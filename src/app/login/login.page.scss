@@ -1,0 +1,31 @@
+.header {
+    height: 130px;
+}
+
+.mainSlide,
+.mainSlide ion-slide {
+    width: 100%;
+    height: 90%;
+}
+
+img {
+    width: 120px;
+}
+
+.pick-avatar {
+    width: 80px;
+    opacity: 0.3;
+}
+
+.pick-avatar-seleccionado {
+    transition: opacity 0.5s linear;
+    opacity: 1 !important;
+}
+
+.form {
+    margin-top: 20px;
+}
+
+.fondo-negro {
+    background-color: #000000 !important;
+}

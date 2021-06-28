@@ -1,0 +1,131 @@
+<!-- <ion-header>
+    <ion-toolbar color="success">
+        <ion-buttons>
+            <ion-button (click)="toggleMenu()">
+                <ion-icon slot="icon-only" name="menu"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header> -->
+
+<ion-buttons>
+    <ion-button color="success" (click)="toggleMenu()">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+    </ion-button>
+</ion-buttons>
+
+
+
+<ion-content [fullscreen]="true" color="medium">
+
+    <ion-menu side="start" menuId="first" color="dark" contentId="main">
+        <ion-header color="secondary">
+            <ion-toolbar color="red">
+                <ion-title class="datos"> ERPP Menú </ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content color="dark">
+            <ion-list class="fondo-gray">
+                <ion-item color="dark" (click)="descargarInformacion()">
+
+                    <ion-label color="light">
+                        <p style="color: white;">
+                            Gestiones realizadas
+                        </p>
+                    </ion-label>
+                    <ion-icon color="success" name="hammer" slot="start"></ion-icon>
+                </ion-item>
+                <ion-item color="dark" (click)="descargarInformacion()">
+
+                    <ion-label color="light">
+                        <p style="color: white;">
+                            Fotos tomadas
+                        </p>
+                    </ion-label>
+                    <ion-icon color="success" name="images-outline" slot="start"></ion-icon>
+                </ion-item>
+                <ion-item color="dark" (click)="exit()">
+
+                    <ion-label color="light">
+                        <p style="color: white;">
+                            Cerrar sesión
+                        </p>
+                    </ion-label>
+                    <ion-icon color="success" name="log-out" slot="start"></ion-icon>
+                </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-menu>
+
+    <div id="main">
+        <ion-row>
+            <ion-col>
+                <img [src]="imgAvatar">
+            </ion-col>
+        </ion-row>
+
+
+        <ion-card color="medium">
+            <ion-card-subtitle color="dark" class="nombre-usuario">
+                <ion-chip color="success">{{nombre}}</ion-chip>
+            </ion-card-subtitle>
+            <ion-card-content color="dark">
+                <p class="datos"> {{email}} </p>
+                <p class="datos"> {{plaza}} </p>
+            </ion-card-content>
+        </ion-card>
+
+
+        <ion-item color="dark" (click)="descargarInformacion()">
+
+            <ion-label color="light">
+                <p style="color: white;">
+                    Descargar cuentas
+                </p>
+            </ion-label>
+            <ion-icon color="success" name="caret-down-circle" slot="start"></ion-icon>
+        </ion-item>
+
+        <hr>
+
+        <ion-item color="dark" (click)="descargarInformacion()">
+
+            <ion-label color="light">
+                <p style="color: white;">
+                    Checador
+                </p>
+            </ion-label>
+            <ion-icon color="success" name="time" slot="start"></ion-icon>
+        </ion-item>
+
+        <hr>
+
+        <ion-item color="dark" (click)="descargarInformacion()">
+
+            <ion-label color="light">
+                <p style="color: white;">
+                    Listado de cuentas
+                </p>
+            </ion-label>
+            <ion-icon color="success" name="list" slot="start"></ion-icon>
+        </ion-item>
+
+        <hr>
+
+
+        <ion-item color="dark" (click)="descargarInformacion()">
+
+            <ion-label color="light">
+                <p style="color: white;">
+                    Manual web
+                </p>
+            </ion-label>
+            <ion-icon color="success" name="book" slot="start"></ion-icon>
+        </ion-item>
+
+    </div>
+
+
+
+
+</ion-content>

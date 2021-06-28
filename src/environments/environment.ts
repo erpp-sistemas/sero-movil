@@ -6,6 +6,19 @@ export const environment = {
   production: false
 };
 
+export const firebaseConfig = {
+  apiKey: "AIzaSyBBpDpub6hC2Sv9Mn_FpyYprVOS8jjsRhY",
+  authDomain: "erpp-movil.firebaseapp.com",
+  projectId: "erpp-movil",
+  storageBucket: "erpp-movil.appspot.com",
+  messagingSenderId: "265285825905",
+  appId: "1:265285825905:web:90fcd8f79f27ebe11472d0",
+  measurementId: "G-6BTN945Q8L"
+}
+
+
+
+
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
