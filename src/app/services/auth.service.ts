@@ -32,8 +32,8 @@ export class AuthService {
       this.firebaseAuth.signInWithEmailAndPassword(email, password).then(user => {
         const id = user.user.uid;
         let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
+          // this.userInfo tiene la informacion del usuario del firebase
           this.userInfo = userInfoFirebase
-          console.log(this.userInfo);
           // corroborar si el usuario esta activo
           if (this.userInfo.isActive) {
             if (this.userInfo.IMEI = '') {
@@ -68,7 +68,6 @@ export class AuthService {
                 await this.storage.set("total", null);
                 await this.storage.set("FechaSync", null);
                 this.rest.deleteInfo();
-                console.log(nombreUsuario);
                 resolve(nombreUsuario)
               }
               createSubscribe.unsubscribe();

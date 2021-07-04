@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { GestionPagePageRoutingModule } from './gestion-page-routing.module';
 
 import { GestionPagePage } from './gestion-page.page';
+import { GestionInspeccionAguaPage } from '../gestion-inspeccion-agua/gestion-inspeccion-agua.page';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { GestionPagePage } from './gestion-page.page';
     IonicModule,
     GestionPagePageRoutingModule
   ],
-  declarations: [GestionPagePage]
+  declarations: [GestionPagePage, GestionInspeccionAguaPage]
 })
 export class GestionPagePageModule {}

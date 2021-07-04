@@ -24,9 +24,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
+
+// google maps
+import { GoogleMaps } from '@ionic-native/google-maps/ngx';
+
+// inAppBrowser
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 
+// splasscreen, statusbar, androidpermissions
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from "@ionic-native/status-bar/ngx";
+//import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
 
+// sqlite
+import { SQLite } from "@ionic-native/sqlite/ngx";
 
 @NgModule({
   declarations: [AppComponent],
@@ -45,6 +56,11 @@ import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
     Geolocation,
     NativeGeocoder,
     InAppBrowser,
+    GoogleMaps,
+    SplashScreen,
+    StatusBar,
+   // AndroidPermissions,
+    SQLite,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],

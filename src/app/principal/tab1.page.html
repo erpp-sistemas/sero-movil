@@ -15,8 +15,9 @@
 </ion-buttons>
 
 
-
 <ion-content [fullscreen]="true" color="medium">
+
+    <ion-progress-bar color="success" buffer="0.1" [value]="progressTotal"></ion-progress-bar>
 
     <ion-menu side="start" menuId="first" color="dark" contentId="main">
         <ion-header color="secondary">
@@ -76,7 +77,7 @@
         </ion-card>
 
 
-        <ion-item color="dark" (click)="descargarInformacion()">
+        <ion-item color="dark" (click)="confirmarDescarga()">
 
             <ion-label color="light">
                 <p style="color: white;">
@@ -88,7 +89,7 @@
 
         <hr>
 
-        <ion-item color="dark" (click)="descargarInformacion()">
+        <ion-item color="dark" (click)="checador()">
 
             <ion-label color="light">
                 <p style="color: white;">
@@ -100,7 +101,7 @@
 
         <hr>
 
-        <ion-item color="dark" (click)="descargarInformacion()">
+        <ion-item color="dark" (click)="listadoCuentas()">
 
             <ion-label color="light">
                 <p style="color: white;">
@@ -113,7 +114,7 @@
         <hr>
 
 
-        <ion-item color="dark" (click)="descargarInformacion()">
+        <ion-item color="dark" (click)="manualWeb()">
 
             <ion-label color="light">
                 <p style="color: white;">

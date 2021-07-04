@@ -84,9 +84,9 @@ export class LoginPage implements OnInit {
 
   async login() {
 
-    console.log(`Email: ${this.email} y password: ${this.password}`);
     this.loading = await this.loadingController.create({
-      message: 'Iniciando sesión'
+      message: 'Iniciando sesión',
+      spinner: 'dots'
     });
 
     await this.loading.present();
@@ -96,8 +96,6 @@ export class LoginPage implements OnInit {
     // }, 3000);
 
     this.auth.loginFirebase(this.email, this.password).then(user => {
-
-      console.log(user);
 
       // Se ha iniciado sesión de forma exitosa, se quita el loading
       this.loading.dismiss();

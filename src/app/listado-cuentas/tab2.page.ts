@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationExtras} from '@angular/router';
-import { NavController, LoadingController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 import { RestService } from '../services/rest.service';
+import { MessagesService } from '../services/messages.service';
 
 @Component({
   selector: 'app-tab2',
@@ -57,20 +58,55 @@ export class Tab2Page implements OnInit {
     }
 
   ];
+  account:any[]; // Es lavariable que tendra la informacion de la tabla contribuyente
+  total: number; // Es la variable que tendra el total
+  gestionadas: number // Es la ariable que tendra la el total de gestionadas;
+
 
   constructor(
     private rest: RestService,
     private router: Router,
     private loadinCtrl: LoadingController,
     private geolocation: Geolocation,
-    private iab:InAppBrowser
+    private iab:InAppBrowser,
+    private message: MessagesService
   ) {}
 
     ngOnInit() {
-      this.rest.obtenerListadoCuentas().subscribe(data => {
-        console.log(data);
-      })
+      this.listadoCuentas();
     }
+
+
+    async listadoCuentas(){
+      this.account = null;
+      this.loading = await this.loadinCtrl.create({
+        message: 'Cargando listado',
+        spinner: 'lines-small'
+      });
+      await this.loading.present();
+      await this.getInfo();
+      await this.getInfoCuentas();
+      this.loading.dismiss();
+    }
+
+    async getInfo() {
+      this.total = await this.rest.getTotalAccounts();
+      console.log("total", this.total);
+      this.gestionadas = await this.rest.getGestionadas();
+    }
+
+    async getInfoCuentas() {
+      this.account = null;
+      this.account = await this.rest.cargarListadoCuentas();
+      console.log("Accounts: ", this.account);
+
+      if(this.account.length == 0){
+        this.message.showAlert("Descarga tu informaciòn!!!!");
+        this.router.navigateByUrl('/home');
+      }
+
+    }
+
 
     find(event) {
 

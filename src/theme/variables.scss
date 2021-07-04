@@ -69,6 +69,14 @@
     --ion-color-light-tint: #f5f6f9;
 }
 
+.alertCancel{
+    --background: #2e2e2e;
+      button.alertButton{
+        color: white;
+      }
+      --ion-color-light: #f4f5f8;
+}
+
 @media (prefers-color-scheme: dark) {
     /*
    * Dark Colors
@@ -200,4 +208,5 @@
         --ion-tab-bar-background: #1f1f1f;
         --ion-card-background: #1e1e1e;
     }
+
 }

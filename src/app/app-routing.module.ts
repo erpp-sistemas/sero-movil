@@ -29,6 +29,10 @@ const routes: Routes = [
   {
     path: 'checador',
     loadChildren: () => import('./checador/checador.module').then( m => m.ChecadorPageModule)
+  },
+  {
+    path: 'gestion-inspeccion-agua',
+    loadChildren: () => import('./gestion-inspeccion-agua/gestion-inspeccion-agua.module').then( m => m.GestionInspeccionAguaPageModule)
   }
 ];
 
