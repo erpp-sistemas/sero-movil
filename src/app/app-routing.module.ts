@@ -16,7 +16,8 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule),
+    canActivate: [NoLoginGuard]
   },
   {
     path: 'streetview',
@@ -33,7 +34,19 @@ const routes: Routes = [
   {
     path: 'gestion-inspeccion-agua',
     loadChildren: () => import('./gestion-inspeccion-agua/gestion-inspeccion-agua.module').then( m => m.GestionInspeccionAguaPageModule)
-  }
+  },
+  {
+    path: 'google-maps',
+    loadChildren: () => import('./google-maps/google-maps.module').then( m => m.GoogleMapsPageModule)
+  },
+  {
+    path: 'pozo-conagua',
+    loadChildren: () => import('./pozo-conagua/pozo-conagua.module').then( m => m.PozoConaguaPageModule)
+  },
+  {
+    path: 'listado-cuentas/:id',
+    loadChildren: () => import('./listado-cuentas/listado-cuentas.module').then( m => m.ListadoCuentasPageModule)
+  },
 ];
 
 @NgModule({

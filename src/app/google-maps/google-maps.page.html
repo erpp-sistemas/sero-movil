@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-input placeholder="Buscar por cuenta" [(ngModel)]="accountString"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="find()">
+        <ion-icon name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="map" id="map_canvas"></div>
+</ion-content>

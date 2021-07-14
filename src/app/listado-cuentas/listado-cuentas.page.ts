@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationExtras} from '@angular/router';
+import { Router, NavigationExtras, ActivatedRoute} from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
@@ -7,14 +7,14 @@ import { RestService } from '../services/rest.service';
 import { MessagesService } from '../services/messages.service';
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss']
+  selector: 'app-listado-cuentas',
+  templateUrl: './listado-cuentas.page.html',
+  styleUrls: ['./listado-cuentas.page.scss'],
 })
-export class Tab2Page implements OnInit {
-
+export class ListadoCuentasPage implements OnInit {
 
   loading:any;
+  idTipo: any;
   arrayCuentas = [
     {
       cuenta: 1020,
@@ -69,42 +69,84 @@ export class Tab2Page implements OnInit {
     private loadinCtrl: LoadingController,
     private geolocation: Geolocation,
     private iab:InAppBrowser,
-    private message: MessagesService
+    private message: MessagesService,
+    private activeRoute: ActivatedRoute
   ) {}
 
     ngOnInit() {
-      this.listadoCuentas();
+      console.log("id: ",this.activeRoute.snapshot.paramMap.get('id'));
+      this.idTipo = this.activeRoute.snapshot.paramMap.get('id');
+      this.validarListadoCuentas( this.idTipo );
     }
 
+    validarListadoCuentas( tipo ) {
+      if(tipo == '1') {
+        this.listadoCuentasAgua();
+      } else if(tipo == '2') {
+        this.listadoCuentasPredio();
+      } else if(tipo == '3') {
+        console.log("listadoCuentasAntenas");
+      } else if(tipo == '4') {
+        console.log("listadoCuentasPozos");
+      }
+    }
 
-    async listadoCuentas(){
+    async listadoCuentasAgua(){
       this.account = null;
       this.loading = await this.loadinCtrl.create({
-        message: 'Cargando listado',
+        message: 'Cargando listado agua',
         spinner: 'lines-small'
       });
       await this.loading.present();
-      await this.getInfo();
-      await this.getInfoCuentas();
+      await this.getInfoAgua();
+      await this.getInfoCuentasAgua();
       this.loading.dismiss();
     }
 
-    async getInfo() {
-      this.total = await this.rest.getTotalAccounts();
-      console.log("total", this.total);
-      this.gestionadas = await this.rest.getGestionadas();
+    async listadoCuentasPredio() {
+      this.account = null;
+      this.loading = await this.loadinCtrl.create({
+        message: 'Cargando listado predio',
+        spinner: 'crescent'
+      });
+      await this.loading.present();
+      await this.getInfoPredio();
+      await this.getInfoCuentasPredio();
+      this.loading.dismiss();
     }
 
-    async getInfoCuentas() {
+    async getInfoAgua() {
+      this.total = await this.rest.getTotalAccountsAgua();
+      console.log("Total agua: ", this.total);
+      this.gestionadas = await this.rest.getGestionadasAgua();
+    }
+
+    async getInfoPredio() {
+      this.total = await this.rest.getTotalAccountsPredio();
+      console.log("Total predio: ", this.total);
+    }
+
+    async getInfoCuentasAgua() {
       this.account = null;
-      this.account = await this.rest.cargarListadoCuentas();
+      this.account = await this.rest.cargarListadoCuentasAgua();
       console.log("Accounts: ", this.account);
 
       if(this.account.length == 0){
-        this.message.showAlert("Descarga tu informaciòn!!!!");
+        this.message.showAlert("Descarga informaciòn de agua!!!!");
         this.router.navigateByUrl('/home');
       }
 
+    }
+
+    async getInfoCuentasPredio() {
+      this.account = null;
+      this.account = await this.rest.cargarListadoCuentasPredio();
+      console.log("Accounts: ", this.account);
+
+      if(this.account.length == 0) {
+        this.message.showAlert("Descarga informaciòn de predio!!!!");
+        this.router.navigateByUrl('/home');
+      }
     }
 
 
@@ -165,7 +207,5 @@ export class Tab2Page implements OnInit {
   goPhotos(cuenta) {
     
   }
-
-
 
 }

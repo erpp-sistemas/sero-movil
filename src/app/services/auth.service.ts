@@ -5,6 +5,8 @@ import { MessagesService } from './messages.service';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
 import { RestService } from './rest.service';
+import { HttpClient } from '@angular/common/http';
+//import { BehaviorSubject } from 'rxjs';
 
 
 @Injectable({
@@ -12,7 +14,9 @@ import { RestService } from './rest.service';
 })
 export class AuthService {
 
-
+  apiUrlSectoresPlazas = 'http://localhost:3000/users/';
+  //private objectSource = new BehaviorSubject<[]>([]);
+  //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
 
 
@@ -22,7 +26,8 @@ export class AuthService {
     private mensaje: MessagesService,
     private router: Router,
     private storage: Storage,
-    private rest: RestService
+    private rest: RestService,
+    private http: HttpClient
   ) { }
 
 
@@ -82,8 +87,49 @@ export class AuthService {
     })
   }
 
+  /**
+   * Metodo que trae la informacion del documento de la coleccion usersErpp por uid 
+   * @param uid 
+   * @returns documento de collection usersErpp
+   */
   getUserInfo(uid: string) {
     return this.firestore.collection('usersErpp').doc(uid).valueChanges()
+  }
+
+  async getPlazaInfo() {
+    const idplaza = await this.storage.get('IdPlaza');
+
+    return new Promise( (resolve, reject ) => {
+      const sectores = [
+        {
+          id_plaza: 1,
+          nombre: 'Leon Guanajuato',
+          id_sector: 1,
+          nombre_sector: 'agua'
+        },
+        {
+          id_plaza: 1,
+          nombre: 'Leon Guanajuato',
+          id_sector: 2,
+          nombre_sector: 'predio'
+        },
+        {
+          id_plaza: 1,
+          nombre: 'Leon Guanajuato',
+          id_sector: 4,
+          nombre_sector: 'antenas'
+        }
+      ]
+      resolve(sectores);
+    })
+    
+    // return new Promise( resolve => {
+    //   this.http.get(this.apiUrlSectoresPlazas + ' ' + idplaza).subscribe( data => {
+    //     console.log(data);
+    //     resolve(data)
+    //   })
+    // });
+
   }
 
   saveUserInfoStorage(userInfo: any) {
@@ -153,14 +199,12 @@ export class AuthService {
           urlImage: "",
           imgAvatar: imgAvatar
         })
-
         resolve(res)
       }).catch(err => console.error(err));
-
-
     })
 
   }
+
 
   logout() {
     this.firebaseAuth.signOut().then(() => {
@@ -168,7 +212,9 @@ export class AuthService {
     })
   }
 
-
+  // sendObjectSource(data:any) {
+  //   this.objectSource.next(data);
+  // }
 
 
 }

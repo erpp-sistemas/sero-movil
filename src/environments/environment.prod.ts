@@ -10,5 +10,11 @@ export const firebaseConfig = {
   messagingSenderId: "265285825905",
   appId: "1:265285825905:web:90fcd8f79f27ebe11472d0",
   measurementId: "G-6BTN945Q8L"
-}
+};
+
+export const awsCredentials ={
+  accessKeyId:'AKIAQAVQA6VNSP724ERU',
+  secretAccessKey:'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'
+  
+};
 

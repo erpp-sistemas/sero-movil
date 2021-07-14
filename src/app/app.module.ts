@@ -7,7 +7,6 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-
 // firebase
 import { firebaseConfig } from 'src/environments/environment';
 import { AngularFireModule } from '@angular/fire';
@@ -39,6 +38,17 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
 // sqlite
 import { SQLite } from "@ionic-native/sqlite/ngx";
 
+// camara
+import { Camera } from "@ionic-native/camera/ngx";
+
+// file
+import { File } from "@ionic-native/file/ngx";
+
+// s3
+import { S3Service } from "../app/services/s3.service";
+import { SystemVariableService } from "../app/services/system-variable";
+
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -59,10 +69,14 @@ import { SQLite } from "@ionic-native/sqlite/ngx";
     GoogleMaps,
     SplashScreen,
     StatusBar,
+    Camera,
+    File,
+    S3Service,
+    SystemVariableService,
    // AndroidPermissions,
     SQLite,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -4,6 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
 
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -29,6 +30,7 @@ export class LoginPage implements OnInit {
   loading: any;
   usuarioVerificado: boolean = false;
   avatarSeleccionado: any;
+  sectores:any;
 
   avatars = [
     {
@@ -75,7 +77,8 @@ export class LoginPage implements OnInit {
     private auth: AuthService,
     private router: Router,
     private usuarioService: UsersService,
-    private mensaje:MessagesService
+    private mensaje:MessagesService,
+    
   ) { }
 
   ngOnInit() {

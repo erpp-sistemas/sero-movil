@@ -76,6 +76,10 @@
       }
       --ion-color-light: #f4f5f8;
 }
+ion-tab-button {
+    --color-selected:#28ba62;
+    --color: red;
+}
 
 @media (prefers-color-scheme: dark) {
     /*

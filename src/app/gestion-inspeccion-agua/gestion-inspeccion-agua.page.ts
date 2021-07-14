@@ -50,6 +50,21 @@ export class GestionInspeccionAguaPage implements OnInit {
   infoImage: any[];
 
 
+  // validaciones de campos
+  activaOtrosHallazgos: boolean = false;
+  mostrarInspectores: boolean = false;
+  inspectores: boolean = false; // para mostrar la lista de inspectores
+  detectedChanges: boolean = false;
+
+  sliderOpts = {
+    zoom: true,
+    slidesPerView: 1.55,
+    spaceBetween: 10,
+    centeredSlides: true
+  };
+
+
+
   constructor(
     private storage: Storage,
     private mensaje: MessagesService,
@@ -59,14 +74,36 @@ export class GestionInspeccionAguaPage implements OnInit {
     private alertController: AlertController,
     private loadingController: LoadingController,
     rest: RestService
-  ) { 
-    this.imgs = [{imagen:"assets/img/imgs.png"}];
+  ) {
+    this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
 
   ngOnInit() {
   }
 
+  exit() {
 
+  }
+
+  resultHallazgo(event) {
+
+  }
+
+  muestraInspectores() {
+
+  }
+
+  deletePhoto( img ) {
+
+  }
+
+  takePic( type ) {
+
+  }
+
+  verify() {
+
+  }
 
 
 }

@@ -27,7 +27,7 @@
         </ion-header>
         <ion-content color="dark">
             <ion-list class="fondo-gray">
-                <ion-item color="dark" (click)="descargarInformacion()">
+                <ion-item color="dark">
 
                     <ion-label color="light">
                         <p style="color: white;">
@@ -36,7 +36,7 @@
                     </ion-label>
                     <ion-icon color="success" name="hammer" slot="start"></ion-icon>
                 </ion-item>
-                <ion-item color="dark" (click)="descargarInformacion()">
+                <ion-item color="dark">
 
                     <ion-label color="light">
                         <p style="color: white;">
@@ -45,6 +45,27 @@
                     </ion-label>
                     <ion-icon color="success" name="images-outline" slot="start"></ion-icon>
                 </ion-item>
+
+                <ion-item color="dark" (click)="checador()">
+
+                    <ion-label color="light">
+                        <p style="color: white;">
+                            Checador
+                        </p>
+                    </ion-label>
+                    <ion-icon color="success" name="time" slot="start"></ion-icon>
+                </ion-item>
+
+                <ion-item color="dark" (click)="manualWeb()">
+
+                    <ion-label color="light">
+                        <p style="color: white;">
+                            Manual web
+                        </p>
+                    </ion-label>
+                    <ion-icon color="success" name="book" slot="start"></ion-icon>
+                </ion-item>
+
                 <ion-item color="dark" (click)="exit()">
 
                     <ion-label color="light">
@@ -54,6 +75,7 @@
                     </ion-label>
                     <ion-icon color="success" name="log-out" slot="start"></ion-icon>
                 </ion-item>
+
             </ion-list>
         </ion-content>
     </ion-menu>
@@ -67,7 +89,7 @@
 
 
         <ion-card color="medium">
-            <ion-card-subtitle color="dark" class="nombre-usuario">
+            <ion-card-subtitle color="dark" class="texto-centrado">
                 <ion-chip color="success">{{nombre}}</ion-chip>
             </ion-card-subtitle>
             <ion-card-content color="dark">
@@ -76,53 +98,75 @@
             </ion-card-content>
         </ion-card>
 
-
-        <ion-item color="dark" (click)="confirmarDescarga()">
-
-            <ion-label color="light">
-                <p style="color: white;">
-                    Descargar cuentas
-                </p>
-            </ion-label>
-            <ion-icon color="success" name="caret-down-circle" slot="start"></ion-icon>
-        </ion-item>
-
         <hr>
 
-        <ion-item color="dark" (click)="checador()">
-
-            <ion-label color="light">
-                <p style="color: white;">
-                    Checador
-                </p>
-            </ion-label>
-            <ion-icon color="success" name="time" slot="start"></ion-icon>
-        </ion-item>
+        <div class="texto-centrado">
+            <ion-chip color="success">Descarga de información</ion-chip>
+        </div>
+        
 
         <hr>
+        <div *ngIf="agua">
+            <ion-item color="dark" (click)="confirmarDescarga(1)">
 
-        <ion-item color="dark" (click)="listadoCuentas()">
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Agua
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="water" slot="start"></ion-icon>
+                <ion-icon *ngIf="descargaAgua" color="success" name="checkmark-done" slot="end"></ion-icon>
+            </ion-item>
+        </div>
+
+        <div *ngIf="predio" class="descarga">
+            <ion-item color="dark" (click)="confirmarDescarga(2)">
+
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Predio
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="copy-outline" slot="start"></ion-icon>
+            </ion-item>
+        </div>
+
+        <div *ngIf="pozos" class="descarga">
+            <ion-item color="dark" (click)="confirmarDescarga(3)">
+
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Pozos
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="color-fill" slot="start"></ion-icon>
+            </ion-item>
+        </div>
+
+
+
+        <div *ngIf="antenas" class="descarga">
+            <ion-item  color="dark" (click)="confirmarDescarga(4)">
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Antenas
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="git-network-outline" slot="start"></ion-icon>
+            </ion-item>
+        </div>
+
+        <!-- <ion-item color="dark" (click)="confirmarDescargaPozos()">
 
             <ion-label color="light">
                 <p style="color: white;">
-                    Listado de cuentas
+                    Descargar pozos conagua
                 </p>
             </ion-label>
             <ion-icon color="success" name="list" slot="start"></ion-icon>
         </ion-item>
 
-        <hr>
-
-
-        <ion-item color="dark" (click)="manualWeb()">
-
-            <ion-label color="light">
-                <p style="color: white;">
-                    Manual web
-                </p>
-            </ion-label>
-            <ion-icon color="success" name="book" slot="start"></ion-icon>
-        </ion-item>
+        <hr> -->
 
     </div>
 

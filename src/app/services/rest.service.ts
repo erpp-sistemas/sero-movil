@@ -11,7 +11,7 @@ export class RestService {
 
 
   apiObtenerDatosMovil = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_obtenerCuentasMovil";
-
+  apiObtenerDatosPozos = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_Pozos";
 
   constructor(
     private http: HttpClient
@@ -23,9 +23,15 @@ export class RestService {
     }
   }
 
-  deleteContribuyente() {
-    let sqlDelete = "DELETE from contribuyente";
+  deleteTableAgua() {
+    let sqlDelete = "DELETE from agua";
     this.db.executeSql(sqlDelete, []);
+  }
+
+
+  deleteTablePozos() {
+    let sqlDeletePozos = "DELETE FROM pozos_conagua"
+    this.db.executeSql(sqlDeletePozos, []);
   }
 
 
@@ -35,7 +41,7 @@ export class RestService {
    * @param idPlaza 
    * @returns promise data
    */
-  obtenerDatosSql(idAspUser, idPlaza) {
+  obtenerDatosSqlAgua(idAspUser, idPlaza) {
     // lanzar el api para obtener los datos del sql
     try{
       return new Promise( resolve => {
@@ -54,13 +60,35 @@ export class RestService {
   }
 
   /**
-   * Metodo que inserta a la tabla contribuyente la informaciòn que trajo del SQL
-   * @param data 
-   * @returns Ejecuciòn del insert into contribuyente
+   * Metodo que trae la informacion del stored sp_Pozos
+   * @param idPlaza 
+   * @returns 
    */
-  guardarInfoSQLContribuyente( data ) {
+  obtenerDatosPozos( idPlaza ) {
+    // lanzar el api para obtener los datos del sql
+    try{
+      return new Promise( resolve => {
+        
+        this.http.post(this.apiObtenerDatosPozos + ' ' + idPlaza, null)
+        .subscribe( data => {
+          console.log("Datos traidos del SQL para pozos");
+          console.log(data);
+          resolve(data);
+        }, err => console.log(err));
+      })
+    } catch{
+      console.log("No se pudo obtener la informaciòn");
+    }
+  }
 
-    let sql = `INSERT INTO contribuyente(cuenta, adeudo, SupTerrenoH, SupConstruccionH, ValorTerrenoH, ValorConstruccionH, ValorCatastralH, tareaAsignada, ultimo_pago, nombre_propietario, telefono_propietario, celular_propietario, correo_electronico_propietario, calle_predio, num_interior_predio, num_exterior_predio, cp_predio, colonia_predio, entre_calle1_predio, entre_calle2_predio, manzana_predio, lote_predio, poblacion_predio, calle_notificacion, num_interior_notificacion, num_exterior_notificacion, cp_notificacion, colonia_notificacion, entre_calle1_notificacion, entre_calle2_notificacion, manzana_notificacion, lote_notificacion, referencia_predio, referencia_notificacion, id_tarea, latitud, longitud, tipoServicio, clave_catastral, numero_medidor, tipo_servicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)` 
+  /**
+   * Metodo que inserta a la tabla agua la informaciòn que trajo del SQL
+   * @param data 
+   * @returns Ejecuciòn del insert into agua
+   */
+  guardarInfoSQLAgua( data ) {
+
+    let sql = `INSERT INTO agua(cuenta, adeudo, SupTerrenoH, SupConstruccionH, ValorTerrenoH, ValorConstruccionH, ValorCatastralH, tareaAsignada, ultimo_pago, nombre_propietario, telefono_propietario, celular_propietario, correo_electronico_propietario, calle_predio, num_interior_predio, num_exterior_predio, cp_predio, colonia_predio, entre_calle1_predio, entre_calle2_predio, manzana_predio, lote_predio, poblacion_predio, calle_notificacion, num_interior_notificacion, num_exterior_notificacion, cp_notificacion, colonia_notificacion, entre_calle1_notificacion, entre_calle2_notificacion, manzana_notificacion, lote_notificacion, referencia_predio, referencia_notificacion, id_tarea, latitud, longitud, tipoServicio, clave_catastral, numero_medidor, tipo_servicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)` 
 
     return this.db.executeSql(sql, [
       data.cuenta,
@@ -108,6 +136,34 @@ export class RestService {
 
   }
 
+  /**
+   * Metodo que inserta la informacion obtenida de sp_Pozos en la tabla interna pozos_conagua
+   * @param data 
+   * @returns 
+   */
+  guardarInfoSqlPozos( data ) {
+    //console.log("data a insertar ", data)
+    let sql = "INSERT INTO pozos_conagua (folio, numero_titulo, titular, representante_legal, rfc, domicilio, municipio, uso_agua, vol_ext_anu, vol_con_anu , profundidad, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    return this.db.executeSql(sql, [
+      data.folio,
+      data.numero_titulo,
+      data.titular,
+      data.representante_legal,
+      data.rfc,
+      data.domicilio,
+      data.municipio,
+      data.uso_agua,
+      data.vol_ext_anu,
+      data.vol_con_anu,
+      data.profundidad,
+      data.latitud,
+      data.longitud
+    ])
+  }
+
+  /**
+   * Metodo que borrara toda la informacion si es que es otro usuario el que se logueo 
+   */
   deleteInfo() {
     // implementar la logica
     console.log("Borrando información");
@@ -117,8 +173,11 @@ export class RestService {
     return this.http.get(this.apiObtenerDatosMovil);
   }
 
-  cargarListadoCuentas() {
-    let sql = `SELECT cuenta, nombre_propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud FROM contribuyente WHERE nombre_propietario NOT NULL LIMIT 20 `;
+  /**
+   * Metodo que carga la lista de cuentas a gestionar para mostrarlas en el tab de cuentas
+   */
+  cargarListadoCuentasAgua() {
+    let sql = `SELECT cuenta, nombre_propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud FROM agua WHERE nombre_propietario NOT NULL LIMIT 20 `;
 
     return this.db.executeSql(sql, []).then( response => {
       let arrayCuentas = [];
@@ -133,8 +192,30 @@ export class RestService {
 
   }
 
-  async getTotalAccounts() {
-    let sql = 'SELECT COUNT(*) as total FROM contribuyente';
+  cargarListadoCuentasPredio() {
+    let sql = `SELECT cuenta, nombre_propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud FROM predio WHERE nombre_propietario NOT NULL LIMIT 20`;
+
+    return this.db.executeSql(sql, []).then(response => {
+      let arrayCuentas = [];
+
+      for (let i = 0; i < response.rows.length; i++) {
+        arrayCuentas.push(response.rows.item(i));
+      }
+
+      return Promise.resolve(arrayCuentas);
+
+    }).catch(error => Promise.reject(error));
+
+  }
+
+
+
+  /**
+   * Metodo que obtiene el total de las cuentas insertadas en la tabla agua
+   * @returns Promise
+   */
+  async getTotalAccountsAgua() {
+    let sql = 'SELECT COUNT(*) as total FROM agua';
     try{
       const response = await this.db.executeSql(sql, []);
       let result = response.rows.item(0);
@@ -145,8 +226,27 @@ export class RestService {
     }
   }
 
-  async getGestionadas() {
-    let sql = 'SELECT COUNT(*) as total_gestionadas FROM contribuyente WHERE gestionada = 1';
+  /**
+   * Metodo que obtiene el total de las cuentas insertadas en la tabla predio
+   * @returns Promise 
+   */
+  async getTotalAccountsPredio() {
+    let sql = 'SELECT COUNT(*) as total FROM predio';
+    try {
+      const response = await this.db.executeSql(sql, []);
+      let result = response.rows.item(0);
+      return Promise.resolve(result);
+    } catch( error ) {
+      return Promise.reject(error);
+    }
+  }
+
+  /**
+   * Metodo que obtiene el total de cuentas gestionadas de la tabla agua
+   * @returns Promise
+   */
+  async getGestionadasAgua() {
+    let sql = 'SELECT COUNT(*) as total_gestionadas FROM agua WHERE gestionada = 1';
     try{
       const response = await this.db.executeSql(sql, []);
       let result = response.rows.item(0);
@@ -157,12 +257,31 @@ export class RestService {
     }
   }
 
+  /**
+   * Metodo que obtiene las cuentas de la tabla pozos_conagua para cargarlas al mapa
+   * @returns Promise sqlite
+   */
+  getDataVisitPositionPozos() {
+    let sql = 'SELECT folio, numero_titulo, titular, representante_legal, rfc, domicilio, municipio, uso_agua, vol_ext_anu, vol_con_anu, profundidad, latitud, longitud FROM pozos_conagua';
+    return this.db.executeSql(sql, []).then(response => {
+      console.log(response);
+      let posiciones = [];
+      for(let index = 0; index < response.rows.length; index ++) {
+        posiciones.push(response.rows.item(index));
+      }
 
+      return Promise.resolve(posiciones)
+    }).catch(error => Promise.reject(error));
+  }
+
+  /**
+   * Metodo que obtiene las cuentas de la tabla agua para cargarlas al mapa
+   * @returns query sqlite
+   */
   getDataVisitPosition() {
     // Carga las posiciones
-    let sql = 'SELECT gestionada, cuenta, latitud, longitud, nombre_propietario, adeudo FROM contribuyente where latitud > 0 and gestionada = 0';
+    let sql = 'SELECT gestionada, cuenta, latitud, longitud, nombre_propietario, adeudo FROM agua where latitud > 0 and gestionada = 0';
     return this.db.executeSql(sql, []).then( response => {
-      console.log(response);
       let posiciones = [];
 
       for (let index = 0; index < response.rows.length; index ++) {
@@ -174,9 +293,14 @@ export class RestService {
     }).catch( error => Promise.reject(error));
   }
 
+  /**
+   * Metodo que obtiene la informacion de una cuenta de la tabla agua para cargarla la mapa
+   * @param accountNumber 
+   * @returns 
+   */
   getDataVisitPositionByAccount(accountNumber: string) {
     let sql =
-      "SELECT gestionada, cuenta, latitud, longitud FROM contribuyente where latitud > 0 and cuenta = ?";
+      "SELECT gestionada, cuenta, latitud, longitud FROM agua where latitud > 0 and cuenta = ?";
     return this.db
       .executeSql(sql, [accountNumber])
       .then(response => {

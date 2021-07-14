@@ -29,7 +29,7 @@ export class GestionPagePage implements OnInit {
     modal.present();
 
     modal.onDidDismiss().then( data => {
-      this.router.navigate(['home/tab1'])
+      this.router.navigate(['home/tab2'])
     })
   }
 

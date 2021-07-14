@@ -15,6 +15,6 @@ import { GestionInspeccionAguaPage } from './gestion-inspeccion-agua.page';
     IonicModule,
     GestionInspeccionAguaPageRoutingModule
   ],
-  declarations: [GestionInspeccionAguaPage]
+  //declarations: [GestionInspeccionAguaPage]
 })
 export class GestionInspeccionAguaPageModule {}

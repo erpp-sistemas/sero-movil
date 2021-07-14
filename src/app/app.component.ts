@@ -42,7 +42,7 @@ export class AppComponent {
     this.platform.ready().then( () => {
       
       this.splasScreen.hide();
-      this.statusBar.hide();
+      this.statusBar.styleBlackOpaque();
       this.createDB();
       // this.getPermission();
 
@@ -66,9 +66,11 @@ export class AppComponent {
     }).then( async(db: SQLiteObject) => {
       this.rest.setDatabase(db);
 
-      await db.executeSql(table.tableContribuyente, []);
+      await db.executeSql(table.tableAgua, []);
+      await db.executeSql(table.tablePredio, []);
       await db.executeSql(table.tableInspeccionAgua, []);
       await db.executeSql(table.tableInspeccionPredio, []);
+      await db.executeSql(table.tablePozos, []);
 
     }).catch( error => console.log("Error en bd", error));
   }
