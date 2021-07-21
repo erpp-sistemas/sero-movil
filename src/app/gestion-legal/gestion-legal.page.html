@@ -1,0 +1,218 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+    <ion-title color="light">Legal</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="tertiary">
+        <ion-icon name="information-circle"></ion-icon>
+      </ion-button>
+      <ion-button color="tertiary" (click)="exit()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="medium">
+
+  <ion-card color="dark">
+    <ion-card-content>
+      <ion-item color="dark">
+        <ion-label>
+          <p>Persona que atiende: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"></ion-input>
+      </ion-item>
+      <ion-item color="dark">
+        <ion-label>
+          <p>Número de contacto: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numeroContacto"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="dark">
+    <ion-card-content color="dark">
+      <ion-item color="dark">
+        <ion-label>
+          <p>
+            Motivo de no pago
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+              [(ngModel)]="idMotivoNoPago" (ionChange)="cambioMotivoNoPago( $event )">
+              <ion-select-option value="1">No quiero pagar</ion-select-option>
+              <ion-select-option value="2">No tengo dinero</ion-select-option>
+              <ion-select-option value="3">Grupo vulnerable</ion-select-option>
+              <ion-select-option value="4">Descontento con administración</ion-select-option>
+              <ion-select-option value="5">Otro</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>
+            <small>
+              Como considera el trabajo actual de la administración
+            </small>
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+              [(ngModel)]="idTrabajoActual">
+              <ion-select-option value="1">Bueno</ion-select-option>
+              <ion-select-option value="2">Regular</ion-select-option>
+              <ion-select-option value="3">Malo</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-label>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="dark">
+    <ion-card-content color="dark">
+      <ion-item color="dark">
+        <ion-label>
+          <p>Tipo de servicio actual</p>
+          <ion-text color="primary"> {{tipoServicioPadron}} </ion-text>
+        </ion-label>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>
+            Cambiar el tipo de servicio
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+              [(ngModel)]="idTipoServicio">
+              <ion-select-option value="1">Comercial</ion-select-option>
+              <ion-select-option value="2">Residencial</ion-select-option>
+              <ion-select-option value="3">Industrial</ion-select-option>
+              <ion-select-option value="4">Gobierno</ion-select-option>
+              <ion-select-option value="5">No aplica</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>Número de niveles: </p>
+        </ion-label>
+        <ion-input type="number" class="myCustomSelect" interface="popover" [(ngModel)]="numeroNiveles"></ion-input>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>Color fachada: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>Color puerta: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>
+            Tipo de predio
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+              [(ngModel)]="idTipoPredio">
+              <ion-select-option value="1">Esquinero</ion-select-option>
+              <ion-select-option value="2">Intermedio</ion-select-option>
+              <ion-select-option value="3">Manzanero</ion-select-option>
+              <ion-select-option value="4">Ahogado</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>Entre calle 1: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle1"></ion-input>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>Entre calle 2: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle2"></ion-input>
+      </ion-item>
+
+      <ion-item color="dark">
+        <ion-label>
+          <p>
+            Observaciones: 
+          </p>
+        </ion-label>
+        <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-slides [options]="sliderOpts">
+    <ion-slide *ngFor="let img of imgs">
+      <img src={{img.imagen}} class="imagen">
+      <ion-fab-button padding size="small" (click)="deletePhoto(img.imagen)" *ngIf="img.imagen != 'assets/img/imgs.png'"
+        color="danger">
+        <ion-icon name="trash"></ion-icon>
+      </ion-fab-button>
+    </ion-slide>
+  </ion-slides>
+
+
+  <ion-item color="dark" text-center>
+    <ion-label>
+      <p class="fotos-visita">
+        Fotos de la visita
+      </p>
+
+
+      <ion-grid>
+        <ion-row>
+          <ion-col text-center>
+            <ion-button expand="block" color="primary" (click)="takePic(1)">
+              <ion-icon name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Evidencia</ion-label>
+          </ion-col>
+
+          <ion-col text-center>
+            <ion-button expand="block" color="warning" (click)="takePic(2)">
+              <ion-icon name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Predio</ion-label>
+          </ion-col>
+
+        </ion-row>
+
+      </ion-grid>
+    </ion-label>
+  </ion-item>
+
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button color="success" expand="block" (click)="verify()">Terminar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+</ion-content>

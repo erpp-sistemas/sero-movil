@@ -1,0 +1,31 @@
+<ion-header no-border>
+  <ion-toolbar color="medium">
+    <img src="../../assets/img/logo.png" alt="" style="height: 100px; width :200">
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="medium">
+  <ion-card color="dark" >
+    <ion-card-content color="dark">
+      <ion-button (click)="syncAgua()" color="primary">Sincronizar agua</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="dark" >
+    <ion-card-content color="dark">
+      <ion-button (click)="syncPredio()" color="warning">Sincronizar predio</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="dark" >
+    <ion-card-content color="dark">
+      <ion-button (click)="syncAntenas()" color="success">Sincronizar antenas</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="dark" >
+    <ion-card-content color="dark">
+      <ion-button (click)="syncPozos()" color="tertiary">Sincronizar pozos</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

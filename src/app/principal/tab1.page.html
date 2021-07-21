@@ -27,7 +27,7 @@
         </ion-header>
         <ion-content color="dark">
             <ion-list class="fondo-gray">
-                <ion-item color="dark">
+                <ion-item color="dark" (click)="gestionesRealizadas()">
 
                     <ion-label color="light">
                         <p style="color: white;">
@@ -103,7 +103,7 @@
         <div class="texto-centrado">
             <ion-chip color="success">Descarga de información</ion-chip>
         </div>
-        
+
 
         <hr>
         <div *ngIf="agua">
@@ -128,6 +128,7 @@
                     </p>
                 </ion-label>
                 <ion-icon color="success" name="copy-outline" slot="start"></ion-icon>
+                <ion-icon *ngIf="descargaPredio" color="success" name="checkmark-done" slot="end"></ion-icon>
             </ion-item>
         </div>
 
@@ -146,7 +147,7 @@
 
 
         <div *ngIf="antenas" class="descarga">
-            <ion-item  color="dark" (click)="confirmarDescarga(4)">
+            <ion-item color="dark" (click)="confirmarDescarga(4)">
                 <ion-label color="light">
                     <p style="color: white;">
                         Antenas

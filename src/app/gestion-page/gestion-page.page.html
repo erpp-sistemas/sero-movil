@@ -16,20 +16,52 @@
 
 <ion-content color="medium">
 
-    <ion-item color="medium">
 
-        <ion-card color="dark" (click)="inspeccion()">
+    <ion-item color="medium" (click)="cartaInvitacion()">
+
+        <ion-card color="dark">
             <ion-card-header>
-                <ion-chip color="success">Inspección</ion-chip>
+                <ion-chip color="success">Carta invitación</ion-chip>
             </ion-card-header>
             <ion-card-content class="elemento">
-                <img src="../../assets/img/inspeccion.png" alt="">
+                <img src="../../assets/img/carta.png" alt="">
             </ion-card-content>
         </ion-card>
 
     </ion-item>
 
-    <ion-item color="medium">
+    <div *ngIf="agua">
+        <ion-item color="medium" (click)="inspeccionAgua()">
+
+            <ion-card color="dark">
+                <ion-card-header>
+                    <ion-chip color="success">Inspección</ion-chip>
+                </ion-card-header>
+                <ion-card-content class="elemento">
+                    <img src="../../assets/img/inspeccion.png" alt="">
+                </ion-card-content>
+            </ion-card>
+    
+        </ion-item>
+    </div>
+
+    <div *ngIf="predio">
+        <ion-item color="medium" (click)="inspeccionPredio()">
+
+            <ion-card color="dark">
+                <ion-card-header>
+                    <ion-chip color="success">Inspección</ion-chip>
+                </ion-card-header>
+                <ion-card-content class="elemento">
+                    <img src="../../assets/img/inspeccion.png" alt="">
+                </ion-card-content>
+            </ion-card>
+    
+        </ion-item>
+    </div>
+
+
+    <ion-item color="medium" (click)="legal()">
 
         <ion-card color="dark">
             <ion-card-header>
@@ -42,17 +74,6 @@
 
     </ion-item>
 
-    <ion-item color="medium">
 
-        <ion-card color="dark">
-            <ion-card-header>
-                <ion-chip color="success">Carta invitación</ion-chip>
-            </ion-card-header>
-            <ion-card-content class="elemento">
-                <img src="../../assets/img/carta.png" alt="">
-            </ion-card-content>
-        </ion-card>
-
-    </ion-item>
 
 </ion-content>

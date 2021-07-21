@@ -8,6 +8,8 @@ import { ListadoCuentasPageRoutingModule } from './listado-cuentas-routing.modul
 
 import { ListadoCuentasPage } from './listado-cuentas.page';
 
+import { FiltroPipe } from '../pipes/filtro.pipe';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -15,6 +17,6 @@ import { ListadoCuentasPage } from './listado-cuentas.page';
     IonicModule,
     ListadoCuentasPageRoutingModule
   ],
-  declarations: [ListadoCuentasPage]
+  declarations: [ListadoCuentasPage, FiltroPipe]
 })
 export class ListadoCuentasPageModule {}

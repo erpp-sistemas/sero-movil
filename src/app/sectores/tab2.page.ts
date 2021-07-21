@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Storage } from '@ionic/storage';
 
 
 @Component({
@@ -17,29 +18,32 @@ pozos: boolean;
 
 
 constructor(
-  private router:Router
+  private router:Router,
+  private storage: Storage
 ) {}
 
 ngOnInit() {
 
 }
  
-irAgua() {
+async irAgua() {
   console.log("agua");
+  await this.storage.set('tipo', 'Agua');
   this.router.navigate(["/listado-cuentas", 1]);
 }
 
-irPredio() {
+async irPredio() {
   console.log("predio");
+  await this.storage.set('tipo', 'Predio');
   this.router.navigate(["/listado-cuentas", 2]);
 }
 
-irAntenas() {
+async irAntenas() {
   console.log("antenas");
   this.router.navigate(["/listado-cuentas", 3]);
 }
 
-irPozos() {
+async irPozos() {
   console.log("pozos");
   this.router.navigate(["/listado-cuentas", 4]);
 }

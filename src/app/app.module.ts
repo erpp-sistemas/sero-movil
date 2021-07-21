@@ -48,6 +48,11 @@ import { File } from "@ionic-native/file/ngx";
 import { S3Service } from "../app/services/s3.service";
 import { SystemVariableService } from "../app/services/system-variable";
 
+// webview
+import { WebView } from "@ionic-native/ionic-webview/ngx";
+
+
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -70,6 +75,7 @@ import { SystemVariableService } from "../app/services/system-variable";
     SplashScreen,
     StatusBar,
     Camera,
+    WebView,
     File,
     S3Service,
     SystemVariableService,

@@ -19,19 +19,19 @@ export class Tab1Page implements OnInit {
   plaza: string = '';
   progress: boolean = false;
   progressTotal: number = 0;
-  loading:any;
-  data:any;
-  dataPozos:any;
-  total:any;
-  alert:any;
-  totalPozos:any;
+  loading: any;
+  data: any;
+  dataPozos: any;
+  total: any;
+  alert: any;
+  totalPozos: any;
   dataSectores: any;
   // sectores validaciones
   agua: boolean;
   predio: boolean;
   antenas: boolean;
   pozos: boolean;
- 
+
   // validaciones para saber si ya se han descargado cuentas
   descargaAgua: boolean;
   descargaPredio: boolean;
@@ -45,7 +45,7 @@ export class Tab1Page implements OnInit {
     private rest: RestService,
     private loadinCtrl: LoadingController,
     private message: MessagesService,
-    private router:Router,
+    private router: Router,
     private alertCtrl: AlertController
   ) { }
 
@@ -61,6 +61,7 @@ export class Tab1Page implements OnInit {
 
   async validaDescargas() {
     this.descargaAgua = await this.storage.get('DescargaAgua');
+    this.descargaPredio = await this.storage.get('DescargaPredio');
   }
 
 
@@ -68,14 +69,14 @@ export class Tab1Page implements OnInit {
 
     this.dataSectores = await this.auth.getPlazaInfo();
     console.log("Data sectores: ", this.dataSectores);
-    this.dataSectores.forEach( sector => {
-      if(sector.nombre_sector == 'agua') {
+    this.dataSectores.forEach(sector => {
+      if (sector.nombre_sector == 'agua') {
         this.agua = true;
-      } else if(sector.nombre_sector == 'predio') {
+      } else if (sector.nombre_sector == 'predio') {
         this.predio = true;
-      } else if(sector.nombre_sector == 'antenas') {
+      } else if (sector.nombre_sector == 'antenas') {
         this.antenas = true;
-      } else if(sector.nombre_sector == 'pozos') {
+      } else if (sector.nombre_sector == 'pozos') {
         this.pozos = true;
       }
     });
@@ -93,14 +94,14 @@ export class Tab1Page implements OnInit {
   }
 
 
-  async confirmarDescarga( tipo ){
+  async confirmarDescarga(tipo) {
 
     if (tipo == 1) {
       console.log("Descargar agua");
       this.confirmaDescargaAgua()
-    } else if ( tipo == 2) {
+    } else if (tipo == 2) {
       console.log("Descarga predio");
-      // llamar al metodo confirme la descarga de predio
+      this.confirmarDescargaPredio();
     } else if (tipo == 3) {
       console.log("Descarga pozos");
       // llamar al metodo confirme la descarga de pozos
@@ -112,7 +113,7 @@ export class Tab1Page implements OnInit {
 
   async confirmaDescargaAgua() {
     const alert = await this.alertCtrl.create({
-      subHeader:'Descarga de cuentas de agua',
+      subHeader: 'Descarga de cuentas de agua',
       message: 'Confirme para iniciar la descarga',
       buttons: [
         {
@@ -133,13 +134,13 @@ export class Tab1Page implements OnInit {
         }
       ]
     });
-    await alert.present(); 
+    await alert.present();
   }
 
 
-  async confirmarDescargaPozos(){
+  async confirmarDescargaPozos() {
     const alert = await this.alertCtrl.create({
-      subHeader:'Descarga de datos de Pozos',
+      subHeader: 'Descarga de datos de Pozos',
       message: 'Confirme para iniciar descarga',
       buttons: [
         {
@@ -163,9 +164,9 @@ export class Tab1Page implements OnInit {
     await alert.present();
   }
 
-  async confirmarDescargaPredio(){
+  async confirmarDescargaPredio() {
     const alert = await this.alertCtrl.create({
-      subHeader:'Descarga de cuentas de predio',
+      subHeader: 'Descarga de cuentas de predio',
       message: 'Confirme para iniciar descarga',
       buttons: [
         {
@@ -191,7 +192,7 @@ export class Tab1Page implements OnInit {
 
 
   async descargarInformacionAgua() {
- 
+
     this.progress = true;
     this.deleteInfoAgua();
 
@@ -208,7 +209,7 @@ export class Tab1Page implements OnInit {
     const idplaza = '10';
     const idaspuser = '18a16d45-6334-4cca-aef7-47a0e837a5f8';
 
-    try{
+    try {
       this.data = await this.rest.obtenerDatosSqlAgua(idaspuser, idplaza);
       this.total = this.data.length;
 
@@ -217,13 +218,13 @@ export class Tab1Page implements OnInit {
         this.loading.dismiss();
         return;
       }
-  
+
       this.storage.set("total", this.total);
-  
+
       await this.guardarDatosSQLAgua(this.data);
-      
+
       // Aqui se guardaran las llaves en el storage para definir campos de validacion de modulos
-  
+
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
       let ionicDate = new Date(
@@ -236,7 +237,7 @@ export class Tab1Page implements OnInit {
           date.getSeconds(),
         )
       );
-  
+
       let fecha = ionicDate.toISOString();
       this.storage.set("FechaSync", fecha);
       this.loading.dismiss();
@@ -244,7 +245,7 @@ export class Tab1Page implements OnInit {
       this.descargaAgua = true;
       this.message.showAlert("Se han descargado tus cuentas!!!!");
       //this.router.navigateByUrl('/home/tab2');
-    } catch(eror) {
+    } catch (eror) {
       this.message.showAlert("Error al intentar la descarga");
     }
   }
@@ -271,7 +272,7 @@ export class Tab1Page implements OnInit {
 
     await this.loading.present();
 
-    try{
+    try {
       this.dataPozos = await this.rest.obtenerDatosPozos(idPlaza);
       this.totalPozos = this.dataPozos.length;
       if (this.totalPozos == 0) {
@@ -284,35 +285,95 @@ export class Tab1Page implements OnInit {
 
       this.loading.dismiss();
       this.message.showAlert("Se han descargado tu informaciòn de pozos!!!!");
-  
+
       this.router.navigateByUrl('/home/tab3');
-    } catch( error){
+    } catch (error) {
 
     }
 
 
   }
 
-  async guardarDatosPozos( data ) {
+  async guardarDatosPozos(data) {
     for (let i = 0; i < data.length; i++) {
       await this.rest.guardarInfoSqlPozos(data[i]);
     }
   }
 
 
-  descargarInfoPredio() {
+  async descargarInfoPredio() {
+    this.progress = true;
+    this.deleteInfoPredio();
 
+    this.loading = await this.loadinCtrl.create({
+      message: 'Descargando informaciòn...',
+      spinner: 'dots'
+    });
+
+    await this.loading.present();
+    // const idaspuser = await this.storage.get("IdAspUser");
+    // const idplaza = await this.storage.get("IdPlaza");
+
+    // borrar esto, solo es de pruebas
+    const idplaza = '9';
+    const idaspuser = '137a6ec4-3d9a-4271-aa31-268c1d2898e4';
+
+    try {
+      this.data = await this.rest.obtenerDatosSqlPredio(idaspuser, idplaza);
+      this.total = this.data.length;
+
+      if (this.total == 0) {
+        this.message.showAlert("No tienes cuentas para sincronizar");
+        this.loading.dismiss();
+        return;
+      }
+
+      this.storage.set("total", this.total);
+
+      await this.guardarDatosSQLPredio(this.data);
+
+      // Aqui se guardaran las llaves en el storage para definir campos de validacion de modulos
+
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(
+        Date.UTC(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds(),
+        )
+      );
+
+      let fecha = ionicDate.toISOString();
+      this.storage.set("FechaSync", fecha);
+      this.loading.dismiss();
+      await this.storage.set('DescargaPredio', true);
+      this.descargaPredio = true;
+      this.message.showAlert("Se han descargado tus cuentas!!!!");
+      //this.router.navigateByUrl('/home/tab2');
+    } catch (eror) {
+      this.message.showAlert("Error al intentar la descarga");
+    }
   }
 
-  async guardarDatosSQLPredio( data ) {
-
+  async guardarDatosSQLPredio(data) {
+    console.log("Guardando la informacion de predio");
+    let cont = 0;
+    for (let i = 0; i < data.length; i++) {
+      await this.rest.guardarInfoSQLPredio(data[i]);
+      cont = cont + 1;
+      this.progressTotal = cont / this.total;
+    }
   }
 
   descargaInfoAntenas() {
 
   }
 
-  async guardarDatosSQLAntenas( data ) {
+  async guardarDatosSQLAntenas(data) {
 
   }
 
@@ -326,7 +387,7 @@ export class Tab1Page implements OnInit {
   }
 
   async deleteInfoPredio() {
-
+    await this.rest.deleteTablePredio();
   }
 
   async deleteInfoAntenas() {
@@ -353,8 +414,12 @@ export class Tab1Page implements OnInit {
 
 
   manualWeb() {
-    
+
   }
 
+  gestionesRealizadas() {
+    console.log("Ir a a gestiones realizadas");
+    this.router.navigateByUrl('/sincronizar-gestiones')
+  }
 
 }

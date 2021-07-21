@@ -6,14 +6,14 @@
 
 <ion-content [fullscreen]="true" color="medium">
   <div class="resumen-cuentas">
-    <ion-chip *ngIf="total" color="secondary">Total</ion-chip>
-    <ion-chip color="success">Gestionadas</ion-chip>
-    <ion-chip color="danger">Faltantes</ion-chip>
+    <ion-chip *ngIf="total" color="secondary">Total: {{total}}</ion-chip>
+    <ion-chip *ngIf="gestionadas "color="success">Gestionadas: {{gestionadas}}</ion-chip>
+    <ion-chip color="danger">Faltantes: {{total - gestionadas}}</ion-chip>
   </div>
 
   <ion-searchbar placeholder="Busqueda por cuenta" (ionChange)="find( $event )"></ion-searchbar>
   <div class="contenedor">
-    <ion-item-sliding color="white" *ngFor="let cuenta of account">
+    <ion-item-sliding color="white" *ngFor="let cuenta of account | filtro: findText">
 
       <ion-item-options side="start">
 
@@ -35,6 +35,7 @@
           <p color="light" class="border">Propietario: {{cuenta.nombre_propietario}}</p>
           <p color="light" class='border direccion'>Dirección: {{cuenta.direccion}}</p>
           <p color="light" class='border'>Deuda:{{cuenta.adeudo | currency:'USD':'symbol' }}</p>
+          <p *ngIf="cuenta.gestionada == 1" class="realizada">Realizada</p>
         </ion-label>
       </ion-item>
 

@@ -47,6 +47,38 @@ const routes: Routes = [
     path: 'listado-cuentas/:id',
     loadChildren: () => import('./listado-cuentas/listado-cuentas.module').then( m => m.ListadoCuentasPageModule)
   },
+  {
+    path: 'gestion-carta',
+    loadChildren: () => import('./gestion-carta/gestion-carta.module').then( m => m.GestionCartaPageModule)
+  },
+  {
+    path: 'gestion-legal',
+    loadChildren: () => import('./gestion-legal/gestion-legal.module').then( m => m.GestionLegalPageModule)
+  },
+  {
+    path: 'sincronizar-gestiones',
+    loadChildren: () => import('./sincronizar-gestiones/sincronizar-gestiones.module').then( m => m.SincronizarGestionesPageModule)
+  },
+  {
+    path: 'sincronizar-agua',
+    loadChildren: () => import('./sincronizar-agua/sincronizar-agua.module').then( m => m.SincronizarAguaPageModule)
+  },
+  {
+    path: 'sincronizar-predio',
+    loadChildren: () => import('./sincronizar-predio/sincronizar-predio.module').then( m => m.SincronizarPredioPageModule)
+  },
+  {
+    path: 'sincronizar-antenas',
+    loadChildren: () => import('./sincronizar-antenas/sincronizar-antenas.module').then( m => m.SincronizarAntenasPageModule)
+  },
+  {
+    path: 'sincronizar-pozos',
+    loadChildren: () => import('./sincronizar-pozos/sincronizar-pozos.module').then( m => m.SincronizarPozosPageModule)
+  },
+  {
+    path: 'gestion-inspeccion-predio',
+    loadChildren: () => import('./gestion-inspeccion-predio/gestion-inspeccion-predio.module').then( m => m.GestionInspeccionPredioPageModule)
+  },
 ];
 
 @NgModule({

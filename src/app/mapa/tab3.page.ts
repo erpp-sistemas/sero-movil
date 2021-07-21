@@ -36,6 +36,10 @@ export class Tab3Page implements OnInit {
     //this.router.navigateByUrl("/cartografia-s");
   }
 
+  async predio() {
+    this.router.navigateByUrl("/google-maps");
+  }
+
   
 
   

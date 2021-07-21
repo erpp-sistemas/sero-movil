@@ -26,16 +26,16 @@ import { MessagesService } from '../services/messages.service';
     <div style="width:190px; height:120px;">
       <div>
         <label ion-label>
-          <p style="font-size: 8px; word-wrap: break-word; white-space: normal;">
+          <p style="font-size: 14px; word-wrap: break-word; white-space: normal;">
           <strong>Cuenta:</strong>{{account}}
           <strong>Propietario:</strong>{{owner}}
           <strong>Deuda:$</strong>{{debt}}</p>
         </label>
       </div>
-      <button ion-button size="small" color="success" expand="block" (click)="gestion()">
+      <button style="background-color: #049c37; padding: 10px; color:white" ion-button size="small" color="success" expand="block" (click)="gestion()">
         Gestionar
       </button>
-      <button ion-button size="small" color="success" expand="block" (click)="street(position)">
+      <button style="background-color: #2427e4; padding: 10px; color:white; margin-left:10px" ion-button size="small" color="success" expand="block" (click)="street(position)">
         StreetView
       </button>
     </div>

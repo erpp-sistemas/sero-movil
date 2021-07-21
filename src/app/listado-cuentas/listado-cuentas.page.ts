@@ -5,6 +5,7 @@ import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 import { RestService } from '../services/rest.service';
 import { MessagesService } from '../services/messages.service';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'app-listado-cuentas',
@@ -15,6 +16,7 @@ export class ListadoCuentasPage implements OnInit {
 
   loading:any;
   idTipo: any;
+  findText: string = '';
   arrayCuentas = [
     {
       cuenta: 1020,
@@ -60,7 +62,8 @@ export class ListadoCuentasPage implements OnInit {
   ];
   account:any[]; // Es lavariable que tendra la informacion de la tabla contribuyente
   total: number; // Es la variable que tendra el total
-  gestionadas: number // Es la ariable que tendra la el total de gestionadas;
+  gestionadas: number; // Es la ariable que tendra la el total de gestionadas;
+  faltantes: number;
 
 
   constructor(
@@ -70,7 +73,8 @@ export class ListadoCuentasPage implements OnInit {
     private geolocation: Geolocation,
     private iab:InAppBrowser,
     private message: MessagesService,
-    private activeRoute: ActivatedRoute
+    private activeRoute: ActivatedRoute,
+    private storage: Storage
   ) {}
 
     ngOnInit() {
@@ -79,15 +83,17 @@ export class ListadoCuentasPage implements OnInit {
       this.validarListadoCuentas( this.idTipo );
     }
 
+
+
     validarListadoCuentas( tipo ) {
       if(tipo == '1') {
         this.listadoCuentasAgua();
       } else if(tipo == '2') {
         this.listadoCuentasPredio();
       } else if(tipo == '3') {
-        console.log("listadoCuentasAntenas");
+        this.listadoCuentasAntenas()
       } else if(tipo == '4') {
-        console.log("listadoCuentasPozos");
+        this.listadoCuentasPozos();
       }
     }
 
@@ -115,14 +121,51 @@ export class ListadoCuentasPage implements OnInit {
       this.loading.dismiss();
     }
 
+    async listadoCuentasAntenas() {
+      this.account = null;
+      this.loading = await this.loadinCtrl.create({
+        message: 'Cargando listado antenas',
+        spinner: 'crescent'
+      });
+      await this.loading.present();
+      await this.getInfoAntenas();
+      await this.getInfoCuentasAntenas();
+      this.loading.dismiss();
+    }
+
+    async listadoCuentasPozos() {
+      this.account = null;
+      this.loading = await this.loadinCtrl.create({
+        message: 'Cargando listado pozos',
+        spinner: 'crescent'
+      });
+      await this.loading.present();
+      await this.getInfoPozos();
+      await this.getInfoCuentasPozos();
+      this.loading.dismiss();
+    }
+
     async getInfoAgua() {
       this.total = await this.rest.getTotalAccountsAgua();
       console.log("Total agua: ", this.total);
       this.gestionadas = await this.rest.getGestionadasAgua();
+      console.log("Gestionadas: ", this.gestionadas);
     }
 
     async getInfoPredio() {
       this.total = await this.rest.getTotalAccountsPredio();
+      console.log("Total predio: ", this.total);
+      this.gestionadas = await this.rest.getGestionadasPredio();
+      console.log("Gestionadas: ", this.gestionadas);
+    }
+
+    async getInfoAntenas() {
+      this.total = await this.rest.getTotalAccountsAntenas();
+      console.log("Total predio: ", this.total);
+    }
+
+    async getInfoPozos() {
+      this.total = await this.rest.getTotalAccountsPozos();
       console.log("Total predio: ", this.total);
     }
 
@@ -132,7 +175,7 @@ export class ListadoCuentasPage implements OnInit {
       console.log("Accounts: ", this.account);
 
       if(this.account.length == 0){
-        this.message.showAlert("Descarga informaciòn de agua!!!!");
+        this.message.showAlert("Descarga información de agua!!!!");
         this.router.navigateByUrl('/home');
       }
 
@@ -144,14 +187,37 @@ export class ListadoCuentasPage implements OnInit {
       console.log("Accounts: ", this.account);
 
       if(this.account.length == 0) {
-        this.message.showAlert("Descarga informaciòn de predio!!!!");
+        this.message.showAlert("Descarga información de predio!!!!");
+        this.router.navigateByUrl('/home');
+      }
+    }
+
+    async getInfoCuentasAntenas() {
+      this.account = null;
+      this.account = await this.rest.cargarListadoCuentasAntenas();
+      console.log("Accounts: ", this.account);
+
+      if(this.account.length == 0) {
+        this.message.showAlert("Descarga información de antenas!!!!");
+        this.router.navigateByUrl('/home');
+      }
+    }
+
+    async getInfoCuentasPozos() {
+      this.account = null;
+      this.account = await this.rest.cargarListadoCuentasPozos();
+      console.log("Accounts: ", this.account);
+
+      if(this.account.length == 0) {
+        this.message.showAlert("Descarga información de pozos!!!!");
         this.router.navigateByUrl('/home');
       }
     }
 
 
     find(event) {
-
+      this.findText = event.detail.value;
+      console.log(this.findText);
     }
 
     async goPanoramaView(item) {
@@ -199,6 +265,7 @@ export class ListadoCuentasPage implements OnInit {
   async gestionarCuenta( cuenta ) {
 
     // guardar en el storage la cuenta que se pasa por parametro
+    await this.storage.set('account', cuenta)
 
     this.router.navigate(["gestion-page"]);
 
