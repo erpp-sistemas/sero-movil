@@ -1,154 +1,32 @@
-<div class="imagen-logo header fondo-negro" style="text-align: center">
-    <img src="../../assets/img/logo.png" alt="" style="height: 100%; width :50%">
-</div>
+<ion-content>
+    <div class="principal">
+        <div class="login">
+            <div class="img-principal">
+                <img src="../../assets/img/sero-blanco.png" alt="">
+            </div>
 
+            <h1 class="texto-login">Login</h1>
 
-<ion-content color="medium">
-
-    <ion-slides class="mainSlide" #slidePrincipal>
-
-        <ion-slide>
-
-            <!-- <form (ngSubmit)="login( fLogin )" #fLogin="ngForm"> -->
-            <ion-grid fixed>
-
-                <ion-row>
-                    <ion-col>
-                        <img src="/assets/avatars/av-1.png">
-                    </ion-col>
-                </ion-row>
-
-                <ion-row>
-                    <ion-col>
-
-                        <ion-item color="dark">
-                            <ion-label color="light">Email: </ion-label>
-                            <ion-input color="light" name="email" type="email" required [(ngModel)]="email"></ion-input>
-                        </ion-item>
-
-                        <ion-item color="dark">
-                            <ion-label color="light">Password: </ion-label>
-                            <ion-input #passwordEyeRegister color="light" name="password" [type]="passwordTypeInput" required [(ngModel)]="password"></ion-input>
-                            <button item-end class="btn_eye_icon" (click)="togglePasswordMode()">
-                                <ion-icon [name]="iconpassword"></ion-icon>
-                            </button>
-                        </ion-item>
-
-                    </ion-col>
-                </ion-row>
-
-                <ion-row>
-                    <ion-col>
-                        <ion-button type="button" color="success" shape="round" (click)="login()">
-                            Login
-                        </ion-button>
-                    </ion-col>
-                </ion-row>
-
-            </ion-grid>
-            <!-- </form> -->
-
-        </ion-slide>
-
-        <ion-slide color="medium">
-
-            <ion-grid fixed>
-
-                <ion-row>
-                    <ion-col>
-                        <h6>Seleccione avatar</h6>
-                    </ion-col>
-                </ion-row>
-
-                <ion-row>
-                    <ion-col>
-                        <ion-slides [options]="avatarSlide">
-                            <ion-slide *ngFor="let avatar of avatars">
-                                <ion-img class="pick-avatar" (click)="elegirAvatar(avatar)" src="/assets/avatars/{{avatar.img}}" [ngClass]="{'pick-avatar-seleccionado': avatar.seleccionado }"></ion-img>
-                            </ion-slide>
-                        </ion-slides>
-                    </ion-col>
-                </ion-row>
-                <ion-row>
-                    <ion-col>
-                        <ion-list class="fondo-negro">
-                            <ion-item color="dark">
-                                <ion-label>Nombre: </ion-label>
-                                <ion-input name="nombre" type="text" required [(ngModel)]="nombre"></ion-input>
-                            </ion-item>
-                            <ion-item color="dark">
-                                <ion-label color="light">Email: </ion-label>
-                                <ion-input color="light" name="email" type="email" required [(ngModel)]="email">
-                                </ion-input>
-                            </ion-item>
-                            <ion-item color="dark">
-                                <ion-label color="light">Password: </ion-label>
-                                <ion-input color="light" name="password" type="password" required [(ngModel)]="password">
-                                </ion-input>
-                            </ion-item>
-                            <ion-card color="dark">
-                                <ion-card-header color="dark">
-                                    <ion-card-subtitle>
-                                        <ion-label color="light">Seleccione su plaza</ion-label>
-                                    </ion-card-subtitle>
-                                </ion-card-header>
-                                <ion-card-content>
-                                    <ion-item color="dark">
-                                        <ion-select color="dark" class="myCustomSelect" interface="action-sheet" placeholder="Selecciona plaza" [(ngModel)]="idplaza" [ngModelOptions]="{standalone: true}">
-                                            <ion-select-option value="2"> Leon - Guanajuato </ion-select-option>
-                                            <ion-select-option value="1"> La Paz - Edo. de Mex. </ion-select-option>
-                                            <ion-select-option value="3"> Tlalnepantla - Edo. de Mex.
-                                            </ion-select-option>
-                                            <ion-select-option value="4"> Ecatepec - Edo. de Mex.
-                                            </ion-select-option>
-                                        </ion-select>
-                                    </ion-item>
-                                </ion-card-content>
-                            </ion-card>
-                        </ion-list>
-                    </ion-col>
-                </ion-row>
-                <ion-row *ngIf="!usuarioVerificado">
-                    <ion-col>
-                        <ion-button type="submit" color="tertiary" shape="round" (click)="verificarUsuario()">
-                            Verificar usuario
-                        </ion-button>
-                    </ion-col>
-                </ion-row>
-
-                <ion-row *ngIf="usuarioVerificado">
-                    <ion-col>
-                        <ion-button type="submit" color="success" shape="round" (click)="crearUsuario()">
-                            Crear usuario
-                        </ion-button>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
-        </ion-slide>
-
-    </ion-slides>
-
-
-
+            <div class="contenido-formulario">
+                <ion-item>
+                    <ion-input class="btn-login" name="email" type="email" required [(ngModel)]="email"
+                        placeholder="Ingresa un usuario"></ion-input>
+                </ion-item>
+    
+                <ion-item>
+                    <ion-input class="btn-login" #passwordEyeRegister name="password" [type]="passwordTypeInput" required
+                        [(ngModel)]="password" placeholder="Ingresa una contraseña"></ion-input>
+                    <button item-end class="btn_eye_icon" (click)="togglePasswordMode()">
+                        <ion-icon [name]="iconpassword"></ion-icon>
+                    </button>
+                </ion-item>
+                <button class="boton-ingresar" (click)="login()">INGRESAR</button>
+            </div>
+            <div class="img-principal erpp-logo" style="margin-top: 50px;">
+                <img src="../../assets/img/logo.png" alt="">
+            </div>
+        </div>
+    </div>
 </ion-content>
 
 
-<ion-footer no-border>
-    <ion-toolbar color="medium">
-        <ion-row>
-
-            <ion-col>
-                <ion-button shape="round" expand="full" size="small" fill="outline" color="success" (click)="mostrarLogin()">
-                    Ingresar
-                </ion-button>
-            </ion-col>
-
-            <ion-col>
-                <ion-button shape="round" expand="full" size="small" fill="outline" color="success" (click)="mostrarRegistro()">
-                    Registrarme
-                </ion-button>
-            </ion-col>
-
-        </ion-row>
-    </ion-toolbar>
-</ion-footer>

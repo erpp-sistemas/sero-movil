@@ -23,7 +23,14 @@ export class QuerysService {
     
     let tableInspeccionPredio = `CREATE TABLE IF NOT EXISTS gestionInspeccionPredio (id INTEGER PRIMARY KEY AUTOINCREMENT, account TEXT, claveCatastral TEXT, nombreContribuyente TEXT, direccion TEXT, orden TEXT, usoSuelo TEXT, observaciones TEXT, avaluo TEXT, idAspUser TEXT, inspector2 TEXT, inspector3 TEXT, inspector4 TEXT, idTarea INTEGER,  fechaCaptura TEXT, latitud TEXT, longitud TEXT, cargado INTEGER NOT NULL DEFAULT 0  )`
 
+    // Agua
     let tableFotos = `CREATE TABLE IF NOT EXISTS capturaFotos (id INTEGER PRIMARY KEY AUTOINCREMENT, imagenLocal TEXT, cuenta TEXT,fecha TEXT,rutaBase64 TEXT,idAspUser TEXT,idTarea INTEGER,tipo TEXT,urlImagen TEXT,isSelected INTEGER NOT NULL DEFAULT 0,cargado INTEGER NOT NULL DEFAULT 0)`;
+
+    let tableFotosPredio = `CREATE TABLE IF NOT EXISTS capturaFotosPredio (id INTEGER PRIMARY KEY AUTOINCREMENT, imagenLocal TEXT, cuenta TEXT,fecha TEXT,rutaBase64 TEXT,idAspUser TEXT,idTarea INTEGER,tipo TEXT,urlImagen TEXT,isSelected INTEGER NOT NULL DEFAULT 0,cargado INTEGER NOT NULL DEFAULT 0)`;
+
+    let tableFotosAntenas = `CREATE TABLE IF NOT EXISTS capturaFotosAntenas (id INTEGER PRIMARY KEY AUTOINCREMENT, imagenLocal TEXT, cuenta TEXT,fecha TEXT,rutaBase64 TEXT,idAspUser TEXT,idTarea INTEGER,tipo TEXT,urlImagen TEXT,isSelected INTEGER NOT NULL DEFAULT 0,cargado INTEGER NOT NULL DEFAULT 0)`;
+
+    let tableFotosPozos = `CREATE TABLE IF NOT EXISTS capturaFotosPozos (id INTEGER PRIMARY KEY AUTOINCREMENT, imagenLocal TEXT, cuenta TEXT,fecha TEXT,rutaBase64 TEXT,idAspUser TEXT,idTarea INTEGER,tipo TEXT,urlImagen TEXT,isSelected INTEGER NOT NULL DEFAULT 0,cargado INTEGER NOT NULL DEFAULT 0)`;
 
     let tables = {
       tableAgua,
@@ -32,7 +39,10 @@ export class QuerysService {
       tablePozos,
       tableInspeccionAgua,
       tableInspeccionPredio,
-      tableFotos
+      tableFotos,
+      tableFotosPredio,
+      tableFotosAntenas,
+      tableFotosPozos
     }
 
     return tables;

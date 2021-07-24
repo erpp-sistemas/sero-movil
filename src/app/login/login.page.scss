@@ -1,32 +1,62 @@
-.header {
-    height: 130px;
+
+.principal {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center;
+    background-image: url(../../assets/img/fondo-login.jpeg);
+    background-repeat: no-repeat;
+    background-size: 120% 110%;
+    background-position: center center;
+    height: 100%;
+    width: 100%;
 }
 
-.mainSlide,
-.mainSlide ion-slide {
+.login {
     width: 100%;
-    height: 90%;
+}
+
+.img-principal {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
 img {
-    width: 120px;
+    width: 230px;
 }
 
-.pick-avatar {
-    width: 80px;
-    opacity: 0.3;
+
+.texto-login {
+    color: rgb(0,255,0);
+    text-align: center;
+    font: 20px;
+    text-transform: uppercase;
+    margin-top: 50px;
+    margin-bottom: 30px;
 }
 
-.pick-avatar-seleccionado {
-    transition: opacity 0.5s linear;
-    opacity: 1 !important;
+.contenido-formulario {
+    width: 90%;
+    margin: 0 auto;
 }
 
-.form {
-    margin-top: 20px;
+ion-item {
+    margin-bottom: 20px;
+    border-radius: 10px;
 }
 
-.fondo-negro {
-    background-color: #000000 !important;
+ion-button{
+    text-transform: uppercase;
 }
 
+.boton-ingresar {
+    background-color: rgb(0,255,0);
+    padding: 15px;
+    width: 100%;
+    color: white;
+    border-radius: 10px;
+}
+
+
+.erpp-logo img {
+    width: 150px;
+}

@@ -473,7 +473,7 @@ export class RestService {
 
   saveImage(image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
     let sql =
-      "INSERT INTO capturaFotos(imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo) values(?,?,?,?,?,?,?)";
+      "INSERT INTO capturaFotosPredio(imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo) values(?,?,?,?,?,?,?)";
     return this.db.executeSql(sql, [
       image,
       accountNumber,

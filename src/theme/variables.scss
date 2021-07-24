@@ -26,7 +26,7 @@
     --ion-color-tertiary-shade: #4854e0;
     --ion-color-tertiary-tint: #6370ff;
     /** success **/
-    --ion-color-success: #06a144;
+    --ion-color-success: rgb(0,255,0);
     --ion-color-success-rgb: 45, 211, 111;
     --ion-color-success-contrast: #ffffff;
     --ion-color-success-contrast-rgb: 255, 255, 255;
@@ -54,7 +54,7 @@
     --ion-color-dark-shade: #1e2023;
     --ion-color-dark-tint: #383a3e;
     /** medium **/
-    --ion-color-medium: #000000;
+    --ion-color-medium: rgb(37, 64, 97);;
     --ion-color-medium-rgb: 60, 59, 59;
     --ion-color-medium-contrast: #333232;
     --ion-color-medium-contrast-rgb: 255, 255, 255;
@@ -69,17 +69,7 @@
     --ion-color-light-tint: #f5f6f9;
 }
 
-.alertCancel{
-    --background: #2e2e2e;
-      button.alertButton{
-        color: white;
-      }
-      --ion-color-light: #f4f5f8;
-}
-ion-tab-button {
-    --color-selected:#28ba62;
-    --color: red;
-}
+
 
 @media (prefers-color-scheme: dark) {
     /*
