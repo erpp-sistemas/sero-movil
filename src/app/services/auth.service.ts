@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
 import { RestService } from './rest.service';
 import { HttpClient } from '@angular/common/http';
+
 //import { BehaviorSubject } from 'rxjs';
 
 
@@ -15,6 +16,7 @@ import { HttpClient } from '@angular/common/http';
 export class AuthService {
 
   apiUrlSectoresPlazas = 'http://localhost:3000/users/';
+  apiObtenerServiciosUser = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios"
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
@@ -39,6 +41,7 @@ export class AuthService {
         let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
           // this.userInfo tiene la informacion del usuario del firebase
           this.userInfo = userInfoFirebase
+          console.log("Usuario firebase: " , userInfoFirebase);
           // corroborar si el usuario esta activo
           if (this.userInfo.isActive) {
             if (this.userInfo.IMEI = '') {
@@ -46,6 +49,7 @@ export class AuthService {
               createSubscribe.unsubscribe();
               // guardar la informacion del usuario en el storage
               this.saveUserInfoStorage(this.userInfo);
+              this.getServicesPlazaUser(this.userInfo.idaspuser);
               await this.storage.set("idFireBase", id);
               await this.storage.set("ActivateApp", 1);
               this.generaIdentificativo(id);
@@ -61,12 +65,14 @@ export class AuthService {
                 createSubscribe.unsubscribe();
                 this.mensaje.showAlert("Bienvenid@ " + nombreUser);
                 this.saveUserInfoStorage(this.userInfo);
+                this.getServicesPlazaUser(this.userInfo.idaspuser);
                 resolve(nombreUser)
               }
               else {
                 console.log("Correo en el storage diferente al ingresado, puede ser null el correo en el storage");
                 createSubscribe.unsubscribe();
                 this.saveUserInfoStorage(this.userInfo);
+                this.getServicesPlazaUser(this.userInfo.idaspuser);
                 let nombreUsuario = await this.storage.get("Nombre")
                 await this.storage.set("idFireBase", id)
                 await this.storage.set("ActivateApp", "1");
@@ -94,6 +100,27 @@ export class AuthService {
    */
   getUserInfo(uid: string) {
     return this.firestore.collection('usersErpp').doc(uid).valueChanges()
+  }
+
+  /**
+   * Metodo que manda a traer la informacion del usuario sus plazas y sus servicios de las plazas
+   * @param idUser 
+   */
+  async getServicesPlazaUser(idUser) {
+    console.log("GetServicesPlazaUser");
+    console.log("idaspuser: " + idUser);
+    await this.rest.deleteServicios();
+    this.http.get(this.apiObtenerServiciosUser + " " + idUser).subscribe(data => {
+      console.log("Servicios", data);
+      this.insertarServicios(data);
+    })
+    
+  }
+
+  insertarServicios( data ) {
+    data.forEach(servicio => {
+        this.rest.insertarServiciosSQL(servicio);
+    });
   }
 
   async getPlazaInfo() {
@@ -135,14 +162,30 @@ export class AuthService {
   saveUserInfoStorage(userInfo: any) {
     this.storage.set('Nombre', userInfo.name);
     this.storage.set('Email', userInfo.email);
-    this.storage.set('IdAspUser', userInfo.idaspuser);
-    this.storage.set('IdPlaza', userInfo.idplaza);
+    this.storage.set('IdAspUser', userInfo.idaspuser)
     this.storage.set('IdRol', userInfo.idrol);
     this.storage.set('Rol', userInfo.rol);
-    this.storage.set('Plaza', userInfo.plaza);
     this.storage.set('IdUserChecador', userInfo.idUserChecador)
     this.storage.set('Password', userInfo.password)
     this.storage.set('ImgAvatar', userInfo.imgAvatar);
+    this.storage.set('NumeroPlazas', userInfo.plaza.length);
+    let contadorPlaza = 1;
+    let contadorIdPlaza = 1;
+    
+    userInfo.plaza.forEach(plaza => {
+      console.log("Plaza:", plaza);
+      this.storage.set(`nombre${contadorPlaza}`, plaza);
+      console.log(`nombre${contadorPlaza}`);
+      contadorPlaza++;
+    });
+
+    userInfo.idPlaza.forEach(idPlaza => {
+      console.log("idPlaza:", idPlaza);
+      this.storage.set(`idPlaza${contadorIdPlaza}`, idPlaza);
+      console.log(`idPlaza${contadorIdPlaza}`);
+      contadorIdPlaza++;
+    });    
+
   }
 
 

@@ -13,8 +13,10 @@ export class RestService {
 
   db: SQLiteObject = null;
 
-
-  apiObtenerDatosMovil = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_obtenerCuentasMovil";
+  // api para obtener las cuentas del agua
+  apiObtenerDatosAgua = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_agua"
+  apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
+  //apiObtenerDatosMovil = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_obtenerCuentasMovil";
   apiObtenerDatosPozos = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_Pozos";
   apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion"
 
@@ -31,6 +33,48 @@ export class RestService {
       this.db = db;
     }
   }
+
+  /**
+   * Metodo que borra los datos de la tabla de serviciosPlazaUser
+   * @returns db execute
+   */
+  deleteServicios() {
+    let sql = 'DELETE FROM serviciosPlazaUser';
+    return this.db.executeSql(sql, []);
+  }
+
+  /**
+   * Metodo que inserta los datos obtenidos del sql en la tabla serviciosPlazaUser
+   * @param data 
+   * @returns db execute
+   */
+  insertarServiciosSQL(data) {
+    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, plaza, servicio, id_plaza, id_servicio) VALUES (?,?,?,?,?,?,?)'
+    return this.db.executeSql(sql, [
+      data.nombre,
+      data.ape_pat,
+      data.ape_mat,
+      data.plaza,
+      data.servicio,
+      data.id_plaza,
+      data.id_servicio
+    ]);
+  }
+
+  async mostrarServicios(idPlaza) {
+    let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
+
+    return this.db.executeSql(sql, [idPlaza]).then(response => {
+      let servicios = [];
+      for (let index = 0; index < response.rows.length; index++) {
+        servicios.push(response.rows.item(index));
+      }
+      console.log(servicios);
+      return Promise.resolve(servicios);
+    }).catch(error => Promise.reject(error));
+    
+  }
+
 
   deleteTableAgua() {
     let sqlDelete = "DELETE from agua";
@@ -55,11 +99,13 @@ export class RestService {
    * @returns promise data
    */
   obtenerDatosSqlAgua(idAspUser, idPlaza) {
+    console.log("idAspUser: ", idAspUser);
+    console.log("idPlaza: ", idPlaza);
     // lanzar el api para obtener los datos del sql
     try {
       return new Promise(resolve => {
 
-        this.http.post(this.apiObtenerDatosMovil + " '" + idAspUser + "', " + idPlaza, null)
+        this.http.post(this.apiObtenerDatosAgua + " '" + idAspUser + "', " + idPlaza, null)
           .subscribe(data => {
             console.log("Datos traidos del SQL");
             console.log(data);
@@ -80,19 +126,19 @@ export class RestService {
    */
   obtenerDatosSqlPredio(idAspUser, idPlaza) {
     // lanzar el api para obtener los datos del sql
-    try {
-      return new Promise(resolve => {
+    // try {
+    //   return new Promise(resolve => {
 
-        this.http.post(this.apiObtenerDatosMovil + " '" + idAspUser + "', " + idPlaza, null)
-          .subscribe(data => {
-            console.log("Datos traidos del SQL");
-            console.log(data);
-            resolve(data);
-          }, err => console.log(err));
-      })
-    } catch {
-      console.log("No se pudo obtener la informaciòn");
-    }
+    //     this.http.post(this.apiObtenerDatosMovil + " '" + idAspUser + "', " + idPlaza, null)
+    //       .subscribe(data => {
+    //         console.log("Datos traidos del SQL");
+    //         console.log(data);
+    //         resolve(data);
+    //       }, err => console.log(err));
+    //   })
+    // } catch {
+    //   console.log("No se pudo obtener la informaciòn");
+    // }
 
   }
 
@@ -125,55 +171,92 @@ export class RestService {
    * @param data 
    * @returns Ejecuciòn del insert into agua
    */
-  guardarInfoSQLAgua(data) {
+  guardarInfoSQLAgua(data, id_plaza) {
 
-    let sql = `INSERT INTO agua(cuenta, adeudo, SupTerrenoH, SupConstruccionH, ValorTerrenoH, ValorConstruccionH, ValorCatastralH, tareaAsignada, ultimo_pago, nombre_propietario, telefono_propietario, celular_propietario, correo_electronico_propietario, calle_predio, num_interior_predio, num_exterior_predio, cp_predio, colonia_predio, entre_calle1_predio, entre_calle2_predio, manzana_predio, lote_predio, poblacion_predio, calle_notificacion, num_interior_notificacion, num_exterior_notificacion, cp_notificacion, colonia_notificacion, entre_calle1_notificacion, entre_calle2_notificacion, manzana_notificacion, lote_notificacion, referencia_predio, referencia_notificacion, id_tarea, latitud, longitud, tipoServicio, clave_catastral, numero_medidor, tipo_servicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+    // let sql = `INSERT INTO agua(cuenta, total, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, fecha_ultimo_pago, propietario, telefono_casa, telefono_celular, correo_electronico, calle, num_int, num_ext, codigo_postal, colonia, entre_calle1_predio, entre_calle2_predio, manzana_predio, lote_predio, poblacion_predio, calle_notificacion, num_interior_notificacion, num_exterior_notificacion, cp_notificacion, colonia_notificacion, entre_calle1_notificacion, entre_calle2_notificacion, manzana_notificacion, lote_notificacion, referencia_predio, referencia_notificacion, id_tarea, latitud, longitud, tipo_servicio, clave_catastral, serie_medidor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
+    let sql = `INSERT INTO agua (id_plaza, cuenta, total, calle, num_int, num_ext, colonia, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?)`;
+    // return this.db.executeSql(sql, [
+    //   data.cuenta,
+    //   data.total,
+    //   data.superficie_terreno_h,
+    //   data.superficie_construccion_h,
+    //   data.valor_terreno_h,
+    //   data.valor_construccion_h,
+    //   data.valor_catastral_h,
+    //   data.tarea_asignada,
+    //   data.fecha_ultimo_pago,
+    //   data.propietario,
+    //   data.telefono_casa,
+    //   data.telefono_celular,
+    //   data.correo_electronico,
+    //   data.calle,
+    //   data.num_int,
+    //   data.num_ext,
+    //   data.codigo_postal,
+    //   data.colonia,
+    //   data.entre_calle1_predio,
+    //   data.entre_calle2_predio,
+    //   data.manzana_predio,
+    //   data.lote_predio,
+    //   data.poblacion_predio,
+    //   data.calle_notificacion,
+    //   data.num_interior_notificacion,
+    //   data.num_exterior_notificacion,
+    //   data.cp_notificacion,
+    //   data.colonia_notificacion,
+    //   data.entre_calle1_notificacion,
+    //   data.entre_calle2_notificacion,
+    //   data.manzana_notificacion,
+    //   data.lote_notificacion,
+    //   data.referencia_predio,
+    //   data.referencia_notificacion,
+    //   data.id_tarea,
+    //   data.latitud,
+    //   data.longitud,
+    //   data.tipo_servicio,
+    //   data.clave_catastral,
+    //   data.serie_medidor
+    // ])
+    
     return this.db.executeSql(sql, [
-      data.cuenta,
-      data.adeudo,
-      data.SupTerrenoH,
-      data.SupConstruccionH,
-      data.ValorTerrenoH,
-      data.ValorConstruccionH,
-      data.ValorCatastralH,
-      data.tareaAsignada,
-      data.ultimo_pago,
-      data.nombre_propietario,
-      data.telefono_propietario,
-      data.celular_propietario,
-      data.correo_electronico_propietario,
-      data.calle_predio,
-      data.num_interior_predio,
-      data.num_exterior_predio,
-      data.cp_predio,
-      data.colonia_predio,
-      data.entre_calle1_predio,
-      data.entre_calle2_predio,
-      data.manzana_predio,
-      data.lote_predio,
-      data.poblacion_predio,
-      data.calle_notificacion,
-      data.num_interior_notificacion,
-      data.num_exterior_notificacion,
-      data.cp_notificacion,
-      data.colonia_notificacion,
-      data.entre_calle1_notificacion,
-      data.entre_calle2_notificacion,
-      data.manzana_notificacion,
-      data.lote_notificacion,
-      data.referencia_predio,
-      data.referencia_notificacion,
-      data.id_tarea,
-      data.latitud,
-      data.longitud,
-      data.tipoServicio,
-      data.clave_catastral,
-      data.numMedidor,
-      data.tipoServicio,
+      id_plaza, 
+      data.cuenta, 
+      data.total,
+      data.calle,
+      data.num_int,
+      data.num_ext,
+      data.colonia,
+      data.latitd,
+      data.longitud
     ])
 
   }
+
+  guardarEstatusDescarga(id_plaza, servicio) {
+    let sql = 'INSERT INTO descargaServicios (id_plaza, id_servicio, descargado) VALUES (?,?,?)';
+    return this.db.executeSql(sql, [
+      id_plaza,
+      servicio,
+      true
+    ]);  
+  }
+
+  verificaEstatusDescarga(id_plaza) {
+    let sql = 'SELECT * FROM descargaServicios where id_plaza = ?';
+    return this.db.executeSql(sql,[id_plaza]).then( response => {
+      console.log(response);
+      let verificacion = [];
+      for (let index = 0; index < response.rows.length; index++) {
+        verificacion.push(response.rows.item(index));
+      }
+      console.log(verificacion);
+      return Promise.resolve(verificacion);
+    }).catch( error => Promise.reject(error));
+  }
+
+
+
 
   guardarInfoSQLPredio(data) {
     let sql = `INSERT INTO predio (cuenta, adeudo, SupTerrenoH, SupConstruccionH, ValorTerrenoH, ValorConstruccionH, ValorCatastralH, tareaAsignada, ultimo_pago, nombre_propietario, telefono_propietario, celular_propietario, correo_electronico_propietario, calle_predio, num_interior_predio, num_exterior_predio, cp_predio, colonia_predio, entre_calle1_predio, entre_calle2_predio, manzana_predio, lote_predio, poblacion_predio, calle_notificacion, num_interior_notificacion, num_exterior_notificacion, cp_notificacion, colonia_notificacion, entre_calle1_notificacion, entre_calle2_notificacion, manzana_notificacion, lote_notificacion, referencia_predio, referencia_notificacion, id_tarea, latitud, longitud, tipoServicio, clave_catastral, numero_medidor, tipo_servicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
@@ -249,6 +332,26 @@ export class RestService {
   }
 
   /**
+   * Metodo que devuelve del sql las plazas a las que pertenece el usuario
+   * solo con internet
+   * @param idUser 
+   * @returns Promise data de las plazas del usuario
+   */
+  getPlazasUsuario(idUser) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.http.get(`${this.apiObtenerPlazasUsuario}, '${idUser}'`).subscribe(data => {
+          console.log("Plazas del usuario ", data);
+          resolve(data)
+        })
+      } catch (error) {
+        reject(error);
+      }
+    })
+  }
+
+
+  /**
    * Metodo que borrara toda la informacion si es que es otro usuario el que se logueo 
    */
   deleteInfo() {
@@ -257,7 +360,7 @@ export class RestService {
   }
 
   obtenerListadoCuentas() {
-    return this.http.get(this.apiObtenerDatosMovil);
+    //return this.http.get(this.apiObtenerDatosMovil);
   }
 
   /**
@@ -355,7 +458,7 @@ export class RestService {
     try {
       const response = await this.db.executeSql(sql, []);
       let result = response.rows.item(0).total;
-      console.log("Total predio: " +  result);
+      console.log("Total predio: " + result);
       return Promise.resolve(result);
     } catch (error) {
       return Promise.reject(error);

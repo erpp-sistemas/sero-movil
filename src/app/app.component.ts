@@ -76,6 +76,8 @@ export class AppComponent {
       await db.executeSql(table.tableFotosPredio, []);
       await db.executeSql(table.tableAntenas, []);
       await db.executeSql(table.tablePozos, []);
+      await db.executeSql(table.tableServicios, []);
+      await db.executeSql(table.tableDescargaServicios, []);
 
     }).catch( error => console.log("Error en bd", error));
   }

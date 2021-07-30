@@ -1,177 +1,191 @@
-<!-- <ion-header>
-    <ion-toolbar color="success">
+<ion-header>
+    <ion-toolbar color="medium">
         <ion-buttons>
-            <ion-button (click)="toggleMenu()">
+            <ion-button color="success" (click)="toggleMenu()">
                 <ion-icon slot="icon-only" name="menu"></ion-icon>
             </ion-button>
         </ion-buttons>
+        <img style="margin-right: 25px;" src="../../assets/img/sero_sin_letras.png" slot="end" alt="">
     </ion-toolbar>
-</ion-header> -->
+</ion-header>
 
-<ion-buttons>
-    <ion-button color="success" (click)="toggleMenu()">
-        <ion-icon slot="icon-only" name="menu"></ion-icon>
-    </ion-button>
-</ion-buttons>
 
 
 <ion-content [fullscreen]="true" color="medium">
 
     <ion-progress-bar color="success" buffer="0.1" [value]="progressTotal"></ion-progress-bar>
 
-    <ion-menu side="start" menuId="first" color="dark" contentId="main">
-        <ion-header color="secondary">
-            <ion-toolbar color="red">
-                <ion-title class="datos"> ERPP Menú </ion-title>
+    <ion-menu side="start" menuId="first" contentId="main">
+        <ion-header>
+            <ion-toolbar color="primary">
+                <ion-title>Start Menu</ion-title>
             </ion-toolbar>
         </ion-header>
-        <ion-content color="dark">
-            <ion-list class="fondo-gray">
-                <ion-item color="dark" (click)="gestionesRealizadas()">
 
-                    <ion-label color="light">
-                        <p style="color: white;">
-                            Gestiones realizadas
-                        </p>
-                    </ion-label>
-                    <ion-icon color="success" name="hammer" slot="start"></ion-icon>
-                </ion-item>
-                <ion-item color="dark">
+        <ion-content color="medium">
 
-                    <ion-label color="light">
-                        <p style="color: white;">
-                            Fotos tomadas
-                        </p>
-                    </ion-label>
-                    <ion-icon color="success" name="images-outline" slot="start"></ion-icon>
-                </ion-item>
+            <ion-item color="medium" (click)="gestionesRealizadas()">
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Gestiones realizadas
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="folder-outline" slot="start"></ion-icon>
+            </ion-item>
 
-                <ion-item color="dark" (click)="checador()">
+            <ion-item color="medium">
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Fotos tomadas
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="images-outline" slot="start"></ion-icon>
+            </ion-item>
 
-                    <ion-label color="light">
-                        <p style="color: white;">
-                            Checador
-                        </p>
-                    </ion-label>
-                    <ion-icon color="success" name="time" slot="start"></ion-icon>
-                </ion-item>
+            <ion-item color="medium" (click)="checador()">
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Checador
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="time-outline" slot="start"></ion-icon>
+            </ion-item>
 
-                <ion-item color="dark" (click)="manualWeb()">
+            <ion-item color="medium" (click)="manualWeb()">
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Manual web
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="book-outline" slot="start"></ion-icon>
+            </ion-item>
 
-                    <ion-label color="light">
-                        <p style="color: white;">
-                            Manual web
-                        </p>
-                    </ion-label>
-                    <ion-icon color="success" name="book" slot="start"></ion-icon>
-                </ion-item>
+            <ion-item color="medium" (click)="exit()">
+                <ion-label color="light">
+                    <p style="color: white;">
+                        Cerrar sesión
+                    </p>
+                </ion-label>
+                <ion-icon color="success" name="log-out-outline" slot="start"></ion-icon>
+            </ion-item>
 
-                <ion-item color="dark" (click)="exit()">
 
-                    <ion-label color="light">
-                        <p style="color: white;">
-                            Cerrar sesión
-                        </p>
-                    </ion-label>
-                    <ion-icon color="success" name="log-out" slot="start"></ion-icon>
-                </ion-item>
-
-            </ion-list>
         </ion-content>
     </ion-menu>
 
     <div id="main">
-        <ion-row>
+
+        <!-- <ion-row>
             <ion-col>
                 <img [src]="imgAvatar">
             </ion-col>
+        </ion-row> -->
+
+        <ion-row>
+            <ion-col>
+                <img class="img-perfil" src="../../assets/img/perfil.jpg" alt="">
+            </ion-col>
         </ion-row>
 
-
-        <ion-card color="medium">
-            <ion-card-subtitle color="dark" class="texto-centrado">
-                <ion-chip color="success">{{nombre}}</ion-chip>
-            </ion-card-subtitle>
-            <ion-card-content color="dark">
-                <p class="datos"> {{email}} </p>
-                <p class="datos"> {{plaza}} </p>
-            </ion-card-content>
-        </ion-card>
-
-        <hr>
-
         <div class="texto-centrado">
-            <ion-chip color="success">Descarga de información</ion-chip>
+            <ion-chip color="success">Bienvenido {{nombre}}</ion-chip>
+            <p class="datos"> {{email}} </p>
+            <p class="datos">
+                <ion-select class="myCustomSelect" interface="popover" placeholder="Seleccionar plaza"
+                    (ionChange)="resultPlaza($event)" [(ngModel)]="id_plaza">
+                    <ion-select-option *ngFor="let plaza of plazas; index as i" [value]="idPlazas[i]">{{plaza | titlecase}}
+                    </ion-select-option>
+                </ion-select>
+            </p>
         </div>
-
 
         <hr>
-        <div *ngIf="agua">
-            <ion-item color="dark" (click)="confirmarDescarga(1)">
 
-                <ion-label color="light">
-                    <p style="color: white;">
-                        Agua
-                    </p>
-                </ion-label>
-                <ion-icon color="success" name="water" slot="start"></ion-icon>
-                <ion-icon *ngIf="descargaAgua" color="success" name="checkmark-done" slot="end"></ion-icon>
-            </ion-item>
+        <div *ngIf="id_plaza != 0">
+            <div *ngIf="agua">
+                <ion-item-sliding>
+                    <ion-item-options side="start">
+                        <ion-item-option color="secondary" (click)="goCuentasTab()">
+                            <ion-icon slot="icon-only" name="layers"></ion-icon>
+                        </ion-item-option>
+                    </ion-item-options>
+                    <ion-item class="btn-cuentas" color="danger" (click)="confirmarDescarga(1)">
+                        <p style="color: white;">
+                            Regularización agua
+                        </p>
+                        <ion-icon color="light" name="water" slot="start"></ion-icon>
+                        <ion-icon *ngIf="descargaAgua" color="success" name="checkmark-done" slot="end"></ion-icon>
+                    </ion-item>
+                    <ion-item-options side="end">
+                        <ion-item-option color="secondary" (click)="goMapTab()">
+                            <ion-icon slot="icon-only" name="map"></ion-icon>
+                        </ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+            </div>
+
+
+
+            <div *ngIf="predio" class="descarga">
+                <ion-item-sliding>
+                    <ion-item-options side="start">
+                        <ion-item-option color="secondary" (click)="goCuentasTab()">
+                            <ion-icon slot="icon-only" name="layers"></ion-icon>
+                        </ion-item-option>
+                    </ion-item-options>
+                    <ion-item class="btn-cuentas" color="danger" (click)="confirmarDescarga(2)">
+                        <p style="color: white;">
+                            Regularización predio
+                        </p>
+                        <ion-icon color="light" name="home" slot="start"></ion-icon>
+                        <ion-icon *ngIf="descargaPredio" color="success" name="checkmark-done" slot="end"></ion-icon>
+                    </ion-item>
+                    <ion-item-options side="end">
+                        <ion-item-option color="secondary" (click)="goMapTab()">
+                            <ion-icon slot="icon-only" name="map"></ion-icon>
+                        </ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+            </div>
+
+
+            <div *ngIf="pozos" class="descarga">
+                <ion-item class="btn-cuentas" color="dark" (click)="confirmarDescarga(3)">
+                    <ion-label color="light">
+                        <p style="color: white;">
+                            Pozos
+                        </p>
+                    </ion-label>
+                    <ion-icon color="success" name="color-fill" slot="start"></ion-icon>
+                </ion-item>
+            </div>
+
+
+
+            <div *ngIf="antenas" class="descarga">
+                <ion-item-sliding>
+                    <ion-item-options side="start">
+                        <ion-item-option color="secondary" (click)="goCuentasTab()">
+                            <ion-icon slot="icon-only" name="layers"></ion-icon>
+                        </ion-item-option>
+                    </ion-item-options>
+                    <ion-item class="btn-cuentas" color="danger" (click)="confirmarDescarga(4)">
+                        <img src="../../assets/img/antena.png" style="width: 25px;" alt="">
+                        <p style="color: white; margin-left: 33px;">
+                            Antenas telecom.
+                        </p>
+                        <!-- <ion-icon color="light" name="home" slot="start"></ion-icon> -->
+                        <ion-icon *ngIf="descargaAntenas" color="success" name="checkmark-done" slot="end"></ion-icon>
+                    </ion-item>
+                    <ion-item-options side="end">
+                        <ion-item-option color="secondary" (click)="goMapTab()">
+                            <ion-icon slot="icon-only" name="map"></ion-icon>
+                        </ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+            </div>
         </div>
-
-        <div *ngIf="predio" class="descarga">
-            <ion-item color="dark" (click)="confirmarDescarga(2)">
-
-                <ion-label color="light">
-                    <p style="color: white;">
-                        Predio
-                    </p>
-                </ion-label>
-                <ion-icon color="success" name="copy-outline" slot="start"></ion-icon>
-                <ion-icon *ngIf="descargaPredio" color="success" name="checkmark-done" slot="end"></ion-icon>
-            </ion-item>
-        </div>
-
-        <div *ngIf="pozos" class="descarga">
-            <ion-item color="dark" (click)="confirmarDescarga(3)">
-
-                <ion-label color="light">
-                    <p style="color: white;">
-                        Pozos
-                    </p>
-                </ion-label>
-                <ion-icon color="success" name="color-fill" slot="start"></ion-icon>
-            </ion-item>
-        </div>
-
-
-
-        <div *ngIf="antenas" class="descarga">
-            <ion-item color="dark" (click)="confirmarDescarga(4)">
-                <ion-label color="light">
-                    <p style="color: white;">
-                        Antenas
-                    </p>
-                </ion-label>
-                <ion-icon color="success" name="git-network-outline" slot="start"></ion-icon>
-            </ion-item>
-        </div>
-
-        <!-- <ion-item color="dark" (click)="confirmarDescargaPozos()">
-
-            <ion-label color="light">
-                <p style="color: white;">
-                    Descargar pozos conagua
-                </p>
-            </ion-label>
-            <ion-icon color="success" name="list" slot="start"></ion-icon>
-        </ion-item>
-
-        <hr> -->
-
     </div>
-
-
 
 
 </ion-content>

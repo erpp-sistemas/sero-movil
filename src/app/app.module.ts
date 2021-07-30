@@ -51,6 +51,7 @@ import { SystemVariableService } from "../app/services/system-variable";
 // webview
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 
 
@@ -81,6 +82,7 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
     SystemVariableService,
    // AndroidPermissions,
     SQLite,
+    NativeStorage,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

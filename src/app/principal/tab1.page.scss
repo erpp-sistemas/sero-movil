@@ -1,10 +1,24 @@
+ion-toolbar {
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ion-toolbar img {
+    width: 160px;
+    height: 40px;
+}
+
 ion-col {
     text-align: center;
     margin-top: 30px;
 }
 
-img {
+.img-perfil {
     width: 120px;
+    height: 120px;
+    border-radius: 50% !important;
 }
 
 .texto-centrado {
@@ -17,9 +31,6 @@ img {
     color: white;
 }
 
-.fondo-gray {
-    background-color: #222428 !important;
-}
 
 #main {
     padding: 0 10%;
@@ -29,6 +40,3 @@ img {
     margin-top: 20px !important;
 }
 
-ion-item {
-    border-radius: 20px !important;
-}

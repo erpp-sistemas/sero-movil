@@ -85,19 +85,6 @@ export class LoginPage implements OnInit {
 
 
 
-  // elegirAvatar(avatar) {
-
-  //   this.avatars.forEach(avatar => avatar.seleccionado = false)
-  //   avatar.seleccionado = true;
-  //   this.avatarSeleccionado = avatar;
-  //   this.mensaje.showToast("Avatar seleccionado");
-
-  // }
-
-
- 
-
-
   /**
    * Metodo que verifica que el usuario ya este en la base de datos de Erpp para poder crearlo en Erpp móvil
    */
