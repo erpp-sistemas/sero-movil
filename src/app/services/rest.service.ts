@@ -783,7 +783,7 @@ export class RestService {
    */
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,

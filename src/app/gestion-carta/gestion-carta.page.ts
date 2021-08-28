@@ -56,7 +56,7 @@ export class GestionCartaPage implements OnInit {
   loading: any;
   fechaCaptura:any;
   detectedChanges: boolean = false;
-
+  tipoServicio: number = 0;
 
   sliderOpts = {
     zoom: true,
@@ -95,15 +95,15 @@ export class GestionCartaPage implements OnInit {
     this.id_plaza = await this.storage.get('IdPlazaActiva');
   }
 
-
-
   async getInfoAccount() {
     this.account = await this.storage.get("account");
     this.idAspUser = await this.storage.get('IdAspUser');
     // verificar que tipo es la cuenta si es de agua, predio, antenas o es otra cosa
     if (this.tipo == 'Agua') {
+      this.tipoServicio = 1
       this.infoAccount = await this.rest.getInfoAccountAgua(this.account);
     } else if (this.tipo == 'Predio') {
+      this.tipoServicio = 2;
       this.infoAccount = await this.rest.getInfoAccountPredio(this.account);
     }
     this.idAccountSqlite = this.infoAccount[0].id;
