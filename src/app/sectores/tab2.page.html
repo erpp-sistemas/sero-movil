@@ -1,44 +1,63 @@
-<ion-header no-border>
-    <ion-toolbar color="medium">
-        <img src="../../assets/img/logo.png" alt="" style="height: 100px; width :200">
-    </ion-toolbar>
-</ion-header>
+<!-- <app-header></app-header> -->
+
+<hr><hr><hr><hr>
 
 <ion-content [fullscreen]="true" color="medium">
 
-
     <ion-card color="medium">
-        <ion-card-subtitle color="dark" class="texto-centrado">
-            <ion-chip color="success">¿Que quieres gestionar?</ion-chip>
+        <ion-card-subtitle color="dark" style="text-align: center;">
+            <p style="color: white; font-size: 16px;">¿Que quieres gestionar?</p>
         </ion-card-subtitle>
     </ion-card>
 
-    <ion-card color="dark" (click)="irAgua()">
-        <ion-card-header>
-            <ion-icon color="success" name="water"></ion-icon>
-        </ion-card-header>
-        <ion-card-content color="dark">
-            <h3>Agua</h3>
-        </ion-card-content>
-    </ion-card>
+    <hr>
 
-    <ion-card color="dark" (click)="irPredio()">
-        <ion-card-header>
-            <ion-icon color="success" name="copy-outline"></ion-icon>
-        </ion-card-header>
-        <ion-card-content color="dark">
-            <h3>Predio</h3>
-        </ion-card-content>
-    </ion-card>
+    <div class="texto-centrado">
+        <p class="datos">
+            <ion-select style="color: #000000;" class="myCustomSelect text-center" interface="popover" placeholder="Seleccionar plaza"
+                (ionChange)="resultPlaza($event)" [(ngModel)]="id_plaza">
+                <ion-select-option *ngFor="let plaza of plazas; index as i" [value]="idPlazas[i]">{{plaza |
+                    titlecase}}
+                </ion-select-option>
+            </ion-select>
+        </p>
+    </div>
 
-    <ion-card color="dark" (click)="irAntenas()">
-        <ion-card-header>
-            <ion-icon color="success" name="git-network-outline"></ion-icon>
-        </ion-card-header>
-        <ion-card-content color="dark">
-            <h3>Antenas</h3>
-        </ion-card-content>
-    </ion-card>
+    <hr>
+
+    <div *ngIf="agua">
+        <ion-card color="medium" (click)="irAgua()">
+            <ion-card-header>
+                <ion-icon color="light" name="water"></ion-icon>
+            </ion-card-header>
+            <ion-card-content color="dark">
+                <h3>Regularización agua</h3>
+            </ion-card-content>
+        </ion-card>
+    </div>
+
+    <div *ngIf="predio">
+        <ion-card color="medium" (click)="irPredio()">
+            <ion-card-header>
+                <ion-icon color="light" name="home"></ion-icon>
+            </ion-card-header>
+            <ion-card-content color="dark">
+                <h3>Regularización predio</h3>
+            </ion-card-content>
+        </ion-card>
+    </div>
+
+    <div *ngIf="antenas">
+        <ion-card color="medium" (click)="irAntenas()">
+            <ion-card-header>
+                <img src="../../assets/img/antena.png" style="width: 30px;" alt="">
+            </ion-card-header>
+            <ion-card-content color="dark">
+                <h3>Antenas telecomunicaciones</h3>
+            </ion-card-content>
+        </ion-card>
+    </div>
+
 
     <!-- <ion-card color="dark" (click)="irPozos()">
         <ion-card-header>

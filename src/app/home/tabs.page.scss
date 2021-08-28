@@ -1,1 +1,7 @@
+ion-tab-button {
+    --color-selected: #23a23f;
+}
 
+ion-tab-button[aria-selected=true] {
+    color: rgb(0,200,0);
+ }

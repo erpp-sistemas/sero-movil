@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MessagesService } from '../services/messages.service';import { IonSlides, LoadingController } from '@ionic/angular';
+import { MessagesService } from '../services/messages.service';
+import { IonSlides, LoadingController, ModalController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
@@ -32,6 +33,7 @@ export class LoginPage implements OnInit {
   avatarSeleccionado: any;
   sectores:any;
 
+
   avatarSlide = {
     slidesPerView: 3.5
   };
@@ -42,7 +44,7 @@ export class LoginPage implements OnInit {
     private router: Router,
     private usuarioService: UsersService,
     private mensaje:MessagesService,
-    
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
@@ -68,7 +70,8 @@ export class LoginPage implements OnInit {
       this.loading.dismiss();
 
       // Se navega hacia el perfil
-      this.router.navigateByUrl("/home/tab1");
+      this.modalCtrl.dismiss();
+      //this.router.navigateByUrl("/home/tab1");
 
     }).catch(error => {
       this.mensaje.showAlert("Credenciales incorrectas, favor de verificar");

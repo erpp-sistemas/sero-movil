@@ -1,0 +1,60 @@
+<hr>
+<hr>
+<hr>
+<hr>
+
+<ion-content color="medium">
+
+  <hr>
+
+  <div style="text-align: center; font-size: 16px;">
+    <h3>Seleccione el tipo de fotos</h3>
+  </div>
+
+  <hr>
+  <hr>
+
+  <ion-card color="medium" (click)="syncFotos()">
+    <ion-card-header>
+      <ion-icon color="light" name="image-outline"></ion-icon>
+    </ion-card-header>
+    <ion-card-content color="dark">
+      <h3>Enviar fotos acciones</h3>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="medium" (click)="syncFotosServicios()">
+    <ion-card-header>
+      <ion-icon color="light" name="warning-outline"></ion-icon>
+    </ion-card-header>
+    <ion-card-content color="dark">
+      <h3>Enviar fotos servicios públicos</h3>
+    </ion-card-content>
+  </ion-card>
+
+  <hr>
+
+</ion-content>
+
+<ion-segment scrollable>
+  <ion-segment-button (click)="navegar(1)">
+    <ion-icon color="light" name="home"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(2)">
+    <ion-icon color="light" name="layers"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(3)">
+    <ion-icon color="light" name="map"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(4)">
+    <ion-icon color="light" name="warning"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(5)">
+    <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
+    <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
+  </ion-segment-button>
+</ion-segment>

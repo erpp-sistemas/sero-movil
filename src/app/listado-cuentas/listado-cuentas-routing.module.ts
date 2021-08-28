@@ -6,7 +6,8 @@ import { ListadoCuentasPage } from './listado-cuentas.page';
 const routes: Routes = [
   {
     path: '',
-    component: ListadoCuentasPage
+    component: ListadoCuentasPage,
+    
   }
 ];
 

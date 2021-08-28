@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Storage } from "@ionic/storage";
 import { MessagesService } from '../services/messages.service';
-import { ModalController,  Platform, LoadingController } from '@ionic/angular';
+import { ModalController,  Platform, LoadingController, NavController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { Router } from '@angular/router';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 @Component({
   selector: 'app-gestion-inspeccion-agua',
@@ -15,13 +17,29 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 export class GestionInspeccionAguaPage implements OnInit {
 
   account: string = "";
-  clave: string = '';
-  ordenInspeccion: string = '';
-  numeroMedidor: string = ''
+  personaAtiende: string = '';
+  numeroContacto: string = '';
+  puesto: string = '';
+  idMotivoNoPago: number = 0;
+  otroMotivo: string = '';
   idTipoServicio: number = 0
-  pozoConagua: string = '';
-  idTipoHallazgo: number = 0;
-  otroHallazgo: string = ''
+  numeroNiveles: number = 1;
+  colorFachada: string = '';
+  colorPuerta: string = '';
+  referencia: string = '';
+  idTipoPredio: number = 0;
+  entreCalle1: string = '';
+  entreCalle2: string = '';
+  hallazgoNinguna: number = 0;
+  hallazgoMedidorDescompuesto: number = 0;
+  hallazgoDiferenciaDiametro: number = 0;
+  hallazgoTomaClandestina: number = 0;
+  hallazgoDerivacionClandestina: number = 0;
+  hallazgoDrenajeClandestino: number = 0;
+  hallazgoCambioGiro: number = 0;
+  hallazgoFaltaDocumentacion: number = 0;
+
+
   observacion: string = '';
   imgs: any;
   nombreInspectores = []; // donde se guardaran todos los inspectores de la plaza
@@ -50,6 +68,10 @@ export class GestionInspeccionAguaPage implements OnInit {
   indicadorImagen: number = 0;
   infoImage: any[];
   takePhoto: boolean = false;
+  activaOtroMotivo: boolean = false;
+
+  nombrePlaza:any;
+  id_plaza: any;
 
 
   // validaciones de campos
@@ -77,7 +99,10 @@ export class GestionInspeccionAguaPage implements OnInit {
     private loadingController: LoadingController,
     private rest: RestService,
     private camera: Camera,
-    private webview: WebView
+    private webview: WebView,
+    private navCtrl: NavController,
+    private router: Router,
+    private callNumber: CallNumber
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -87,6 +112,92 @@ export class GestionInspeccionAguaPage implements OnInit {
     await this.getInfoAccount();
     //this.getTotals();
     this.getFechaActual();
+    this.getPlaza();
+  }
+
+
+  // results
+  resultMotivoNoPago( event ) {
+    let motivo = event.detail.value;
+    if(motivo == 5) {
+      this.activaOtroMotivo = true;
+    } else {
+      this.activaOtroMotivo = false;
+    }
+  }
+
+  resultNinguna( event ) {
+    if(event.detail.value == 'ningunaSi') {
+      this.hallazgoNinguna = 1
+    } else {
+      this.hallazgoNinguna = 0
+    }
+  }
+
+  resultMedidorDescompuesto( event ) {
+    if(event.detail.value == 'medidorDescompuestoSi') {
+      this.hallazgoMedidorDescompuesto = 1
+    } else {
+      this.hallazgoMedidorDescompuesto = 0
+    }
+  }
+
+  resultDiferenciaDiametro( event ) {
+    if(event.detail.value == 'diferenciaDiametroSi') {
+      this.hallazgoDiferenciaDiametro = 1
+    } else {
+      this.hallazgoDiferenciaDiametro = 0
+    }
+  }
+
+  resultTomaClandestina( event ) {
+    if(event.detail.value == 'tomaClandestinaSi') {
+      this.hallazgoTomaClandestina = 1
+    } else {
+      this.hallazgoTomaClandestina = 0
+    }
+  }
+
+  resultDerivacionClandestina( event ) {
+    if(event.detail.value == 'derivacionClandestinaSi') {
+      this.hallazgoDerivacionClandestina = 1
+    } else {
+      this.hallazgoDerivacionClandestina = 0
+    }
+  }
+
+  resultDrenajeClandestino( event ) {
+    if(event.detail.value == 'DrenajeClandestinoSi') {
+      this.hallazgoDrenajeClandestino = 1
+    } else {
+      this.hallazgoDrenajeClandestino = 0
+    }
+  }
+
+  resultCambioGiro( event ) {
+    if(event.detail.value == 'cambioGiroSi') {
+      this.hallazgoCambioGiro = 1
+    } else {
+      this.hallazgoCambioGiro = 0
+    }
+  }
+
+  resultFaltaDocumentacion( event ) {
+    if(event.detail.value == 'faltaDocumentacionSi') {
+      this.hallazgoFaltaDocumentacion = 1
+    } else {
+      this.hallazgoFaltaDocumentacion = 0
+    }
+  }
+
+
+  ///////////////////////
+
+
+
+  async getPlaza() {
+    this.nombrePlaza = await this.storage.get('NombrePlazaActiva');
+    this.id_plaza = await this.storage.get('IdPlazaActiva');
   }
 
   ionViewWillLeave() {
@@ -98,18 +209,10 @@ export class GestionInspeccionAguaPage implements OnInit {
   }
 
   exit() {
-    this.modalController.dismiss();
+    //this.modalController.dismiss();
+    this.navCtrl.navigateRoot(['/home/tab2']);
   }
 
-  resultHallazgo(event) {
-    this.detectedChanges = true;
-    console.log(event.detail.value);
-    if (event.detail.value === '7') {
-      this.activaOtrosHallazgos = true;
-    } else {
-      this.activaOtrosHallazgos = false;
-    }
-  }
 
   async muestraInspectores() {
     this.mostrarInspectores = true;
@@ -144,7 +247,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.idAccountSqlite = this.infoAccount[0].id;
     this.idTareaGestor = this.infoAccount[0].id_tarea;
     let gestionada = this.infoAccount[0].gestionada;
-    this.tareaAsignada = this.infoAccount[0].tareaAsignada;
+    this.tareaAsignada = this.infoAccount[0].tarea_asignada;
     this.tipoServicioPadron = this.infoAccount[0].tipoServicio;
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
@@ -194,9 +297,9 @@ export class GestionInspeccionAguaPage implements OnInit {
   async takePic(type) {
     let tipo;
     if (type == 1) {
-      tipo = "Inspección evidencia";
+      tipo = "Inspección recorrido";
     } else if (type == 2) {
-      tipo = "Inspección acta";
+      tipo = "Inspección evidencia";
     } 
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
@@ -236,6 +339,8 @@ export class GestionInspeccionAguaPage implements OnInit {
         }
 
         this.saveImage(
+          this.id_plaza,
+          this.nombrePlaza,
           this.image,
           this.account,
           fecha,
@@ -250,9 +355,11 @@ export class GestionInspeccionAguaPage implements OnInit {
       });
   }
 
-  saveImage(image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
+  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
     this.rest
       .saveImage(
+        id_plaza,
+        nombrePlaza,
         image,
         accountNumber,
         fecha,
@@ -309,19 +416,36 @@ export class GestionInspeccionAguaPage implements OnInit {
         this.fechaCaptura = ionicDate.toISOString();
 
         let data = {
+          id_plaza: this.id_plaza,
+          nombrePlaza: this.nombrePlaza,
           account: this.account,
-          clave: this.clave,
-          ordenInspeccion: this.ordenInspeccion,
-          numeroMedidor: this.numeroMedidor,
-          pozoConagua: this.pozoConagua,
+          personaAtiende: this.personaAtiende,
+          numeroContacto: this.numeroContacto,
+          puesto: this.puesto,
+          idMotivoNoPago: this.idMotivoNoPago,
+          otroMotivo: this.otroMotivo,
           idTipoServicio: this.idTipoServicio,
-          idHallazgo: this.idTipoHallazgo,
-          otroHallazgo: this.otroHallazgo,
+          numeroNiveles: this.numeroNiveles,
+          colorFachada: this.colorFachada,
+          colorPuerta: this.colorPuerta,
+          referencia: this.referencia,
+          idTipoPredio: this.idTipoPredio,
+          entreCalle1: this.entreCalle1,
+          entrecalle2: this.entreCalle2,
+          hallazgoNinguna: this.hallazgoNinguna,
+          hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
+          hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
+          hallazgoTomaClandestina: this.hallazgoTomaClandestina,
+          hallazgoDerivacionClandestina: this.hallazgoDerivacionClandestina,
+          hallazgoDrenajeClandestino: this.hallazgoDrenajeClandestino,
+          hallazgoCambioGiro: this.hallazgoCambioGiro,
+          hallazgoFaltaDocumentacion: this.hallazgoFaltaDocumentacion,
           idAspUser: this.idAspuser,
           inspector2: this.inspector2,
           inspector3: this.inspector3,
           inspector4: this.inspector4,
-          idTarea: this.idTareaGestor,
+          observacion: this.observacion,
+          idTarea: this.tareaAsignada,
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
           longitud: this.longitud,
@@ -361,23 +485,40 @@ export class GestionInspeccionAguaPage implements OnInit {
       this.fechaCaptura = ionicDate.toISOString();
 
       let data = {
-        account: this.account,
-        clave: this.clave,
-        ordenInspeccion: this.ordenInspeccion,
-        numeroMedidor: this.numeroMedidor,
-        pozoConagua: this.pozoConagua,
-        idTipoServicio: this.idTipoServicio,
-        idHallazgo: this.idTipoHallazgo,
-        otroHallazgo: this.otroHallazgo,
-        idAspUser: this.idAspuser,
-        inspector2: this.inspector2,
-        inspector3: this.inspector3,
-        inspector4: this.inspector4,
-        idTarea: this.idTareaGestor,
-        fechaCaptura: this.fechaCaptura,
-        latitud: this.latitud,
-        longitud: this.longitud,
-        id: this.idAccountSqlite
+        id_plaza: this.id_plaza,
+          nombrePlaza: this.nombrePlaza,
+          account: this.account,
+          personaAtiende: this.personaAtiende,
+          numeroContacto: this.numeroContacto,
+          puesto: this.puesto,
+          idMotivoNoPago: this.idMotivoNoPago,
+          otroMotivo: this.otroMotivo,
+          idTipoServicio: this.idTipoServicio,
+          numeroNiveles: this.numeroNiveles,
+          colorFachada: this.colorFachada,
+          colorPuerta: this.colorPuerta,
+          referencia: this.referencia,
+          idTipoPredio: this.idTipoPredio,
+          entreCalle1: this.entreCalle1,
+          entrecalle2: this.entreCalle2,
+          hallazgoNinguna: this.hallazgoNinguna,
+          hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
+          hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
+          hallazgoTomaClandestina: this.hallazgoTomaClandestina,
+          hallazgoDerivacionClandestina: this.hallazgoDerivacionClandestina,
+          hallazgoDrenajeClandestino: this.hallazgoDrenajeClandestino,
+          hallazgoCambioGiro: this.hallazgoCambioGiro,
+          hallazgoFaltaDocumentacion: this.hallazgoFaltaDocumentacion,
+          idAspUser: this.idAspuser,
+          inspector2: this.inspector2,
+          inspector3: this.inspector3,
+          inspector4: this.inspector4,
+          observacion: this.observacion,
+          idTarea: this.tareaAsignada,
+          fechaCaptura: this.fechaCaptura,
+          latitud: this.latitud,
+          longitud: this.longitud,
+          id: this.idAccountSqlite
       };
       await this.gestionInspeccion(data);
       this.loading.dismiss();
@@ -392,5 +533,26 @@ export class GestionInspeccionAguaPage implements OnInit {
     await this.rest.gestionInspeccionAgua(data);
     console.log(data);
   }
+
+
+
+  navegar(tipo) {
+    if (tipo == 1) {
+      this.router.navigateByUrl('home/tab1');
+    } else if (tipo == 2) {
+      this.router.navigateByUrl('home/tab2');
+    } else if (tipo == 3) {
+      this.router.navigateByUrl('home/tab3');
+    } else if (tipo == 4) {
+      this.router.navigateByUrl('/servicios-publicos');
+    } else if (tipo == 5) {
+
+      this.callNumber.callNumber('18001010101', true)
+        .then(res => console.log('Launched dialer!', res))
+        .catch(err => console.log('Error launching dialer', err));
+
+    }
+  } 
+
 
 }

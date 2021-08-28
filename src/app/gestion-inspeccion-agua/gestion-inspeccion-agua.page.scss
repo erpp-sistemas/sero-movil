@@ -20,9 +20,66 @@ ion-select {
 }
 
 p{
-    color: white;
+    color: white !important;
 }
 
 .fotos-visita{
     text-align: center;
+    color: white;
+}
+
+.plaza {
+    width: 100px !important;
+}
+
+.procedimiento {
+    width: 100px !important;
+}
+
+ion-input {
+    color: white !important;
+}
+
+ion-textarea {
+    color: white !important;
+}
+
+.segment-si {
+   
+    padding: 0;
+    border-radius: 10px !important;
+    height: 10px !important;
+}
+
+.segment-no {
+    
+    padding: 0;
+    margin-left: 10px;
+    border-radius: 10px !important;
+    height: 10px !important;
+}
+
+
+
+.marca-si {
+    color: yellowgreen;
+}
+
+.marca-no {
+    color: red;
+}
+
+.icon-trash {
+    color: red;
+}
+
+ion-segment {
+    --background:rgb(37, 64, 97);
+    border-top: 1px solid rgba(0,0,0,.1);
+    height: 60px;
+    margin-bottom: -5px;
+}
+
+ion-segment-button {
+    --indicator-color: transparent !important;
 }

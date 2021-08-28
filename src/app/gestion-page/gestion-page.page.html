@@ -1,79 +1,88 @@
-<ion-header>
-    <ion-toolbar color="medium">
-        <ion-grid>
-            <ion-row>
-                <ion-col>
-                    <ion-item color="dark">
-                        <ion-label class="titulo">
-                            Formularios para gestión
-                        </ion-label>
-                    </ion-item>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </ion-toolbar>
-</ion-header>
+<hr>
+<hr>
+<hr>
+<hr>
 
-<ion-content color="medium">
+<ion-content style="text-align: center;" color="medium">
 
 
-    <ion-item color="medium" (click)="cartaInvitacion()">
+    <ion-card color="medium">
+        <ion-card-subtitle color="dark" style="text-align: center;">
+            <p style="color: white; font-size: 16px;">Procedimientos de gestión</p>
+        </ion-card-subtitle>
+    </ion-card>
 
-        <ion-card color="dark">
-            <ion-card-header>
-                <ion-chip color="success">Carta invitación</ion-chip>
-            </ion-card-header>
-            <ion-card-content class="elemento">
-                <img src="../../assets/img/carta.png" alt="">
-            </ion-card-content>
-        </ion-card>
-
-    </ion-item>
+    <hr>
 
     <div *ngIf="agua">
-        <ion-item color="medium" (click)="inspeccionAgua()">
-
-            <ion-card color="dark">
-                <ion-card-header>
-                    <ion-chip color="success">Inspección</ion-chip>
-                </ion-card-header>
-                <ion-card-content class="elemento">
-                    <img src="../../assets/img/inspeccion.png" alt="">
-                </ion-card-content>
-            </ion-card>
-    
-        </ion-item>
+        <ion-card color="medium" (click)="inspeccionAgua()">
+            <ion-card-header>
+                <img src="../../assets/img/lupa.png" alt="">
+            </ion-card-header>
+            <ion-card-content color="dark">
+                <h3>Inspección</h3>
+            </ion-card-content>
+        </ion-card>
     </div>
 
     <div *ngIf="predio">
-        <ion-item color="medium" (click)="inspeccionPredio()">
-
-            <ion-card color="dark">
-                <ion-card-header>
-                    <ion-chip color="success">Inspección</ion-chip>
-                </ion-card-header>
-                <ion-card-content class="elemento">
-                    <img src="../../assets/img/inspeccion.png" alt="">
-                </ion-card-content>
-            </ion-card>
-    
-        </ion-item>
-    </div>
-
-
-    <ion-item color="medium" (click)="legal()">
-
-        <ion-card color="dark">
+        <ion-card color="medium" (click)="inspeccionPredio()">
             <ion-card-header>
-                <ion-chip color="success">Legal</ion-chip>
+                <img src="../../assets/img/lupa.png" alt="">
             </ion-card-header>
-            <ion-card-content class="elemento">
-                <img src="../../assets/img/legal.png" alt="">
+            <ion-card-content color="dark">
+                <h3>Inspección</h3>
             </ion-card-content>
         </ion-card>
+    </div>
 
-    </ion-item>
+    <hr>
+    <hr>
+
+    <ion-card color="medium" (click)="legal()">
+        <ion-card-header>
+            <img src="../../assets/img/mazo-legal.png" alt="">
+        </ion-card-header>
+        <ion-card-content color="dark">
+            <h3>Legal</h3>
+        </ion-card-content>
+    </ion-card>
+
+    <hr>
+    <hr>
+
+    <ion-card color="medium" (click)="cartaInvitacion()">
+        <ion-card-header>
+            <ion-icon color="light" style="font-size: 40px;" name="clipboard-outline"></ion-icon>
+        </ion-card-header>
+        <ion-card-content color="dark">
+            <h3>Carta invitación</h3>
+        </ion-card-content>
+    </ion-card>
 
 
 
 </ion-content>
+
+<ion-segment scrollable>
+    <ion-segment-button (click)="navegar(1)">
+      <ion-icon color="light" name="home"></ion-icon>
+      <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+    </ion-segment-button>
+    <ion-segment-button (click)="navegar(2)">
+      <ion-icon color="light" name="layers"></ion-icon>
+      <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+    </ion-segment-button>
+    <ion-segment-button (click)="navegar(3)">
+      <ion-icon color="light" name="map"></ion-icon>
+      <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+    </ion-segment-button>
+    <ion-segment-button (click)="navegar(4)">
+      <ion-icon color="light" name="warning"></ion-icon>
+      <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+    </ion-segment-button>
+    <ion-segment-button (click)="navegar(5)">
+      <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
+      <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
+    </ion-segment-button>
+  </ion-segment>

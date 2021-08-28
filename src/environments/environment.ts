@@ -17,8 +17,8 @@ export const firebaseConfig = {
 };
 
 export const awsCredentials ={
-  accessKeyId:'AKIAQAVQA6VNSP724ERU',
-  secretAccessKey:'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'
+  accessKeyId:'AKIA5NSDPBH32ZG3HSMX',
+  secretAccessKey:'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'
   
 };
 

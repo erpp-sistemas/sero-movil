@@ -1,0 +1,52 @@
+.texto-centrado {
+    text-align: center;
+    //background-color: #3dc2ff;
+    background-color: rgb(0,200,0);
+    width: 60%;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.datos {
+    font-size: 15px;
+    text-align: center;
+    color: rgb(0, 200, 0);
+}
+
+
+h3 {
+    color: white;
+}
+
+ion-select {
+    max-width: 100% !important;
+}
+
+ion-icon {
+    font-size: 28px;
+}
+
+.delete {
+    color: red !important;
+}
+
+.imagen {
+    width: 35%;
+    height: 35%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+p{
+    color: white !important;
+}
+
+.fotos-visita{
+    text-align: center;
+    color: white !important;
+}
+
+.btn-camara {
+    width: 200px;
+    margin: 0 auto !important;
+}

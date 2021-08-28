@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { RestService } from '../services/rest.service';
 import { Storage } from "@ionic/storage";
 import { MessagesService } from '../services/messages.service';
-import { ModalController, AlertController, Platform, LoadingController } from '@ionic/angular';
+import { ModalController, AlertController, Platform, LoadingController, NavController } from '@ionic/angular';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
@@ -61,6 +61,9 @@ export class GestionInspeccionPredioPage implements OnInit {
   takePhoto: boolean = false;
 
 
+  nombrePlaza:any;
+  id_plaza: any;
+
   constructor(
     private rest: RestService,
     private storage: Storage,
@@ -72,6 +75,7 @@ export class GestionInspeccionPredioPage implements OnInit {
     private alertController: AlertController,
     private loadingController: LoadingController,
     private camera: Camera,
+    private navCtrl: NavController
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -81,6 +85,7 @@ export class GestionInspeccionPredioPage implements OnInit {
     await this.getInfoAccount();
     //this.getTotals();
     this.getFechaActual();
+    this.getPlaza();
   }
 
   sliderOpts = {
@@ -89,6 +94,12 @@ export class GestionInspeccionPredioPage implements OnInit {
     spaceBetween: 10,
     centeredSlides: true
   };
+
+
+  async getPlaza() {
+    this.nombrePlaza = await this.storage.get('NombrePlazaActiva');
+    this.id_plaza = await this.storage.get('IdPlazaActiva');
+  }
 
   ionViewWillLeave() {
     if (this.detectedChanges) {
@@ -165,9 +176,11 @@ export class GestionInspeccionPredioPage implements OnInit {
 
 
 
-  saveImage(image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
+  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
     this.rest
       .saveImage(
+        id_plaza,
+        nombrePlaza,
         image,
         accountNumber,
         fecha,
@@ -184,7 +197,7 @@ export class GestionInspeccionPredioPage implements OnInit {
 
 
   exit() {
-    this.modalController.dismiss();
+    this.navCtrl.navigateRoot(['/home/tab2']);
   }
 
   async takePic(type) {
@@ -232,6 +245,8 @@ export class GestionInspeccionPredioPage implements OnInit {
         }
 
         this.saveImage(
+          this.id_plaza,
+          this.nombrePlaza,
           this.image,
           this.account,
           fecha,
@@ -305,6 +320,8 @@ export class GestionInspeccionPredioPage implements OnInit {
         this.fechaCaptura = ionicDate.toISOString();
 
         let data = {
+          id_plaza: this.id_plaza,
+          nombrePlaza: this.nombrePlaza,
           account: this.account,
           claveCatastral: this.claveCatastral,
           nombreContribuyente: this.nombreContribuyente,
@@ -357,6 +374,8 @@ export class GestionInspeccionPredioPage implements OnInit {
       this.fechaCaptura = ionicDate.toISOString();
 
       let data = {
+        id_plaza: this.id_plaza,
+        nombrePlaza: this.nombrePlaza,
         account: this.account,
         claveCatastral: this.claveCatastral,
         nombreContribuyente: this.nombreContribuyente,
@@ -387,7 +406,7 @@ export class GestionInspeccionPredioPage implements OnInit {
 
   async gestionInspeccion(data) {
     this.detectedChanges = false;
-    await this.rest.gestionInspeccionPredio(data);
+    //await this.rest.gestionInspeccionPredio(data);
     console.log(data);
   }
 }

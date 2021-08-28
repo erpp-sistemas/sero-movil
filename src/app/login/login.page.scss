@@ -1,3 +1,17 @@
+// ion-header {
+//     height: 80px;
+//     background-image: url(../../assets/img/fondo-login.jpeg);
+//     background-repeat: no-repeat;
+//     background-size: 120% 630%;
+//     background-position: top;
+//     position: relative;
+//     z-index: 2;
+//     // border-bottom: .1px rgba(97, 122, 152, .3) !important;
+// }
+
+// .hydrated {
+//     display: none !important;
+// }
 
 .principal {
     display: flex !important;
@@ -13,6 +27,8 @@
 
 .login {
     width: 100%;
+    // position: relative;
+    // top: -30px;
 }
 
 .img-principal {

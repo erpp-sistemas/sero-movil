@@ -5,6 +5,8 @@ import { File } from "@ionic-native/file/ngx";
 import { MessagesService } from './messages.service';
 import { Storage } from '@ionic/storage';
 import { LoadingController } from '@ionic/angular';
+import { Base64 } from "@ionic-native/base64/ngx";
+import { S3Service } from './s3.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,20 +14,29 @@ import { LoadingController } from '@ionic/angular';
 export class RestService {
 
   db: SQLiteObject = null;
+  loading: any;
 
   // api para obtener las cuentas del agua
   apiObtenerDatosAgua = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_agua"
+  apiObtenerDatosPredio = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_predio"
   apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
-  //apiObtenerDatosMovil = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_obtenerCuentasMovil";
-  apiObtenerDatosPozos = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_Pozos";
-  apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion"
+  apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion";
+  apiRegistroInspeccionAgua = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion_agua";
+  apiRegistroInspeccionPredio = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion_predio";
+  apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion"
+  apiRegistroServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_servicios_publicos"
+  apiRegistroFotos = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSero";
+  apiRegistroFotosServicios = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSeroServicios";
+  apiObtenerDatosPozos = "";
 
   constructor(
     private http: HttpClient,
     private file: File,
     private message: MessagesService,
     private storage: Storage,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private base64: Base64,
+    private s3Service: S3Service
   ) { }
 
   setDatabase(db: SQLiteObject) {
@@ -52,8 +63,8 @@ export class RestService {
     let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, plaza, servicio, id_plaza, id_servicio) VALUES (?,?,?,?,?,?,?)'
     return this.db.executeSql(sql, [
       data.nombre,
-      data.ape_pat,
-      data.ape_mat,
+      data.apellido_paterno,
+      data.apellido_materno,
       data.plaza,
       data.servicio,
       data.id_plaza,
@@ -62,6 +73,7 @@ export class RestService {
   }
 
   async mostrarServicios(idPlaza) {
+    console.log('Traer los servicios de la plaza ' + idPlaza);
     let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
 
     return this.db.executeSql(sql, [idPlaza]).then(response => {
@@ -72,7 +84,7 @@ export class RestService {
       console.log(servicios);
       return Promise.resolve(servicios);
     }).catch(error => Promise.reject(error));
-    
+
   }
 
 
@@ -88,7 +100,8 @@ export class RestService {
   }
 
   deleteTablePredio() {
-    let sqlDeletePredio = 'DELETE FROM predio'
+    let sqlDeletePredio = 'DELETE FROM predio';
+    this.db.executeSql(sqlDeletePredio, []);
   }
 
 
@@ -125,20 +138,22 @@ export class RestService {
    * @returns Promise
    */
   obtenerDatosSqlPredio(idAspUser, idPlaza) {
+    console.log("idAspUser: ", idAspUser);
+    console.log("idPlaza: ", idPlaza);
     // lanzar el api para obtener los datos del sql
-    // try {
-    //   return new Promise(resolve => {
-
-    //     this.http.post(this.apiObtenerDatosMovil + " '" + idAspUser + "', " + idPlaza, null)
-    //       .subscribe(data => {
-    //         console.log("Datos traidos del SQL");
-    //         console.log(data);
-    //         resolve(data);
-    //       }, err => console.log(err));
-    //   })
-    // } catch {
-    //   console.log("No se pudo obtener la informaciòn");
-    // }
+    try {
+      return new Promise(resolve => {
+        console.log(this.apiObtenerDatosPredio + " '" + idAspUser + "', " + idPlaza);
+        this.http.post(this.apiObtenerDatosPredio + " '" + idAspUser + "', " + idPlaza, null)
+          .subscribe(data => {
+            console.log("Datos traidos del SQL");
+            console.log(data);
+            resolve(data);
+          }, err => console.log(err));
+      })
+    } catch {
+      console.log("No se pudo obtener la informaciòn");
+    }
 
   }
 
@@ -173,61 +188,34 @@ export class RestService {
    */
   guardarInfoSQLAgua(data, id_plaza) {
 
-    // let sql = `INSERT INTO agua(cuenta, total, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, fecha_ultimo_pago, propietario, telefono_casa, telefono_celular, correo_electronico, calle, num_int, num_ext, codigo_postal, colonia, entre_calle1_predio, entre_calle2_predio, manzana_predio, lote_predio, poblacion_predio, calle_notificacion, num_interior_notificacion, num_exterior_notificacion, cp_notificacion, colonia_notificacion, entre_calle1_notificacion, entre_calle2_notificacion, manzana_notificacion, lote_notificacion, referencia_predio, referencia_notificacion, id_tarea, latitud, longitud, tipo_servicio, clave_catastral, serie_medidor) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
-    let sql = `INSERT INTO agua (id_plaza, cuenta, total, calle, num_int, num_ext, colonia, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?)`;
-    // return this.db.executeSql(sql, [
-    //   data.cuenta,
-    //   data.total,
-    //   data.superficie_terreno_h,
-    //   data.superficie_construccion_h,
-    //   data.valor_terreno_h,
-    //   data.valor_construccion_h,
-    //   data.valor_catastral_h,
-    //   data.tarea_asignada,
-    //   data.fecha_ultimo_pago,
-    //   data.propietario,
-    //   data.telefono_casa,
-    //   data.telefono_celular,
-    //   data.correo_electronico,
-    //   data.calle,
-    //   data.num_int,
-    //   data.num_ext,
-    //   data.codigo_postal,
-    //   data.colonia,
-    //   data.entre_calle1_predio,
-    //   data.entre_calle2_predio,
-    //   data.manzana_predio,
-    //   data.lote_predio,
-    //   data.poblacion_predio,
-    //   data.calle_notificacion,
-    //   data.num_interior_notificacion,
-    //   data.num_exterior_notificacion,
-    //   data.cp_notificacion,
-    //   data.colonia_notificacion,
-    //   data.entre_calle1_notificacion,
-    //   data.entre_calle2_notificacion,
-    //   data.manzana_notificacion,
-    //   data.lote_notificacion,
-    //   data.referencia_predio,
-    //   data.referencia_notificacion,
-    //   data.id_tarea,
-    //   data.latitud,
-    //   data.longitud,
-    //   data.tipo_servicio,
-    //   data.clave_catastral,
-    //   data.serie_medidor
-    // ])
-    
+    let sql = `INSERT INTO agua (id_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+
     return this.db.executeSql(sql, [
-      id_plaza, 
-      data.cuenta, 
-      data.total,
+      id_plaza,
+      data.cuenta,
+      data.clave_catastral,
+      data.propietario,
       data.calle,
       data.num_int,
       data.num_ext,
       data.colonia,
-      data.latitd,
+      data.poblacion,
+      data.codigo_postal,
+      data.total,
+      data.fecha_ultimo_pago,
+      data.serie_medidor,
+      data.tipo_servicio,
+      data.telefono_casa,
+      data.telefono_celular,
+      data.correo_electronico,
+      data.superficie_terreno_h,
+      data.superficie_construccion_h,
+      data.valor_terreno_h,
+      data.valor_construccion_h,
+      data.valor_catastral_h,
+      data.tarea_asignada,
+      data.latitud,
       data.longitud
     ])
 
@@ -239,12 +227,12 @@ export class RestService {
       id_plaza,
       servicio,
       true
-    ]);  
+    ]);
   }
 
   verificaEstatusDescarga(id_plaza) {
     let sql = 'SELECT * FROM descargaServicios where id_plaza = ?';
-    return this.db.executeSql(sql,[id_plaza]).then( response => {
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
       console.log(response);
       let verificacion = [];
       for (let index = 0; index < response.rows.length; index++) {
@@ -252,57 +240,72 @@ export class RestService {
       }
       console.log(verificacion);
       return Promise.resolve(verificacion);
-    }).catch( error => Promise.reject(error));
+    }).catch(error => Promise.reject(error));
+  }
+
+  async obtenerPlazas() {
+    // En este metodo traigo del storage el nombre de las plazas y sus ids del firebase
+    // tambien se pueden obtener de la abla serviciosPlazaUser
+    let plazas = [];
+    let idPlazas = [];
+    let numeroPlazas = await this.storage.get('NumeroPlazas');
+    console.log("Numero de plazas: ", numeroPlazas);
+    for (let i = 0; i < numeroPlazas; i++) {
+      let temp = await this.storage.get(`nombre${i + 1}`);
+      //console.log(`nombre${i+1}`)
+      plazas.push(temp);
+      //console.log("Temp: ", temp);
+      temp = null;
+    }
+
+    console.log(plazas);
+
+    for (let i = 0; i < numeroPlazas; i++) {
+      let temp2 = await this.storage.get(`idPlaza${i + 1}`);
+      //console.log(`idPlaza${i+1}`)
+      idPlazas.push(temp2);
+      //console.log("Temp2: ", temp2);
+      temp2 = null;
+    }
+    // le ponemos al id_plaza el primer valor del arreglo id_plazas que sera el que aparecera por defecto
+    console.log(idPlazas);
+
+    return {
+      plazas,
+      idPlazas
+    }
   }
 
 
-
-
-  guardarInfoSQLPredio(data) {
-    let sql = `INSERT INTO predio (cuenta, adeudo, SupTerrenoH, SupConstruccionH, ValorTerrenoH, ValorConstruccionH, ValorCatastralH, tareaAsignada, ultimo_pago, nombre_propietario, telefono_propietario, celular_propietario, correo_electronico_propietario, calle_predio, num_interior_predio, num_exterior_predio, cp_predio, colonia_predio, entre_calle1_predio, entre_calle2_predio, manzana_predio, lote_predio, poblacion_predio, calle_notificacion, num_interior_notificacion, num_exterior_notificacion, cp_notificacion, colonia_notificacion, entre_calle1_notificacion, entre_calle2_notificacion, manzana_notificacion, lote_notificacion, referencia_predio, referencia_notificacion, id_tarea, latitud, longitud, tipoServicio, clave_catastral, numero_medidor, tipo_servicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  guardarInfoSQLPredio(data, id_plaza) {
+    let sql = `INSERT INTO predio (id_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
     return this.db.executeSql(sql, [
+      id_plaza,
       data.cuenta,
-      data.adeudo,
-      data.SupTerrenoH,
-      data.SupConstruccionH,
-      data.ValorTerrenoH,
-      data.ValorConstruccionH,
-      data.ValorCatastralH,
-      data.tareaAsignada,
-      data.ultimo_pago,
-      data.nombre_propietario,
-      data.telefono_propietario,
-      data.celular_propietario,
-      data.correo_electronico_propietario,
-      data.calle_predio,
-      data.num_interior_predio,
-      data.num_exterior_predio,
-      data.cp_predio,
-      data.colonia_predio,
-      data.entre_calle1_predio,
-      data.entre_calle2_predio,
-      data.manzana_predio,
-      data.lote_predio,
-      data.poblacion_predio,
-      data.calle_notificacion,
-      data.num_interior_notificacion,
-      data.num_exterior_notificacion,
-      data.cp_notificacion,
-      data.colonia_notificacion,
-      data.entre_calle1_notificacion,
-      data.entre_calle2_notificacion,
-      data.manzana_notificacion,
-      data.lote_notificacion,
-      data.referencia_predio,
-      data.referencia_notificacion,
-      data.id_tarea,
-      data.latitud,
-      data.longitud,
-      data.tipoServicio,
       data.clave_catastral,
-      data.numMedidor,
-      data.tipoServicio,
+      data.propietario,
+      data.calle,
+      data.num_int,
+      data.num_ext,
+      data.colonia,
+      data.poblacion,
+      data.codigo_postal,
+      data.total,
+      data.fecha_ultimo_pago,
+      data.serie_medidor,
+      data.tipo_servicio,
+      data.telefono_casa,
+      data.telefono_celular,
+      data.correo_electronico,
+      data.superficie_terreno_h,
+      data.superficie_construccion_h,
+      data.valor_terreno_h,
+      data.valor_construccion_h,
+      data.valor_catastral_h,
+      data.tarea_asignada,
+      data.latitud,
+      data.longitud
     ])
   }
 
@@ -367,15 +370,17 @@ export class RestService {
    * Metodo que carga la lista de cuentas de agua a gestionar 
    * @returns Promise 
    */
-  cargarListadoCuentasAgua() {
-    let sql = `SELECT cuenta, nombre_propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud, gestionada FROM agua WHERE nombre_propietario NOT NULL`;
+  cargarListadoCuentasAgua(id_plaza) {
+    console.log("Cargando el listado de cuentas de agua");
+    let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM agua WHERE id_plaza = ? and propietario NOT NULL`;
 
-    return this.db.executeSql(sql, []).then(response => {
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
       let arrayCuentas = [];
 
       for (let index = 0; index < response.rows.length; index++) {
         arrayCuentas.push(response.rows.item(index));
       }
+      console.log(arrayCuentas);
 
       return Promise.resolve(arrayCuentas);
 
@@ -383,26 +388,29 @@ export class RestService {
 
   }
 
-  cargarListadoCuentasPredio() {
-    let sql = `SELECT cuenta, nombre_propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud, gestionada FROM predio WHERE nombre_propietario NOT NULL LIMIT 20`;
+  cargarListadoCuentasPredio(id_plaza) {
+    console.log("Cargando el listado de cuentas predio");
+    // let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM predio WHERE id_plaza = ? and propietario NOT NULL`;
 
-    return this.db.executeSql(sql, []).then(response => {
+    let sql = `SELECT cuenta, propietario, calle as direccion, total, latitud, longitud, gestionada FROM predio WHERE id_plaza = ? AND propietario NOT NULL`;
+
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
       let arrayCuentas = [];
 
       for (let i = 0; i < response.rows.length; i++) {
         arrayCuentas.push(response.rows.item(i));
       }
-
+      console.log(arrayCuentas);
       return Promise.resolve(arrayCuentas);
 
     }).catch(error => Promise.reject(error));
 
   }
 
-  cargarListadoCuentasAntenas() {
-    let sql = `SELECT cuenta, nombre_propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud, gestionada FROM antenas WHERE nombre_propietario NOT NULL LIMIT 20`;
+  cargarListadoCuentasAntenas(id_plaza) {
+    let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM antenas WHERE id_plaza = ? and propietario NOT NULL`;
 
-    return this.db.executeSql(sql, []).then(response => {
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
       let arrayCuentas = [];
 
       for (let i = 0; i < response.rows.length; i++) {
@@ -416,7 +424,7 @@ export class RestService {
   }
 
   cargarListadoCuentasPozos() {
-    let sql = `SELECT cuenta, nombre_propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud, gestionada FROM pozos WHERE nombre_propietario NOT NULL LIMIT 20`;
+    let sql = `SELECT cuenta, propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud, gestionada FROM pozos WHERE nombre_propietario NOT NULL LIMIT 20`;
 
     return this.db.executeSql(sql, []).then(response => {
       let arrayCuentas = [];
@@ -434,13 +442,14 @@ export class RestService {
 
 
   /**
-   * Metodo que obtiene el total de las cuentas insertadas en la tabla agua
+   * Metodo que obtiene el total de las cuentas insertadas en la tabla agua segun la plaza pasada por parametro
+   * @param id_plaza  
    * @returns Promise
    */
-  async getTotalAccountsAgua() {
-    let sql = 'SELECT COUNT(*) as total FROM agua';
+  async getTotalAccountsAgua(id_plaza) {
+    let sql = 'SELECT COUNT(*) as total FROM agua where id_plaza = ? ';
     try {
-      const response = await this.db.executeSql(sql, []);
+      const response = await this.db.executeSql(sql, [id_plaza]);
       let result = response.rows.item(0).total;
 
       return Promise.resolve(result);
@@ -453,10 +462,10 @@ export class RestService {
    * Metodo que obtiene el total de las cuentas insertadas en la tabla predio
    * @returns Promise 
    */
-  async getTotalAccountsPredio() {
-    let sql = 'SELECT COUNT(*) as total FROM predio';
+  async getTotalAccountsPredio(id_plaza) {
+    let sql = 'SELECT COUNT(*) as total FROM predio where id_plaza = ?';
     try {
-      const response = await this.db.executeSql(sql, []);
+      const response = await this.db.executeSql(sql, [id_plaza]);
       let result = response.rows.item(0).total;
       console.log("Total predio: " + result);
       return Promise.resolve(result);
@@ -465,10 +474,10 @@ export class RestService {
     }
   }
 
-  async getTotalAccountsAntenas() {
-    let sql = 'SELECT COUNT(*) as total FROM antenas';
+  async getTotalAccountsAntenas(id_plaza) {
+    let sql = 'SELECT COUNT(*) as total FROM antenas where id_plaza = ?';
     try {
-      const response = await this.db.executeSql(sql, []);
+      const response = await this.db.executeSql(sql, [id_plaza]);
       let result = response.rows.item(0);
       return Promise.resolve(result);
     } catch (error) {
@@ -491,10 +500,10 @@ export class RestService {
    * Metodo que obtiene el total de cuentas gestionadas de la tabla agua
    * @returns Promise
    */
-  async getGestionadasAgua() {
-    let sql = 'SELECT COUNT(*) as total_gestionadas FROM agua WHERE gestionada = 1';
+  async getGestionadasAgua(id_plaza) {
+    let sql = 'SELECT COUNT(*) as total_gestionadas FROM agua WHERE id_plaza = ? and gestionada = 1';
     try {
-      const response = await this.db.executeSql(sql, []);
+      const response = await this.db.executeSql(sql, [id_plaza]);
       let result = response.rows.item(0).total_gestionadas;
 
       return Promise.resolve(result);
@@ -503,10 +512,23 @@ export class RestService {
     }
   }
 
-  async getGestionadasPredio() {
-    let sql = 'SELECT COUNT(*) as total_gestionadas FROM predio WHERE gestionada = 1';
+  async getGestionadasPredio(id_plaza) {
+    let sql = 'SELECT COUNT(*) as total_gestionadas FROM predio WHERE id_plaza = ? and gestionada = 1';
     try {
-      const response = await this.db.executeSql(sql, []);
+      const response = await this.db.executeSql(sql, [id_plaza]);
+      let result = response.rows.item(0).total_gestionadas;
+
+      return Promise.resolve(result);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  async getGestionadasAntenas(id_plaza) {
+    console.log("gestionadas antenas");
+    let sql = 'SELECT COUNT(*) as total_gestionadas FROM antenas WHERE id_plaza = ? and gestionada = 1';
+    try {
+      const response = await this.db.executeSql(sql, [id_plaza]);
       let result = response.rows.item(0).total_gestionadas;
 
       return Promise.resolve(result);
@@ -536,10 +558,10 @@ export class RestService {
    * Metodo que obtiene las cuentas de la tabla agua para cargarlas al mapa
    * @returns query sqlite
    */
-  getDataVisitPosition() {
+  getDataVisitPosition(id_plaza) {
     // Carga las posiciones
-    let sql = 'SELECT gestionada, cuenta, latitud, longitud, nombre_propietario, adeudo FROM agua where latitud > 0 and gestionada = 0';
-    return this.db.executeSql(sql, []).then(response => {
+    let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total FROM agua where id_plaza = ? and latitud > 0 and gestionada = 0';
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
       let posiciones = [];
 
       for (let index = 0; index < response.rows.length; index++) {
@@ -550,6 +572,7 @@ export class RestService {
 
     }).catch(error => Promise.reject(error));
   }
+
 
   /**
    * Metodo que obtiene la informacion de una cuenta de la tabla agua para cargarla la mapa
@@ -574,16 +597,66 @@ export class RestService {
   }
 
 
-  saveImage(image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
+  getDataVisitPositionPredio(id_plaza) {
+    // Carga las posiciones
+    let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total FROM predio where id_plaza = ? and latitud > 0 and gestionada = 0';
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
+      let posiciones = [];
+
+      for (let index = 0; index < response.rows.length; index++) {
+        posiciones.push(response.rows.item(index));
+      }
+
+      return Promise.resolve(posiciones);
+
+    }).catch(error => Promise.reject(error));
+  }
+
+  getDataVisitPositionByAccountPredio(accountNumber: string) {
     let sql =
-      "INSERT INTO capturaFotosPredio(imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo) values(?,?,?,?,?,?,?)";
+      "SELECT gestionada, cuenta, latitud, longitud FROM predio where latitud > 0 and cuenta = ?";
+    return this.db
+      .executeSql(sql, [accountNumber])
+      .then(response => {
+        let res = [];
+
+        for (let index = 0; index < response.rows.length; index++) {
+          res.push(response.rows.item(index));
+        }
+        console.log(res);
+        return Promise.resolve(res);
+      })
+      .catch(error => Promise.reject(error));
+  }
+
+
+  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
+    let sql =
+      "INSERT INTO capturaFotos(id_plaza,nombre_plaza, imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo) values(?,?,?,?,?,?,?,?,?)";
     return this.db.executeSql(sql, [
+      id_plaza,
+      nombrePlaza,
       image,
       accountNumber,
       fecha,
       rutaBase64,
       idAspuser,
       idTarea,
+      tipo
+    ]);
+  }
+
+  saveImageServicios(id_plaza, idAspUser, image, fecha, rutaBase64, tipo, idServicio, nombrePlaza) {
+    let sql =
+      "INSERT INTO capturaFotosServicios(id_plaza, nombre_plaza, idAspUser, idServicio, imagenLocal,fecha,rutaBase64,tipo) values(?,?,?,?,?,?,?,?)";
+    return this.db.executeSql(sql, [
+      id_plaza,
+      nombrePlaza,
+      idAspUser,
+      idServicio,
+      image,
+      fecha,
+      rutaBase64,
       tipo
     ]);
   }
@@ -638,8 +711,28 @@ export class RestService {
 
   }
 
+  async getImageLocalServicios(img) {
+    let sql = "SELECT * FROM CapturaFotosServicios where cargado = 0 and imagenLocal = ?"
+    return this.db.executeSql(sql, [img])
+      .then(response => {
+        let arrayImage = [];
+        arrayImage.push(response.rows.item(0));
+        console.log(arrayImage);
+        this.deletePhotoServicios(arrayImage[0].id, arrayImage[0].rutaBase64);
+        return Promise.resolve(arrayImage);
+      })
+      .catch(error => Promise.reject(error));
+
+  }
+
   deletePhoto(id, url) {
     this.db.executeSql("delete from  capturaFotos where id = ?", [id]);
+    this.deletePhotoFile(url);
+    return;
+  }
+
+  deletePhotoServicios(id, url) {
+    this.db.executeSql("delete from  capturaFotosServicios where id = ?", [id]);
     this.deletePhotoFile(url);
     return;
   }
@@ -662,77 +755,155 @@ export class RestService {
   }
 
   /**
-   * Metodo que inserta en gestionInspeccionAgua la informacion capturada
+   * Metodo que inserta la informacion capturada en servicios publicos
    * @param data 
-   * @returns Promise (insert gestionInspeccionAgua)
+   * @returns Promise (insert into serviciosPublicos)
+   */
+  gestionServiciosPublicos(data) {
+    let sql = 'INSERT INTO serviciosPublicos ( id_plaza, nombre_plaza, idAspUser, idServicio, idServicio2, observacion, fechaCaptura, latitud, longitud)' +
+      'VALUES (?,?,?,?,?,?,?,?,?)';
+
+    return this.db.executeSql(sql, [
+      data.id_plaza,
+      data.nombrePlaza,
+      data.idAspUser,
+      data.idServicio,
+      data.idServicio2,
+      data.observacion,
+      data.fechaCaptura,
+      data.latitud,
+      data.longitud,
+    ]);
+  }
+
+  /**
+   * Metodo que inserta la informacion capturada en carta invitacion
+   * @param data 
+   * @returns Promise (insert into gestionCartaINvitacion) 
+   */
+  gestionCartaInvitacion(data) {
+    this.updateAccountGestionada(data.id);
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+
+    return this.db.executeSql(sql, [
+      data.id_plaza,
+      data.nombrePlaza,
+      data.account,
+      data.persona_atiende,
+      data.numero_contacto,
+      data.id_motivo_no_pago,
+      data.id_trabajo_actual,
+      data.id_gasto_impuesto,
+      data.id_tipo_servicio,
+      data.numero_niveles,
+      data.color_fachada,
+      data.color_puerta,
+      data.referencia,
+      data.id_tipo_predio,
+      data.entre_calle1,
+      data.entre_calle2,
+      data.observaciones,
+      data.idAspUser,
+      data.idTarea,
+      data.fechaCaptura,
+      data.latitud,
+      data.longitud
+    ])
+  }
+
+
+  /**
+   * Metodo que inserta en gestionInspeccion la informacion capturada
+   * @param data 
+   * @returns Promise (insert gestionInspeccion)
    */
   gestionInspeccionAgua(data) {
 
     this.updateAccountGestionada(data.id);
 
-    let sql = 'INSERT INTO gestionInspeccionAgua ( account, clave, ordenInspeccion, numeroMedidor, pozoConagua, idTipoServicio, idHallazgo, otroHallazgo, idAspUser, inspector2, inspector3, inspector4, idTarea, fechaCaptura, latitud, longitud)' +
-      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, numeroContacto, puesto, idMotivoNoPago, otroMotivo, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud)' +
+      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
     return this.db.executeSql(sql, [
+      data.id_plaza,
+      data.nombrePlaza,
       data.account,
-      data.clave,
-      data.ordenInspeccion,
-      data.numeroMedidor,
-      data.pozoConagua,
+      data.personaAtiende,
+      data.numeroContacto,
+      data.puesto,
+      data.idMotivoNoPago,
+      data.otroMotivo,
       data.idTipoServicio,
-      data.idHallazgo,
-      data.otroHallazgo,
+      data.numeroNiveles,
+      data.colorFachada,
+      data.colorPuerta,
+      data.referencia,
+      data.idTipoPredio,
+      data.entreCalle1,
+      data.entrecalle2,
+      data.hallazgoNinguna,
+      data.hallazgoMedidorDescompuesto,
+      data.hallazgoDiferenciaDiametro,
+      data.hallazgoTomaClandestina,
+      data.hallazgoDerivacionClandestina,
+      data.hallazgoDrenajeClandestino,
+      data.hallazgoCambioGiro,
+      data.hallazgoFaltaDocumentacion,
       data.idAspUser,
       data.inspector2,
       data.inspector3,
       data.inspector4,
+      data.observacion,
       data.idTarea,
       data.fechaCaptura,
       data.latitud,
-      data.longitud
-    ]);
-  }
-
-  gestionInspeccionPredio(data) {
-
-    this.updateAccountGestionadaPredio(data.id);
-    let sql =
-      "INSERT INTO gestionInspeccionPredio(account, claveCatastral, nombreContribuyente, direccion, orden, usoSuelo, observaciones, avaluo, idAspUser, inspector2, inspector3, inspector4, idTarea,  fechaCaptura, latitud, longitud)" +
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-    return this.db.executeSql(sql, [
-      data.account,
-      data.claveCatastral,
-      data.nombreContribuyente,
-      data.direccion,
-      data.orden,
-      data.usoSuelo,
-      data.observaciones,
-      data.avaluo,
-      data.idAspUser,
-      data.inspector2,
-      data.inspector3,
-      data.inspector4,
-      data.idTarea,
-      data.fechaCaptura,
-      data.latitud,
-      data.longitud
+      data.longitud,
     ]);
   }
 
 
+  /**
+   * 
+   * @param id Metodo que actualiza el campo gestionada en 1 de la tabla agua
+   * @returns executeSql
+   */
   updateAccountGestionada(id) {
     let sql = 'UPDATE agua SET gestionada = 1 WHERE id = ?';
     return this.db.executeSql(sql, [id]);
   }
 
+  /**
+   * Metodo que actualiza el campo gestionada de la tabla predio 
+   * @param id 
+   * @returns executeSql 
+   */
   updateAccountGestionadaPredio(id) {
     let sql = 'UPDATE predio SET gestionada = 1 WHERE id = ?';
     return this.db.executeSql(sql, [id]);
   }
 
+  /**
+   * Metodo que trae los servicios gestionados con el campo cargado = 0 de la tabla serviciosPublicos
+   * @returns Promise con los servicios gestionados
+   */
+  getAccountsGestionesServicios() {
+    let sql = `SELECT nombre_plaza as plaza, fechaCaptura, 'Servicio público' as rol FROM serviciosPublicos WHERE cargado = 0`;
+    return this.db.executeSql(sql, []).then(response => {
+      let accounts = [];
+      for (let i = 0; i < response.rows.length; i++) {
+        accounts.push(response.rows.item(i));
+      }
+      return Promise.resolve(accounts);
+    }).catch(error => Promise.reject(error));
+  }
+
+  /**
+   * Metodo que trae todas las cuentas gestionadas con el campo cargado = 0 de las tablas de inspeccion, carta y demas de agua
+   * @returns Promise con las cuentas gestionadas de agua
+   */
   getAccountsGestionesAgua() {
-    let sql = `SELECT account, fechaCaptura, 'Inspección agua' as rol FROM gestionInspeccionAgua WHERE cargado = 0`;
+    let sql = `SELECT account, fechaCaptura, 'Inspección agua' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0
+    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0`;
     return this.db.executeSql(sql, []).then(response => {
       let accounts = [];
       for (let i = 0; i < response.rows.length; i++) {
@@ -742,8 +913,13 @@ export class RestService {
     }).catch(error => Promise.reject(error));
   }
 
+  /**
+   * Metodo que trae las cuentas gestionadas con el campo cargado = 0de las tablas de inspeccion, carta y demas de predio
+   * @returns Promise con las cuentas gestionadas de predio
+   */
   getAccountsGestionesPredio() {
-    let sql = `SELECT account, fechaCaptura, 'Inspección predio' as rol FROM gestionInspeccionPredio WHERE cargado = 0`;
+    let sql = `SELECT account, fechaCaptura, 'Inspección agua' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0
+    UNION ALL SELECT account, fecha_captura, 'Inspección predio' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0`;
     return this.db.executeSql(sql, []).then(response => {
       let accounts = [];
       for (let i = 0; i < response.rows.length; i++) {
@@ -753,10 +929,162 @@ export class RestService {
     }).catch(error => Promise.reject(error));
   }
 
-  async sendAguaInspeccionAgua() {
+  async sendServiciosPublicos() {
+    console.log("Entrando a enviar la informacion de servicios publicos");
+    try {
+      let arrayServicios = [];
+      let sql = "SELECT * FROM serviciosPublicos where cargado = 0";
+      const result = await this.db.executeSql(sql, []);
+
+      for(let i= 0; i < result.rows.length; i++) {
+        arrayServicios.push(result.rows.item(i));
+      }
+      if (arrayServicios.length == 0) {
+        this.message.showToast("Sin registros de carta servicios públicos por enviar");
+      } else {
+        this.avanceServicios = 0;
+        this.envioGestionesServicios(arrayServicios);
+      }
+    } catch( error) {
+
+    }
+  }
+
+  avanceServicios = 0;
+
+  envioGestionesServicios(arrayServicios) {
+    console.log("envioGestionesServiciosPublicos");
+    console.log(this.avanceGestionesCarta);
+
+    if (this.avanceServicios === arrayServicios.length) {
+      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
+    } else {
+      this.sendGestionesServicios(this.avanceServicios, arrayServicios).then(resp => {
+        if (resp) {
+          this.avanceServicios++;
+          this.envioGestionesServicios(arrayServicios);
+        } else {
+          this.envioGestionesServicios(arrayServicios);
+        }
+      })
+    }
+  }
+
+  sendGestionesServicios(i, arrayServicios) {
+    return new Promise( async resolve => {
+
+      console.log(arrayServicios);
+
+      let id_plaza = arrayServicios[i].id_plaza;
+      let idAspUser = arrayServicios[i].idAspUser;
+      let idServicio = arrayServicios[i].idServicio;
+      let idServicio2 = arrayServicios[i].idServicio2;
+      let observacion = arrayServicios[i].observacion;
+      let fechaCaptura = arrayServicios[i].fechaCaptura;
+      let latitud = arrayServicios[i].latitud;
+      let longitud = arrayServicios[i].longitud;
+      let id = arrayServicios[i].id
+
+      let sql = `${id_plaza},'${idAspUser}',${idServicio},${idServicio2},'${observacion}','${fechaCaptura}',${latitud},${longitud} `
+      console.log(sql);
+      await this.enviarSQLServicios(sql, id)
+      resolve('Execute Query successfully');
+
+    })
+  }
+
+  async sendCartaInvitacion() {
+    console.log("Entrando a enviar la informacion de cartas invitacion");
+    try {
+      let arrayCuentasCarta = [];
+      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0';
+      const result = await this.db.executeSql(sql, []);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasCarta.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasCarta);
+
+      if (arrayCuentasCarta.length == 0) {
+        this.message.showToast("Sin registros de carta invitación por enviar");
+      } else {
+        this.avanceGestionesCarta = 0;
+        this.envioGestionesCarta(arrayCuentasCarta);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  avanceGestionesCarta = 0;
+
+  envioGestionesCarta(arrayCuentasCarta) {
+    console.log("envioGestionesCarta");
+    console.log(this.avanceGestionesCarta);
+
+    if (this.avanceGestionesCarta === arrayCuentasCarta.length) {
+      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
+    } else {
+      this.sendGestionesCarta(this.avanceGestionesCarta, arrayCuentasCarta).then(resp => {
+        if (resp) {
+          this.avanceGestionesCarta++;
+          this.envioGestionesCarta(arrayCuentasCarta);
+        } else {
+          this.envioGestionesCarta(arrayCuentasCarta);
+        }
+      })
+    }
+  }
+
+  async sendGestionesCarta(i, arrayGestionesCarta) {
+    return new Promise(async (resolve, reject) => {
+
+      console.log(arrayGestionesCarta);
+
+      let id_plaza = arrayGestionesCarta[i].id_plaza;
+      let account = arrayGestionesCarta[i].account;
+      let persona_atiende = arrayGestionesCarta[i].persona_atiende;
+      let numero_contacto = arrayGestionesCarta[i].numero_contacto;
+      let id_motivo_no_pago = arrayGestionesCarta[i].id_motivo_no_pago;
+      let id_trabajo_actual = arrayGestionesCarta[i].id_trabajo_admin;
+      let id_gasto_impuesto = arrayGestionesCarta[i].id_gasto_impuesto;
+      let id_tipo_servicio = arrayGestionesCarta[i].id_tipo_servicio;
+      let numero_niveles = arrayGestionesCarta[i].numero_niveles;
+      let color_fachada = arrayGestionesCarta[i].color_fachada;
+      let color_puerta = arrayGestionesCarta[i].color_puerta;
+      let referencia = arrayGestionesCarta[i].referencia;
+      let id_tipo_predio = arrayGestionesCarta[i].tipo_predio;
+      let entre_calle1 = arrayGestionesCarta[i].entre_calle1;
+      let entre_calle2 = arrayGestionesCarta[i].entre_calle2;
+      let observaciones = arrayGestionesCarta[i].observaciones;
+      let idAspUser = arrayGestionesCarta[i].idAspUser;
+      let idTarea = arrayGestionesCarta[i].id_tarea;
+      let fechaCaptura = arrayGestionesCarta[i].fecha_captura;
+      let latitud = arrayGestionesCarta[i].latitud;
+      let longitud = arrayGestionesCarta[i].longitud;
+      let id = arrayGestionesCarta[i].id;
+
+      let sql = `${id_plaza},'${account}','${persona_atiende}','${numero_contacto}',${id_motivo_no_pago},${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud} `
+      console.log("IdMotivoNoPago " + id_motivo_no_pago);
+      console.log("IdTipoPredio " + id_tipo_predio);
+      console.log(sql);
+      await this.enviarSQLCartaInvitacion(sql, id)
+      resolve('Execute Query successfully');
+
+    })
+  }
+
+
+  /**
+   * Metodo que inicia el envio de los registros de inspeccion
+   * @returns Promise
+   */
+  async sendInspeccion() {
+    console.log("Entrando a enviar la informacion");
     try {
       let arrayCuentasInspeccion = [];
-      let sql = 'SELECT * FROM gestionInspeccionAgua WHERE cargado = 0';
+      let sql = 'SELECT * FROM gestionInspeccion WHERE cargado = 0';
       const result = await this.db.executeSql(sql, []);
       for (let i = 0; i < result.rows.length; i++) {
         arrayCuentasInspeccion.push(result.rows.item(i));
@@ -764,74 +1092,105 @@ export class RestService {
       console.log(arrayCuentasInspeccion);
 
       if (arrayCuentasInspeccion.length == 0) {
-        this.message.showAlert('Sin registros');
+        this.message.showToast("Sin registros de inspeccion por enviar");
       } else {
-        this.avanceGestionesInspeccionAgua = 0;
-
+        this.avanceGestionesInspeccion = 0;
+        this.envioGestionesInspeccion(arrayCuentasInspeccion);
       }
 
     } catch (error) {
-
+      return Promise.reject(error);
     }
   }
 
-  avanceGestionesInspeccionAgua = 0
+  avanceGestionesInspeccion = 0
 
-  envioGestionesInspeccionAgua(arrayGestionesInspeccionAgua) {
+  /**
+   * Segundo metodo para el envio de registros de inspeccion
+   * @param arrayGestionesInspeccion 
+   */
+  envioGestionesInspeccion(arrayGestionesInspeccion) {
     console.log("envioGestionesInspeccionAgua");
-    console.log(this.avanceGestionesInspeccionAgua);
+    console.log(this.avanceGestionesInspeccion);
 
-    if (this.avanceGestionesInspeccionAgua === arrayGestionesInspeccionAgua.length) {
+    if (this.avanceGestionesInspeccion === arrayGestionesInspeccion.length) {
       this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
     } else {
-      this.sendGestionesInspeccionAgua(this.avanceGestionesInspeccionAgua, arrayGestionesInspeccionAgua).then(resp => {
+      this.sendGestionesInspeccion(this.avanceGestionesInspeccion, arrayGestionesInspeccion).then(resp => {
         if (resp) {
-          this.avanceGestionesInspeccionAgua++;
-          this.envioGestionesInspeccionAgua(arrayGestionesInspeccionAgua);
+          this.avanceGestionesInspeccion++;
+          this.envioGestionesInspeccion(arrayGestionesInspeccion);
         } else {
-          this.envioGestionesInspeccionAgua(arrayGestionesInspeccionAgua);
+          this.envioGestionesInspeccion(arrayGestionesInspeccion);
         }
       })
     }
   }
 
-
-  async sendGestionesInspeccionAgua(i, arrayGestionesInspeccionAgua) {
-    let idPlaza = await this.storage.get("IdPlaza");
+  /**
+   * Tercer metodo que envia los registros de inspeccion
+   * @param i 
+   * @param arrayGestionesInspeccionAgua 
+   * @returns 
+   */
+  async sendGestionesInspeccion(i, arrayGestionesInspeccionAgua) {
+    //let idPlaza = await this.storage.get("IdPlaza");
     return new Promise(async (resolve) => {
+      let id_plaza = arrayGestionesInspeccionAgua[i].id_plaza;
       let account = arrayGestionesInspeccionAgua[i].account;
-      let cuenta = arrayGestionesInspeccionAgua[i].cuenta;
-      let clave = arrayGestionesInspeccionAgua[i].clave;
-      let ordenInspeccion = arrayGestionesInspeccionAgua[i].ordenInspeccion;
-      let numeroMedidor = arrayGestionesInspeccionAgua[i].numeroMedidor;
+      let personaAtiende = arrayGestionesInspeccionAgua[i].personaAtiende;
+      let numeroContacto = arrayGestionesInspeccionAgua[i].numeroContacto;
+      let puesto = arrayGestionesInspeccionAgua[i].puesto;
+      let idMotivoNoPago = arrayGestionesInspeccionAgua[i].idMotivoNoPago;
+      let otroMotivo = arrayGestionesInspeccionAgua[i].otroMotivo;
       let idTipoServicio = arrayGestionesInspeccionAgua[i].idTipoServicio;
-      let pozoConagua = arrayGestionesInspeccionAgua[i].pozoConagua;
-      let idHallazgo = arrayGestionesInspeccionAgua[i].idHallazgo;
-      let otroHallazgo = arrayGestionesInspeccionAgua[i].otroHallazgo;
+      let numeroNiveles = arrayGestionesInspeccionAgua[i].numeroNiveles;
+      let colorFachada = arrayGestionesInspeccionAgua[i].colorFachada;
+      let colorPuerta = arrayGestionesInspeccionAgua[i].colorPuerta;
+      let referencia = arrayGestionesInspeccionAgua[i].referencia;
+      let idTipoPredio = arrayGestionesInspeccionAgua[i].idTipoPredio;
+      let entreCalle1 = arrayGestionesInspeccionAgua[i].entreCalle1;
+      let entreCalle2 = arrayGestionesInspeccionAgua[i].entreCalle2;
+      let hallazgoNinguna = arrayGestionesInspeccionAgua[i].hallazgoNinguna;
+      let hallazgoMedidorDescompuesto = arrayGestionesInspeccionAgua[i].hallazgoMedidorDescompuesto;
+      let hallazgoDiferenciaDiametro = arrayGestionesInspeccionAgua[i].hallazgoDiferenciaDiametro;
+      let hallazgoTomaClandestina = arrayGestionesInspeccionAgua[i].hallazgoTomaClandestina;
+      let hallazgoDerivacionClandestina = arrayGestionesInspeccionAgua[i].hallazgoDerivacionClandestina;
+      let hallazgoDrenajeClandestino = arrayGestionesInspeccionAgua[i].hallazgoDrenajeClandestino;
+      let hallazgoCambioGiro = arrayGestionesInspeccionAgua[i].hallazgoCambioGiro;
+      let hallazgoFaltaDocumentacion = arrayGestionesInspeccionAgua[i].hallazgoFaltaDocumentacion;
       let idAspUser = arrayGestionesInspeccionAgua[i].idAspUser;
       let inspector2 = arrayGestionesInspeccionAgua[i].inspector2;
       let inspector3 = arrayGestionesInspeccionAgua[i].inspector3;
       let inspector4 = arrayGestionesInspeccionAgua[i].inspector4;
+      let observacion = arrayGestionesInspeccionAgua[i].observacion;
       let idTarea = arrayGestionesInspeccionAgua[i].idTarea;
       let fechaCaptura = arrayGestionesInspeccionAgua[i].fechaCaptura;
       let latitud = arrayGestionesInspeccionAgua[i].latitud;
       let longitud = arrayGestionesInspeccionAgua[i].longitud;
       let id = arrayGestionesInspeccionAgua[i].id;
 
-      let sql = `'${account}','${cuenta}','${clave}','${ordenInspeccion}','${numeroMedidor}',${idTipoServicio},'${pozoConagua}',${idHallazgo},'${otroHallazgo}','${idAspUser}','${inspector2}','${inspector3}','${inspector4}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idPlaza}`;
-      console.log("idplaza", idPlaza);
+      let sql = `${id_plaza},'${account}','${personaAtiende}','${numeroContacto}','${puesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud}`;
       console.log(sql);
-      await this.enviarSQLInspeccionAgua(sql, id)
+      await this.enviarSQLInspeccion(sql, id)
       resolve('Execute Query successfully');
     })
   }
 
-  async enviarSQLInspeccionAgua(query, id) {
+  /**
+   * Cuarto y ultimo metodo que envia los registros de inspeccion
+   * @param query 
+   * @param id 
+   * @returns 
+   */
+  async enviarSQLInspeccion(query, id) {
     return new Promise(resolve => {
       // cambiar apiObtenerInspectoresAgua por el api que envia la informacion
-      this.http.post(this.apiObtenerInspectoresAgua + " " + query, null).subscribe(
+      console.log("Enviando...");
+      console.log(this.apiRegistroInspeccionAgua + " " + query)
+      this.http.post(this.apiRegistroInspeccionAgua + " " + query, null).subscribe(
         async data => {
-          await this.actualizarIdInspeccionAgua(id);
+          await this.actualizarIdInspeccion(id);
           console.log(data);
           resolve(data);
         },
@@ -846,9 +1205,371 @@ export class RestService {
     });
   }
 
-  actualizarIdInspeccionAgua(id) {
-    let sql = "UPDATE gestionInspeccionAgua SET cargado = 1 where id = ?";
+  enviarSQLCartaInvitacion(query, id) {
+    return new Promise(resolve => {
+
+      console.log("Enviando carta invitacion...");
+      console.log(this.apiRegistroCartaInvitacion + " " + query);
+      this.http.post(this.apiRegistroCartaInvitacion + " " + query, null).subscribe(async data => {
+        await this.actualizarIdCartaInvitacion(id);
+        console.log(data);
+        resolve(data);
+      }, err => {
+        this.message.showAlert(
+          "No se pudo enviar la información, verifica tu red " + err
+        );
+        this.loadingCtrl.dismiss();
+        console.log(err);
+      }
+      )
+    })
+  }
+
+  enviarSQLServicios(query, id) {
+    return new Promise(resolve => {
+
+      console.log("Enviando servicios públicos");
+      console.log(this.apiRegistroServiciosPublicos + " " + query);
+      this.http.post(this.apiRegistroServiciosPublicos + " " + query, null).subscribe(async data => {
+        await this.actualizarServiciosPublicos(id);
+        console.log(data);
+        resolve(data);
+      }, err => {
+        this.message.showAlert(
+          "No se pudo enviar la información, verifica tu red " + err
+        );
+        this.loadingCtrl.dismiss();
+        console.log(err);
+      }
+      )
+    })
+  }
+
+
+  /**
+   * Metodo que actualiza el campo cargado a 1 de la tabla de inspeccion
+   * @param id 
+   * @returns Promise
+   */
+  actualizarIdInspeccion(id) {
+    let sql = "UPDATE gestionInspeccion SET cargado = 1 where id = ?";
     return this.db.executeSql(sql, [id]);
+  }
+
+  actualizarIdCartaInvitacion(id) {
+    let sql = "UPDATE gestionCartaInvitacion SET cargado = 1 where id = ?"
+    return this.db.executeSql(sql, [id]);
+  }
+
+  /**
+   * 
+   * @param id Metodo que actualiza el campo cargado a 1 de la tabla de serviciosPublicos
+   * @returns 
+   */
+  actualizarServiciosPublicos(id) {
+    let sql = "UPDATE serviciosPublicos SET cargado = 1 where id = ? ";
+    return this.db.executeSql(sql, [id]);
+  }
+
+  // metodos para las fotos
+
+  async getImagesLocal() {
+    let sql = "SELECT * FROM capturaFotos where cargado = 0 order by fecha desc";
+
+    return this.db.executeSql(sql, []).then(response => {
+      let arrayFotos = [];
+
+      for (let i = 0; i < response.rows.length; i++) {
+        arrayFotos.push(response.rows.item(i));
+      }
+      console.log(arrayFotos);
+      return Promise.resolve(arrayFotos);
+    }).catch(error => Promise.reject(error))
+  }
+
+  async getImagesLocalServicios() {
+    let sql = "SELECT * FROM capturaFotosServicios WHERE cargado = 0 order by fecha desc";
+
+    return this.db.executeSql(sql, []).then( response => {
+      let arrayFotosServicios = [];
+
+      for (let i = 0; i < response.rows.length; i++) {
+        arrayFotosServicios.push(response.rows.item(i));
+      }
+      console.log(arrayFotosServicios);
+      return Promise.resolve(arrayFotosServicios);
+    }).catch(error => Promise.reject(error));
+  }
+
+  async uploadPhotosServicios() {
+    let arrayImagesServicios = [];
+    let sql = "SELECT * FROM capturaFotosServicios where cargado = limit 20"
+    let response = await this.db.executeSql(sql, []);
+    for (let i = 0; i > response.rows.length; i++) {
+      arrayImagesServicios.push(response.rows.item(i));
+    }
+    
+    if(arrayImagesServicios.length == 0) {
+      this.message.showAlert("Sin fotos para sincronizar");
+    } else {
+      this.loading = await this.loadingCtrl.create({
+        message: 'Enviando fotos servicios...',
+        spinner: 'dots'
+      });
+
+      await this.loading.present();
+
+      this.avanceImagesServicios = 0;
+      this.envioFotosServicios(arrayImagesServicios);
+    }
+  }
+
+  avanceImagesServicios = 0;
+
+  envioFotosServicios(arrayImagesServicios) {
+    if (this.avanceImages === arrayImagesServicios.length) {
+      this.loading.dismiss();
+      this.message.showAlert("Fotos enviadas con exito!!!!");
+    } else {
+      this.sendImage(this.avanceImages, arrayImagesServicios).then(respEnvio => {
+        if (respEnvio) {
+          this.avanceImagesServicios++;
+          this.envioFotos(arrayImagesServicios);
+        } else {
+          this.envioFotos(arrayImagesServicios);
+        }
+      })
+    }
+  }
+
+  sendImageServicios(i, arrayImagesServicios) {
+    return new Promise(async (resolve) => {
+      await this.base64.encodeFile(arrayImagesServicios[i].rutaBase64).then(async (base64File: string) => {
+        let aleatorio = Math.floor((Math.random() * (100-1))+1);
+        let imageName = "servicio-" + aleatorio + "-" + arrayImagesServicios[i].idServio + arrayImagesServicios[i].fecha;
+        let imagen64 = base64File.split(",");
+        let imagenString = imagen64[1];
+        // imagen string es el que manda al s3 y el nombre que en este caso es el imageName
+        let idServicio = arrayImagesServicios[i].idServicio;
+        if (idServicio == null) { idServicio = 0; }
+        this.uploadPhotoS3V1Servicios(arrayImagesServicios[i].idAspUser, idServicio, arrayImagesServicios[i].fecha, arrayImagesServicios[i].tipo, imagenString, imageName, arrayImagesServicios[i].id, arrayImagesServicios[i].rutaBase64, i + 1, arrayImagesServicios[i].id_plaza).then(respImagen => {
+          resolve(respImagen);
+        });
+      },
+        err => {
+          console.log(err);
+          resolve(false);
+        }
+      );
+    });
+  }
+
+
+  async uploadPhotos() {
+    let arrayImages = [];
+    let sql = "SELECT * FROM capturaFotos where cargado = 0 limit 20";
+    let response = await this.db.executeSql(sql, []);
+
+    for (let i = 0; i < response.rows.length; i++) {
+      arrayImages.push(response.rows.item(i));
+    }
+
+    if (arrayImages.length == 0) {
+      this.message.showAlert("Sin fotos para sincronizar");
+    } else {
+      this.loading = await this.loadingCtrl.create({
+        message: 'Enviando fotos...',
+        spinner: 'dots'
+      });
+
+      await this.loading.present();
+
+      this.avanceImages = 0;
+      this.envioFotos(arrayImages);
+    }
+
+  }
+
+  avanceImages = 0;
+
+  envioFotos(arrayImages) {
+    if (this.avanceImages === arrayImages.length) {
+      this.loading.dismiss();
+      this.message.showAlert("Fotos enviadas con exito!!!!");
+    } else {
+      this.sendImage(this.avanceImages, arrayImages).then(respEnvio => {
+        if (respEnvio) {
+          this.avanceImages++;
+          this.envioFotos(arrayImages);
+        } else {
+          this.envioFotos(arrayImages);
+        }
+      })
+    }
+  }
+
+  async sendImage(i, arrayImages) {
+    return new Promise(async (resolve) => {
+      await this.base64.encodeFile(arrayImages[i].rutaBase64).then(async (base64File: string) => {
+        let imageName = arrayImages[i].cuenta + arrayImages[i].fecha;
+        let imagen64 = base64File.split(",");
+        let imagenString = imagen64[1];
+        // imagen string es el que manda al s3 y el nombre que en este caso es el imageName
+        let idTarea = arrayImages[i].idTarea;
+        if (idTarea == null) { idTarea = 0; }
+        this.uploadPhotoS3V1(arrayImages[i].cuenta, arrayImages[i].idAspUser, idTarea, arrayImages[i].fecha, arrayImages[i].tipo, imagenString, imageName, arrayImages[i].id, arrayImages[i].rutaBase64, i + 1, arrayImages[i].id_plaza).then(respImagen => {
+          resolve(respImagen);
+        });
+      },
+        err => {
+          console.log(err);
+          resolve(false);
+        }
+      );
+    });
+  }
+
+
+  async uploadPhotoS3V1(cuenta, idAspuser, idTarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza) {
+    return new Promise(async (resolve) => {
+      try {
+        this.s3Service.uploadS3(base64File, imageName).then(async uploadResponse => {
+          if (uploadResponse) {
+            let UrlOriginal: any;
+            UrlOriginal = this.s3Service.getURLPresignaded(imageName);
+            console.log('La url::::::')
+            console.log(UrlOriginal)
+            await this.saveSqlServer(cuenta, idAspuser, imageName, idTarea, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza);
+            resolve(true);
+          }
+          else {
+            this.uploadPhotoS3V1(cuenta, idAspuser, idTarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza);
+          }
+        });
+      } catch (err_1) {
+        alert(err_1)
+        console.log(err_1);
+        resolve(false);
+      }
+    });
+  }
+
+  async uploadPhotoS3V1Servicios(idAspuser, idServicio, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza) {
+    return new Promise(async (resolve) => {
+      try {
+        this.s3Service.uploadS3(base64File, imageName).then(async uploadResponse => {
+          if (uploadResponse) {
+            let UrlOriginal: any;
+            UrlOriginal = this.s3Service.getURLPresignaded(imageName);
+            console.log('La url::::::')
+            console.log(UrlOriginal)
+            await this.saveSqlServerServicios(idAspuser, imageName, idServicio, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza);
+            resolve(true);
+          }
+          else {
+            this.uploadPhotoS3V1Servicios(idAspuser, idServicio, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza);
+          }
+        });
+      } catch (err_1) {
+        alert(err_1)
+        console.log(err_1);
+        resolve(false);
+      }
+    });
+  }
+
+
+
+  async saveSqlServer(cuenta, idAspuser, imageName, idTarea, fecha, tipo, id, url, ruta, cont, id_plaza) {
+    console.log("id_plaza " + id_plaza);
+    let a = url.split("&");
+    let b = a[0];
+    let b1 = b.split(":");
+    let b2 = b1[0];
+    let b3 = b1[1];
+    let c = a[1];
+    let d = a[2];
+    console.log('La url partida')
+    console.log(b2, b3, c, d)
+    let idPlaza = id_plaza
+    let strinSql0 = `'${cuenta}','${idAspuser}','${imageName}',${idTarea},'${fecha}','${tipo}',${idPlaza},'${b2}','${b3}','${c}','${d}'`;
+
+    return new Promise(resolve => {
+      // cambiar api
+      this.http.post(this.apiRegistroFotos + " " + strinSql0, null).subscribe(
+        async data => {
+          this.message.showToast(data[0].mensaje + ' ' + cont)
+          await this.updateLoadedItem(id);
+          console.log('registroCargado al sql')
+          //   await this.deletePhotoFile(ruta);
+          //  console.log('se borro la foto')
+          resolve(data);
+        },
+        err => {
+          this.message.showAlert(
+            "Existe un error con la red, verifica y vuelve a intentar :( " + err
+          );
+          console.log(err);
+        }
+      );
+    });
+  }
+
+  
+  async saveSqlServerServicios( idAspuser, imageName, idServicio, fecha, tipo, id, url, ruta, cont, id_plaza) {
+    console.log("id_plaza " + id_plaza);
+    let a = url.split("&");
+    let b = a[0];
+    let b1 = b.split(":");
+    let b2 = b1[0];
+    let b3 = b1[1];
+    let c = a[1];
+    let d = a[2];
+    console.log('La url partida')
+    console.log(b2, b3, c, d)
+    let idPlaza = id_plaza
+    let strinSql0 = `'${idAspuser}','${imageName}',${idServicio},'${fecha}','${tipo}',${idPlaza},'${b2}','${b3}','${c}','${d}'`;
+
+    return new Promise(resolve => {
+      // cambiar api
+      this.http.post(this.apiRegistroFotosServicios + " " + strinSql0, null).subscribe(
+        async data => {
+          this.message.showToast(data[0].mensaje + ' ' + cont)
+          await this.updateLoadedItem(id);
+          console.log('registroCargado al sql')
+          //   await this.deletePhotoFile(ruta);
+          //  console.log('se borro la foto')
+          resolve(data);
+        },
+        err => {
+          this.message.showAlert(
+            "Existe un error con la red, verifica y vuelve a intentar :( " + err
+          );
+          console.log(err);
+        }
+      );
+    });
+  }
+
+
+  updateLoadedItem(id) {
+    let sql = "UPDATE capturaFotos SET cargado = 1 where id = ?";
+    return this.db.executeSql(sql, [id]);
+  }
+
+
+  obtenerPlazaId( id_plaza ) {
+    console.log('Traer el nombre de la plaza ' + id_plaza);
+    let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
+
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
+      let data = [];
+      for (let index = 0; index < response.rows.length; index++) {
+        data.push(response.rows.item(index));
+      }
+      console.log(data);
+      return Promise.resolve(data);
+    }).catch(error => Promise.reject(error));
   }
 
 }

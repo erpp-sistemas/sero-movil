@@ -1,6 +1,23 @@
-ion-toolbar {
-    height: 100px;
+
+
+.texto-centrado {
     text-align: center;
+    //background-color: #3dc2ff;
+    background-color: rgb(0,200,0);
+    width: 60%;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.datos {
+    font-size: 15px;
+    text-align: center;
+    color: rgb(0, 200, 0);
+}
+
+
+h3 {
+    color: white;
 }
 
 ion-card-header {
@@ -15,13 +32,4 @@ ion-card-content {
 ion-icon {
     font-size: 40px;
 }
-
-.texto-centrado {
-    text-align: center;
-}
-
-ion-chip {
-    font-size: 16px !important;
-}
-
 

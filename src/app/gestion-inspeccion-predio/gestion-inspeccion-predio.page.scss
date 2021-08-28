@@ -20,7 +20,11 @@ ion-select {
 }
 
 p{
-    color: white;
+    color: white !important;
+}
+ion-input,
+ion-textarea {
+    color: white !important;
 }
 
 .fotos-visita{

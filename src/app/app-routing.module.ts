@@ -6,7 +6,7 @@ import { NoLoginGuard } from './guards/no-login.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'video-presentacion',
     pathMatch: 'full'
   },
   {
@@ -36,7 +36,7 @@ const routes: Routes = [
     loadChildren: () => import('./gestion-inspeccion-agua/gestion-inspeccion-agua.module').then( m => m.GestionInspeccionAguaPageModule)
   },
   {
-    path: 'google-maps',
+    path: 'google-maps/:id_plaza',
     loadChildren: () => import('./google-maps/google-maps.module').then( m => m.GoogleMapsPageModule)
   },
   {
@@ -44,7 +44,7 @@ const routes: Routes = [
     loadChildren: () => import('./pozo-conagua/pozo-conagua.module').then( m => m.PozoConaguaPageModule)
   },
   {
-    path: 'listado-cuentas/:id',
+    path: 'listado-cuentas/:id/:id_plaza',
     loadChildren: () => import('./listado-cuentas/listado-cuentas.module').then( m => m.ListadoCuentasPageModule)
   },
   {
@@ -78,6 +78,42 @@ const routes: Routes = [
   {
     path: 'gestion-inspeccion-predio',
     loadChildren: () => import('./gestion-inspeccion-predio/gestion-inspeccion-predio.module').then( m => m.GestionInspeccionPredioPageModule)
+  },
+  {
+    path: 'video-presentacion',
+    loadChildren: () => import('./video-presentacion/video-presentacion.module').then( m => m.VideoPresentacionPageModule)
+  },
+  {
+    path: 'directorio',
+    loadChildren: () => import('./directorio/directorio.module').then( m => m.DirectorioPageModule)
+  },
+  {
+    path: 'servicios-publicos',
+    loadChildren: () => import('./servicios-publicos/servicios-publicos.module').then( m => m.ServiciosPublicosPageModule)
+  },
+  {
+    path: 'mapa-predio/:id_plaza',
+    loadChildren: () => import('./mapa-predio/mapa-predio.module').then( m => m.MapaPredioPageModule)
+  },
+  {
+    path: 'sincronizar-servicios',
+    loadChildren: () => import('./sincronizar-servicios/sincronizar-servicios.module').then( m => m.SincronizarServiciosPageModule)
+  },
+  {
+    path: 'sincronizar-fotos',
+    loadChildren: () => import('./sincronizar-fotos/sincronizar-fotos.module').then( m => m.SincronizarFotosPageModule)
+  },
+  {
+    path: 'image-preview',
+    loadChildren: () => import('./image-preview/image-preview.module').then( m => m.ImagePreviewPageModule)
+  },
+  {
+    path: 'sync-fotos-acciones',
+    loadChildren: () => import('./sync-fotos-acciones/sync-fotos-acciones.module').then( m => m.SyncFotosAccionesPageModule)
+  },
+  {
+    path: 'sync-fotos-servicios',
+    loadChildren: () => import('./sync-fotos-servicios/sync-fotos-servicios.module').then( m => m.SyncFotosServiciosPageModule)
   },
 ];
 

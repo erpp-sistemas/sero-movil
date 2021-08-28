@@ -1,18 +1,16 @@
-<ion-header>
-  <ion-toolbar color="medium">
-    <img src="../../assets/img/logo.png" alt="" style="height: 100px; width :200">
-</ion-toolbar>
-</ion-header>
+<hr><hr><hr><hr><hr>
 
 <ion-content [fullscreen]="true" color="medium">
   <div class="resumen-cuentas">
     <ion-chip *ngIf="total" color="secondary">Total: {{total}}</ion-chip>
-    <ion-chip *ngIf="gestionadas "color="success">Gestionadas: {{gestionadas}}</ion-chip>
-    <ion-chip color="danger">Faltantes: {{total - gestionadas}}</ion-chip>
+    <ion-chip *ngIf="gestionadas " color="success">Gestionadas: {{gestionadas}}</ion-chip>
+    <ion-chip color="warning">Faltantes: {{total - gestionadas}}</ion-chip>
   </div>
 
   <ion-searchbar placeholder="Busqueda por cuenta" (ionChange)="find( $event )"></ion-searchbar>
+
   <div class="contenedor">
+
     <ion-item-sliding color="white" *ngFor="let cuenta of account | filtro: findText">
 
       <ion-item-options side="start">
@@ -21,20 +19,21 @@
           <ion-icon slot="icon-only" name="walk"></ion-icon>
         </ion-item-option>
 
-        <ion-item-option (click)="openLink(cuenta)" color="success">
-          <ion-icon slot="icon-only" name="bicycle"></ion-icon>
+        <ion-item-option (click)="openLink(cuenta)" color="light">
+          <!-- <ion-icon slot="icon-only" name="bicycle"></ion-icon> -->
+          <img src="../../assets/img/ruta.png" style="width: 90%; height:60px;" alt="">
         </ion-item-option>
 
       </ion-item-options>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>
             <ion-chip color="success">Cuenta: {{cuenta.cuenta}} </ion-chip>
           </p>
-          <p color="light" class="border">Propietario: {{cuenta.nombre_propietario}}</p>
+          <p color="light" class="border">Propietario: {{cuenta.propietario}}</p>
           <p color="light" class='border direccion'>Dirección: {{cuenta.direccion}}</p>
-          <p color="light" class='border'>Deuda:{{cuenta.adeudo | currency:'USD':'symbol' }}</p>
+          <p color="light" class='border'>Deuda:{{cuenta.total | currency:'USD':'symbol' }}</p>
           <p *ngIf="cuenta.gestionada == 1" class="realizada">Realizada</p>
         </ion-label>
       </ion-item>
@@ -42,7 +41,7 @@
       <ion-item-options side="end">
 
         <ion-item-option color="tertiary" (click)="gestionarCuenta(cuenta.cuenta)">
-          <ion-icon slot="icon-only" name="navigate"></ion-icon>
+          <ion-icon slot="icon-only" name="document"></ion-icon>
         </ion-item-option>
 
       </ion-item-options>
@@ -50,3 +49,35 @@
     </ion-item-sliding>
   </div>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar color="medium" style="width: 100% !important;">
+    <ion-segment style="width: 100% !important;" color="medium">
+      <ion-segment-button (click)="navegar(1)">
+        <ion-icon color="light" name="home"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+      </ion-segment-button>
+
+      <ion-segment-button (click)="navegar(2)">
+        <ion-icon color="light" name="layers"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+      </ion-segment-button>
+
+      <ion-segment-button (click)="navegar(3)">
+        <ion-icon color="light" name="map"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+      </ion-segment-button>
+
+      <ion-segment-button (click)="navegar(4)">
+        <ion-icon color="light" name="warning"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+      </ion-segment-button>
+<!-- 
+      <ion-segment-button (click)="navegar(5)" >
+        <img src="../../../assets/img/sos.png" style="width: 20px; height: 20px; " alt="">
+        <ion-label color="light" style="font-size:3px"><small>S.O.S.</small></ion-label>
+      </ion-segment-button> -->
+
+    </ion-segment>
+  </ion-toolbar>
+</ion-footer>

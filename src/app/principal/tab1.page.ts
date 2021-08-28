@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController, MenuController } from '@ionic/angular';
+import { CallNumber } from '@ionic-native/call-number/ngx';
+import { AlertController, LoadingController, MenuController, Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { AuthService } from '../services/auth.service';
 import { MessagesService } from '../services/messages.service';
@@ -36,32 +37,40 @@ export class Tab1Page implements OnInit {
   descargaPredio: boolean;
   descargaAntenas: boolean;
   descargaPozos: boolean;
-  plazas:any = [];
-  idPlazas:any = [];
+  plazas: any = [];
+  idPlazas: any = [];
   id_plaza: number = 0; // select option de plaza
   plaza: number = 0;
+  selecciona: boolean = false;
 
   plazaServicioDescarga = [];
+  login: boolean;
 
   constructor(
     private storage: Storage,
-    private menuCtrl: MenuController,
-    private auth: AuthService,
     private rest: RestService,
     private loadinCtrl: LoadingController,
     private message: MessagesService,
+    private platform: Platform,
     private router: Router,
-    private alertCtrl: AlertController,
-  ) { }
+    private alertCtrl: AlertController
+  ) {
+
+  }
 
   async ngOnInit() {
     //this.mostrarAvatar();
+    console.log("Empieza principal");
     this.obtenerDatosUsuario();
-    this.validaDescargas();
+    this.platform.ready().then(() => {
+      this.obtenerPlazasUsuario();
+    });
   }
 
   ionViewDidEnter() {
-    this.obtenerPlazasUsuario();
+    this.platform.ready().then(() => {
+      this.obtenerPlazasUsuario();
+    });
   }
 
   /**
@@ -76,53 +85,38 @@ export class Tab1Page implements OnInit {
    * Metodo que obtiene las plazas y los ids guardadas en el storage por auth.service
    */
   async obtenerPlazasUsuario() {
-    this.plazas = [];
-    this.idPlazas = [];
-    let numeroPlazas = await this.storage.get('NumeroPlazas');
-    console.log("Numero de plazas: " , numeroPlazas);
-    for(let i = 0; i < numeroPlazas; i++) {
-      let temp = await this.storage.get(`nombre${i+1}`);
-      //console.log(`nombre${i+1}`)
-      this.plazas.push(temp);
-      //console.log("Temp: ", temp);
-      temp = null;
-    }
-
-    console.log(this.plazas);
-
-    for(let i = 0; i < numeroPlazas; i++) {
-      let temp2 = await this.storage.get(`idPlaza${i+1}`);
-      //console.log(`idPlaza${i+1}`)
-      this.idPlazas.push(temp2);
-      //console.log("Temp2: ", temp2);
-      temp2 = null;
-    }
-    // le ponemos al id_plaza el primer valor del arreglo id_plazas que sera el que aparecera por defecto
-    this.id_plaza = this.idPlazas[0];
-    console.log(this.idPlazas);
-
+    let plazasRest = this.rest.obtenerPlazas();
+    this.plazas = (await plazasRest).plazas;
+    this.idPlazas = (await plazasRest).idPlazas;
+    this.id_plaza = await this.idPlazas[0];
+    const servicios = await this.rest.mostrarServicios(this.id_plaza);
+    // En este punto ya se tiene el primer id_plaza obtenido de la base
+    this.mostrarServicios(servicios);
   }
 
   /**
-   * Metodo que se ejcuta cuando cambian en selec option de la plaza
+   * Metodo que se ejcuta cuando cambian en selec option de la plazam este metodo tambien se ejecuta al inicio 
    * @param event 
    */
-  async resultPlaza( event ) {
+  async resultPlaza(event) {
+
     console.log("idPlaza: " + this.id_plaza);
 
-    // verificar si el id_plaza escogida tiene un estatus true en el campo descargado de la tabla descargaServicios
-    this.verificarEstatusDescarga();
-
-    this.agua = false;
-    this.predio = false;
-    this.antenas = false;
-    this.pozos = false;
-    this.plaza = event.detail.value
-    // this.asignarSectores(this.plaza);
-    this.asignarSectores(this.id_plaza);
-    //console.log(event.detail.value);
+    // si el idPlaza es diferente de 0 entonces verificar la descarga
+    if (this.id_plaza != 0) {
+      // verificar si el id_plaza escogida tiene un estatus true en el campo descargado de la tabla descargaServicios
+      const estado = await this.verificarEstatusDescarga();
+      this.agua = false;
+      this.predio = false;
+      this.antenas = false;
+      this.pozos = false;
+      this.asignarSectores(this.id_plaza);
+    }
   }
 
+  /**
+   * Metodo que trae la informacion de la plaza para ver si ya fue descargada la informacion
+   */
   async verificarEstatusDescarga() {
     // poner todos los estatus de descaga en false
     this.descargaAgua = false;
@@ -131,29 +125,47 @@ export class Tab1Page implements OnInit {
     this.descargaPozos = false;
     const serviciosDescargados = await this.rest.verificaEstatusDescarga(this.id_plaza);
     console.log(serviciosDescargados);
-    serviciosDescargados.forEach( servicio => {
+    serviciosDescargados.forEach(servicio => {
       console.log(servicio);
-      if(servicio.id_servicio == '1' && servicio.descargado == 'true') {
+      if (servicio.id_servicio == '1' && servicio.descargado == 'true') {
         console.log("Su servicio de agua si esta descargado");
         this.descargaAgua = true;
-      } else if ( servicio.id_servicio == '2' && servicio.descargado == 'true') {
+      } else if (servicio.id_servicio == '2' && servicio.descargado == 'true') {
         console.log("Su servicio de predio si esta descargado");
         this.descargaPredio = true;
+      } else if (servicio.id_servicio == '3' && servicio.descargado == 'true') {
+        console.log("Su servicio de antenas si esta descargado");
+        this.descargaAntenas = true;
+      } else if (servicio.id_servicio == '4' && servicio.descargado == 'true') {
+        console.log("Su servicio de pozos si esta descargado");
+        this.descargaPozos = true;
       }
     });
+    return Promise.resolve('Success');
   }
 
   /**
    * Metodo que activa los servicios segun la plaza que se pasa por parametro
    * @param idPlaza 
    */
-  async asignarSectores( idPlaza ) {
+  async asignarSectores(idPlaza) {
+    console.log("idplaza a " + idPlaza);
+
+    if (idPlaza == 0) {
+      this.selecciona = true;
+    } else {
+      this.selecciona = false;
+    }
 
     const servicios = await this.rest.mostrarServicios(idPlaza);
-    //console.log("Servicios");
-    //console.log(servicios);
-    servicios.forEach( servicio => {
-      if(servicio.id_servicio == 1) {
+    this.mostrarServicios(servicios);
+
+  }
+
+
+  mostrarServicios(servicios) {
+    servicios.forEach(servicio => {
+      if (servicio.id_servicio == 1) {
         this.agua = true;
       } else if (servicio.id_servicio == 2) {
         this.predio = true
@@ -163,9 +175,7 @@ export class Tab1Page implements OnInit {
         this.pozos = true;
       }
     });
-
   }
-
 
   // async mostrarAvatar() {
   //   this.imgAvatar += await this.storage.get('ImgAvatar');
@@ -175,6 +185,7 @@ export class Tab1Page implements OnInit {
    * Metodo que obtiene el nombre y el email del usuario desde el storage
    */
   async obtenerDatosUsuario() {
+    console.log('Obteniendo los datos del usuario');
     this.nombre = await this.storage.get('Nombre');
     this.email = await this.storage.get('Email');
   }
@@ -187,18 +198,20 @@ export class Tab1Page implements OnInit {
       console.log("Descargar agua en la plaza " + this.id_plaza);
       this.confirmaDescargaAgua(this.id_plaza)
     } else if (tipo == 2) {
-      console.log("Descarga predio en la plaza " + this.plaza);
-      this.confirmarDescargaPredio();
+      console.log("Descarga predio en la plaza " + this.id_plaza);
+      this.confirmarDescargaPredio(this.id_plaza);
     } else if (tipo == 3) {
-      console.log("Descarga pozos");
+      console.log("Descarga antenas");
+      console.log("Descarga predio en la plaza " + this.id_plaza);
+      this.confirmarDescargaAntenas(this.id_plaza);
       // llamar al metodo confirme la descarga de pozos
     } else if (tipo == 4) {
-      console.log("Descarga antenas");
+      console.log("Descarga pozos");
       // llamar al metodo confirme la descarga de antenas
     }
   }
 
-  async confirmaDescargaAgua( id_plaza) {
+  async confirmaDescargaAgua(id_plaza) {
     const alert = await this.alertCtrl.create({
       subHeader: 'Descarga de cuentas de agua',
       message: 'Confirme para iniciar la descarga',
@@ -251,7 +264,7 @@ export class Tab1Page implements OnInit {
     await alert.present();
   }
 
-  async confirmarDescargaPredio() {
+  async confirmarDescargaPredio(id_plaza) {
     const alert = await this.alertCtrl.create({
       subHeader: 'Descarga de cuentas de predio',
       message: 'Confirme para iniciar descarga',
@@ -269,7 +282,33 @@ export class Tab1Page implements OnInit {
           cssClass: "secondary",
           handler: () => {
             //  if(this.network.getNetworkType() == 'wifi'){
-            this.descargarInfoPredio();
+            this.descargarInfoPredio(id_plaza);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async confirmarDescargaAntenas(id_plaza) {
+    const alert = await this.alertCtrl.create({
+      subHeader: 'Descarga de cuentas de antenas',
+      message: 'Confirme para iniciar descarga',
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            //  if(this.network.getNetworkType() == 'wifi'){
+            this.descargarInfoAntenas(id_plaza);
           }
         }
       ]
@@ -290,13 +329,13 @@ export class Tab1Page implements OnInit {
 
     await this.loading.present();
     const idaspuser = await this.storage.get("IdAspUser");
-    
+
     try {
       this.data = await this.rest.obtenerDatosSqlAgua(idaspuser, id_plaza);
       this.total = this.data.length;
 
       if (this.total == 0) {
-        this.message.showAlert("No tienes cuentas para sincronizar");
+        this.message.showAlert("No tienes cuentas asignadas para descargar");
         this.loading.dismiss();
         return;
       }
@@ -324,7 +363,7 @@ export class Tab1Page implements OnInit {
       this.storage.set("FechaSync", fecha);
       this.loading.dismiss();
       await this.storage.set('DescargaAgua', true);
-      
+
       this.descargaAgua = true;
 
       // se descargo agua en la plaza this.id_plaza, meter en la tabla descargaServicios
@@ -342,14 +381,13 @@ export class Tab1Page implements OnInit {
 
   async guardarDatosSQLAgua(data, id_plaza) {
     console.log("Guardando la informacion de agua");
+    console.log(data);
     let cont = 0;
     for (let i = 0; i < data.length; i++) {
       await this.rest.guardarInfoSQLAgua(data[i], id_plaza);
       cont = cont + 1;
       this.progressTotal = cont / this.total;
-      //console.log("Guardado: " + cont);
     }
-   // console.log("Se ha terminado de guardar la informacion traida del sql");
   }
 
   async actualizarEstatusDescarga(id_plaza, servicio) {
@@ -395,7 +433,7 @@ export class Tab1Page implements OnInit {
   }
 
 
-  async descargarInfoPredio() {
+  async descargarInfoPredio(id_plaza) {
     this.progress = true;
     this.deleteInfoPredio();
 
@@ -405,26 +443,22 @@ export class Tab1Page implements OnInit {
     });
 
     await this.loading.present();
-    // const idaspuser = await this.storage.get("IdAspUser");
-    // const idplaza = await this.storage.get("IdPlaza");
 
-    // borrar esto, solo es de pruebas
-    const idplaza = '9';
-    const idaspuser = '137a6ec4-3d9a-4271-aa31-268c1d2898e4';
+    const idaspuser = await this.storage.get("IdAspUser");
 
     try {
-      this.data = await this.rest.obtenerDatosSqlPredio(idaspuser, idplaza);
+      this.data = await this.rest.obtenerDatosSqlPredio(idaspuser, id_plaza);
       this.total = this.data.length;
 
       if (this.total == 0) {
-        this.message.showAlert("No tienes cuentas para sincronizar");
+        this.message.showAlert("No tienes cuentas asignadas para sincronizar");
         this.loading.dismiss();
         return;
       }
 
       this.storage.set("total", this.total);
 
-      await this.guardarDatosSQLPredio(this.data);
+      await this.guardarDatosSQLPredio(this.data, id_plaza);
 
       // Aqui se guardaran las llaves en el storage para definir campos de validacion de modulos
 
@@ -445,26 +479,30 @@ export class Tab1Page implements OnInit {
       this.storage.set("FechaSync", fecha);
       this.loading.dismiss();
       await this.storage.set('DescargaPredio', true);
+
       this.descargaPredio = true;
+      // se descargo agua en la plaza this.id_plaza, meter en la tabla descargaServicios
+      this.actualizarEstatusDescarga(this.id_plaza, 2); // 2 es predio
+      console.log(this.plazaServicioDescarga);
       this.message.showAlert("Se han descargado tus cuentas!!!!");
-      //this.router.navigateByUrl('/home/tab2');
+
     } catch (eror) {
       this.message.showAlert("Error al intentar la descarga");
     }
   }
 
-  async guardarDatosSQLPredio(data) {
+  async guardarDatosSQLPredio(data, id_plaza) {
     console.log("Guardando la informacion de predio");
     let cont = 0;
     for (let i = 0; i < data.length; i++) {
-      await this.rest.guardarInfoSQLPredio(data[i]);
+      await this.rest.guardarInfoSQLPredio(data[i], id_plaza);
       cont = cont + 1;
       this.progressTotal = cont / this.total;
     }
   }
 
-  descargaInfoAntenas() {
-
+  descargarInfoAntenas(id_plaza) {
+    this.message.showAlert("No tienes cuentas asignadas para sincronizar");
   }
 
   async guardarDatosSQLAntenas(data) {
@@ -488,41 +526,36 @@ export class Tab1Page implements OnInit {
 
   }
 
-  toggleMenu() {
-    this.menuCtrl.toggle();
+
+  async goCuentasTab(tipo) {
+    //this.router.navigateByUrl('/home/tab2');
+    if( tipo == '1') {
+      await this.storage.set('tipo', 'Agua');
+    } else if(tipo == '2') {
+      await this.storage.set('tipo', 'Predio');
+    }
+    console.log("Tipo " + tipo);
+    
+
+    const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+
+    const plaza = plaza_servicio.filter( e => {
+      return e.id_plaza == this.id_plaza
+    })
+
+
+    await this.storage.set('NombrePlazaActiva', plaza[0].plaza);
+    await this.storage.set('IdPlazaActiva', plaza[0].id_plaza);
+
+    this.router.navigate(['/listado-cuentas', tipo, this.id_plaza]);
   }
 
-
-  exit() {
-    this.menuCtrl.close();
-    this.auth.logout();
-  }
-
-
-  checador() {
-
-  }
-
-  listadoCuentas() {
-
-  }
-
-
-  manualWeb() {
-
-  }
-
-  gestionesRealizadas() {
-    console.log("Ir a a gestiones realizadas");
-    this.router.navigateByUrl('/sincronizar-gestiones')
-  }
-
-  goCuentasTab() {
-    this.router.navigateByUrl('/home/tab2');
-  }
-
-  goMapTab() {
-    this.router.navigateByUrl('/home/tab3');
+  goMapTab( tipo ) {
+    if (tipo == '1') {
+      this.router.navigate(['/google-maps', this.id_plaza]);
+    } else if( tipo == '2') {
+      this.router.navigate(['/mapa-predio', this.id_plaza]);
+    }
   }
 
 

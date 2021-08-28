@@ -11,6 +11,7 @@ import { QuerysService } from './services/querys.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MessagesService } from './services/messages.service';
 import { Storage } from '@ionic/storage';
+import { Router } from '@angular/router';
 //import { auth } from 'firebase';
 //import { UsersFirebaseService } from './services/users-firebase.service';
 
@@ -21,6 +22,11 @@ import { Storage } from '@ionic/storage';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
+
+
+  login: boolean;
+  _router:any;
+
   constructor(
     private query: QuerysService,
     private platform: Platform,
@@ -32,9 +38,11 @@ export class AppComponent {
     private db: AngularFirestore,
     private auth: AuthService,
     private message: MessagesService,
-    private storage: Storage
+    private storage: Storage,
+    private router:Router
   ) {
     this.initializeApp();
+    
   }
 
 
@@ -45,9 +53,9 @@ export class AppComponent {
       this.statusBar.styleBlackOpaque();
       this.createDB();
       // this.getPermission();
-
     })
   }
+
 
   // async getPermission() {
   //   this.androidPermissions.requestPermissions(
@@ -71,11 +79,10 @@ export class AppComponent {
       await db.executeSql(table.tableAntenas, []);
       await db.executeSql(table.tablePozos, []);
       await db.executeSql(table.tableInspeccionAgua, []);
-      await db.executeSql(table.tableInspeccionPredio, []);
+      await db.executeSql(table.tableCartaInvitacion, []);
+      await db.executeSql(table.tableServiciosPublicos, []);
       await db.executeSql(table.tableFotos, []);
-      await db.executeSql(table.tableFotosPredio, []);
-      await db.executeSql(table.tableAntenas, []);
-      await db.executeSql(table.tablePozos, []);
+      await db.executeSql(table.tableFotosServicios, []);
       await db.executeSql(table.tableServicios, []);
       await db.executeSql(table.tableDescargaServicios, []);
 

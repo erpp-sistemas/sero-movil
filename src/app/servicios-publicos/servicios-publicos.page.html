@@ -1,0 +1,188 @@
+<hr>
+<hr>
+<hr>
+<hr>
+
+<ion-content color="medium">
+
+  <ion-card color="medium">
+    <ion-card-subtitle color="dark" style="text-align: center;">
+      <p style="color: white; font-size: 16px;">Selecciona la plaza</p>
+    </ion-card-subtitle>
+  </ion-card>
+
+  <div class="texto-centrado">
+    <p class="datos">
+      <ion-select style="color: #000000;" class="myCustomSelect text-center" interface="popover"
+        placeholder="Seleccionar plaza" [(ngModel)]="id_plaza" (ionChange)="resultPlaza( $event)">
+        <ion-select-option *ngFor="let plaza of plazas; index as i" [value]="idPlazas[i]">{{plaza |
+          titlecase}}
+        </ion-select-option>
+      </ion-select>
+    </p>
+  </div>
+
+  <hr>
+  <hr>
+
+  <div style="text-align: center;">
+    <ion-chip color="success">Incidencia 1</ion-chip>
+  </div>
+
+  <ion-card color="medium">
+    <ion-card-header color="medium">
+      <ion-label>
+        <p class="fotos-visita">
+          Fotos de incidencia 1
+        </p>
+      </ion-label>
+    </ion-card-header>
+    <hr>
+    <ion-card-content color="medium">
+      <ion-slides [options]="sliderOpts">
+        <ion-slide *ngFor="let img of imgs">
+          <img src={{img.imagen}} class="imagen">
+          <ion-fab-button padding size="small" (click)="deletePhoto(img.imagen, 1)"
+            *ngIf="img.imagen != 'assets/img/imgs.png'" color="danger">
+            <ion-icon class="delete" name="trash"></ion-icon>
+          </ion-fab-button>
+        </ion-slide>
+      </ion-slides>
+
+
+      <ion-grid style="text-align: center;">
+        <ion-col>
+          <ion-button class="btn-camara" color="primary" (click)="takePic(1)">
+            <ion-icon name="camera"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-grid>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col style="text-align: center;">
+            <ion-label class="fotos-visita">Evidencia</ion-label>
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="medium">
+    <ion-card-header color="medium">
+      <p style="text-align: center;">Tipo de incidenia 1</p>
+    </ion-card-header>
+    <ion-card-content color="medium">
+      <p>
+        <ion-select interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idServicio">
+          <ion-select-option value='1'>Fuga de agua</ion-select-option>
+          <ion-select-option value='2'>Falla en el suministro de agua </ion-select-option>
+          <ion-select-option value='3'>Coladera omisa o en mal estado </ion-select-option>
+          <ion-select-option value='4'>Bache</ion-select-option>
+          <ion-select-option value='5'>Pavimento en mal estado</ion-select-option>
+          <ion-select-option value='6'>Luminaria faltante o fundida</ion-select-option>
+          <ion-select-option value='7'>Señalamiento vial omiso o en mal estado</ion-select-option>
+          <ion-select-option value='8'>Aseo público</ion-select-option>
+          <ion-select-option value='9'>Zona de riesgo</ion-select-option>
+          <ion-select-option value='10'>Situación de riesgo</ion-select-option>
+          <ion-select-option value='11'>Inundación</ion-select-option>
+          <ion-select-option value='12'>Emergencia</ion-select-option>
+        </ion-select>
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+  <hr>
+  <hr>
+
+  <div style="text-align: center;">
+    <ion-chip color="success">Incidencia 2</ion-chip>
+  </div>
+
+  <ion-card color="medium">
+    <ion-card-header color="medium">
+      <ion-label>
+        <p class="fotos-visita">
+          Fotos de incidencia 2
+        </p>
+      </ion-label>
+    </ion-card-header>
+    <hr>
+    <ion-card-content color="medium">
+      <ion-slides [options]="sliderOpts">
+        <ion-slide *ngFor="let img2 of imgs2">
+          <img src={{img2.imagen}} class="imagen">
+          <ion-fab-button padding size="small" (click)="deletePhoto(img2.imagen, 2)"
+            *ngIf="img2.imagen != 'assets/img/imgs.png'" color="danger">
+            <ion-icon class="delete" name="trash"></ion-icon>
+          </ion-fab-button>
+        </ion-slide>
+      </ion-slides>
+
+
+      <ion-grid style="text-align: center;">
+        <ion-col>
+          <ion-button class="btn-camara" color="primary" (click)="takePic(2)">
+            <ion-icon name="camera"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-grid>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col style="text-align: center;">
+            <ion-label class="fotos-visita">Evidencia</ion-label>
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="medium">
+    <ion-card-header color="medium">
+      <p style="text-align: center;">Tipo de incidenia 2</p>
+    </ion-card-header>
+    <ion-card-content color="medium">
+      <p>
+        <ion-select interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idServicio2">
+          <ion-select-option value='1'>Fuga de agua</ion-select-option>
+          <ion-select-option value='2'>Falla en el suministro de agua </ion-select-option>
+          <ion-select-option value='3'>Coladera omisa o en mal estado </ion-select-option>
+          <ion-select-option value='4'>Bache</ion-select-option>
+          <ion-select-option value='5'>Pavimento en mal estado</ion-select-option>
+          <ion-select-option value='6'>Luminaria faltante o fundida</ion-select-option>
+          <ion-select-option value='7'>Señalamiento vial omiso o en mal estado</ion-select-option>
+          <ion-select-option value='8'>Aseo público</ion-select-option>
+          <ion-select-option value='9'>Zona de riesgo</ion-select-option>
+          <ion-select-option value='10'>Situación de riesgo</ion-select-option>
+          <ion-select-option value='11'>Inundación</ion-select-option>
+          <ion-select-option value='12'>Emergencia</ion-select-option>
+        </ion-select>
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+  <hr>
+
+  <ion-card color="medium">
+    <ion-card-header color="medium">
+      <p>Observación incidencias</p>
+    </ion-card-header>
+    <ion-card-content color="medium">
+      <ion-item color="medium">
+        <ion-textarea [(ngModel)]="observacion" color="light" placeholder="Ingrese observación"></ion-textarea>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button color="primary" expand="block" (click)="verify()">Terminar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

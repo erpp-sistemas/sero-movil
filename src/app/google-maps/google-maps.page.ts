@@ -15,8 +15,9 @@ import {
   HtmlInfoWindow
 } from "@ionic-native/google-maps/ngx";
 import { Platform, LoadingController } from '@ionic/angular';
-import { Router, NavigationExtras } from '@angular/router';
+import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { MessagesService } from '../services/messages.service';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 
 
@@ -120,6 +121,7 @@ export class GoogleMapsPage implements OnInit {
   loading: any;
   accountString: string = "";
   result: any[];
+  id_plaza: any;
 
   constructor(private ngZone: NgZone,
     private injector: Injector,
@@ -130,11 +132,15 @@ export class GoogleMapsPage implements OnInit {
     private platform: Platform,
     private service: RestService,
     private loadingCtrl: LoadingController,
-    private mensaje: MessagesService) { }
+    private mensaje: MessagesService,
+    private activeRoute: ActivatedRoute,
+    private callNumber: CallNumber
+    ) { }
 
   async ngOnInit() {
     await this.platform.ready();
-    await this.getAccountInfo();
+    this.id_plaza = this.activeRoute.snapshot.paramMap.get('id_plaza');
+    await this.getAccountInfo(this.id_plaza);
   }
 
   async ionViewDidEnter() {
@@ -216,9 +222,6 @@ export class GoogleMapsPage implements OnInit {
           }
         }
       ]
-
-
-
     });
 
 
@@ -262,7 +265,7 @@ export class GoogleMapsPage implements OnInit {
     
     for (let markers of data) {
       let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
-      let marker = { position: latlng, cuenta: markers.cuenta, propietario: markers.nombre_propietario, deuda: markers.adeudo }
+      let marker = { position: latlng, cuenta: markers.cuenta, propietario: markers.nombre_propietario, deuda: markers.total }
       array.push(marker)
 
     }
@@ -270,14 +273,15 @@ export class GoogleMapsPage implements OnInit {
     this.loadMap(array)
   }
 
-  async getAccountInfo() {//realiza la carga de informacion que existe en la base interna sqlite
+  async getAccountInfo( id_plaza ) {//realiza la carga de informacion que existe en la base interna sqlite
 
 
-    this.markersArrayInfo = await this.service.getDataVisitPosition();
+    this.markersArrayInfo = await this.service.getDataVisitPosition( id_plaza );
 
     if (this.markersArrayInfo.length <= 0) {
       // await this.setMarkers(this.markersArrayInfo);  
-      this.mensaje.showAlert('Debes sincronizar primero para comenzar con las gestiones!!')
+      this.mensaje.showAlert('Tienes que descargar información para visualizar las cuentas en el mapa!!!!')
+      this.router.navigateByUrl('/home');
       // this.toggleMenu();
     } else {
       this.loading = await this.loadingCtrl.create({
@@ -319,5 +323,27 @@ export class GoogleMapsPage implements OnInit {
       }
     }
   }
+
+  navegar(tipo) {
+    if (tipo == 1) {
+      this.router.navigateByUrl('home/tab1');
+    } else if (tipo == 2) {
+      this.router.navigateByUrl('home/tab2');
+    } else if (tipo == 3) {
+      this.router.navigateByUrl('home/tab3');
+    } else if (tipo == 4) {
+      this.router.navigateByUrl('/servicios-publicos');
+    } else if (tipo == 5) {
+
+      this.callNumber.callNumber('18001010101', true)
+        .then(res => console.log('Launched dialer!', res))
+        .catch(err => console.log('Error launching dialer', err));
+
+    }
+  }
+
+  
+
+
 
 }

@@ -1,31 +1,66 @@
-<ion-header no-border>
-  <ion-toolbar color="medium">
-    <img src="../../assets/img/logo.png" alt="" style="height: 100px; width :200">
-  </ion-toolbar>
-</ion-header>
+<hr>
+<hr>
+<hr>
+<hr>
 
 <ion-content color="medium">
-  <ion-card color="dark" >
+
+  <div style="text-align: center; font-size: 16px;">
+    <h3>Envio de acciones</h3>
+  </div>
+  
+  <hr>
+
+  <ion-card color="medium" (click)="syncAgua()">
+    <ion-card-header>
+      <ion-icon color="light" name="water"></ion-icon>
+    </ion-card-header>
     <ion-card-content color="dark">
-      <ion-button (click)="syncAgua()" color="primary">Sincronizar agua</ion-button>
+      <h3>Enviar registros agua</h3>
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="dark" >
+  <ion-card color="medium" (click)="syncPredio()">
+    <ion-card-header>
+      <ion-icon color="light" name="home"></ion-icon>
+    </ion-card-header>
     <ion-card-content color="dark">
-      <ion-button (click)="syncPredio()" color="warning">Sincronizar predio</ion-button>
+      <h3>Enviar registros predio</h3>
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="dark" >
+  <ion-card color="medium" (click)="syncServicios()">
+    <ion-card-header>
+      <ion-icon color="light" name="warning-outline"></ion-icon>
+    </ion-card-header>
     <ion-card-content color="dark">
-      <ion-button (click)="syncAntenas()" color="success">Sincronizar antenas</ion-button>
+      <h3>Enviar registros servicios públicos</h3>
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="dark" >
-    <ion-card-content color="dark">
-      <ion-button (click)="syncPozos()" color="tertiary">Sincronizar pozos</ion-button>
-    </ion-card-content>
-  </ion-card>
+
 </ion-content>
+
+
+<ion-segment scrollable>
+  <ion-segment-button (click)="navegar(1)">
+    <ion-icon color="light" name="home"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(2)">
+    <ion-icon color="light" name="layers"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(3)">
+    <ion-icon color="light" name="map"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(4)">
+    <ion-icon color="light" name="warning"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(5)">
+    <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
+    <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
+  </ion-segment-button>
+</ion-segment>

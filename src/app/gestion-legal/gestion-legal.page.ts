@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Storage } from "@ionic/storage";
 
 @Component({
   selector: 'app-gestion-legal',
@@ -22,7 +23,8 @@ export class GestionLegalPage implements OnInit {
   observaciones: string = '';
   tipoServicioPadron: string = '';
 
-
+  nombrePlaza:any;
+  id_plaza: any;
 
 
   sliderOpts = {
@@ -32,12 +34,21 @@ export class GestionLegalPage implements OnInit {
     centeredSlides: true
   };
 
-  constructor() {
+  constructor(
+    private storage: Storage
+  ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
 
   ngOnInit() {
+    this.getPlaza();
   }
+
+  async getPlaza() {
+    this.nombrePlaza = await this.storage.get('NombrePlazaActiva');
+    this.id_plaza = await this.storage.get('IdPlazaActiva');
+  }
+
 
   cambioMotivoNoPago( event ) {
 

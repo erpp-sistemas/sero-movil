@@ -7,14 +7,14 @@ export class SystemVariableService {
   public SYSTEM_PARAMS = {
     REGION: "us-east-1",
     COGNITO_POOL: {
-      UserPoolId: "us-east-1_1cAr9PsQL",
-      ClientId: "1q21rlt46i81nv7hr26jk2l43l"
+      UserPoolId: "us-east-1_Ab129fabB",
+      ClientId: "7lhlkkfbfb4q5kpp90urffao"
     },
     COGNITO_IDENTITY: {
-      IDENTITY_POOL_ID: "us-east-1:850348cc-bb23-486f-b42c-62b2bece34d1"
+      IDENTITY_POOL_ID: "us-east-2:ec533192-33a3-4a74-89af-ebe4dc409b47"
     },
     S3: {
-      BUCKET_NAME: "fotos-implementta-movil"
+      BUCKET_NAME: "fotos-sero-movil"
     }
   };
 }

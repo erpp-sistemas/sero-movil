@@ -1,28 +1,37 @@
-<ion-header>
-  <ion-toolbar color="tertiary">
-    <ion-title color="light">Legal</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="tertiary">
-        <ion-icon name="information-circle"></ion-icon>
-      </ion-button>
-      <ion-button color="tertiary" (click)="exit()">
-        <ion-icon name="close"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<hr>
+<hr>
+<hr>
+<hr>
 
 <ion-content color="medium">
 
-  <ion-card color="dark">
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="start">
+      <ion-chip class="plaza" color="success">
+        {{nombrePlaza}}
+      </ion-chip>
+      <ion-chip class="procedimiento" color="success">
+        Legal
+      </ion-chip>
+    </ion-fab-list>
+  </ion-fab>
+
+  <hr>
+  <hr>
+  <hr>
+
+  <ion-card color="medium">
     <ion-card-content>
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>Persona que atiende: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"></ion-input>
       </ion-item>
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>Número de contacto: </p>
         </ion-label>
@@ -31,9 +40,9 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="dark">
-    <ion-card-content color="dark">
-      <ion-item color="dark">
+  <ion-card color="medium">
+    <ion-card-content color="medium">
+      <ion-item color="medium">
         <ion-label>
           <p>
             Motivo de no pago
@@ -51,7 +60,7 @@
         </ion-label>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>
             <small>
@@ -72,16 +81,16 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="dark">
-    <ion-card-content color="dark">
-      <ion-item color="dark">
+  <ion-card color="medium">
+    <ion-card-content color="medium">
+      <ion-item color="medium">
         <ion-label>
           <p>Tipo de servicio actual</p>
           <ion-text color="primary"> {{tipoServicioPadron}} </ion-text>
         </ion-label>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>
             Cambiar el tipo de servicio
@@ -99,28 +108,28 @@
         </ion-label>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>Número de niveles: </p>
         </ion-label>
         <ion-input type="number" class="myCustomSelect" interface="popover" [(ngModel)]="numeroNiveles"></ion-input>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>Color fachada: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>Color puerta: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>
             Tipo de predio
@@ -137,24 +146,24 @@
         </ion-label>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>Entre calle 1: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle1"></ion-input>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>Entre calle 2: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle2"></ion-input>
       </ion-item>
 
-      <ion-item color="dark">
+      <ion-item color="medium">
         <ion-label>
           <p>
-            Observaciones: 
+            Observaciones:
           </p>
         </ion-label>
         <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
@@ -175,7 +184,7 @@
   </ion-slides>
 
 
-  <ion-item color="dark" text-center>
+  <ion-item color="medium" text-center>
     <ion-label>
       <p class="fotos-visita">
         Fotos de la visita

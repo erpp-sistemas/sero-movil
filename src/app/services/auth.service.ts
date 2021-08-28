@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
 import { RestService } from './rest.service';
 import { HttpClient } from '@angular/common/http';
+import { ModalController } from '@ionic/angular';
+import { LoginPage } from '../login/login.page';
 
 //import { BehaviorSubject } from 'rxjs';
 
@@ -20,6 +22,7 @@ export class AuthService {
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
+  modal:any;
 
 
   constructor(
@@ -29,7 +32,8 @@ export class AuthService {
     private router: Router,
     private storage: Storage,
     private rest: RestService,
-    private http: HttpClient
+    private http: HttpClient,
+    private modalCtrl: ModalController
   ) { }
 
 
@@ -171,7 +175,7 @@ export class AuthService {
     this.storage.set('NumeroPlazas', userInfo.plaza.length);
     let contadorPlaza = 1;
     let contadorIdPlaza = 1;
-    
+    console.log(userInfo.plaza);
     userInfo.plaza.forEach(plaza => {
       console.log("Plaza:", plaza);
       this.storage.set(`nombre${contadorPlaza}`, plaza);
@@ -250,8 +254,18 @@ export class AuthService {
 
 
   logout() {
-    this.firebaseAuth.signOut().then(() => {
-      this.router.navigate(['/login']);
+    this.firebaseAuth.signOut().then( async () => {
+      // this.router.navigate(['/login']);
+      
+      this.modal = await this.modalCtrl.create({
+        component: LoginPage
+      });
+  
+      this.modal.present()
+  
+      this.modal.onDidDismiss().then(data => {
+        this.router.navigate(['home/tab1']);
+      })
     })
   }
 

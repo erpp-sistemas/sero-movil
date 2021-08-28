@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { CallNumber } from '@ionic-native/call-number/ngx';
+
 
 @Component({
   selector: 'app-tabs',
@@ -7,6 +9,26 @@ import { Component } from '@angular/core';
 })
 export class TabsPage {
 
-  constructor() {}
+
+
+
+  constructor(
+    private callNumber: CallNumber
+  ) {}
+
+
+  tabCambio( event ) {
+    console.log(event);
+  }
+
+
+  help(numero:string) {
+    this.callNumber.callNumber(numero, true)
+    .then(res => console.log('Launched dialer!', res))
+    .catch(err => console.log('Error launching dialer', err));
+  }
+
+
+
 
 }

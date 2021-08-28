@@ -6,7 +6,7 @@ import { GestionInspeccionAguaPage } from './gestion-inspeccion-agua.page';
 const routes: Routes = [
   {
     path: '',
-    //component: GestionInspeccionAguaPage
+    component: GestionInspeccionAguaPage
   }
 ];
 

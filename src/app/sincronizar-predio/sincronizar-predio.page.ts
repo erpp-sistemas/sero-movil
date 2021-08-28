@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
+import { CallNumber } from '@ionic-native/call-number/ngx';
+
 
 @Component({
   selector: 'app-sincronizar-predio',
@@ -15,7 +18,8 @@ export class SincronizarPredioPage implements OnInit {
   constructor(
     private rest: RestService,
     private loadingCtrl: LoadingController,
-
+    private router:Router,
+    private callNumber: CallNumber
   ) { }
 
   ngOnInit() {
@@ -36,9 +40,9 @@ export class SincronizarPredioPage implements OnInit {
     this.loading.present();
 
     // enviar toas las gestiones de todos los roles
-    //await this.rest.sendAguaInspeccionAgua();
-    //await this.rest.sendAguaCartaInvitacion();
-    //await this.rest.sendAguaLegal();
+    //await this.rest.sendPredioInspeccionPredio();
+    this.loading.dismiss();
+    this.router.navigateByUrl('home/tab1');
   }
 
 
@@ -50,5 +54,26 @@ export class SincronizarPredioPage implements OnInit {
   deleteAccount( cuenta, rol ) {
     
   } 
+
+
+  
+  navegar(tipo) {
+    if (tipo == 1) {
+      this.router.navigateByUrl('home/tab1');
+    } else if (tipo == 2) {
+      this.router.navigateByUrl('home/tab2');
+    } else if (tipo == 3) {
+      this.router.navigateByUrl('home/tab3');
+    } else if (tipo == 4) {
+      this.router.navigateByUrl('/servicios-publicos');
+    } else if (tipo == 5) {
+
+      this.callNumber.callNumber('18001010101', true)
+        .then(res => console.log('Launched dialer!', res))
+        .catch(err => console.log('Error launching dialer', err));
+
+    }
+  } 
+
 
 }

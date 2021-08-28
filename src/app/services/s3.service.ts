@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as aws from "aws-sdk";
 import { SystemVariableService } from "../services/system-variable";
 import { Buffer } from 'buffer';
-import {awsCredentials} from '../../environments/environment'
+import { awsCredentials } from '../../environments/environment'
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +10,7 @@ export class S3Service {
   SYSTEM_VARIABLE = new SystemVariableService().SYSTEM_PARAMS;
 
   upload(image, imageName, accessToken) {
-
+    console.log("Upload metodo");
     return new Promise((resolve, reject) => {
       aws.config.region = this.SYSTEM_VARIABLE.REGION;
       aws.config.credentials = new aws.CognitoIdentityCredentials({
@@ -25,7 +25,7 @@ export class S3Service {
         apiVersion: "2006-03-01",
         params: { Bucket: this.SYSTEM_VARIABLE.S3.BUCKET_NAME }
       });
-    let something = Buffer.from(image,"base64")
+      let something = Buffer.from(image, "base64")
       var data = {
         Bucket: this.SYSTEM_VARIABLE.S3.BUCKET_NAME,
         Key: imageName,
@@ -33,7 +33,7 @@ export class S3Service {
         ContentEncoding: "base64",
         ContentType: "image/jpeg"
       };
-      
+
       s3.putObject(data, (err, res) => {
         if (err) {
           console.log(err)
@@ -44,53 +44,56 @@ export class S3Service {
         }
       });
 
-    });  
-   
-  }
-  uploadS3(image,imageName) {
-    return new Promise((resolve) => {
-    let  s3=new aws.S3()
-    s3.config.update(awsCredentials)
-    s3.config.update({region:'us-east-1'})
-    let something = Buffer.from(image,"base64")
-    const data = {
-      Bucket: this.SYSTEM_VARIABLE.S3.BUCKET_NAME,
-      Key: imageName,
-      Body: something,
-      ContentEncoding: "base64",
-      ContentType: "image/jpeg"
-    };
-
-    s3.putObject(data,(err, res) => {
-      if (err) {
-        console.log(err);
-        resolve(false);
-        // return err
-      } else {
-        console.log(res);
-        resolve(true);
-      }
     });
-  });
+
   }
-   getURLPresignaded(imageName){
+  uploadS3(image, imageName) {
+    console.log("UploadS3");
+    console.log(imageName);
+    return new Promise((resolve) => {
+      let s3 = new aws.S3()
+      s3.config.update(awsCredentials)
+      s3.config.update({ region: 'us-east-1' })
+      let something = Buffer.from(image, "base64")
+      const data = {
+        Bucket: this.SYSTEM_VARIABLE.S3.BUCKET_NAME,
+        Key: imageName,
+        Body: something,
+        ContentEncoding: "base64",
+        ContentType: "image/jpeg"
+      };
 
-  let  s3=new aws.S3()
+      s3.putObject(data, (err, res) => {
+        console.log(data);
+        if (err) {
+          console.log(err);
+          resolve(false);
+          // return err
+        } else {
+          console.log(res);
+          resolve(true);
+        }
+      });
+    });
+  }
+  getURLPresignaded(imageName) {
+    console.log("GetURLPresignaded");
+    let s3 = new aws.S3()
 
-  s3.config.update(awsCredentials)
-  s3.config.update({region:'us-east-1'})
+    s3.config.update(awsCredentials)
+    s3.config.update({ region: 'us-east-1' })
 
-  const bucketName ='fotos-implementta-movil'
-  const key = imageName
-  const signedUrlExpireSeconds = 30000000*10
+    const bucketName = 'fotos-sero-movil'
+    const key = imageName
+    const signedUrlExpireSeconds = 30000000 * 10
 
-  const url = s3.getSignedUrl('getObject', {
-    Bucket: bucketName,
-    Key: key,
-    Expires: signedUrlExpireSeconds
-})
-return url
+    const url = s3.getSignedUrl('getObject', {
+      Bucket: bucketName,
+      Key: key,
+      Expires: signedUrlExpireSeconds
+    })
+    return url
 
-   }
- 
+  }
+
 }

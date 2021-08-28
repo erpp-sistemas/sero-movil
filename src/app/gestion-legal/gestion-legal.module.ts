@@ -15,6 +15,6 @@ import { GestionLegalPage } from './gestion-legal.page';
     IonicModule,
     GestionLegalPageRoutingModule
   ],
-  //declarations: [GestionLegalPage]
+  declarations: [GestionLegalPage]
 })
 export class GestionLegalPageModule {}

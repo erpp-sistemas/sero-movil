@@ -6,6 +6,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ComponentsModule } from './components/components.module';
 
 // firebase
 import { firebaseConfig } from 'src/environments/environment';
@@ -51,9 +52,16 @@ import { SystemVariableService } from "../app/services/system-variable";
 // webview
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 
+import { StreamingMedia } from '@ionic-native/streaming-media/ngx';
+
+// NativeStorage 
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
+// Email
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
 
+// base64
+import { Base64 } from "@ionic-native/base64/ngx";
 
 @NgModule({
   declarations: [AppComponent],
@@ -66,6 +74,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
     IonicModule.forRoot(), 
     AppRoutingModule,
     HttpClientModule,
+    ComponentsModule,
     IonicStorageModule.forRoot(),
   ],
   providers: [
@@ -83,6 +92,9 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
    // AndroidPermissions,
     SQLite,
     NativeStorage,
+    StreamingMedia,
+    EmailComposer,
+    Base64,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

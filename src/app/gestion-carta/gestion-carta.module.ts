@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { GestionCartaPageRoutingModule } from './gestion-carta-routing.module';
 
 import { GestionCartaPage } from './gestion-carta.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    GestionCartaPageRoutingModule
+    GestionCartaPageRoutingModule,
+    ComponentsModule
   ],
-  //declarations: [GestionCartaPage]
+  declarations: [GestionCartaPage]
 })
 export class GestionCartaPageModule {}

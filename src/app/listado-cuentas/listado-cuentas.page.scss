@@ -1,6 +1,13 @@
 ion-toolbar {
-    height: 100px;
-    text-align: center;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ion-toolbar img {
+    width: 160px;
+    height: 40px;
 }
 
 .resumen-cuentas {
@@ -32,3 +39,8 @@ p {
     background-color: #1282c4;
     border-radius: 20px;
 }
+
+ion-footer {
+    height: 60px !important;
+}
+
