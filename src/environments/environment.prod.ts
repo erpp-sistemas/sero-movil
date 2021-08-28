@@ -12,6 +12,7 @@ export const firebaseConfig = {
   measurementId: "G-6BTN945Q8L"
 };
 
+
 export const awsCredentials ={
   accessKeyId:'AKIA5NSDPBH32ZG3HSMX',
   secretAccessKey:'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'
