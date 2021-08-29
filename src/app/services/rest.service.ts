@@ -17,6 +17,7 @@ export class RestService {
   loading: any;
 
   // api para obtener las cuentas del agua
+  apiObtenerDatos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas";
   apiObtenerDatosAgua = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_agua"
   apiObtenerDatosPredio = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_predio"
   apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
@@ -60,7 +61,7 @@ export class RestService {
    * @returns db execute
    */
   insertarServiciosSQL(data) {
-    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, plaza, servicio, id_plaza, id_servicio) VALUES (?,?,?,?,?,?,?)'
+    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, plaza, servicio, id_plaza, id_servicio, icono_app_movil) VALUES (?,?,?,?,?,?,?,?)'
     return this.db.executeSql(sql, [
       data.nombre,
       data.apellido_paterno,
@@ -68,7 +69,8 @@ export class RestService {
       data.plaza,
       data.servicio,
       data.id_plaza,
-      data.id_servicio
+      data.id_servicio,
+      data.icono_app_movil
     ]);
   }
 
@@ -88,37 +90,31 @@ export class RestService {
   }
 
 
-  deleteTableAgua() {
-    let sqlDelete = "DELETE from agua";
-    this.db.executeSql(sqlDelete, []);
+  deleteTable(tipo) {
+    if (tipo == 1) {
+      let sqlDelete = "DELETE from agua";
+      this.db.executeSql(sqlDelete, []);
+    } else if (tipo == 2) {
+      let sqlDelete = "DELETE from predio";
+      this.db.executeSql(sqlDelete, []);
+    } else if (tipo == 3) {
+      let sqlDeleteAntenas = "DELETE FROM antenas"
+      this.db.executeSql(sqlDeleteAntenas, []);
+    } else if (tipo == 4) {
+      let sqlDeletePozos = "DELETE FROM pozos"
+      this.db.executeSql(sqlDeletePozos, []);
+    }
   }
 
 
-  deleteTablePozos() {
-    let sqlDeletePozos = "DELETE FROM pozos_conagua"
-    this.db.executeSql(sqlDeletePozos, []);
-  }
-
-  deleteTablePredio() {
-    let sqlDeletePredio = 'DELETE FROM predio';
-    this.db.executeSql(sqlDeletePredio, []);
-  }
-
-
-  /**
-   * Metodo que trae la informacion del sql del stored procedure ObtenerDatosMovil de agua
-   * @param idAspUser 
-   * @param idPlaza 
-   * @returns promise data
-   */
-  obtenerDatosSqlAgua(idAspUser, idPlaza) {
+  obtenerDatosSql(idAspUser, idPlaza, tipo) {
     console.log("idAspUser: ", idAspUser);
     console.log("idPlaza: ", idPlaza);
-    // lanzar el api para obtener los datos del sql
+    console.log("tipo:", tipo);
     try {
       return new Promise(resolve => {
 
-        this.http.post(this.apiObtenerDatosAgua + " '" + idAspUser + "', " + idPlaza, null)
+        this.http.post(this.apiObtenerDatos + " '" + idAspUser + "', " + idPlaza + ", " + tipo, null)
           .subscribe(data => {
             console.log("Datos traidos del SQL");
             console.log(data);
@@ -128,56 +124,14 @@ export class RestService {
     } catch {
       console.log("No se pudo obtener la informaciòn");
     }
-
-  }
-
-  /**
-   * Metodo que trae la informacion del stored procedure ObtenerDatosMovil de predio
-   * @param idAspUser 
-   * @param idPlaza 
-   * @returns Promise
-   */
-  obtenerDatosSqlPredio(idAspUser, idPlaza) {
-    console.log("idAspUser: ", idAspUser);
-    console.log("idPlaza: ", idPlaza);
-    // lanzar el api para obtener los datos del sql
-    try {
-      return new Promise(resolve => {
-        console.log(this.apiObtenerDatosPredio + " '" + idAspUser + "', " + idPlaza);
-        this.http.post(this.apiObtenerDatosPredio + " '" + idAspUser + "', " + idPlaza, null)
-          .subscribe(data => {
-            console.log("Datos traidos del SQL");
-            console.log(data);
-            resolve(data);
-          }, err => console.log(err));
-      })
-    } catch {
-      console.log("No se pudo obtener la informaciòn");
-    }
-
   }
 
 
-
-  /**
-   * Metodo que trae la informacion del stored sp_Pozos
-   * @param idPlaza 
-   * @returns 
-   */
-  obtenerDatosPozos(idPlaza) {
-    // lanzar el api para obtener los datos del sql
-    try {
-      return new Promise(resolve => {
-
-        this.http.post(this.apiObtenerDatosPozos + ' ' + idPlaza, null)
-          .subscribe(data => {
-            console.log("Datos traidos del SQL para pozos");
-            console.log(data);
-            resolve(data);
-          }, err => console.log(err));
-      })
-    } catch {
-      console.log("No se pudo obtener la informaciòn");
+  guardarInfoSQL(data, id_plaza, tipo) {
+    if(tipo == 1) {
+      this.guardarInfoSQLAgua(data, id_plaza);
+    } else if(tipo == 2) {
+      this.guardarInfoSQLPredio(data, id_plaza);
     }
   }
 
@@ -230,6 +184,12 @@ export class RestService {
     ]);
   }
 
+  actualizaServicioEstatus(id_plaza, id_servicio) {
+    let sql = "UPDATE serviciosPlazaUser set descargado = true where id_plaza = ? and id_servicio = ?"
+    return this.db.executeSql(sql, [id_plaza, id_servicio]);
+  }
+
+
   verificaEstatusDescarga(id_plaza) {
     let sql = 'SELECT * FROM descargaServicios where id_plaza = ?';
     return this.db.executeSql(sql, [id_plaza]).then(response => {
@@ -242,6 +202,23 @@ export class RestService {
       return Promise.resolve(verificacion);
     }).catch(error => Promise.reject(error));
   }
+
+
+  async obtenerPlazasSQL() {
+    let plazas = [];
+    try {
+      let sql = "SELECT DISTINCT id_plaza, plaza FROM serviciosPlazaUser"
+      const response = await this.db.executeSql(sql, []);
+      for (let i = 0; i < response.rows.length; i++) {
+        plazas.push(response.rows.item(i));
+      }
+      console.log(plazas);
+      return Promise.resolve(plazas);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
 
   async obtenerPlazas() {
     // En este metodo traigo del storage el nombre de las plazas y sus ids del firebase
@@ -936,7 +913,7 @@ export class RestService {
       let sql = "SELECT * FROM serviciosPublicos where cargado = 0";
       const result = await this.db.executeSql(sql, []);
 
-      for(let i= 0; i < result.rows.length; i++) {
+      for (let i = 0; i < result.rows.length; i++) {
         arrayServicios.push(result.rows.item(i));
       }
       if (arrayServicios.length == 0) {
@@ -945,7 +922,7 @@ export class RestService {
         this.avanceServicios = 0;
         this.envioGestionesServicios(arrayServicios);
       }
-    } catch( error) {
+    } catch (error) {
 
     }
   }
@@ -971,7 +948,7 @@ export class RestService {
   }
 
   sendGestionesServicios(i, arrayServicios) {
-    return new Promise( async resolve => {
+    return new Promise(async resolve => {
 
       console.log(arrayServicios);
 
@@ -1290,7 +1267,7 @@ export class RestService {
   async getImagesLocalServicios() {
     let sql = "SELECT * FROM capturaFotosServicios WHERE cargado = 0 order by fecha desc";
 
-    return this.db.executeSql(sql, []).then( response => {
+    return this.db.executeSql(sql, []).then(response => {
       let arrayFotosServicios = [];
 
       for (let i = 0; i < response.rows.length; i++) {
@@ -1308,8 +1285,8 @@ export class RestService {
     for (let i = 0; i > response.rows.length; i++) {
       arrayImagesServicios.push(response.rows.item(i));
     }
-    
-    if(arrayImagesServicios.length == 0) {
+
+    if (arrayImagesServicios.length == 0) {
       this.message.showAlert("Sin fotos para sincronizar");
     } else {
       this.loading = await this.loadingCtrl.create({
@@ -1345,7 +1322,7 @@ export class RestService {
   sendImageServicios(i, arrayImagesServicios) {
     return new Promise(async (resolve) => {
       await this.base64.encodeFile(arrayImagesServicios[i].rutaBase64).then(async (base64File: string) => {
-        let aleatorio = Math.floor((Math.random() * (100-1))+1);
+        let aleatorio = Math.floor((Math.random() * (100 - 1)) + 1);
         let imageName = "servicio-" + aleatorio + "-" + arrayImagesServicios[i].idServio + arrayImagesServicios[i].fecha;
         let imagen64 = base64File.split(",");
         let imagenString = imagen64[1];
@@ -1515,8 +1492,8 @@ export class RestService {
     });
   }
 
-  
-  async saveSqlServerServicios( idAspuser, imageName, idServicio, fecha, tipo, id, url, ruta, cont, id_plaza) {
+
+  async saveSqlServerServicios(idAspuser, imageName, idServicio, fecha, tipo, id, url, ruta, cont, id_plaza) {
     console.log("id_plaza " + id_plaza);
     let a = url.split("&");
     let b = a[0];
@@ -1558,7 +1535,7 @@ export class RestService {
   }
 
 
-  obtenerPlazaId( id_plaza ) {
+  obtenerPlazaId(id_plaza) {
     console.log('Traer el nombre de la plaza ' + id_plaza);
     let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
 
