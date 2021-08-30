@@ -37,7 +37,8 @@ export class HeaderComponent implements OnInit {
   }
 
   checador() {
-
+    this.menuCtrl.close();
+    this.router.navigateByUrl('/checador');
   }
 
   manualWeb() {

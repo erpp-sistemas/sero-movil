@@ -1,0 +1,18 @@
+.logo-checador {
+    width: 200px; 
+    height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgb(0, 200, 0);
+}
+
+
+ion-segment {
+    --background:rgb(37, 64, 97);
+    border-top: 1px solid rgba(0,0,0,.1);
+    height: 60px;
+    margin-bottom: -5px;
+}
+
+ion-segment-button {
+    --indicator-color: transparent !important;
+}
