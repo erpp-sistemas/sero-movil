@@ -63,6 +63,10 @@ import { EmailComposer } from '@ionic-native/email-composer/ngx';
 // base64
 import { Base64 } from "@ionic-native/base64/ngx";
 
+// Scanner
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'
+
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -95,6 +99,7 @@ import { Base64 } from "@ionic-native/base64/ngx";
     StreamingMedia,
     EmailComposer,
     Base64,
+    BarcodeScanner,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
