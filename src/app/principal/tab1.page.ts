@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CallNumber } from '@ionic-native/call-number/ngx';
 import { AlertController, LoadingController, MenuController, Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
-import { AuthService } from '../services/auth.service';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 
@@ -14,38 +12,23 @@ import { RestService } from '../services/rest.service';
 })
 export class Tab1Page implements OnInit {
 
-  imgAvatar: string = '/assets/avatars/';
   nombre: string = '';
   email: string = '';
   progress: boolean = false;
   progressTotal: number = 0;
   loading: any;
   data: any;
-  dataPozos: any;
   total: any;
   alert: any;
-  totalPozos: any;
-  dataSectores: any;
-  // servicios validaciones
-  agua: boolean;
-  predio: boolean;
-  antenas: boolean;
-  pozos: boolean;
 
-  // validaciones para saber si ya se han descargado cuentas
-  descargaAgua: boolean;
-  descargaPredio: boolean;
-  descargaAntenas: boolean;
-  descargaPozos: boolean;
+
   id_plaza: number = 0; // select option de plaza
-  plaza: number = 0;
-  selecciona: boolean = false;
-  plazasServicios: any;
-  servicios: any;
+  selecciona: boolean = false; // manitra verde
+  plazasServicios: any; // para almacenar esto (select distinct id_plaza, plaza from serviciosPlazaUser)
+  servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
 
-  plazaServicioDescarga = [];
-  login: boolean;
-  descargaServicio: boolean = false;
+
+  
   constructor(
     private storage: Storage,
     private rest: RestService,
@@ -73,13 +56,6 @@ export class Tab1Page implements OnInit {
     });
   }
 
-  /**
-   * Metodo para habilitar o deshabilitar las palomas de verificacion de descarga
-   */
-  async validaDescargas() {
-    this.descargaAgua = await this.storage.get('DescargaAgua');
-    this.descargaPredio = await this.storage.get('DescargaPredio');
-  }
 
   /**
    * Metodo que obtiene las plazas y los ids guardadas en el storage por auth.service
@@ -89,9 +65,11 @@ export class Tab1Page implements OnInit {
     this.plazasServicios = await this.rest.obtenerPlazasSQL();
     console.log(this.plazasServicios);
 
+    // tomamos el primer registro para ponerlo como defauult en el select
     this.id_plaza = this.plazasServicios[0].id_plaza;
 
     const servicios = await this.rest.mostrarServicios(this.id_plaza);
+    
     // En este punto ya se tiene el primer id_plaza obtenido de la base
     this.mostrarServicios(servicios);
   }
@@ -102,50 +80,12 @@ export class Tab1Page implements OnInit {
    */
   async resultPlaza(event) {
     console.log(event.detail.value);
-    console.log("idPlaza: " + this.id_plaza);
-    console.log("Este es el id_plaza en el result " + this.id_plaza);
     // si el idPlaza es diferente de 0 entonces verificar la descarga
     if (this.id_plaza != 0) {
-      // verificar si el id_plaza escogida tiene un estatus true en el campo descargado de la tabla descargaServicios
-      const estado = await this.verificarEstatusDescarga();
-      this.agua = false;
-      this.predio = false;
-      this.antenas = false;
-      this.pozos = false;
       this.asignarSectores(this.id_plaza);
     }
   }
-
-
-  /**
-   * Metodo que trae la informacion de la plaza para ver si ya fue descargada la informacion
-   */
-  async verificarEstatusDescarga() {
-    // poner todos los estatus de descaga en false
-    this.descargaAgua = false;
-    this.descargaPredio = false;
-    this.descargaAntenas = false;
-    this.descargaPozos = false;
-    const serviciosDescargados = await this.rest.verificaEstatusDescarga(this.id_plaza);
-    console.log(serviciosDescargados);
-    serviciosDescargados.forEach(servicio => {
-      console.log(servicio);
-      if (servicio.id_servicio == '1' && servicio.descargado == 'true') {
-        console.log("Su servicio de agua si esta descargado");
-        this.descargaAgua = true;
-      } else if (servicio.id_servicio == '2' && servicio.descargado == 'true') {
-        console.log("Su servicio de predio si esta descargado");
-        this.descargaPredio = true;
-      } else if (servicio.id_servicio == '3' && servicio.descargado == 'true') {
-        console.log("Su servicio de antenas si esta descargado");
-        this.descargaAntenas = true;
-      } else if (servicio.id_servicio == '4' && servicio.descargado == 'true') {
-        console.log("Su servicio de pozos si esta descargado");
-        this.descargaPozos = true;
-      }
-    });
-    return Promise.resolve('Success');
-  }
+ 
 
   /**
    * Metodo que activa los servicios segun la plaza que se pasa por parametro viene del result
@@ -153,6 +93,7 @@ export class Tab1Page implements OnInit {
    */
   async asignarSectores(idPlaza) {
 
+    // validacion para mostrar la manita verde
     if (idPlaza == 0) {
       this.selecciona = true;
     } else {
@@ -182,11 +123,11 @@ export class Tab1Page implements OnInit {
 
 
 
-  async confirmarDescarga(tipo, plaza, servicio) {
-    console.log(tipo, plaza, servicio);
+  async confirmarDescarga(idServicioPlaza, nombrePlaza, nombreServicio) {
+    console.log(idServicioPlaza, nombrePlaza, nombreServicio);
     const alert = await this.alertCtrl.create({
-      header: plaza.toUpperCase(),
-      subHeader: "Confirme para iniciar la descarga de " + servicio,
+      header: nombrePlaza.toUpperCase(),
+      subHeader: "Confirme para iniciar la descarga de " + nombreServicio,
       buttons: [
         {
           text: "Cancelar",
@@ -201,7 +142,7 @@ export class Tab1Page implements OnInit {
           cssClass: "secondary",
           handler: () => {
             //  if(this.network.getNetworkType() == 'wifi'){
-            this.descargarInformacion(this.id_plaza, tipo);
+            this.descargarInformacion(this.id_plaza, idServicioPlaza);
           }
         }
       ]
@@ -211,10 +152,10 @@ export class Tab1Page implements OnInit {
   }
 
 
-  async descargarInformacion(id_plaza, tipo) {
+  async descargarInformacion(id_plaza, idServicioPlaza) {
     this.progress = true;
     // aqui solo abra un metodo para borrar la informacion deleteInfo
-    this.deleteInfo(tipo);
+    this.deleteInfo(id_plaza, idServicioPlaza);
 
     this.loading = await this.loadinCtrl.create({
       message: 'Descargando informaciòn...',
@@ -226,7 +167,7 @@ export class Tab1Page implements OnInit {
 
     try {
 
-      this.data = await this.rest.obtenerDatosSql(idaspuser, id_plaza, tipo);
+      this.data = await this.rest.obtenerDatosSql(idaspuser, id_plaza, idServicioPlaza);
       this.total = this.data.length;
 
       if (this.total == 0) {
@@ -237,7 +178,8 @@ export class Tab1Page implements OnInit {
 
       this.storage.set("total", this.total);
 
-      await this.guardarDatosSQL(this.data, id_plaza, tipo);
+      // guardar en sero_principal
+      await this.guardarDatosSQL(this.data, id_plaza, idServicioPlaza);
 
       // Aqui se guardaran las llaves en el storage para definir campos de validacion de modulos
 
@@ -258,13 +200,10 @@ export class Tab1Page implements OnInit {
       this.storage.set("FechaSync", fecha);
       this.loading.dismiss();
 
-
       // se descargo agua en la plaza this.id_plaza, meter en la tabla descargaServicios
       
-      this.actualizarEstatusDescarga(this.id_plaza, tipo); // 1 es agua
+      this.actualizarEstatusDescarga(this.id_plaza, idServicioPlaza);
 
-
-      console.log(this.plazaServicioDescarga);
       this.message.showAlert("Se han descargado tus cuentas!!!!");
     } catch (eror) {
       this.message.showAlert("Error al intentar la descarga");
@@ -272,12 +211,12 @@ export class Tab1Page implements OnInit {
   }
 
 
-  async guardarDatosSQL(data, id_plaza, tipo) {
-    console.log("Guardando la informacion de " + tipo);
+  async guardarDatosSQL(data, id_plaza, idServicioPlaza) {
+    console.log("Guardando la informacion de " + idServicioPlaza);
     console.log(data);
     let cont = 0;
     for (let i = 0; i < data.length; i++) {
-      await this.rest.guardarInfoSQL(data[i], id_plaza, tipo);
+      await this.rest.guardarInfoSQL(data[i], id_plaza, idServicioPlaza);
       cont = cont + 1;
       this.progressTotal = cont / this.total;
     }
@@ -290,51 +229,62 @@ export class Tab1Page implements OnInit {
 
 
 
-  async deleteInfo(tipo) {
-    await this.rest.deleteTable(tipo);
+  async deleteInfo(id_plaza, id_servicio_plaza) {
+    await this.rest.deleteTable(id_plaza, id_servicio_plaza);
   }
 
 
-
-  async goCuentasTab(tipo) {
+  
+  async goCuentasTab(idServicioPlaza) {
     //this.router.navigateByUrl('/home/tab2');
-    if (tipo == '1') {
-      await this.storage.set('tipo', 'Agua');
-      await this.storage.set('IdServicio', 1);
-    } else if (tipo == '2') {
-      await this.storage.set('tipo', 'Predio');
-      await this.storage.set('IdServicio', 1);
-    } else if(tipo == '3') {
-      await this.storage.set('tipo', 'Antenas');
-      await this.storage.set('IdServicio', 3);
-    } else if(tipo == '4') {
-      await this.storage.set('tipo', 'Pozos');
-      await this.storage.set('IdServicio', 4);
-    }
-    console.log("Tipo " + tipo);
-
+    // if (idServicioPlaza == '1') {
+    //   await this.storage.set('tipo', 'Agua');
+    //   await this.storage.set('IdServicio', 1);
+    // } else if (idServicioPlaza == '2') {
+    //   await this.storage.set('tipo', 'Predio');
+    //   await this.storage.set('IdServicio', 1);
+    // } else if(idServicioPlaza == '3') {
+    //   await this.storage.set('tipo', 'Antenas');
+    //   await this.storage.set('IdServicio', 3);
+    // } else if(idServicioPlaza == '4') {
+    //   await this.storage.set('tipo', 'Pozos');
+    //   await this.storage.set('IdServicio', 4);
+    // }
 
     const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+    console.log(plaza_servicio);
 
-    const plaza = plaza_servicio.filter(e => {
-      return e.id_plaza == this.id_plaza
-    })
 
-    console.log(plaza);
+    await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
+    await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
+    await this.storage.set( 'IdServicioActivo', idServicioPlaza);
 
-    await this.storage.set('NombrePlazaActiva', plaza[0].plaza);
-    await this.storage.set('IdPlazaActiva', plaza[0].id_plaza);
+    console.log("IdServicioActivo " + idServicioPlaza);
+    console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
+    console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
+
 
     
-    this.router.navigate(['/listado-cuentas', tipo, this.id_plaza]);
+    this.router.navigate(['/listado-cuentas', idServicioPlaza, this.id_plaza]);
   }
 
-  goMapTab(tipo) {
-    if (tipo == '1') {
-      this.router.navigate(['/google-maps', this.id_plaza]);
-    } else if (tipo == '2') {
-      this.router.navigate(['/mapa-predio', this.id_plaza]);
-    }
+
+  async goMapTab(idServicioPlaza) {
+    const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+    console.log(plaza_servicio);
+
+
+    await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
+    await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
+    await this.storage.set( 'IdServicioActivo', idServicioPlaza);
+
+    console.log("IdServicioActivo " + idServicioPlaza);
+    console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
+    console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
+
+
+    
+    this.router.navigate(['/google-maps', idServicioPlaza, this.id_plaza]);
   }
 
 

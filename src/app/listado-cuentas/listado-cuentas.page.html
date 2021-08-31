@@ -3,50 +3,53 @@
 <ion-content [fullscreen]="true" color="medium">
   <div class="resumen-cuentas">
     <ion-chip *ngIf="total" color="secondary">Total: {{total}}</ion-chip>
-    <ion-chip *ngIf="gestionadas " color="success">Gestionadas: {{gestionadas}}</ion-chip>
+    <ion-chip color="success">Gestionadas: {{gestionadas}}</ion-chip>
     <ion-chip color="warning">Faltantes: {{total - gestionadas}}</ion-chip>
   </div>
 
-  <ion-searchbar placeholder="Busqueda por cuenta" (ionChange)="find( $event )"></ion-searchbar>
+  <ion-searchbar placeholder="Cuenta, propietario o dirección" animated (ionChange)="find($event)"></ion-searchbar>
 
   <div class="contenedor">
 
-    <ion-item-sliding color="white" *ngFor="let cuenta of account | filtro: findText">
+    <ion-virtual-scroll [items]="account | filtro : findText">
 
-      <ion-item-options side="start">
+      <ion-item-sliding *virtualItem = "let item" color="white">
 
-        <ion-item-option color="secondary" (click)="goPanoramaView(cuenta)">
-          <ion-icon slot="icon-only" name="walk"></ion-icon>
-        </ion-item-option>
+        <ion-item-options side="start">
 
-        <ion-item-option (click)="openLink(cuenta)" color="light">
-          <!-- <ion-icon slot="icon-only" name="bicycle"></ion-icon> -->
-          <img src="../../assets/img/ruta.png" style="width: 90%; height:60px;" alt="">
-        </ion-item-option>
+          <ion-item-option color="secondary" (click)="goPanoramaView(item)">
+            <ion-icon slot="icon-only" name="walk"></ion-icon>
+          </ion-item-option>
 
-      </ion-item-options>
+          <ion-item-option (click)="openLink(item)" color="light">
+            <!-- <ion-icon slot="icon-only" name="bicycle"></ion-icon> -->
+            <img src="../../assets/img/ruta.png" style="width: 90%; height:60px;" alt="">
+          </ion-item-option>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>
-            <ion-chip color="success">Cuenta: {{cuenta.cuenta}} </ion-chip>
-          </p>
-          <p color="light" class="border">Propietario: {{cuenta.propietario}}</p>
-          <p color="light" class='border direccion'>Dirección: {{cuenta.direccion}}</p>
-          <p color="light" class='border'>Deuda:{{cuenta.total | currency:'USD':'symbol' }}</p>
-          <p *ngIf="cuenta.gestionada == 1" class="realizada">Realizada</p>
-        </ion-label>
-      </ion-item>
+        </ion-item-options>
 
-      <ion-item-options side="end">
+        <ion-item color="medium">
+          <ion-label>
+            <p>
+              <ion-chip color="success">Cuenta: {{item.cuenta}} </ion-chip>
+            </p>
+            <p color="light" class="border">Propietario: {{item.propietario}}</p>
+            <p color="light" class='border direccion'>Dirección: {{item.direccion}}</p>
+            <p color="light" class='border'>Deuda:{{item.total | currency:'USD':'symbol' }}</p>
+            <p *ngIf="item.gestionada == 1" class="realizada">Realizada</p>
+          </ion-label>
+        </ion-item>
 
-        <ion-item-option color="tertiary" (click)="gestionarCuenta(cuenta.cuenta)">
-          <ion-icon slot="icon-only" name="document"></ion-icon>
-        </ion-item-option>
+        <ion-item-options side="end">
 
-      </ion-item-options>
+          <ion-item-option color="tertiary" (click)="gestionarCuenta(item.cuenta)">
+            <ion-icon slot="icon-only" name="document"></ion-icon>
+          </ion-item-option>
 
-    </ion-item-sliding>
+        </ion-item-options>
+
+      </ion-item-sliding>
+  </ion-virtual-scroll>
   </div>
 </ion-content>
 

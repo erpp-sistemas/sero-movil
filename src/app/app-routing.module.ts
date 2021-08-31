@@ -36,7 +36,7 @@ const routes: Routes = [
     loadChildren: () => import('./gestion-inspeccion-agua/gestion-inspeccion-agua.module').then( m => m.GestionInspeccionAguaPageModule)
   },
   {
-    path: 'google-maps/:id_plaza',
+    path: 'google-maps/:id/:id_plaza',
     loadChildren: () => import('./google-maps/google-maps.module').then( m => m.GoogleMapsPageModule)
   },
   {

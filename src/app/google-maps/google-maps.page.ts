@@ -122,6 +122,7 @@ export class GoogleMapsPage implements OnInit {
   accountString: string = "";
   result: any[];
   id_plaza: any;
+  idServicioPlaza:any;
 
   constructor(private ngZone: NgZone,
     private injector: Injector,
@@ -139,8 +140,12 @@ export class GoogleMapsPage implements OnInit {
 
   async ngOnInit() {
     await this.platform.ready();
+    console.log("id: ", this.activeRoute.snapshot.paramMap.get('id'));
+    console.log("plaza", this.activeRoute.snapshot.paramMap.get('id_plaza'));
+    this.idServicioPlaza = this.activeRoute.snapshot.paramMap.get('id');
     this.id_plaza = this.activeRoute.snapshot.paramMap.get('id_plaza');
-    await this.getAccountInfo(this.id_plaza);
+
+    await this.getAccountInfo(this.id_plaza, this.idServicioPlaza);
   }
 
   async ionViewDidEnter() {
@@ -273,10 +278,10 @@ export class GoogleMapsPage implements OnInit {
     this.loadMap(array)
   }
 
-  async getAccountInfo( id_plaza ) {//realiza la carga de informacion que existe en la base interna sqlite
+  async getAccountInfo( id_plaza, idServicioPlaza ) {//realiza la carga de informacion que existe en la base interna sqlite
 
 
-    this.markersArrayInfo = await this.service.getDataVisitPosition( id_plaza );
+    this.markersArrayInfo = await this.service.getDataVisitPosition( id_plaza, idServicioPlaza );
 
     if (this.markersArrayInfo.length <= 0) {
       // await this.setMarkers(this.markersArrayInfo);  

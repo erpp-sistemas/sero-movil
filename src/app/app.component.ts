@@ -74,6 +74,7 @@ export class AppComponent {
     }).then( async(db: SQLiteObject) => {
       this.rest.setDatabase(db);
 
+      await db.executeSql(table.tableSero, []);
       await db.executeSql(table.tableAgua, []);
       await db.executeSql(table.tablePredio, []);
       await db.executeSql(table.tableAntenas, []);

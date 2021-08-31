@@ -17,7 +17,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 export class ListadoCuentasPage implements OnInit {
 
   loading: any;
-  idTipo: any;
+  idServicioPlaza: any;
   id_plaza: any;
   findText: string = '';
   account: any[]; // Es lavariable que tendra la informacion de la tabla contribuyente
@@ -42,104 +42,39 @@ export class ListadoCuentasPage implements OnInit {
   ngOnInit() {
     console.log("id: ", this.activeRoute.snapshot.paramMap.get('id'));
     console.log("plaza", this.activeRoute.snapshot.paramMap.get('id_plaza'));
-    this.idTipo = this.activeRoute.snapshot.paramMap.get('id');
+    this.idServicioPlaza = this.activeRoute.snapshot.paramMap.get('id');
     this.id_plaza = this.activeRoute.snapshot.paramMap.get('id_plaza');
-    this.validarListadoCuentas(this.idTipo);
+    this.listadoCuentas(this.id_plaza, this.idServicioPlaza);
   }
 
 
 
-  validarListadoCuentas(tipo) {
-    if (tipo == '1') {
-      this.listadoCuentasAgua(this.id_plaza);
-    } else if (tipo == '2') {
-      this.listadoCuentasPredio(this.id_plaza);
-    } else if (tipo == '3') {
-      this.listadoCuentasAntenas(this.id_plaza)
-    } else if (tipo == '4') {
-      this.listadoCuentasPozos();
-    }
-  }
-
-  async listadoCuentasAgua(id_plaza) {
-    console.log("Cargando listado de cuentas de agua de la plaza " + id_plaza);
+  async listadoCuentas(id_plaza, idServicioPlaza) {
+    console.log("Cargando listado de cuentas del servicio " + idServicioPlaza + " de la plaza " + id_plaza);
     this.account = null;
     this.loading = await this.loadinCtrl.create({
       message: 'Cargando listado agua',
       spinner: 'lines-small'
     });
     await this.loading.present();
-    await this.getInfoAgua(id_plaza);
-    await this.getInfoCuentasAgua(id_plaza);
+    await this.getInfo(id_plaza, idServicioPlaza );
+    await this.getInfoCuentas(id_plaza, idServicioPlaza);
     this.loading.dismiss();
   }
 
-  async listadoCuentasPredio(id_plaza) {
-    console.log("Cargando listado de cuentas de predio de la plaza " + id_plaza);
+
+
+  async getInfo(id_plaza, idServicioPlaza) {
+    this.total = await this.rest.getTotalAccounts(id_plaza, idServicioPlaza);
+    console.log("Total del servicio" + idServicioPlaza + " " + this.total);
+    this.gestionadas = await this.rest.getGestionadas(id_plaza, idServicioPlaza);
+    console.log("Gestionadas del servicio " + idServicioPlaza + " " + this.gestionadas);
+  }
+  
+
+  async getInfoCuentas(id_plaza, idServicioPlaza) {
     this.account = null;
-    this.loading = await this.loadinCtrl.create({
-      message: 'Cargando listado predio',
-      spinner: 'crescent'
-    });
-    await this.loading.present();
-    await this.getInfoPredio(id_plaza);
-    await this.getInfoCuentasPredio(id_plaza);
-    this.loading.dismiss();
-  }
-
-  async listadoCuentasAntenas(id_plaza) {
-    this.account = null;
-    this.loading = await this.loadinCtrl.create({
-      message: 'Cargando listado antenas',
-      spinner: 'crescent'
-    });
-    await this.loading.present();
-    await this.getInfoAntenas(id_plaza);
-    await this.getInfoCuentasAntenas(id_plaza);
-    this.loading.dismiss();
-  }
-
-  async listadoCuentasPozos() {
-    this.account = null;
-    this.loading = await this.loadinCtrl.create({
-      message: 'Cargando listado pozos',
-      spinner: 'crescent'
-    });
-    await this.loading.present();
-    await this.getInfoPozos();
-    await this.getInfoCuentasPozos();
-    this.loading.dismiss();
-  }
-
-  async getInfoAgua(id_plaza) {
-    this.total = await this.rest.getTotalAccountsAgua(id_plaza);
-    console.log("Total agua: ", this.total);
-    this.gestionadas = await this.rest.getGestionadasAgua(id_plaza);
-    console.log("Gestionadas: ", this.gestionadas);
-  }
-
-  async getInfoPredio(id_plaza) {
-    this.total = await this.rest.getTotalAccountsPredio(id_plaza);
-    console.log("Total predio: ", this.total);
-    this.gestionadas = await this.rest.getGestionadasPredio(id_plaza);
-    console.log("Gestionadas: ", this.gestionadas);
-  }
-
-  async getInfoAntenas(id_plaza) {
-    this.total = await this.rest.getTotalAccountsAntenas(id_plaza);
-    console.log("Total antenas: ", this.total);
-    this.gestionadas = await this.rest.getGestionadasAntenas(id_plaza);
-    console.log("Gestionadas: ", this.gestionadas);
-  }
-
-  async getInfoPozos() {
-    this.total = await this.rest.getTotalAccountsPozos();
-    console.log("Total predio: ", this.total);
-  }
-
-  async getInfoCuentasAgua(id_plaza) {
-    this.account = null;
-    this.account = await this.rest.cargarListadoCuentasAgua(id_plaza);
+    this.account = await this.rest.cargarListadoCuentas(id_plaza, idServicioPlaza);
     console.log("Accounts: ", this.account);
 
     if (this.account.length == 0) {
@@ -147,40 +82,6 @@ export class ListadoCuentasPage implements OnInit {
       this.router.navigateByUrl('/home');
     }
 
-  }
-
-  async getInfoCuentasPredio(id_plaza) {
-    this.account = null;
-    this.account = await this.rest.cargarListadoCuentasPredio(id_plaza);
-    console.log("Accounts: ", this.account);
-
-    if (this.account.length == 0) {
-      this.message.showAlert("Tienes que descargar información para visualizar las cuentas!!!!");
-      this.router.navigateByUrl('/home');
-    }
-  }
-
-  async getInfoCuentasAntenas(id_plaza) {
-    console.log("mostrando las cuentas de antenas");
-    this.account = null;
-    this.account = await this.rest.cargarListadoCuentasAntenas(id_plaza);
-    console.log("Accounts: ", this.account);
-
-    if (this.account.length == 0) {
-      this.message.showAlert("Tienes que descargar información para visualizar las cuentas!!!!");
-      this.router.navigateByUrl('/home');
-    }
-  }
-
-  async getInfoCuentasPozos() {
-    this.account = null;
-    this.account = await this.rest.cargarListadoCuentasPozos();
-    console.log("Accounts: ", this.account);
-
-    if (this.account.length == 0) {
-      this.message.showAlert("Descarga información de pozos!!!!");
-      this.router.navigateByUrl('/home');
-    }
   }
 
 
@@ -188,6 +89,7 @@ export class ListadoCuentasPage implements OnInit {
     this.findText = event.detail.value;
     console.log(this.findText);
   }
+
 
   async goPanoramaView(item) {
     let position = {
@@ -240,9 +142,6 @@ export class ListadoCuentasPage implements OnInit {
 
   }
 
-  goPhotos(cuenta) {
-
-  }
 
   navegar(tipo) {
     if (tipo == 1) {

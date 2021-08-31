@@ -16,7 +16,7 @@
         <p class="datos">
             <ion-select style="color: #000000;" class="myCustomSelect text-center" interface="popover" placeholder="Seleccionar plaza"
                 (ionChange)="resultPlaza($event)" [(ngModel)]="id_plaza">
-                <ion-select-option *ngFor="let plaza of plazas; index as i" [value]="idPlazas[i]">{{plaza |
+                <ion-select-option *ngFor="let plaza of plazasServicios; index as i" [value]="plaza.id_plaza">{{plaza.plaza |
                     titlecase}}
                 </ion-select-option>
             </ion-select>
@@ -25,48 +25,18 @@
 
     <hr>
 
-    <div *ngIf="agua">
-        <ion-card color="medium" (click)="irAgua()">
+
+    <div *ngIf="id_plaza != 0">
+        <ion-card color="medium" (click)="irListado(servicio.id_servicio)" *ngFor="let servicio of servicios" >
             <ion-card-header>
-                <ion-icon color="light" name="water"></ion-icon>
+                <ion-icon *ngIf="servicio.icono_app_movil.length < 15" color="light" [name]="servicio.icono_app_movil"></ion-icon>
+                <img *ngIf="servicio.icono_app_movil.length > 12" [src]="servicio.icono_app_movil" style="width: 50px;">
             </ion-card-header>
-            <ion-card-content color="dark">
-                <h3>Regularización agua</h3>
+            <ion-card-content>
+                <h3> {{servicio.servicio}} </h3>
             </ion-card-content>
         </ion-card>
     </div>
-
-    <div *ngIf="predio">
-        <ion-card color="medium" (click)="irPredio()">
-            <ion-card-header>
-                <ion-icon color="light" name="home"></ion-icon>
-            </ion-card-header>
-            <ion-card-content color="dark">
-                <h3>Regularización predio</h3>
-            </ion-card-content>
-        </ion-card>
-    </div>
-
-    <div *ngIf="antenas">
-        <ion-card color="medium" (click)="irAntenas()">
-            <ion-card-header>
-                <img src="../../assets/img/antena.png" style="width: 30px;" alt="">
-            </ion-card-header>
-            <ion-card-content color="dark">
-                <h3>Antenas telecomunicaciones</h3>
-            </ion-card-content>
-        </ion-card>
-    </div>
-
-
-    <!-- <ion-card color="dark" (click)="irPozos()">
-        <ion-card-header>
-            <ion-icon color="success" name="color-fill"></ion-icon>
-        </ion-card-header>
-        <ion-card-content color="dark">
-            <h3>Pozos</h3>
-        </ion-card-content>
-    </ion-card> -->
 
 
 

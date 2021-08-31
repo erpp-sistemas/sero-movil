@@ -3,12 +3,17 @@
 <hr>
 <hr>
 <ion-content>
-  <ion-input style="padding: 0 30px;" placeholder="Buscar por cuenta" [(ngModel)]="accountString"></ion-input>
-  <ion-buttons slot="end">
-    <ion-button (click)="find()">
-      <ion-icon color="success" name="search"></ion-icon>
-    </ion-button>
-  </ion-buttons>
+  <!-- <ion-input placeholder="Buscar por cuenta" [(ngModel)]="accountString"></ion-input> -->
+
+  <ion-toolbar>
+    <ion-input placeholder ="Buscar por cuenta" [(ngModel)]="accountString"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="find()" >
+        <ion-icon name="search" ></ion-icon>
+      </ion-button>
+    </ion-buttons> 
+  </ion-toolbar>
+
   <div class="map" id="map_canvas"></div>
 </ion-content>
 

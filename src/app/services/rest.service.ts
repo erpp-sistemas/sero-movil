@@ -61,6 +61,7 @@ export class RestService {
    * @returns db execute
    */
   insertarServiciosSQL(data) {
+    console.log("Tratando de insertar los servicios obtenidos");
     let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, plaza, servicio, id_plaza, id_servicio, icono_app_movil) VALUES (?,?,?,?,?,?,?,?)'
     return this.db.executeSql(sql, [
       data.nombre,
@@ -90,31 +91,30 @@ export class RestService {
   }
 
 
-  deleteTable(tipo) {
-    if (tipo == 1) {
-      let sqlDelete = "DELETE from agua";
-      this.db.executeSql(sqlDelete, []);
-    } else if (tipo == 2) {
-      let sqlDelete = "DELETE from predio";
-      this.db.executeSql(sqlDelete, []);
-    } else if (tipo == 3) {
-      let sqlDeleteAntenas = "DELETE FROM antenas"
-      this.db.executeSql(sqlDeleteAntenas, []);
-    } else if (tipo == 4) {
-      let sqlDeletePozos = "DELETE FROM pozos"
-      this.db.executeSql(sqlDeletePozos, []);
-    }
+  /**
+   * Borra la informacion de la tabla sero_principal cada que se descarga informacion dependiendo del servicio y la plaza
+   * @returns Promise
+   */
+  deleteTable(id_plaza, id_servicio_plaza) {
+    let sql = "DELETE FROM sero_principal where id_plaza = ? and id_servicio_plaza = ?";
+    return this.db.executeSql(sql, [id_plaza, id_servicio_plaza]);
   }
 
-
-  obtenerDatosSql(idAspUser, idPlaza, tipo) {
+  /**
+   * Hace la peticion al servidor de la informacion de las cuentas dependiendo de la plaza y el servicio
+   * @param idAspUser 
+   * @param idPlaza 
+   * @param idPlazaServicio 
+   * @returns Promise
+   */
+  obtenerDatosSql(idAspUser, idPlaza, idPlazaServicio) {
     console.log("idAspUser: ", idAspUser);
     console.log("idPlaza: ", idPlaza);
-    console.log("tipo:", tipo);
+    console.log("tipo:", idPlazaServicio);
     try {
       return new Promise(resolve => {
 
-        this.http.post(this.apiObtenerDatos + " '" + idAspUser + "', " + idPlaza + ", " + tipo, null)
+        this.http.post(this.apiObtenerDatos + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio, null)
           .subscribe(data => {
             console.log("Datos traidos del SQL");
             console.log(data);
@@ -127,26 +127,22 @@ export class RestService {
   }
 
 
-  guardarInfoSQL(data, id_plaza, tipo) {
-    if(tipo == 1) {
-      this.guardarInfoSQLAgua(data, id_plaza);
-    } else if(tipo == 2) {
-      this.guardarInfoSQLPredio(data, id_plaza);
-    }
-  }
 
   /**
-   * Metodo que inserta a la tabla agua la informaciòn que trajo del SQL
-   * @param data 
-   * @returns Ejecuciòn del insert into agua
+   * Guarda la informacion descargada en la tabla sero_principal
+   * @param data // informacion descargada
+   * @param id_plaza  // id de la plaza (demo 1, demo 2)
+   * @param idServicioPlaza  // servicio (agua, predio)
+   * @returns 
    */
-  guardarInfoSQLAgua(data, id_plaza) {
+  guardarInfoSQL(data, id_plaza, idServicioPlaza) {
 
+    let sql = `INSERT INTO sero_principal (id_plaza, id_servicio_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
-    let sql = `INSERT INTO agua (id_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
     return this.db.executeSql(sql, [
       id_plaza,
+      idServicioPlaza,
       data.cuenta,
       data.clave_catastral,
       data.propietario,
@@ -173,37 +169,26 @@ export class RestService {
       data.longitud
     ])
 
+
   }
 
-  guardarEstatusDescarga(id_plaza, servicio) {
-    let sql = 'INSERT INTO descargaServicios (id_plaza, id_servicio, descargado) VALUES (?,?,?)';
-    return this.db.executeSql(sql, [
-      id_plaza,
-      servicio,
-      true
-    ]);
-  }
 
+  /**
+   * Actualiza el campo descargado a true dependiendo de la plaza y el servicio
+   * @param id_plaza 
+   * @param id_servicio 
+   * @returns Promise
+   */
   actualizaServicioEstatus(id_plaza, id_servicio) {
     let sql = "UPDATE serviciosPlazaUser set descargado = true where id_plaza = ? and id_servicio = ?"
     return this.db.executeSql(sql, [id_plaza, id_servicio]);
   }
 
 
-  verificaEstatusDescarga(id_plaza) {
-    let sql = 'SELECT * FROM descargaServicios where id_plaza = ?';
-    return this.db.executeSql(sql, [id_plaza]).then(response => {
-      console.log(response);
-      let verificacion = [];
-      for (let index = 0; index < response.rows.length; index++) {
-        verificacion.push(response.rows.item(index));
-      }
-      console.log(verificacion);
-      return Promise.resolve(verificacion);
-    }).catch(error => Promise.reject(error));
-  }
-
-
+  /**
+   * Obtiene el id_plaza y la plaza unicos
+   * @returns Promise
+   */
   async obtenerPlazasSQL() {
     let plazas = [];
     try {
@@ -339,19 +324,16 @@ export class RestService {
     console.log("Borrando información");
   }
 
-  obtenerListadoCuentas() {
-    //return this.http.get(this.apiObtenerDatosMovil);
-  }
 
   /**
-   * Metodo que carga la lista de cuentas de agua a gestionar 
+   * Metodo que carga la lista de cuentas a gestionar 
    * @returns Promise 
    */
-  cargarListadoCuentasAgua(id_plaza) {
-    console.log("Cargando el listado de cuentas de agua");
-    let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM agua WHERE id_plaza = ? and propietario NOT NULL`;
+  cargarListadoCuentas(id_plaza, idServicioPlaza) {
+    console.log("Cargando el listado de cuentas de la plaza " + id_plaza + " del servicio " + idServicioPlaza);
+    let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM sero_principal WHERE id_plaza = ? and id_servicio_plaza = ? and propietario NOT NULL`;
 
-    return this.db.executeSql(sql, [id_plaza]).then(response => {
+    return this.db.executeSql(sql, [id_plaza, idServicioPlaza]).then(response => {
       let arrayCuentas = [];
 
       for (let index = 0; index < response.rows.length; index++) {
@@ -365,122 +347,34 @@ export class RestService {
 
   }
 
-  cargarListadoCuentasPredio(id_plaza) {
-    console.log("Cargando el listado de cuentas predio");
-    // let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM predio WHERE id_plaza = ? and propietario NOT NULL`;
-
-    let sql = `SELECT cuenta, propietario, calle as direccion, total, latitud, longitud, gestionada FROM predio WHERE id_plaza = ? AND propietario NOT NULL`;
-
-    return this.db.executeSql(sql, [id_plaza]).then(response => {
-      let arrayCuentas = [];
-
-      for (let i = 0; i < response.rows.length; i++) {
-        arrayCuentas.push(response.rows.item(i));
-      }
-      console.log(arrayCuentas);
-      return Promise.resolve(arrayCuentas);
-
-    }).catch(error => Promise.reject(error));
-
-  }
-
-  cargarListadoCuentasAntenas(id_plaza) {
-    let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM antenas WHERE id_plaza = ? and propietario NOT NULL`;
-
-    return this.db.executeSql(sql, [id_plaza]).then(response => {
-      let arrayCuentas = [];
-
-      for (let i = 0; i < response.rows.length; i++) {
-        arrayCuentas.push(response.rows.item(i));
-      }
-
-      return Promise.resolve(arrayCuentas);
-
-    }).catch(error => Promise.reject(error));
-
-  }
-
-  cargarListadoCuentasPozos() {
-    let sql = `SELECT cuenta, propietario, calle_predio ||  ' mz: ' || manzana_predio || ' lote: ' || lote_predio || ' ' || colonia_predio as direccion,  adeudo, latitud, longitud, gestionada FROM pozos WHERE nombre_propietario NOT NULL LIMIT 20`;
-
-    return this.db.executeSql(sql, []).then(response => {
-      let arrayCuentas = [];
-
-      for (let i = 0; i < response.rows.length; i++) {
-        arrayCuentas.push(response.rows.item(i));
-      }
-
-      return Promise.resolve(arrayCuentas);
-
-    }).catch(error => Promise.reject(error));
-
-  }
-
-
-
   /**
-   * Metodo que obtiene el total de las cuentas insertadas en la tabla agua segun la plaza pasada por parametro
-   * @param id_plaza  
+   * Metodo que obtiene las cuentas totales de la plaza y del servicio seleccionado
+   * @param id_plaza 
+   * @param idServicioPlaza 
    * @returns Promise
    */
-  async getTotalAccountsAgua(id_plaza) {
-    let sql = 'SELECT COUNT(*) as total FROM agua where id_plaza = ? ';
+  async getTotalAccounts(id_plaza, idServicioPlaza) {
+    let sql = "SELECT COUNT(*) as total FROM sero_principal where id_plaza = ? and id_servicio_plaza = ?";
     try {
-      const response = await this.db.executeSql(sql, [id_plaza]);
+      const response = await this.db.executeSql(sql, [id_plaza, idServicioPlaza]);
       let result = response.rows.item(0).total;
-
       return Promise.resolve(result);
-    } catch (error) {
+    } catch( error ) {
       return Promise.reject(error);
     }
   }
 
   /**
-   * Metodo que obtiene el total de las cuentas insertadas en la tabla predio
-   * @returns Promise 
-   */
-  async getTotalAccountsPredio(id_plaza) {
-    let sql = 'SELECT COUNT(*) as total FROM predio where id_plaza = ?';
-    try {
-      const response = await this.db.executeSql(sql, [id_plaza]);
-      let result = response.rows.item(0).total;
-      console.log("Total predio: " + result);
-      return Promise.resolve(result);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-
-  async getTotalAccountsAntenas(id_plaza) {
-    let sql = 'SELECT COUNT(*) as total FROM antenas where id_plaza = ?';
-    try {
-      const response = await this.db.executeSql(sql, [id_plaza]);
-      let result = response.rows.item(0);
-      return Promise.resolve(result);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-
-  async getTotalAccountsPozos() {
-    let sql = 'SELECT COUNT(*) as total FROM pozos';
-    try {
-      const response = await this.db.executeSql(sql, []);
-      let result = response.rows.item(0);
-      return Promise.resolve(result);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-
-  /**
-   * Metodo que obtiene el total de cuentas gestionadas de la tabla agua
+   * Metodo que obtiene las cuentas gestionadas de la plaza y del servicio seleccionado
+   * @param id_plaza 
+   * @param idServicioPlaza 
    * @returns Promise
    */
-  async getGestionadasAgua(id_plaza) {
-    let sql = 'SELECT COUNT(*) as total_gestionadas FROM agua WHERE id_plaza = ? and gestionada = 1';
+  async getGestionadas(id_plaza, idServicioPlaza) {
+    console.log("Obteniendo el total de gestionadas");
+    let sql = 'SELECT COUNT(*) as total_gestionadas FROM sero_principal where id_plaza = ? and id_servicio_plaza = ? and gestionada = 1';
     try {
-      const response = await this.db.executeSql(sql, [id_plaza]);
+      const response = await this.db.executeSql(sql, [id_plaza, idServicioPlaza]);
       let result = response.rows.item(0).total_gestionadas;
 
       return Promise.resolve(result);
@@ -489,30 +383,6 @@ export class RestService {
     }
   }
 
-  async getGestionadasPredio(id_plaza) {
-    let sql = 'SELECT COUNT(*) as total_gestionadas FROM predio WHERE id_plaza = ? and gestionada = 1';
-    try {
-      const response = await this.db.executeSql(sql, [id_plaza]);
-      let result = response.rows.item(0).total_gestionadas;
-
-      return Promise.resolve(result);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-
-  async getGestionadasAntenas(id_plaza) {
-    console.log("gestionadas antenas");
-    let sql = 'SELECT COUNT(*) as total_gestionadas FROM antenas WHERE id_plaza = ? and gestionada = 1';
-    try {
-      const response = await this.db.executeSql(sql, [id_plaza]);
-      let result = response.rows.item(0).total_gestionadas;
-
-      return Promise.resolve(result);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
 
   /**
    * Metodo que obtiene las cuentas de la tabla pozos_conagua para cargarlas al mapa
@@ -535,10 +405,10 @@ export class RestService {
    * Metodo que obtiene las cuentas de la tabla agua para cargarlas al mapa
    * @returns query sqlite
    */
-  getDataVisitPosition(id_plaza) {
+  getDataVisitPosition(id_plaza, id_servicio_plaza) {
     // Carga las posiciones
-    let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total FROM agua where id_plaza = ? and latitud > 0 and gestionada = 0';
-    return this.db.executeSql(sql, [id_plaza]).then(response => {
+    let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total FROM sero_principal where id_plaza = ? and id_servicio_plaza = ? and latitud > 0 and gestionada = 0';
+    return this.db.executeSql(sql, [id_plaza, id_servicio_plaza]).then(response => {
       let posiciones = [];
 
       for (let index = 0; index < response.rows.length; index++) {
@@ -558,7 +428,7 @@ export class RestService {
    */
   getDataVisitPositionByAccount(accountNumber: string) {
     let sql =
-      "SELECT gestionada, cuenta, latitud, longitud FROM agua where latitud > 0 and cuenta = ?";
+      "SELECT gestionada, cuenta, latitud, longitud FROM sero_principal where latitud > 0 and cuenta = ?";
     return this.db
       .executeSql(sql, [accountNumber])
       .then(response => {
@@ -761,11 +631,8 @@ export class RestService {
    */
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
-<<<<<<< HEAD
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-=======
+
     let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, idServicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
->>>>>>> logica-servicios
 
     return this.db.executeSql(sql, [
       data.id_plaza,
