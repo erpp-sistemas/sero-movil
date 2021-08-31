@@ -26,7 +26,7 @@ export class GestionCartaPage implements OnInit {
   idTrabajoActual: number = 0;
   idGastoImpuesto: number = 0;
   idTipoServicio: number = 0;
-  numeroNiveles: number = 0;
+  numeroNiveles: number = 1;
   colorFachada: string = '';
   colorPuerta: string = '';
   idTipoPredio: number = 0;
@@ -57,6 +57,8 @@ export class GestionCartaPage implements OnInit {
   fechaCaptura:any;
   detectedChanges: boolean = false;
   tipoServicio: number = 0;
+  idServicioPlaza: number = 0;
+
 
   sliderOpts = {
     zoom: true,
@@ -84,10 +86,12 @@ export class GestionCartaPage implements OnInit {
 
   async ngOnInit() {
     this.tipo = await this.storage.get('tipo');
+    console.log(this.tipo);
     await this.platform.ready();
     this.getInfoAccount();
     this.getPlaza();
     this.getFechaActual();
+    this.idServicioPlaza = await this.storage.get('IdServicio');
   }
 
   async getPlaza() {
@@ -201,7 +205,8 @@ export class GestionCartaPage implements OnInit {
           rutaBase64,
           this.idAspUser,
           this.tareaAsignada,
-          tipo
+          tipo,
+          this.idServicioPlaza
         );
       })
       .catch(error => {
@@ -210,7 +215,7 @@ export class GestionCartaPage implements OnInit {
 
   }
 
-  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
+  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
     this.rest
       .saveImage(
         id_plaza,
@@ -221,7 +226,8 @@ export class GestionCartaPage implements OnInit {
         rutaBase64,
         idAspuser,
         idTarea,
-        tipo
+        tipo,
+        idServicioPlaza
       )
       .then(res => {
         console.log(res);
@@ -288,6 +294,7 @@ export class GestionCartaPage implements OnInit {
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
           longitud: this.longitud,
+          idServicio: this.idServicioPlaza,
           id: this.idAccountSqlite
         }
 
@@ -314,8 +321,6 @@ export class GestionCartaPage implements OnInit {
     // this.router.ngOnDestroy();
     // this.router.dispose();
   }
-
-  
 
   navegar(tipo) {
     if (tipo == 1) {

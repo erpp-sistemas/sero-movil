@@ -607,9 +607,9 @@ export class RestService {
   }
 
 
-  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
+  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
     let sql =
-      "INSERT INTO capturaFotos(id_plaza,nombre_plaza, imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo) values(?,?,?,?,?,?,?,?,?)";
+      "INSERT INTO capturaFotos(id_plaza,nombre_plaza, imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo, idServicio) values(?,?,?,?,?,?,?,?,?,?)";
     return this.db.executeSql(sql, [
       id_plaza,
       nombrePlaza,
@@ -619,7 +619,8 @@ export class RestService {
       rutaBase64,
       idAspuser,
       idTarea,
-      tipo
+      tipo,
+      idServicioPlaza
     ]);
   }
 
@@ -760,7 +761,11 @@ export class RestService {
    */
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
+<<<<<<< HEAD
     let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+=======
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, idServicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+>>>>>>> logica-servicios
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -784,7 +789,8 @@ export class RestService {
       data.idTarea,
       data.fechaCaptura,
       data.latitud,
-      data.longitud
+      data.longitud,
+      data.idServicio
     ])
   }
 
@@ -798,8 +804,8 @@ export class RestService {
 
     this.updateAccountGestionada(data.id);
 
-    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, numeroContacto, puesto, idMotivoNoPago, otroMotivo, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud)' +
-      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, numeroContacto, puesto, idMotivoNoPago, otroMotivo, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud, idServicio)' +
+      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -835,6 +841,7 @@ export class RestService {
       data.fechaCaptura,
       data.latitud,
       data.longitud,
+      data.idServicio
     ]);
   }
 

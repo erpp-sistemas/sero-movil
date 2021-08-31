@@ -4,7 +4,6 @@ import { ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { GestionCartaPage } from '../gestion-carta/gestion-carta.page';
 import { GestionInspeccionAguaPage } from '../gestion-inspeccion-agua/gestion-inspeccion-agua.page';
-import { GestionInspeccionPredioPage } from '../gestion-inspeccion-predio/gestion-inspeccion-predio.page';
 import { GestionLegalPage } from '../gestion-legal/gestion-legal.page';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 

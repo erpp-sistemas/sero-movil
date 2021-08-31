@@ -76,10 +76,6 @@ const routes: Routes = [
     loadChildren: () => import('./sincronizar-pozos/sincronizar-pozos.module').then( m => m.SincronizarPozosPageModule)
   },
   {
-    path: 'gestion-inspeccion-predio',
-    loadChildren: () => import('./gestion-inspeccion-predio/gestion-inspeccion-predio.module').then( m => m.GestionInspeccionPredioPageModule)
-  },
-  {
     path: 'video-presentacion',
     loadChildren: () => import('./video-presentacion/video-presentacion.module').then( m => m.VideoPresentacionPageModule)
   },
