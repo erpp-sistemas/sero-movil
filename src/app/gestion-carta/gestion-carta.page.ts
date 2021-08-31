@@ -315,4 +315,25 @@ export class GestionCartaPage implements OnInit {
     // this.router.dispose();
   }
 
+  
+
+  navegar(tipo) {
+    if (tipo == 1) {
+      this.router.navigateByUrl('home/tab1');
+    } else if (tipo == 2) {
+      this.router.navigateByUrl('home/tab2');
+    } else if (tipo == 3) {
+      this.router.navigateByUrl('home/tab3');
+    } else if (tipo == 4) {
+      this.router.navigateByUrl('/servicios-publicos');
+    } else if (tipo == 5) {
+
+      this.callNumber.callNumber('18001010101', true)
+        .then(res => console.log('Launched dialer!', res))
+        .catch(err => console.log('Error launching dialer', err));
+
+    }
+  } 
+
+
 }

@@ -86,6 +86,16 @@ export class SyncFotosServiciosPage implements OnInit {
     }
   } 
 
+  openPreview(imagen) {
+    this.modalCtrl.create({
+      component: ImagePreviewPage,
+      componentProps: {
+        imagen
+      }
+    }).then( modal => {
+      modal.present();
+    });
+  }
 
 
 }
