@@ -72,6 +72,7 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   nombrePlaza:any;
   id_plaza: any;
+  idServicioPlaza: number = 0;
 
 
   // validaciones de campos
@@ -113,6 +114,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     //this.getTotals();
     this.getFechaActual();
     this.getPlaza();
+    this.idServicioPlaza = await this.storage.get('IdServicio');
   }
 
 
@@ -347,7 +349,8 @@ export class GestionInspeccionAguaPage implements OnInit {
           rutaBase64,
           this.idAspuser,
           this.idTareaGestor,
-          tipo
+          tipo,
+          this.idServicioPlaza
         );
       })
       .catch(error => {
@@ -355,7 +358,7 @@ export class GestionInspeccionAguaPage implements OnInit {
       });
   }
 
-  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo) {
+  saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
     this.rest
       .saveImage(
         id_plaza,
@@ -366,7 +369,8 @@ export class GestionInspeccionAguaPage implements OnInit {
         rutaBase64,
         idAspuser,
         idTarea,
-        tipo
+        tipo,
+        idServicioPlaza
       )
       .then(res => {
         console.log(res);
@@ -449,6 +453,7 @@ export class GestionInspeccionAguaPage implements OnInit {
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
           longitud: this.longitud,
+          idServicio: this.idServicioPlaza,
           id: this.idAccountSqlite
         };
         await this.gestionInspeccion(data);
@@ -518,6 +523,7 @@ export class GestionInspeccionAguaPage implements OnInit {
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
           longitud: this.longitud,
+          idServicio: this.idServicioPlaza,
           id: this.idAccountSqlite
       };
       await this.gestionInspeccion(data);

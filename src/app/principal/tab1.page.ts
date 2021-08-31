@@ -152,7 +152,6 @@ export class Tab1Page implements OnInit {
    * @param idPlaza 
    */
   async asignarSectores(idPlaza) {
-    console.log("idplaza a " + idPlaza);
 
     if (idPlaza == 0) {
       this.selecciona = true;
@@ -301,8 +300,16 @@ export class Tab1Page implements OnInit {
     //this.router.navigateByUrl('/home/tab2');
     if (tipo == '1') {
       await this.storage.set('tipo', 'Agua');
+      await this.storage.set('IdServicio', 1);
     } else if (tipo == '2') {
       await this.storage.set('tipo', 'Predio');
+      await this.storage.set('IdServicio', 1);
+    } else if(tipo == '3') {
+      await this.storage.set('tipo', 'Antenas');
+      await this.storage.set('IdServicio', 3);
+    } else if(tipo == '4') {
+      await this.storage.set('tipo', 'Pozos');
+      await this.storage.set('IdServicio', 4);
     }
     console.log("Tipo " + tipo);
 
@@ -313,10 +320,12 @@ export class Tab1Page implements OnInit {
       return e.id_plaza == this.id_plaza
     })
 
+    console.log(plaza);
 
     await this.storage.set('NombrePlazaActiva', plaza[0].plaza);
     await this.storage.set('IdPlazaActiva', plaza[0].id_plaza);
 
+    
     this.router.navigate(['/listado-cuentas', tipo, this.id_plaza]);
   }
 
