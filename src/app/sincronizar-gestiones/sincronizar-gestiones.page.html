@@ -11,21 +11,13 @@
   
   <hr>
 
-  <ion-card color="medium" (click)="syncAgua()">
+  <ion-card *ngFor="let servicio of servicios" color="medium" (click)="sync(servicio.id_servicio)">
     <ion-card-header>
-      <ion-icon color="light" name="water"></ion-icon>
+      <ion-icon *ngIf="servicio.icono_app_movil.length < 12" color="light" [name]="servicio.icono_app_movil"></ion-icon>
+      <img *ngIf="servicio.icono_app_movil.length > 12" [src]="servicio.icono_app_movil" style="width: 50px;">
     </ion-card-header>
     <ion-card-content color="dark">
-      <h3>Enviar registros agua</h3>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card color="medium" (click)="syncPredio()">
-    <ion-card-header>
-      <ion-icon color="light" name="home"></ion-icon>
-    </ion-card-header>
-    <ion-card-content color="dark">
-      <h3>Enviar registros predio</h3>
+      <h3> {{servicio.servicio}} </h3>
     </ion-card-content>
   </ion-card>
 
@@ -34,7 +26,7 @@
       <ion-icon color="light" name="warning-outline"></ion-icon>
     </ion-card-header>
     <ion-card-content color="dark">
-      <h3>Enviar registros servicios públicos</h3>
+      <h3>Servicios públicos</h3>
     </ion-card-content>
   </ion-card>
 

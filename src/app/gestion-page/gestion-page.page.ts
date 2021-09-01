@@ -15,8 +15,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 export class GestionPagePage implements OnInit {
 
   modal:any;
-  agua: boolean = false;
-  predio: boolean = false;
+
   constructor(
     private modalCtrl: ModalController,
     private router:Router,
@@ -25,18 +24,11 @@ export class GestionPagePage implements OnInit {
   ) { }
 
   async ngOnInit() {
-    const tipo = await this.storage.get('tipo');
-    if(tipo == 'Agua') {
-      this.agua = true;
-      this.predio = false;
-    } else if (tipo == 'Predio') {
-      this.predio = true;
-      this.agua = false;
-    }
+
   }
 
 
-  async inspeccionAgua() {
+  async inspeccion() {
     // const modal = await this.modalCtrl.create({
     //   component: GestionInspeccionAguaPage
     // });
@@ -46,21 +38,10 @@ export class GestionPagePage implements OnInit {
     // modal.onDidDismiss().then( data => {
     //   this.router.navigate(['home/tab2'])
     // })
+    // inspeccion-agua es inspeccion se le dejo el nombre para ya no modificarlo en todos los lugares que se llame
     this.router.navigateByUrl('/gestion-inspeccion-agua');
   }
 
-  async inspeccionPredio() {
-    // const modal = await this.modalCtrl.create( {
-    //   component: GestionInspeccionPredioPage
-    // });
-
-    // modal.present();
-
-    // modal.onDidDismiss().then( data => {
-    //   this.router.navigate(['home/tab2']);
-    // })
-    this.router.navigateByUrl('/gestion-inspeccion-predio');
-  }
 
   async cartaInvitacion() {
     // const modal = await this.modalCtrl.create({

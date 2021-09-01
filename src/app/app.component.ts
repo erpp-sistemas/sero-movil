@@ -75,11 +75,7 @@ export class AppComponent {
       this.rest.setDatabase(db);
 
       await db.executeSql(table.tableSero, []);
-      await db.executeSql(table.tableAgua, []);
-      await db.executeSql(table.tablePredio, []);
-      await db.executeSql(table.tableAntenas, []);
-      await db.executeSql(table.tablePozos, []);
-      await db.executeSql(table.tableInspeccionAgua, []);
+      await db.executeSql(table.tableInspeccion, []);
       await db.executeSql(table.tableCartaInvitacion, []);
       await db.executeSql(table.tableServiciosPublicos, []);
       await db.executeSql(table.tableFotos, []);

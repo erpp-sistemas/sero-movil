@@ -91,7 +91,7 @@ export class GestionCartaPage implements OnInit {
     this.getInfoAccount();
     this.getPlaza();
     this.getFechaActual();
-    this.idServicioPlaza = await this.storage.get('IdServicio');
+    this.idServicioPlaza = await this.storage.get('IdServicioActivo');
   }
 
   async getPlaza() {
@@ -102,14 +102,7 @@ export class GestionCartaPage implements OnInit {
   async getInfoAccount() {
     this.account = await this.storage.get("account");
     this.idAspUser = await this.storage.get('IdAspUser');
-    // verificar que tipo es la cuenta si es de agua, predio, antenas o es otra cosa
-    if (this.tipo == 'Agua') {
-      this.tipoServicio = 1
-      this.infoAccount = await this.rest.getInfoAccountAgua(this.account);
-    } else if (this.tipo == 'Predio') {
-      this.tipoServicio = 2;
-      this.infoAccount = await this.rest.getInfoAccountPredio(this.account);
-    }
+    this.infoAccount = await this.rest.getInfoAccount(this.account);
     this.idAccountSqlite = this.infoAccount[0].id;
     this.idTareaGestor = this.infoAccount[0].id_tarea;
     let gestionada = this.infoAccount[0].gestionada;
@@ -294,7 +287,7 @@ export class GestionCartaPage implements OnInit {
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
           longitud: this.longitud,
-          idServicio: this.idServicioPlaza,
+          idServicioPlaza: this.idServicioPlaza,
           id: this.idAccountSqlite
         }
 

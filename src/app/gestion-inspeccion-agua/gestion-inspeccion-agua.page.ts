@@ -114,7 +114,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     //this.getTotals();
     this.getFechaActual();
     this.getPlaza();
-    this.idServicioPlaza = await this.storage.get('IdServicio');
+    this.idServicioPlaza = await this.storage.get('IdServicioActivo');
   }
 
 
@@ -244,7 +244,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     console.log("Cuenta guardada en el storage: " , this.account);
     this.idAspuser = await this.storage.get("IdAspUser");
     console.log("Idaspuser guardado en el storage: ", this.idAspuser);
-    this.infoAccount = await this.rest.getInfoAccountAgua(this.account);
+    this.infoAccount = await this.rest.getInfoAccount(this.account);
     console.log("InfoAccount: " , this.infoAccount);
     this.idAccountSqlite = this.infoAccount[0].id;
     this.idTareaGestor = this.infoAccount[0].id_tarea;
@@ -453,7 +453,7 @@ export class GestionInspeccionAguaPage implements OnInit {
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
           longitud: this.longitud,
-          idServicio: this.idServicioPlaza,
+          idServicioPlaza: this.idServicioPlaza,
           id: this.idAccountSqlite
         };
         await this.gestionInspeccion(data);
@@ -523,7 +523,7 @@ export class GestionInspeccionAguaPage implements OnInit {
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
           longitud: this.longitud,
-          idServicio: this.idServicioPlaza,
+          idServicioPlaza: this.idServicioPlaza,
           id: this.idAccountSqlite
       };
       await this.gestionInspeccion(data);
@@ -536,8 +536,8 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   async gestionInspeccion(data) {
     this.detectedChanges = false;
-    await this.rest.gestionInspeccionAgua(data);
     console.log(data);
+    await this.rest.gestionInspeccion(data);
   }
 
 

@@ -18,17 +18,15 @@ export class RestService {
 
   // api para obtener las cuentas del agua
   apiObtenerDatos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas";
-  apiObtenerDatosAgua = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_agua"
-  apiObtenerDatosPredio = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_predio"
+ 
   apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
   apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion";
-  apiRegistroInspeccionAgua = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion_agua";
-  apiRegistroInspeccionPredio = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion_predio";
+  apiRegistroInspeccion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion";
   apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion"
   apiRegistroServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_servicios_publicos"
   apiRegistroFotos = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSero";
   apiRegistroFotosServicios = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSeroServicios";
-  apiObtenerDatosPozos = "";
+
 
   constructor(
     private http: HttpClient,
@@ -80,6 +78,21 @@ export class RestService {
     let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
 
     return this.db.executeSql(sql, [idPlaza]).then(response => {
+      let servicios = [];
+      for (let index = 0; index < response.rows.length; index++) {
+        servicios.push(response.rows.item(index));
+      }
+      console.log(servicios);
+      return Promise.resolve(servicios);
+    }).catch(error => Promise.reject(error));
+
+  }
+
+  async mostrarServiciosAll() {
+    console.log('Traer los servicios');
+    let sql = "SELECT DISTINCT servicio, id_servicio, icono_app_movil FROM serviciosPlazaUser"
+
+    return this.db.executeSql(sql, []).then(response => {
       let servicios = [];
       for (let index = 0; index < response.rows.length; index++) {
         servicios.push(response.rows.item(index));
@@ -479,7 +492,7 @@ export class RestService {
 
   saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
     let sql =
-      "INSERT INTO capturaFotos(id_plaza,nombre_plaza, imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo, idServicio) values(?,?,?,?,?,?,?,?,?,?)";
+      "INSERT INTO capturaFotos(id_plaza,nombre_plaza, imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo, id_servicio_plaza) values(?,?,?,?,?,?,?,?,?,?)";
     return this.db.executeSql(sql, [
       id_plaza,
       nombrePlaza,
@@ -509,8 +522,14 @@ export class RestService {
     ]);
   }
 
-  getInfoAccountAgua(account) {
-    let sql = "SELECT * from agua where cuenta = ?";
+  /**
+   * Metodo que trae la informacion de las cuentas de sero_principal lo manda a traer los formularios de
+   * gestion para obtener datos de la cuenta seleccionada
+   * @param account 
+   * @returns Promise
+   */
+  getInfoAccount(account) {
+    let sql = "SELECT * from sero_principal where cuenta = ?";
     return this.db
       .executeSql(sql, [account])
       .then(response => {
@@ -632,7 +651,7 @@ export class RestService {
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, idServicio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -657,7 +676,7 @@ export class RestService {
       data.fechaCaptura,
       data.latitud,
       data.longitud,
-      data.idServicio
+      data.idServicioPlaza
     ])
   }
 
@@ -667,11 +686,11 @@ export class RestService {
    * @param data 
    * @returns Promise (insert gestionInspeccion)
    */
-  gestionInspeccionAgua(data) {
+  gestionInspeccion(data) {
 
     this.updateAccountGestionada(data.id);
 
-    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, numeroContacto, puesto, idMotivoNoPago, otroMotivo, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud, idServicio)' +
+    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, numeroContacto, puesto, idMotivoNoPago, otroMotivo, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud, id_servicio_plaza)' +
       'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
     return this.db.executeSql(sql, [
@@ -708,7 +727,7 @@ export class RestService {
       data.fechaCaptura,
       data.latitud,
       data.longitud,
-      data.idServicio
+      data.idServicioPlaza
     ]);
   }
 
@@ -719,7 +738,7 @@ export class RestService {
    * @returns executeSql
    */
   updateAccountGestionada(id) {
-    let sql = 'UPDATE agua SET gestionada = 1 WHERE id = ?';
+    let sql = 'UPDATE sero_principal SET gestionada = 1 WHERE id = ?';
     return this.db.executeSql(sql, [id]);
   }
 
@@ -753,7 +772,8 @@ export class RestService {
    * @returns Promise con las cuentas gestionadas de agua
    */
   getAccountsGestionesAgua() {
-    let sql = `SELECT account, fechaCaptura, 'Inspección agua' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0
+    let sql = 
+    `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0
     UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0`;
     return this.db.executeSql(sql, []).then(response => {
       let accounts = [];
@@ -914,11 +934,10 @@ export class RestService {
       let fechaCaptura = arrayGestionesCarta[i].fecha_captura;
       let latitud = arrayGestionesCarta[i].latitud;
       let longitud = arrayGestionesCarta[i].longitud;
+      let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}','${numero_contacto}',${id_motivo_no_pago},${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud} `
-      console.log("IdMotivoNoPago " + id_motivo_no_pago);
-      console.log("IdTipoPredio " + id_tipo_predio);
+      let sql = `${id_plaza},'${account}','${persona_atiende}','${numero_contacto}',${id_motivo_no_pago},${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
       console.log(sql);
       await this.enviarSQLCartaInvitacion(sql, id)
       resolve('Execute Query successfully');
@@ -1019,9 +1038,10 @@ export class RestService {
       let fechaCaptura = arrayGestionesInspeccionAgua[i].fechaCaptura;
       let latitud = arrayGestionesInspeccionAgua[i].latitud;
       let longitud = arrayGestionesInspeccionAgua[i].longitud;
+      let idServicioPlaza = arrayGestionesInspeccionAgua[i].id_servicio_plaza;
       let id = arrayGestionesInspeccionAgua[i].id;
 
-      let sql = `${id_plaza},'${account}','${personaAtiende}','${numeroContacto}','${puesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud}`;
+      let sql = `${id_plaza},'${account}','${personaAtiende}','${numeroContacto}','${puesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
       console.log(sql);
       await this.enviarSQLInspeccion(sql, id)
       resolve('Execute Query successfully');
@@ -1038,8 +1058,8 @@ export class RestService {
     return new Promise(resolve => {
       // cambiar apiObtenerInspectoresAgua por el api que envia la informacion
       console.log("Enviando...");
-      console.log(this.apiRegistroInspeccionAgua + " " + query)
-      this.http.post(this.apiRegistroInspeccionAgua + " " + query, null).subscribe(
+      console.log(this.apiRegistroInspeccion + " " + query)
+      this.http.post(this.apiRegistroInspeccion + " " + query, null).subscribe(
         async data => {
           await this.actualizarIdInspeccion(id);
           console.log(data);
@@ -1268,7 +1288,7 @@ export class RestService {
         // imagen string es el que manda al s3 y el nombre que en este caso es el imageName
         let idTarea = arrayImages[i].idTarea;
         if (idTarea == null) { idTarea = 0; }
-        this.uploadPhotoS3V1(arrayImages[i].cuenta, arrayImages[i].idAspUser, idTarea, arrayImages[i].fecha, arrayImages[i].tipo, imagenString, imageName, arrayImages[i].id, arrayImages[i].rutaBase64, i + 1, arrayImages[i].id_plaza).then(respImagen => {
+        this.uploadPhotoS3V1(arrayImages[i].cuenta, arrayImages[i].idAspUser, idTarea, arrayImages[i].fecha, arrayImages[i].tipo, imagenString, imageName, arrayImages[i].id, arrayImages[i].rutaBase64, i + 1, arrayImages[i].id_plaza, arrayImages[i].id_servicio_plaza).then(respImagen => {
           resolve(respImagen);
         });
       },
@@ -1281,7 +1301,7 @@ export class RestService {
   }
 
 
-  async uploadPhotoS3V1(cuenta, idAspuser, idTarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza) {
+  async uploadPhotoS3V1(cuenta, idAspuser, idTarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza, id_plaza_servicio) {
     return new Promise(async (resolve) => {
       try {
         this.s3Service.uploadS3(base64File, imageName).then(async uploadResponse => {
@@ -1290,11 +1310,11 @@ export class RestService {
             UrlOriginal = this.s3Service.getURLPresignaded(imageName);
             console.log('La url::::::')
             console.log(UrlOriginal)
-            await this.saveSqlServer(cuenta, idAspuser, imageName, idTarea, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza);
+            await this.saveSqlServer(cuenta, idAspuser, imageName, idTarea, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza, id_plaza_servicio);
             resolve(true);
           }
           else {
-            this.uploadPhotoS3V1(cuenta, idAspuser, idTarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza);
+            this.uploadPhotoS3V1(cuenta, idAspuser, idTarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza, id_plaza_servicio);
           }
         });
       } catch (err_1) {
@@ -1331,7 +1351,7 @@ export class RestService {
 
 
 
-  async saveSqlServer(cuenta, idAspuser, imageName, idTarea, fecha, tipo, id, url, ruta, cont, id_plaza) {
+  async saveSqlServer(cuenta, idAspuser, imageName, idTarea, fecha, tipo, id, url, ruta, cont, id_plaza, id_plaza_servicio) {
     console.log("id_plaza " + id_plaza);
     let a = url.split("&");
     let b = a[0];
@@ -1343,10 +1363,11 @@ export class RestService {
     console.log('La url partida')
     console.log(b2, b3, c, d)
     let idPlaza = id_plaza
-    let strinSql0 = `'${cuenta}','${idAspuser}','${imageName}',${idTarea},'${fecha}','${tipo}',${idPlaza},'${b2}','${b3}','${c}','${d}'`;
+    let strinSql0 = `'${cuenta}','${idAspuser}','${imageName}',${idTarea},'${fecha}','${tipo}',${id_plaza_servicio},${idPlaza},'${b2}','${b3}','${c}','${d}'`;
 
     return new Promise(resolve => {
       // cambiar api
+      console.log(this.apiRegistroFotos + " " + strinSql0);
       this.http.post(this.apiRegistroFotos + " " + strinSql0, null).subscribe(
         async data => {
           this.message.showToast(data[0].mensaje + ' ' + cont)

@@ -24,7 +24,9 @@ export class ImagePreviewPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.img = this.navParams.get('img');
+    this.img = this.navParams.get('imagen');
+    console.log("imagen");
+    console.log(this.img);
   }
 
   close() {

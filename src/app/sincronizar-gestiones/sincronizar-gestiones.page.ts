@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { RestService } from '../services/rest.service';
 
 @Component({
   selector: 'app-sincronizar-gestiones',
@@ -9,16 +10,31 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 })
 export class SincronizarGestionesPage implements OnInit {
 
+  servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
+
   constructor(
     private router: Router,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private rest: RestService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.obtenerServicios();
   }
 
-  syncAgua() {
-    this.router.navigateByUrl('/sincronizar-agua');
+
+  // ionViewDidEnter() {
+  //   this.obtenerServicios();
+  // }
+
+  async obtenerServicios() {
+    this.servicios = await this.rest.mostrarServiciosAll();
+    console.log(this.servicios);
+  }
+
+  sync(id_servicio) {
+    console.log(id_servicio);
+    //this.router.navigateByUrl('/sincronizar-agua');
   }
 
   syncPredio() {
@@ -27,14 +43,6 @@ export class SincronizarGestionesPage implements OnInit {
 
   syncServicios() {
     this.router.navigateByUrl('/sincronizar-servicios');
-  }
-
-  syncAntenas() {
-    this.router.navigateByUrl('/sincronizar-antenas');
-  }
-
-  syncPozos() {
-    this.router.navigateByUrl('/sincronizar-pozos');
   }
 
   navegar(tipo) {

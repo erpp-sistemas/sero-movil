@@ -54,6 +54,7 @@ export class SyncFotosAccionesPage implements OnInit {
 
 
   openPreview(imagen) {
+    console.log(imagen);
     this.modalCtrl.create({
       component: ImagePreviewPage,
       componentProps: {
