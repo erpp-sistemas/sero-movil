@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { RestService } from '../services/rest.service';
+import { Storage } from '@ionic/storage';
 
 
 
@@ -27,14 +28,22 @@ export class Tab3Page implements OnInit {
   descargaAntenas: boolean = false;
   descargaPozos: boolean = false;
 
+  selecciona: boolean = false; // manitra verde
+  plazasServicios: any; // para almacenar esto (select distinct id_plaza, plaza from serviciosPlazaUser)
+  servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
+
   constructor(
     private modalCtrl: ModalController,
     private router: Router,
-    private rest: RestService
+    private rest: RestService,
+    private platform: Platform,
+    private storage: Storage
   ) { }
 
   async ngOnInit() {
-
+    this.platform.ready().then(() => {
+      this.obtenerPlazasUsuario();
+    });
   }
 
 
@@ -42,69 +51,78 @@ export class Tab3Page implements OnInit {
     this.obtenerPlazasUsuario();
   }
 
-  async obtenerPlazasUsuario() {
-    let plazasRest = this.rest.obtenerPlazas();
-    this.plazas = (await plazasRest).plazas;
-    this.idPlazas = (await plazasRest).idPlazas;
-    this.id_plaza = this.idPlazas[0];
-  }
+  /**
+   * Metodo que obtiene las plazas y los ids guardadas en el storage por auth.service
+   */
+   async obtenerPlazasUsuario() {
 
-  async resultPlaza(event) {
-    console.log("idPlaza: " + this.id_plaza);
+    this.plazasServicios = await this.rest.obtenerPlazasSQL();
+    console.log(this.plazasServicios);
 
-    // verificar si el id_plaza escogida tiene un estatus true en el campo descargado de la tabla descargaServicios
-    // this.asignarSectores(this.plaza);
-    this.asignarSectores(this.id_plaza);
-    //console.log(event.detail.value);
-  }
+    // tomamos el primer registro para ponerlo como defauult en el select
+    this.id_plaza = this.plazasServicios[0].id_plaza;
 
-
-
-  async asignarSectores(idPlaza) {
-    console.log("idplaza a " + idPlaza);
-    const servicios = await this.rest.mostrarServicios(idPlaza);
-    //console.log("Servicios");
-    //console.log(servicios);
-    servicios.forEach(servicio => {
-      if (servicio.id_servicio == 1) {
-        this.agua = true;
-      } else if (servicio.id_servicio == 2) {
-        this.predio = true
-      } else if (servicio.id_servicio == 3) {
-        this.antenas = true;
-      } else if (servicio.id_servicio == 4) {
-        this.pozos = true;
-      }
-    });
-
-  }
-
-
-  async irAgua() {
-    this.router.navigate(["/google-maps", this.id_plaza]);
-  }
-
-
-  async googleMaps() {
-    this.router.navigateByUrl("/google-maps");
-  }
-
-  async irPozos() {
-    this.router.navigateByUrl("/pozo-conagua");
-  }
-
-  async cartografia() {
-    //this.router.navigateByUrl("/cartografia-s");
-  }
-
-  async irPredio() {
-    this.router.navigate(["/mapa-predio", this.id_plaza]);
-  }
-
-  async irAntenas() {
+    const servicios = await this.rest.mostrarServicios(this.id_plaza);
     
+    // En este punto ya se tiene el primer id_plaza obtenido de la base
+    this.mostrarServicios(servicios);
   }
 
+  /**
+   * Metodo que se ejcuta cuando cambian en selec option de la plazam este metodo tambien se ejecuta al inicio 
+   * @param event 
+   */
+   async resultPlaza(event) {
+    console.log(event.detail.value);
+    // si el idPlaza es diferente de 0 entonces verificar la descarga
+    if (this.id_plaza != 0) {
+      this.asignarSectores(this.id_plaza);
+    }
+  }
+ 
+
+  /**
+   * Metodo que activa los servicios segun la plaza que se pasa por parametro viene del result
+   * @param idPlaza 
+   */
+  async asignarSectores(idPlaza) {
+
+    // validacion para mostrar la manita verde
+    if (idPlaza == 0) {
+      this.selecciona = true;
+    } else {
+      this.selecciona = false;
+    }
+
+    this.servicios = await this.rest.mostrarServicios(idPlaza);
+    this.mostrarServicios(this.servicios);
+
+  }
+
+  // viene del obtenerPlazasUsuario
+  async mostrarServicios(servicios) {
+    console.log(servicios);
+    this.servicios = await this.rest.mostrarServicios(this.id_plaza)
+
+  }
+
+  async irMapa(idServicioPlaza) {
+    const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+    console.log(plaza_servicio);
+
+
+    await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
+    await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
+    await this.storage.set( 'IdServicioActivo', idServicioPlaza);
+
+    console.log("IdServicioActivo " + idServicioPlaza);
+    console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
+    console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
+
+
+    
+    this.router.navigate(['/google-maps', idServicioPlaza, this.id_plaza]);
+  }
 
 
 

@@ -3,7 +3,7 @@
     <name>Ser0 móvil</name>
     <description>Aplicación enfocada para la optimizaión de los procesos de recaudación</description>
     <author email="hi@ionicframework.com" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://localhost:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

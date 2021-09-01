@@ -123,6 +123,8 @@ export class GoogleMapsPage implements OnInit {
   result: any[];
   id_plaza: any;
   idServicioPlaza:any;
+  div:any;
+  compRef:ComponentRef<CustomTag>
 
   constructor(private ngZone: NgZone,
     private injector: Injector,
@@ -148,10 +150,24 @@ export class GoogleMapsPage implements OnInit {
     await this.getAccountInfo(this.id_plaza, this.idServicioPlaza);
   }
 
-  async ionViewDidEnter() {
-   
-  }
   
+  ionViewWillLeave() {
+    console.log("Saliendo");
+    this.markersArrayInfo = null;
+
+    
+    this.div.removeChild(this.compRef.location.nativeElement);
+    // Dynamic rendering
+    this.ngZone.run(() => {
+      this.htmlInfoWindow.empty();
+      this.htmlInfoWindow.close();
+    });
+
+    // Destroy the component when the htmlInfoWindow is closed.
+    this.htmlInfoWindow.one(GoogleMapsEvent.INFO_CLOSE).then(() => {
+      this.compRef.destroy();
+    });
+  }
 
   async loadMap(data) {
     //////////opciones del mapa
@@ -237,27 +253,27 @@ export class GoogleMapsPage implements OnInit {
 
       // Create a component
       const compFactory = this.resolver.resolveComponentFactory(CustomTag);
-      let compRef: ComponentRef<CustomTag> = compFactory.create(this.injector);
-      compRef.instance.account = marker.get("cuenta");
-      compRef.instance.owner = marker.get("propietario");
-      compRef.instance.debt = marker.get("deuda");
-      compRef.instance.position = marker.get("position");
+      this.compRef = compFactory.create(this.injector);
+      this.compRef.instance.account = marker.get("cuenta");
+      this.compRef.instance.owner = marker.get("propietario");
+      this.compRef.instance.debt = marker.get("deuda");
+      this.compRef.instance.position = marker.get("position");
       // compRef.instance.lng = marker.get("longitud");
 
-      this.appRef.attachView(compRef.hostView);
+      this.appRef.attachView(this.compRef.hostView);
 
-      let div = document.createElement('div');
-      div.appendChild(compRef.location.nativeElement);
+      this.div = document.createElement('div');
+      this.div.appendChild(this.compRef.location.nativeElement);
 
       // Dynamic rendering
       this.ngZone.run(() => {
-        this.htmlInfoWindow.setContent(div);
+        this.htmlInfoWindow.setContent(this.div);
         this.htmlInfoWindow.open(marker);
       });
 
       // Destroy the component when the htmlInfoWindow is closed.
       this.htmlInfoWindow.one(GoogleMapsEvent.INFO_CLOSE).then(() => {
-        compRef.destroy();
+        this.compRef.destroy();
       });
 
 
