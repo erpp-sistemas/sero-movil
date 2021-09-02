@@ -490,6 +490,33 @@ export class RestService {
   }
 
 
+  async getTotalGestionadas(idServicioPlaza) {
+    console.log('Obteniendo el total de las gestionadas');
+    let sql = 
+    "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 ) a";
+    try {
+      const response = await this.db.executeSql(sql, [idServicioPlaza]);
+      let result = response.rows.item(0).total;
+      return Promise.resolve(result);
+    } catch( error ) {
+      return Promise.reject(error);
+    }
+  }
+
+  getAccountsGestiones(idServicioPlaza) {
+    let sql = 
+    `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?
+    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ?`;
+    return this.db.executeSql(sql, [idServicioPlaza]).then(response => {
+      let accounts = [];
+      for (let i = 0; i < response.rows.length; i++) {
+        accounts.push(response.rows.item(i));
+      }
+      return Promise.resolve(accounts);
+    }).catch(error => Promise.reject(error));
+  }
+
+
   saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
     let sql =
       "INSERT INTO capturaFotos(id_plaza,nombre_plaza, imagenLocal,cuenta,fecha,rutaBase64,idAspuser,idTarea,tipo, id_servicio_plaza) values(?,?,?,?,?,?,?,?,?,?)";

@@ -111,6 +111,11 @@ const routes: Routes = [
     path: 'sync-fotos-servicios',
     loadChildren: () => import('./sync-fotos-servicios/sync-fotos-servicios.module').then( m => m.SyncFotosServiciosPageModule)
   },
+  {
+    path: 'sync-acciones/:id_servicio_plaza',
+    loadChildren: () => import('./sync-acciones/sync-acciones.module').then( m => m.SyncAccionesPageModule)
+  },
+
 ];
 
 @NgModule({

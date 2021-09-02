@@ -1,0 +1,65 @@
+<hr>
+<hr>
+<hr>
+<hr>
+<ion-content color="medium">
+
+  <ion-card color="medium">
+    <ion-card-header style="text-align: center;" color="medium">
+      <ion-button (click)="syncAccounts()">
+        <p style="color: white;">Enviar registros</p>
+        <ion-icon color="success" slot="end" name="cloud-upload"></ion-icon>
+      </ion-button>
+    </ion-card-header>
+  </ion-card>
+
+  <ion-virtual-scroll [items]="accounts">
+    <ion-item-sliding *virtualItem="let item;">
+      <ion-item color="medium">
+        <ion-label>
+          <p><strong>Cuenta: </strong>{{item.account}}</p>
+          <p><strong>Fecha captura: </strong>{{item.fechaCaptura}}</p>
+          <p><strong>Tarea: </strong>{{item.rol}}</p>
+          <p><strong>Plaza: </strong>{{item.nombre_plaza}}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- <ion-item-options side="start">
+        <ion-item-option color="danger" (click)="deleteAccount(item.account, item.rol)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="end">
+        <ion-item-option color="primary" (click)="syncAccount(item.account, item.rol)">
+          <ion-icon slot="icon-only" name="cloud-upload"></ion-icon>
+        </ion-item-option>
+      </ion-item-options> -->
+    </ion-item-sliding>
+  </ion-virtual-scroll>
+</ion-content>
+
+
+
+<ion-segment scrollable>
+  <ion-segment-button (click)="navegar(1)">
+    <ion-icon color="light" name="home"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(2)">
+    <ion-icon color="light" name="layers"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(3)">
+    <ion-icon color="light" name="map"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(4)">
+    <ion-icon color="light" name="warning"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(5)">
+    <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
+    <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
+  </ion-segment-button>
+</ion-segment>
