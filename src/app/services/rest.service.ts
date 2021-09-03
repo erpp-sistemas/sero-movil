@@ -489,13 +489,17 @@ export class RestService {
       .catch(error => Promise.reject(error));
   }
 
-
+  /**
+   * Metodo que trae el total de las gestiones realizadas por servicio
+   * @param idServicioPlaza 
+   * @returns Promise
+   */
   async getTotalGestionadas(idServicioPlaza) {
     console.log('Obteniendo el total de las gestionadas');
     let sql = 
     "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 ) a";
     try {
-      const response = await this.db.executeSql(sql, [idServicioPlaza]);
+      const response = await this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza]);
       let result = response.rows.item(0).total;
       return Promise.resolve(result);
     } catch( error ) {
@@ -503,11 +507,48 @@ export class RestService {
     }
   }
 
+  /**
+   * Metodo que obtiene el total de los registros de capturaFotos donde cargado = 0
+   * @returns Promise
+   */
+  async getTotalFotosAcciones() {
+    console.log("Obteniendo el total de las fotos de las acciones");
+    let sql = "SELECT count(*) AS total from capturaFotos WHERE cargado = 0 ";
+    try {
+      const response = await this.db.executeSql(sql, []);
+      let result = response.rows.item(0).total;
+      return Promise.resolve(result);
+    } catch(error) {
+      return Promise.reject(error);
+    }
+  }
+
+  /**
+   * Metodo que obtiene el total de registros de capturaFotosServicios donde cargado = 0
+   * @returns Promise
+   */
+  async getTotalFotosServicios() {
+    console.log("Obteniendo el total de las fotos de las acciones");
+    let sql = "SELECT count(*) AS total from capturaFotosServicios WHERE cargado = 0 ";
+    try {
+      const response = await this.db.executeSql(sql, []);
+      let result = response.rows.item(0).total;
+      return Promise.resolve(result);
+    } catch(error) {
+      return Promise.reject(error);
+    }
+  }
+
+  /**
+   * Metodo que trae las gestiones realizadas por servicio
+   * @param idServicioPlaza 
+   * @returns Promise
+   */
   getAccountsGestiones(idServicioPlaza) {
     let sql = 
     `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?
     UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ?`;
-    return this.db.executeSql(sql, [idServicioPlaza]).then(response => {
+    return this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza]).then(response => {
       let accounts = [];
       for (let i = 0; i < response.rows.length; i++) {
         accounts.push(response.rows.item(i));
@@ -761,21 +802,11 @@ export class RestService {
 
   /**
    * 
-   * @param id Metodo que actualiza el campo gestionada en 1 de la tabla agua
+   * @param id Metodo que actualiza el campo gestionada en 1
    * @returns executeSql
    */
   updateAccountGestionada(id) {
     let sql = 'UPDATE sero_principal SET gestionada = 1 WHERE id = ?';
-    return this.db.executeSql(sql, [id]);
-  }
-
-  /**
-   * Metodo que actualiza el campo gestionada de la tabla predio 
-   * @param id 
-   * @returns executeSql 
-   */
-  updateAccountGestionadaPredio(id) {
-    let sql = 'UPDATE predio SET gestionada = 1 WHERE id = ?';
     return this.db.executeSql(sql, [id]);
   }
 
@@ -794,37 +825,15 @@ export class RestService {
     }).catch(error => Promise.reject(error));
   }
 
-  /**
-   * Metodo que trae todas las cuentas gestionadas con el campo cargado = 0 de las tablas de inspeccion, carta y demas de agua
-   * @returns Promise con las cuentas gestionadas de agua
-   */
-  getAccountsGestionesAgua() {
-    let sql = 
-    `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0
-    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0`;
-    return this.db.executeSql(sql, []).then(response => {
-      let accounts = [];
-      for (let i = 0; i < response.rows.length; i++) {
-        accounts.push(response.rows.item(i));
-      }
-      return Promise.resolve(accounts);
-    }).catch(error => Promise.reject(error));
-  }
-
-  /**
-   * Metodo que trae las cuentas gestionadas con el campo cargado = 0de las tablas de inspeccion, carta y demas de predio
-   * @returns Promise con las cuentas gestionadas de predio
-   */
-  getAccountsGestionesPredio() {
-    let sql = `SELECT account, fechaCaptura, 'Inspección agua' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0
-    UNION ALL SELECT account, fecha_captura, 'Inspección predio' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0`;
-    return this.db.executeSql(sql, []).then(response => {
-      let accounts = [];
-      for (let i = 0; i < response.rows.length; i++) {
-        accounts.push(response.rows.item(i));
-      }
-      return Promise.resolve(accounts);
-    }).catch(error => Promise.reject(error));
+  async getTotalGestionesServicios() {
+    let sql = "SELECT COUNT(*) AS total FROM serviciosPublicos"
+    try {
+      const response = await this.db.executeSql(sql, []);
+      let result = response.rows.item(0).total;
+      return Promise.resolve(result);
+    } catch( error ) {
+      return Promise.reject(error);
+    }
   }
 
   async sendServiciosPublicos() {
@@ -890,6 +899,32 @@ export class RestService {
 
     })
   }
+
+  async sendCartaInvitacionByIdServicio(idServicioPlaza) {
+    console.log("Entrando a enviar la informacion de cartas invitacion del servicio " + idServicioPlaza);
+    try {
+      let arrayCuentasCarta = [];
+      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND is_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasCarta.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasCarta);
+
+      if (arrayCuentasCarta.length == 0) {
+        this.message.showToast("Sin registros de carta invitación por enviar");
+      } else {
+        this.avanceGestionesCarta = 0;
+        this.envioGestionesCarta(arrayCuentasCarta);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+
 
   async sendCartaInvitacion() {
     console.log("Entrando a enviar la informacion de cartas invitacion");
@@ -970,6 +1005,30 @@ export class RestService {
       resolve('Execute Query successfully');
 
     })
+  }
+
+
+  async sendInspeccionByIdServicio( idServicioPlaza ) {
+    console.log("Entrando a enviar la informacion del servicio " + idServicioPlaza);
+    try {
+      let arrayCuentasInspeccion = [];
+      let sql = 'SELECT * FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasInspeccion.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasInspeccion);
+
+      if (arrayCuentasInspeccion.length == 0) {
+        this.message.showToast("Sin registros de inspeccion por enviar");
+      } else {
+        this.avanceGestionesInspeccion = 0;
+        this.envioGestionesInspeccion(arrayCuentasInspeccion);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
 
@@ -1200,12 +1259,15 @@ export class RestService {
   }
 
   async uploadPhotosServicios() {
+    console.log("Mandar fotos servicios");
     let arrayImagesServicios = [];
-    let sql = "SELECT * FROM capturaFotosServicios where cargado = limit 20"
+    let sql = "SELECT * FROM capturaFotosServicios where cargado = 0 limit 20"
     let response = await this.db.executeSql(sql, []);
-    for (let i = 0; i > response.rows.length; i++) {
+    for (let i = 0; i < response.rows.length; i++) {
       arrayImagesServicios.push(response.rows.item(i));
     }
+
+    console.log(arrayImagesServicios);
 
     if (arrayImagesServicios.length == 0) {
       this.message.showAlert("Sin fotos para sincronizar");
@@ -1225,16 +1287,16 @@ export class RestService {
   avanceImagesServicios = 0;
 
   envioFotosServicios(arrayImagesServicios) {
-    if (this.avanceImages === arrayImagesServicios.length) {
+    if (this.avanceImagesServicios === arrayImagesServicios.length) {
       this.loading.dismiss();
       this.message.showAlert("Fotos enviadas con exito!!!!");
     } else {
-      this.sendImage(this.avanceImages, arrayImagesServicios).then(respEnvio => {
+      this.sendImageServicios(this.avanceImagesServicios, arrayImagesServicios).then(respEnvio => {
         if (respEnvio) {
           this.avanceImagesServicios++;
-          this.envioFotos(arrayImagesServicios);
+          this.envioFotosServicios(arrayImagesServicios);
         } else {
-          this.envioFotos(arrayImagesServicios);
+          this.envioFotosServicios(arrayImagesServicios);
         }
       })
     }
@@ -1457,18 +1519,18 @@ export class RestService {
   }
 
 
-  obtenerPlazaId(id_plaza) {
-    console.log('Traer el nombre de la plaza ' + id_plaza);
-    let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
+  // obtenerNombrePlazaId(id_plaza) {
+  //   console.log('Traer el nombre de la plaza ' + id_plaza);
+  //   let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
 
-    return this.db.executeSql(sql, [id_plaza]).then(response => {
-      let data = [];
-      for (let index = 0; index < response.rows.length; index++) {
-        data.push(response.rows.item(index));
-      }
-      console.log(data);
-      return Promise.resolve(data);
-    }).catch(error => Promise.reject(error));
-  }
+  //   return this.db.executeSql(sql, [id_plaza]).then(response => {
+  //     let data = [];
+  //     for (let index = 0; index < response.rows.length; index++) {
+  //       data.push(response.rows.item(index));
+  //     }
+  //     console.log(data);
+  //     return Promise.resolve(data);
+  //   }).catch(error => Promise.reject(error));
+  // }
 
 }

@@ -33,19 +33,19 @@
         <ion-card-content>
             <ion-item color="medium">
                 <ion-label>
-                    <p>Persona que atiende</p>
+                    <p>Persona que atiende: </p>
                 </ion-label>
                 <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"></ion-input>
             </ion-item>
             <ion-item color="medium">
                 <ion-label>
-                    <p>Número de contacto</p>
+                    <p>Número de contacto: </p>
                 </ion-label>
                 <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numeroContacto"></ion-input>
             </ion-item>
             <ion-item color="medium">
                 <ion-label>
-                    <p>Puesto</p>
+                    <p>Puesto: </p>
                 </ion-label>
                 <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="puesto"></ion-input>
             </ion-item>
@@ -76,7 +76,7 @@
             <div *ngIf="activaOtroMotivo">
                 <ion-item color="medium">
                     <ion-label>
-                        <p>Especifique</p>
+                        <p>Especifique: </p>
                     </ion-label>
                     <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="otroMotivo"></ion-input>
                 </ion-item>
@@ -145,7 +145,7 @@
 
             <ion-item color="medium">
                 <ion-label>
-                    <p>Referencia</p>
+                    <p>Referencia: </p>
                 </ion-label>
                 <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="referencia"></ion-input>
             </ion-item>
@@ -487,7 +487,7 @@
     <ion-grid>
         <ion-row>
             <ion-col size=12 class="ion-text-center">
-                <ion-button color="success" expand="block" (click)="verify()">Terminar</ion-button>
+                <ion-button shape="round" color="success" expand="block" (click)="verify()">Terminar</ion-button>
             </ion-col>
         </ion-row>
     </ion-grid>

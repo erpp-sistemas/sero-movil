@@ -7,6 +7,7 @@ import { MessagesService } from '../services/messages.service';
 import { ModalController, Platform, LoadingController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { Router } from '@angular/router';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 @Component({
   selector: 'app-servicios-publicos',
@@ -48,6 +49,11 @@ export class ServiciosPublicosPage implements OnInit {
   idServicioMandar: number; // este es el que se va a mandar a guardar en la tabla dependiendo si es la evidencia 1 o 2
   observacion: string = '';
   nombrePlaza: string = '';
+  plazasServicios: any;
+  idIncidencia1Selected: boolean = false;
+  idIncidencia2Selected: boolean = false;
+  colorIncidencia1: string = '';
+  colorIncidencia2: string = '';
 
   sliderOpts = {
     zoom: true,
@@ -66,7 +72,8 @@ export class ServiciosPublicosPage implements OnInit {
     private modalController: ModalController,
     private platform: Platform,
     private loadingController: LoadingController,
-    private router: Router
+    private router: Router,
+    private callNumber: CallNumber,
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
     this.imgs2 = [{ imagen: "assets/img/imgs.png" }];
@@ -77,24 +84,36 @@ export class ServiciosPublicosPage implements OnInit {
     this.idAspuser = await this.storage.get('IdAspUser');
   }
 
-  ionViewDidEnter() {
+  async ionViewDidEnter() {
+    await this.platform.ready();
     this.obtenerPlazasUsuario();
+    this.idIncidencia1Selected = false;
+    this.colorIncidencia1 = '';
+
+    this.idIncidencia2Selected = false;
+    this.colorIncidencia2 = '';
+
   }
 
 
   async obtenerPlazasUsuario() {
-    let plazasRest = this.rest.obtenerPlazas();
-    this.plazas = (await plazasRest).plazas;
-    this.idPlazas = (await plazasRest).idPlazas;
-    // plaza por default cambiara cuando abra el select option
-    this.id_plaza = this.idPlazas[0];
+    this.plazasServicios = await this.rest.obtenerPlazasSQL();
+    console.log(this.plazasServicios);
+
+    // tomamos el primer registro para ponerlo como defauult en el select
+    this.id_plaza = this.plazasServicios[0].id_plaza;
+    this.nombrePlaza = this.plazasServicios[0].plaza;
+
+    console.log("idPlaza " + this.id_plaza);
+    console.log("Nombre plaza " + this.nombrePlaza);
+    // const servicios = await this.rest.mostrarServicios(this.id_plaza);
   }
 
   async deletePhoto(img, numero_incidencia) {
     console.log(img);
     console.log(this.imgs);
 
-    if(numero_incidencia == 1) {
+    if (numero_incidencia == 1) {
       console.log("Borrar foto de incidencia 1");
       for (let i = 0; i < this.imgs.length; i++) {
         console.log(this.imgs[i].imagen);
@@ -104,7 +123,7 @@ export class ServiciosPublicosPage implements OnInit {
           console.log("No hay coincidencias");
         }
       }
-    } else if(numero_incidencia == 2) {
+    } else if (numero_incidencia == 2) {
       console.log("Borrar foto de incidencia 2");
       for (let i = 0; i < this.imgs2.length; i++) {
         console.log(this.imgs2[i].imagen);
@@ -122,23 +141,33 @@ export class ServiciosPublicosPage implements OnInit {
 
   async resultPlaza(event) {
     let idPlaza = event.detail.value;
-    const plaza = await this.rest.obtenerPlazaId(idPlaza);
-    console.log(plaza[0].plaza);
-    this.nombrePlaza = plaza[0].plaza;
+    let servicios = await this.rest.mostrarServicios(idPlaza);
+    this.nombrePlaza = servicios[0].plaza
+    console.log(this.nombrePlaza);
+  }
+
+  resultIncidencia(tipo) {
+    if (tipo == 1) {
+      this.idIncidencia1Selected = true;
+      this.colorIncidencia1 = 'primary'
+    } else if (tipo == 2) {
+      this.idIncidencia2Selected = true;
+      this.colorIncidencia2 = 'primary'
+    }
   }
 
   async takePic(type) {
     let tipo = 'Evidencia servicios públicos'
     if (type == 1) {
       this.idServicioMandar = this.idServicio;
-      this.photoEidencia1(tipo);
+      this.photoEvidencia1(tipo);
     } else if (type == 2) {
       this.idServicioMandar = this.idServicio2;
       this.photoEvidencia2(tipo);
     }
   }
 
-  photoEidencia1( tipo ) {
+  photoEvidencia1(tipo) {
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(
@@ -327,7 +356,6 @@ export class ServiciosPublicosPage implements OnInit {
 
           this.fechaCaptura = ionicDate.toISOString();
 
-
           let data = {
             id_plaza: this.id_plaza,
             nombrePlaza: this.nombrePlaza,
@@ -341,7 +369,6 @@ export class ServiciosPublicosPage implements OnInit {
           };
           await this.gestionServiciosPublicos(data);
           this.loading.dismiss();
-          this.exit();
 
         } // if
       }).catch(async (error) => {
@@ -384,16 +411,12 @@ export class ServiciosPublicosPage implements OnInit {
         };
         await this.gestionServiciosPublicos(data);
         this.loading.dismiss();
-        this.exit();
 
       }); // catch      
     }
 
   }
 
-  exit() {
-
-  }
 
   async gestionServiciosPublicos(data) {
     await this.rest.gestionServiciosPublicos(data);
@@ -413,6 +436,8 @@ export class ServiciosPublicosPage implements OnInit {
   mostrarIncidencias(event) {
     console.log(event.detail.value);
   }
+
+
 
 }
 

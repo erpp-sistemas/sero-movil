@@ -12,10 +12,10 @@ import { RestService } from '../services/rest.service';
 })
 export class SyncAccionesPage implements OnInit {
 
-  loading:any;
+  loading: any;
   id_servicio_plaza: any;
-  gestiones:any;
-  totalGestiones:any;
+  gestiones: any;
+  totalGestiones: any;
 
   constructor(
     private rest: RestService,
@@ -32,7 +32,7 @@ export class SyncAccionesPage implements OnInit {
     this.listadoGestiones(this.id_servicio_plaza);
   }
 
-  async listadoGestiones( idServicioPlaza ) {
+  async listadoGestiones(idServicioPlaza) {
     console.log("Cargando el listado de acciones del servicio " + idServicioPlaza);
     this.gestiones = null;
     this.loading = await this.loadingCtrl.create({
@@ -54,11 +54,26 @@ export class SyncAccionesPage implements OnInit {
   async getInfoCuentas(idServicioPlaza) {
     this.gestiones = await this.rest.getAccountsGestiones(idServicioPlaza);
     console.log(this.gestiones);
-    if(this.gestiones.length == 0) {
+    if (this.gestiones.length == 0) {
       this.message.showAlert("No tienes gestiones realizadas en este servicio!!!!");
       this.router.navigateByUrl('sincronizar-gestiones');
     }
   }
+
+  async syncAccounts() {
+    this.loading = await this.loadingCtrl.create({
+      message: 'Enviando información',
+      spinner: 'dots'
+    });
+
+    await this.loading.present();
+
+    await this.rest.sendInspeccionByIdServicio(this.id_servicio_plaza);
+    await this.rest.sendCartaInvitacionByIdServicio(this.id_servicio_plaza);
+    this.loading.dismiss();
+    this.router.navigateByUrl('home/tab1');
+  }
+
 
   navegar(tipo) {
     if (tipo == 1) {
@@ -76,6 +91,6 @@ export class SyncAccionesPage implements OnInit {
         .catch(err => console.log('Error launching dialer', err));
 
     }
-  } 
+  }
 
 }

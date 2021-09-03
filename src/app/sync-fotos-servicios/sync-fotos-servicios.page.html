@@ -13,8 +13,12 @@
       </ion-button>
     </ion-card-header>
   </ion-card>
-
   <hr>
+
+  <div style="text-align: center;">
+    <ion-chip mode="ios" color="secondary"> Total fotos: {{totalFotos}} </ion-chip>
+  </div>
+
   <ion-virtual-scroll [items]="infoImages">
     <ion-item-sliding color="medium" *virtualItem="let item; let indice = index">
       <ion-item color="medium">

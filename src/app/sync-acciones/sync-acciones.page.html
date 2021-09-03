@@ -13,7 +13,11 @@
     </ion-card-header>
   </ion-card>
 
-  <ion-virtual-scroll [items]="accounts">
+  <div style="text-align: center;">
+    <ion-chip color="success"> Total gestiones: {{totalGestiones}} </ion-chip>
+  </div>
+
+  <ion-virtual-scroll [items]="gestiones">
     <ion-item-sliding *virtualItem="let item;">
       <ion-item color="medium">
         <ion-label>

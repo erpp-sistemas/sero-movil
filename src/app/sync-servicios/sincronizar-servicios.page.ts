@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { MessagesService } from '../services/messages.service';
 
 
 
@@ -15,11 +16,13 @@ export class SincronizarServiciosPage implements OnInit {
 
   accounts:any;
   loading:any;
+  totalAccounts:any;
 
   constructor(
     private rest: RestService,
     private loadingCtrl: LoadingController,
     private router: Router,
+    private message: MessagesService,
     private callNumber: CallNumber
   ) { }
 
@@ -28,8 +31,33 @@ export class SincronizarServiciosPage implements OnInit {
   }
 
   async getAccounts() {
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Cargando el listado de servicios',
+      spinner: 'dots'
+    });
+
+    await this.loading.present();
+    
+    await this.getTotal();
+    await this.getInfoCuentas();
+
+    this.loading.dismiss();
+    
+  }
+
+  async getInfoCuentas() {
     this.accounts = await this.rest.getAccountsGestionesServicios();
     console.log("Servicios publicos: ", this.accounts);
+    if(this.accounts.length == 0) {
+      this.message.showAlert("No tienes gestiones realizadas de servicios públicos!!!!");
+      this.router.navigateByUrl('sincronizar-gestiones');
+    }
+  }
+
+  async getTotal() {
+    this.totalAccounts = await this.rest.getTotalGestionesServicios();
+    console.log("Total de gestiones " + this.totalAccounts);
   }
 
   async syncAccounts() {

@@ -5,10 +5,20 @@
 
 <ion-content color="medium">
 
-  <div style="text-align: center; font-size: 16px;">
-    <h5>Selecciona las acciones a enviar</h5>
-  </div>
+  <ion-card color="medium">
+    <ion-card-header style="text-align: center;" color="medium">
+      <ion-button (click)="syncAccounts()">
+        <p style="color: white;">Enviar todo</p>
+        <ion-icon style="font-size: 20px;" color="success" slot="end" name="cloud-upload"></ion-icon>
+      </ion-button>
+    </ion-card-header>
+  </ion-card>
 
+  <div style="text-align: center; font-size: 16px;">
+    <ion-chip color="secondary">Selecciona las acciones a enviar</ion-chip>
+    <ion-chip color="secondary">O presiona enviar todo</ion-chip>
+
+  </div>
   <hr>
 
   <ion-card *ngFor="let servicio of servicios" color="medium" (click)="sync(servicio.id_servicio)">

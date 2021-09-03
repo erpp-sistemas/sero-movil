@@ -22,6 +22,7 @@ export class SyncFotosAccionesPage implements OnInit {
   isHide: boolean = false
 
 
+
   constructor(
     private rest: RestService,
     private loadingCtrl: LoadingController,
@@ -31,8 +32,9 @@ export class SyncFotosAccionesPage implements OnInit {
     private callNumber: CallNumber
   ) { }
 
-  ngOnInit() {
-    this.getInfo();
+  async ngOnInit() {
+    await this.getTotalFotos();
+    await this.getInfo();
   }
 
 
@@ -47,11 +49,16 @@ export class SyncFotosAccionesPage implements OnInit {
 
     if (this.infoImages.length == 0) {
       this.mensaje.showAlert("No tienes fotos a sincronizar");
+      this.router.navigateByUrl('sincronizar-fotos');
     }
 
     this.loading.dismiss();
   }
 
+  async getTotalFotos() {
+    this.totalFotos = await this.rest.getTotalFotosAcciones();
+    console.log("Fotos acciones " , this.totalFotos);
+  }
 
   openPreview(imagen) {
     console.log(imagen);

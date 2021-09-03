@@ -348,7 +348,7 @@ export class GestionInspeccionAguaPage implements OnInit {
           fecha,
           rutaBase64,
           this.idAspuser,
-          this.idTareaGestor,
+          this.tareaAsignada,
           tipo,
           this.idServicioPlaza
         );

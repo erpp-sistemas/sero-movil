@@ -60,22 +60,6 @@ const routes: Routes = [
     loadChildren: () => import('./sincronizar-gestiones/sincronizar-gestiones.module').then( m => m.SincronizarGestionesPageModule)
   },
   {
-    path: 'sincronizar-agua',
-    loadChildren: () => import('./sincronizar-agua/sincronizar-agua.module').then( m => m.SincronizarAguaPageModule)
-  },
-  {
-    path: 'sincronizar-predio',
-    loadChildren: () => import('./sincronizar-predio/sincronizar-predio.module').then( m => m.SincronizarPredioPageModule)
-  },
-  {
-    path: 'sincronizar-antenas',
-    loadChildren: () => import('./sincronizar-antenas/sincronizar-antenas.module').then( m => m.SincronizarAntenasPageModule)
-  },
-  {
-    path: 'sincronizar-pozos',
-    loadChildren: () => import('./sincronizar-pozos/sincronizar-pozos.module').then( m => m.SincronizarPozosPageModule)
-  },
-  {
     path: 'video-presentacion',
     loadChildren: () => import('./video-presentacion/video-presentacion.module').then( m => m.VideoPresentacionPageModule)
   },
@@ -93,7 +77,7 @@ const routes: Routes = [
   },
   {
     path: 'sincronizar-servicios',
-    loadChildren: () => import('./sincronizar-servicios/sincronizar-servicios.module').then( m => m.SincronizarServiciosPageModule)
+    loadChildren: () => import('./sync-servicios/sincronizar-servicios.module').then( m => m.SincronizarServiciosPageModule)
   },
   {
     path: 'sincronizar-fotos',

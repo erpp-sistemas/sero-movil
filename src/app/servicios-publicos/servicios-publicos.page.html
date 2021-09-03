@@ -13,9 +13,9 @@
 
   <div class="texto-centrado">
     <p class="datos">
-      <ion-select style="color: #000000;" class="myCustomSelect text-center" interface="popover"
-        placeholder="Seleccionar plaza" [(ngModel)]="id_plaza" (ionChange)="resultPlaza( $event)">
-        <ion-select-option *ngFor="let plaza of plazas; index as i" [value]="idPlazas[i]">{{plaza |
+      <ion-select class="myCustomSelect" interface="popover" placeholder="Seleccionar plaza" [(ngModel)]="id_plaza" (ionChange)="resultPlaza( $event )">
+        <ion-select-option *ngFor="let plaza of plazasServicios; index as i" [value]="plaza.id_plaza">
+          {{plaza.plaza |
           titlecase}}
         </ion-select-option>
       </ion-select>
@@ -26,8 +26,34 @@
   <hr>
 
   <div style="text-align: center;">
-    <ion-chip color="success">Incidencia 1</ion-chip>
+    <ion-chip color="secondary">Incidencia 1</ion-chip>
   </div>
+
+  <ion-card color="medium">
+    <ion-card-header color="medium">
+      <p style="text-align: center;">Tipo de incidenia 1</p>
+    </ion-card-header>
+    <ion-card-content color="medium">
+      <p>
+        <ion-select interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idServicio"
+          (ionChange)="resultIncidencia(1)">
+          <ion-select-option value='1'>Fuga de agua</ion-select-option>
+          <ion-select-option value='2'>Falla en el suministro de agua </ion-select-option>
+          <ion-select-option value='3'>Coladera omisa o en mal estado </ion-select-option>
+          <ion-select-option value='4'>Bache</ion-select-option>
+          <ion-select-option value='5'>Pavimento en mal estado</ion-select-option>
+          <ion-select-option value='6'>Luminaria faltante o fundida</ion-select-option>
+          <ion-select-option value='7'>Señalamiento vial omiso o en mal estado</ion-select-option>
+          <ion-select-option value='8'>Aseo público</ion-select-option>
+          <ion-select-option value='9'>Zona de riesgo</ion-select-option>
+          <ion-select-option value='10'>Situación de riesgo</ion-select-option>
+          <ion-select-option value='11'>Inundación</ion-select-option>
+          <ion-select-option value='12'>Emergencia</ion-select-option>
+        </ion-select>
+      </p>
+    </ion-card-content>
+  </ion-card>
+
 
   <ion-card color="medium">
     <ion-card-header color="medium">
@@ -52,9 +78,10 @@
 
       <ion-grid style="text-align: center;">
         <ion-col>
-          <ion-button class="btn-camara" color="primary" (click)="takePic(1)">
+          <ion-button class="btn-camara" [color]="colorIncidencia1" [disabled]="!idIncidencia1Selected" (click)="takePic(1)">
             <ion-icon name="camera"></ion-icon>
           </ion-button>
+          <ion-ripple-effect></ion-ripple-effect>
         </ion-col>
       </ion-grid>
 
@@ -69,13 +96,24 @@
     </ion-card-content>
   </ion-card>
 
+
+
+  <hr>
+  <hr>
+
+  <div style="text-align: center;">
+    <ion-chip color="success">Incidencia 2</ion-chip>
+  </div>
+
+
   <ion-card color="medium">
     <ion-card-header color="medium">
-      <p style="text-align: center;">Tipo de incidenia 1</p>
+      <p style="text-align: center;">Tipo de incidenia 2</p>
     </ion-card-header>
     <ion-card-content color="medium">
       <p>
-        <ion-select interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idServicio">
+        <ion-select interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idServicio2"
+        (ionChange)="resultIncidencia(2)">
           <ion-select-option value='1'>Fuga de agua</ion-select-option>
           <ion-select-option value='2'>Falla en el suministro de agua </ion-select-option>
           <ion-select-option value='3'>Coladera omisa o en mal estado </ion-select-option>
@@ -92,13 +130,6 @@
       </p>
     </ion-card-content>
   </ion-card>
-
-  <hr>
-  <hr>
-
-  <div style="text-align: center;">
-    <ion-chip color="success">Incidencia 2</ion-chip>
-  </div>
 
   <ion-card color="medium">
     <ion-card-header color="medium">
@@ -123,7 +154,7 @@
 
       <ion-grid style="text-align: center;">
         <ion-col>
-          <ion-button class="btn-camara" color="primary" (click)="takePic(2)">
+          <ion-button class="btn-camara" [color]="colorIncidencia2" (click)="takePic(2)" [disabled]="!idIncidencia2Selected">
             <ion-icon name="camera"></ion-icon>
           </ion-button>
         </ion-col>
@@ -140,29 +171,6 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="medium">
-    <ion-card-header color="medium">
-      <p style="text-align: center;">Tipo de incidenia 2</p>
-    </ion-card-header>
-    <ion-card-content color="medium">
-      <p>
-        <ion-select interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idServicio2">
-          <ion-select-option value='1'>Fuga de agua</ion-select-option>
-          <ion-select-option value='2'>Falla en el suministro de agua </ion-select-option>
-          <ion-select-option value='3'>Coladera omisa o en mal estado </ion-select-option>
-          <ion-select-option value='4'>Bache</ion-select-option>
-          <ion-select-option value='5'>Pavimento en mal estado</ion-select-option>
-          <ion-select-option value='6'>Luminaria faltante o fundida</ion-select-option>
-          <ion-select-option value='7'>Señalamiento vial omiso o en mal estado</ion-select-option>
-          <ion-select-option value='8'>Aseo público</ion-select-option>
-          <ion-select-option value='9'>Zona de riesgo</ion-select-option>
-          <ion-select-option value='10'>Situación de riesgo</ion-select-option>
-          <ion-select-option value='11'>Inundación</ion-select-option>
-          <ion-select-option value='12'>Emergencia</ion-select-option>
-        </ion-select>
-      </p>
-    </ion-card-content>
-  </ion-card>
 
   <hr>
 
@@ -186,3 +194,6 @@
   </ion-grid>
 
 </ion-content>
+
+
+

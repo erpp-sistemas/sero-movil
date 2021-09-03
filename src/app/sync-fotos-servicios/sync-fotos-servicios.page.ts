@@ -31,8 +31,9 @@ export class SyncFotosServiciosPage implements OnInit {
   ) { }
 
   async ngOnInit() {
-   await this.getInfo();
-   console.log(this.infoImages);
+    await this.getTotalFotos();
+    await this.getInfo();
+    console.log(this.infoImages);
   }
 
   async getInfo() {
@@ -51,9 +52,14 @@ export class SyncFotosServiciosPage implements OnInit {
     this.loading.dismiss();
   }
 
+  async getTotalFotos() {
+    this.totalFotos = await this.rest.getTotalFotosServicios();
+    console.log("Total fotos servicios" + this.totalFotos);
+  }
+
 
   syncFotos() {
-    this.rest.uploadPhotos().then(() => {
+    this.rest.uploadPhotosServicios().then(() => {
       console.log("Se mandaron las fotos");
       this.router.navigateByUrl('/sincronizar-fotos');
     })

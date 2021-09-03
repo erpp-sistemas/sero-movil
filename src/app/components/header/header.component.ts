@@ -68,7 +68,7 @@ export class HeaderComponent implements OnInit {
   }
 
   servicios() {
-    this.router.navigateByUrl('/servicios-publicos');
+    this.router.navigateByUrl('/home/tab4');
     this.menuCtrl.close();
   }
 

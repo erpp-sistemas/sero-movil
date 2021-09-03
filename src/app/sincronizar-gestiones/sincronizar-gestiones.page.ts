@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { LoadingController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
 
 @Component({
@@ -10,12 +11,14 @@ import { RestService } from '../services/rest.service';
 })
 export class SincronizarGestionesPage implements OnInit {
 
-  servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
+  servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser)
+  loading:any;
 
   constructor(
     private router: Router,
     private callNumber: CallNumber,
-    private rest: RestService
+    private rest: RestService,
+    private loadingCtrl: LoadingController
   ) { }
 
   async ngOnInit() {
@@ -32,13 +35,25 @@ export class SincronizarGestionesPage implements OnInit {
     console.log(this.servicios);
   }
 
+  async syncAccounts() {
+    this.loading = await this.loadingCtrl.create({
+      message: 'Enviando información',
+      spinner: 'dots'
+    });
+
+    await this.loading.present();
+
+    await this.rest.sendInspeccion();
+    await this.rest.sendCartaInvitacion();
+
+    await this.rest.sendServiciosPublicos();
+    this.loading.dismiss();
+    this.router.navigateByUrl('home/tab1');
+  }
+
   sync(id_servicio) {
     console.log(id_servicio);
     this.router.navigate(['sync-acciones', id_servicio]);
-  }
-
-  syncPredio() {
-    this.router.navigateByUrl('/sincronizar-predio');
   }
 
   syncServicios() {
