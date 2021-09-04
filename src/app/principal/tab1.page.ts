@@ -52,7 +52,7 @@ export class Tab1Page implements OnInit {
 
   ionViewDidEnter() {
     this.platform.ready().then(() => {
-      //this.obtenerPlazasUsuario();
+      this.obtenerPlazasUsuario();
     });
   }
 

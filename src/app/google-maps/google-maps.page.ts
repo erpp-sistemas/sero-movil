@@ -81,27 +81,27 @@ export class CustomTag {
   }
 
   async goArcgis(account) {
-    
+
     const rutaArcgis = await this.storage.get('rutaArcgis');
     var url = rutaArcgis + '&find=' + account;
     //switch (idPlaza) {
-      // case '4': url = 'http://oscarvazquez.maps.arcgis.com/apps/webappviewer/index.html?id=632ea1dc115c4d3fa9960f80b88e37d1&find=' + account; break;
-      // case '7': url = 'https://sis-estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=8c5d59991b2c4676952f46a429ed1e2a&find=' + account; break;
-      // case '3': url = 'http://oscarvazquez.maps.arcgis.com/apps/webappviewer/index.html?id=632ea1dc115c4d3fa9960f80b88e37d1&find=' + account; break;
-      // case '8': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=bde50fa89665458ab23aca1323b980c4&find=' + account; break;
-      // case '10': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=1ff1f324e54e4b1eac49517ee239567f&find=' + account; break;
-      // case '9': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=6ce8f192dd3a415e94793f48054ea92b&find=' + account; break;
-      // case '13': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=09d157d58e464c57875e0b7e590d9b69&find=' + account; break;
-      // case '12': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=e2aa3190ed0245b596e6e890e84e15bc&find=' + account; break;
-      // case '11': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=e2aa3190ed0245b596e6e890e84e15bc&find=' + account; break;
-      // case '25': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=2737fe33e0a847039bdb3712984100d4&find=' + account; break;
-      // case '23': url = 'https://claudiagarcia.maps.arcgis.com/apps/webappviewer/index.html?id=27f6cc2518364b718d2f9e248f407393&find=' + account; break;
-      // case '27': url = 'https://claudiagarcia.maps.arcgis.com/apps/webappviewer/index.html?id=0decccf35bd14a6a8c68b277c51a7d1e&find=' + account; break;
-      // case '18': url = 'https://camiloerdm.maps.arcgis.com/apps/webappviewer/index.html?id=8b8e7f78b3af45ca8bcb3016e1ef7c0f&find=' + account; break;
-      // case '24': url = 'https://camiloerdm.maps.arcgis.com/apps/webappviewer/index.html?id=8b8e7f78b3af45ca8bcb3016e1ef7c0f&find=' + account; break;
-      
+    // case '4': url = 'http://oscarvazquez.maps.arcgis.com/apps/webappviewer/index.html?id=632ea1dc115c4d3fa9960f80b88e37d1&find=' + account; break;
+    // case '7': url = 'https://sis-estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=8c5d59991b2c4676952f46a429ed1e2a&find=' + account; break;
+    // case '3': url = 'http://oscarvazquez.maps.arcgis.com/apps/webappviewer/index.html?id=632ea1dc115c4d3fa9960f80b88e37d1&find=' + account; break;
+    // case '8': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=bde50fa89665458ab23aca1323b980c4&find=' + account; break;
+    // case '10': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=1ff1f324e54e4b1eac49517ee239567f&find=' + account; break;
+    // case '9': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=6ce8f192dd3a415e94793f48054ea92b&find=' + account; break;
+    // case '13': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=09d157d58e464c57875e0b7e590d9b69&find=' + account; break;
+    // case '12': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=e2aa3190ed0245b596e6e890e84e15bc&find=' + account; break;
+    // case '11': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=e2aa3190ed0245b596e6e890e84e15bc&find=' + account; break;
+    // case '25': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=2737fe33e0a847039bdb3712984100d4&find=' + account; break;
+    // case '23': url = 'https://claudiagarcia.maps.arcgis.com/apps/webappviewer/index.html?id=27f6cc2518364b718d2f9e248f407393&find=' + account; break;
+    // case '27': url = 'https://claudiagarcia.maps.arcgis.com/apps/webappviewer/index.html?id=0decccf35bd14a6a8c68b277c51a7d1e&find=' + account; break;
+    // case '18': url = 'https://camiloerdm.maps.arcgis.com/apps/webappviewer/index.html?id=8b8e7f78b3af45ca8bcb3016e1ef7c0f&find=' + account; break;
+    // case '24': url = 'https://camiloerdm.maps.arcgis.com/apps/webappviewer/index.html?id=8b8e7f78b3af45ca8bcb3016e1ef7c0f&find=' + account; break;
+
     //}
-    
+
     console.log(url)
     this.iab.create(url, "_system", { location: 'yes', zoom: 'yes' });
 
@@ -114,7 +114,7 @@ export class CustomTag {
   styleUrls: ['./google-maps.page.scss'],
 })
 export class GoogleMapsPage implements OnInit {
- 
+
   htmlInfoWindow = new HtmlInfoWindow();
   map: GoogleMap;
   markersArrayInfo: any;
@@ -122,9 +122,11 @@ export class GoogleMapsPage implements OnInit {
   accountString: string = "";
   result: any[];
   id_plaza: any;
-  idServicioPlaza:any;
-  div:any;
-  compRef:ComponentRef<CustomTag>
+  idServicioPlaza: any;
+  div: any;
+  compRef: ComponentRef<CustomTag>
+  markerCluster: MarkerCluster
+  compFactory: any;
 
   constructor(private ngZone: NgZone,
     private injector: Injector,
@@ -138,7 +140,7 @@ export class GoogleMapsPage implements OnInit {
     private mensaje: MessagesService,
     private activeRoute: ActivatedRoute,
     private callNumber: CallNumber
-    ) { }
+  ) { }
 
   async ngOnInit() {
     await this.platform.ready();
@@ -150,24 +152,60 @@ export class GoogleMapsPage implements OnInit {
     await this.getAccountInfo(this.id_plaza, this.idServicioPlaza);
   }
 
-  
+
   ionViewWillLeave() {
     console.log("Saliendo");
+    this.appRef.tick();
     this.markersArrayInfo = null;
-
-    
-    this.div.removeChild(this.compRef.location.nativeElement);
-    // Dynamic rendering
-    this.ngZone.run(() => {
-      this.htmlInfoWindow.empty();
-      this.htmlInfoWindow.close();
-    });
-
-    // Destroy the component when the htmlInfoWindow is closed.
-    this.htmlInfoWindow.one(GoogleMapsEvent.INFO_CLOSE).then(() => {
-      this.compRef.destroy();
-    });
+    this.map = null;
+    this.markerCluster.empty();
+    this.markerCluster.removeEventListener();
+    this.compFactory = null;
+    //this.compRef.destroy();
+    //this.appRef.detachView(this.compRef.hostView);
   }
+
+  async getAccountInfo(id_plaza, idServicioPlaza) {//realiza la carga de informacion que existe en la base interna sqlite
+
+
+    this.markersArrayInfo = await this.service.getDataVisitPosition(id_plaza, idServicioPlaza);
+
+    if (this.markersArrayInfo.length <= 0) {
+      // await this.setMarkers(this.markersArrayInfo);  
+      this.mensaje.showAlert('Tienes que descargar información para visualizar las cuentas en el mapa!!!!')
+      this.router.navigateByUrl('/home');
+      // this.toggleMenu();
+    } else {
+      this.loading = await this.loadingCtrl.create({
+        message: 'Cargando cuentas en el mapa...'
+      });
+      await this.loading.present();
+      await this.setMarkers(this.markersArrayInfo);
+    }
+
+
+  }
+
+
+  setMarkers(data) {//realiza un ciclo para la carga de los markers 
+    let array = []
+    for (let markers of data) {
+      let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
+      let marker = {
+        position: latlng,
+        cuenta: markers.cuenta,
+        propietario: markers.propietario,
+        deuda: markers.total,
+        icon: '../../assets/icon/gota.png'
+      }
+      array.push(marker)
+      
+    }
+    console.log("array", array)
+    this.loadMap(array)
+  }
+
+
 
   async loadMap(data) {
     //////////opciones del mapa
@@ -176,6 +214,8 @@ export class GoogleMapsPage implements OnInit {
       controls: {
         'compass': true,
         'myLocationButton': true,
+        'mapTypeControl': true,
+        'streetViewControl': true,
         'myLocation': true,   // (blue dot)
         'mapToolbar': true     // android only
       },
@@ -213,10 +253,12 @@ export class GoogleMapsPage implements OnInit {
     this.loading.dismiss();
   }
 
+
+
   addCluster(data) {
     console.log("entra")
     console.log(data)
-    let markerCluster: MarkerCluster = this.map.addMarkerClusterSync({
+    this.markerCluster = this.map.addMarkerClusterSync({
       markers: data,
       icons: [
         {
@@ -247,13 +289,13 @@ export class GoogleMapsPage implements OnInit {
 
 
 
-    markerCluster.on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
+    this.markerCluster.on(GoogleMapsEvent.MARKER_CLICK).subscribe((params) => {
 
       let marker: Marker = params.pop();
 
       // Create a component
-      const compFactory = this.resolver.resolveComponentFactory(CustomTag);
-      this.compRef = compFactory.create(this.injector);
+      this.compFactory = this.resolver.resolveComponentFactory(CustomTag);
+      this.compRef = this.compFactory.create(this.injector);
       this.compRef.instance.account = marker.get("cuenta");
       this.compRef.instance.owner = marker.get("propietario");
       this.compRef.instance.debt = marker.get("deuda");
@@ -281,39 +323,7 @@ export class GoogleMapsPage implements OnInit {
 
   }
 
-  setMarkers(data) {//realiza un ciclo para la carga de los markers 
-    let array = []
-    
-    for (let markers of data) {
-      let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
-      let marker = { position: latlng, cuenta: markers.cuenta, propietario: markers.nombre_propietario, deuda: markers.total }
-      array.push(marker)
-
-    }
-    console.log("array", array)
-    this.loadMap(array)
-  }
-
-  async getAccountInfo( id_plaza, idServicioPlaza ) {//realiza la carga de informacion que existe en la base interna sqlite
-
-
-    this.markersArrayInfo = await this.service.getDataVisitPosition( id_plaza, idServicioPlaza );
-
-    if (this.markersArrayInfo.length <= 0) {
-      // await this.setMarkers(this.markersArrayInfo);  
-      this.mensaje.showAlert('Tienes que descargar información para visualizar las cuentas en el mapa!!!!')
-      this.router.navigateByUrl('/home');
-      // this.toggleMenu();
-    } else {
-      this.loading = await this.loadingCtrl.create({
-        message: 'Cargando cuentas en el mapa...'
-      });
-      await this.loading.present();
-      await this.setMarkers(this.markersArrayInfo);
-    }
-
-
-  }
+ 
 
 
   goDetail() {
@@ -347,13 +357,21 @@ export class GoogleMapsPage implements OnInit {
 
   navegar(tipo) {
     if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
+      this.ngZone.run(() => {
+        this.router.navigateByUrl("home/tab1")
+      })
     } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
+      this.ngZone.run(() => {
+        this.router.navigateByUrl("home/tab2")
+      })
     } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
+      this.ngZone.run(() => {
+        this.router.navigateByUrl("home/tab3")
+      })
     } else if (tipo == 4) {
-      this.router.navigateByUrl('/servicios-publicos');
+      this.ngZone.run(() => {
+        this.router.navigateByUrl("home/tab4")
+      })
     } else if (tipo == 5) {
 
       this.callNumber.callNumber('18001010101', true)
@@ -363,7 +381,7 @@ export class GoogleMapsPage implements OnInit {
     }
   }
 
-  
+
 
 
 

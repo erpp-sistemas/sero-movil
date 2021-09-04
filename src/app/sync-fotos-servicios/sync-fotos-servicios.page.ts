@@ -82,7 +82,7 @@ export class SyncFotosServiciosPage implements OnInit {
     } else if (tipo == 3) {
       this.router.navigateByUrl('home/tab3');
     } else if (tipo == 4) {
-      this.router.navigateByUrl('/servicios-publicos');
+      this.router.navigateByUrl('home/tab4');
     } else if (tipo == 5) {
 
       this.callNumber.callNumber('18001010101', true)
