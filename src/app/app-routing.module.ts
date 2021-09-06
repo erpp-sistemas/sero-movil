@@ -40,10 +40,6 @@ const routes: Routes = [
     loadChildren: () => import('./google-maps/google-maps.module').then( m => m.GoogleMapsPageModule)
   },
   {
-    path: 'pozo-conagua',
-    loadChildren: () => import('./pozo-conagua/pozo-conagua.module').then( m => m.PozoConaguaPageModule)
-  },
-  {
     path: 'listado-cuentas/:id/:id_plaza',
     loadChildren: () => import('./listado-cuentas/listado-cuentas.module').then( m => m.ListadoCuentasPageModule)
   },

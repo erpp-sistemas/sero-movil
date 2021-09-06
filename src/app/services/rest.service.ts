@@ -22,8 +22,9 @@ export class RestService {
   apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
   apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion";
   apiRegistroInspeccion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion";
-  apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion"
-  apiRegistroServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_servicios_publicos"
+  apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion";
+  apiRegistroLegal = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_legal";
+  apiRegistroServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_servicios_publicos";
   apiRegistroFotos = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSero";
   apiRegistroFotosServicios = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSeroServicios";
 
@@ -612,22 +613,6 @@ export class RestService {
       .catch(error => Promise.reject(error));
   }
 
-  getInfoAccountPredio(account) {
-    let sql = "SELECT * from predio where cuenta = ?";
-    return this.db
-      .executeSql(sql, [account])
-      .then(response => {
-        let posiciones = [];
-
-        for (let index = 0; index < response.rows.length; index++) {
-          posiciones.push(response.rows.item(index));
-        }
-
-        return Promise.resolve(posiciones);
-      })
-      .catch(error => Promise.reject(error));
-  }
-
   getNombreInspectores(idPlaza) {
     return this.http.get<any>(this.apiObtenerInspectoresAgua + ' ' + idPlaza);
   }
@@ -799,6 +784,44 @@ export class RestService {
     ]);
   }
 
+  /**
+   * Merodo que inserta en la tabla gestionLegal la informacion capturada
+   * @param data 
+   * @returns Promise
+   */
+  gestionLegal( data ) {
+
+    this.updateAccountGestionada(data.id);
+
+    let sql = "INSERT INTO gestionLegal (id_plaza, nombre_plaza, account, persona_atiende, numero_contacto, puesto, id_motivo_no_pago, otro_motivo, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, id_tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+
+    return this.db.executeSql(sql, [
+      data.id_plaza,
+      data.nombrePlaza,
+      data.account,
+      data.personaAtiende,
+      data.numeroContacto,
+      data.puesto,
+      data.idMotivoNoPago,
+      data.otroMotivo,
+      data.idTipoServicio,
+      data.numeroNiveles,
+      data.clorFachada,
+      data.colorPuerta,
+      data.referencia,
+      data.idTipoPredio,
+      data.entreCalle1,
+      data.entreCalle2,
+      data.observaciones,
+      data.idAspUser,
+      data.idTarea,
+      data.fechaCaptura,
+      data.latitud,
+      data.longitud,
+      data.idServicioPlaza
+    ])
+
+  }
 
   /**
    * 
@@ -900,11 +923,112 @@ export class RestService {
     })
   }
 
+
+  async sendLegalByIdServicio(idServicioPlaza) {
+    console.log("Entrando a enviar la informacion de legal del servicio " + idServicioPlaza);
+    try {
+      let arrayCuentasLegal = [];
+      let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+      for (let i = 0; i < result.rows.length; i++ ) {
+        arrayCuentasLegal.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasLegal);
+
+      if(arrayCuentasLegal.length == 0) {
+        this.message.showToast("Sin registros legales para enviar");
+      } else {
+        this.avanceGestionesLegal = 0;
+        this.envioGestionesLegal(arrayCuentasLegal);
+      }
+    } catch( error ) {
+      return Promise.reject(error);
+    }
+  }
+
+
+  async sendLegal() {
+    console.log("Entrando a enviar la informacion de legal");
+    try {
+      let arrayCuentasLegal = [];
+      let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0';
+      const result = await this.db.executeSql(sql, []);
+      for (let i = 0; i < result.rows.length; i++ ) {
+        arrayCuentasLegal.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasLegal);
+
+      if(arrayCuentasLegal.length == 0) {
+        this.message.showToast("Sin registros legales para enviar");
+      } else {
+        this.avanceGestionesLegal = 0;
+        this.envioGestionesLegal(arrayCuentasLegal);
+      }
+    } catch( error ) {
+      return Promise.reject(error);
+    }
+  }
+
+  avanceGestionesLegal = 0
+
+  envioGestionesLegal(arrayGestionesLegal) {
+    console.log("envioGestionesLegal");
+    console.log(this.avanceGestionesLegal);
+
+    if (this.avanceGestionesLegal === arrayGestionesLegal.length) {
+      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
+    } else {
+      this.sendGestionesLegal(this.avanceGestionesLegal, arrayGestionesLegal).then(resp => {
+        if (resp) {
+          this.avanceGestionesLegal++;
+          this.envioGestionesLegal(arrayGestionesLegal);
+        } else {
+          this.envioGestionesLegal(arrayGestionesLegal);
+        }
+      })
+    }
+  }
+
+  sendGestionesLegal(i, arrayGestionesLegal) {
+    return new Promise( async (resolve, reject) => {
+      console.log(arrayGestionesLegal);
+
+      let id_plaza = arrayGestionesLegal[i].id_plaza
+      let account = arrayGestionesLegal[i].account;
+      let personaTiende = arrayGestionesLegal[i].persona_atiende;
+      let numeroContacto = arrayGestionesLegal[i].numero_contacto;
+      let puesto = arrayGestionesLegal[i].puesto;
+      let idMotivoNoPago = arrayGestionesLegal[i].id_motivo_no_pago;
+      let otroMotivo = arrayGestionesLegal[i].otro_motivo;
+      let idTipoServicio = arrayGestionesLegal[i].id_tipo_servicio;
+      let numeroNiveles = arrayGestionesLegal[i].numero_niveles;
+      let colorFachada = arrayGestionesLegal[i].color_fachada;
+      let colorPuerta = arrayGestionesLegal[i].colorPuerta;
+      let referencia = arrayGestionesLegal[i].referencia;
+      let idTipoPredio = arrayGestionesLegal[i].id_tipo_predio;
+      let entreCalle1 = arrayGestionesLegal[i].entre_Calle1;
+      let entreCalle2 = arrayGestionesLegal[i].entre_Calle2;
+      let observaciones = arrayGestionesLegal[i].observaciones;
+      let idAspUser = arrayGestionesLegal[i].idAspUser;
+      let idTarea = arrayGestionesLegal[i].id_tarea;
+      let fechaCaptura = arrayGestionesLegal[i].fecha_captura;
+      let latitud = arrayGestionesLegal[i].latitud; let longitud = arrayGestionesLegal[i].longitud;
+      let idServicioPlaza = arrayGestionesLegal[i].id_servicio_plaza
+      let id = arrayGestionesLegal[i].id;
+
+      let sql = `${id_plaza},'${account}','${personaTiende}','${numeroContacto}','${puesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
+      console.log(sql);
+      await this.enviarSQLGestionLegal(sql, id)
+      resolve('Execute Query successfully');
+
+    })
+  }
+
   async sendCartaInvitacionByIdServicio(idServicioPlaza) {
     console.log("Entrando a enviar la informacion de cartas invitacion del servicio " + idServicioPlaza);
     try {
       let arrayCuentasCarta = [];
-      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND is_servicio_plaza = ?';
+      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ?';
       const result = await this.db.executeSql(sql, [idServicioPlaza]);
 
       for (let i = 0; i < result.rows.length; i++) {
@@ -1162,6 +1286,7 @@ export class RestService {
     });
   }
 
+
   enviarSQLCartaInvitacion(query, id) {
     return new Promise(resolve => {
 
@@ -1169,6 +1294,26 @@ export class RestService {
       console.log(this.apiRegistroCartaInvitacion + " " + query);
       this.http.post(this.apiRegistroCartaInvitacion + " " + query, null).subscribe(async data => {
         await this.actualizarIdCartaInvitacion(id);
+        console.log(data);
+        resolve(data);
+      }, err => {
+        this.message.showAlert(
+          "No se pudo enviar la información, verifica tu red " + err
+        );
+        this.loadingCtrl.dismiss();
+        console.log(err);
+      }
+      )
+    })
+  }
+
+  enviarSQLGestionLegal(query, id) {
+    return new Promise(resolve => {
+
+      console.log("Enviando legal ...");
+      console.log(this.apiRegistroLegal + " " + query);
+      this.http.post(this.apiRegistroLegal + " " + query, null).subscribe(async data => {
+        await this.actualizarIdLegal(id);
         console.log(data);
         resolve(data);
       }, err => {
@@ -1215,6 +1360,11 @@ export class RestService {
 
   actualizarIdCartaInvitacion(id) {
     let sql = "UPDATE gestionCartaInvitacion SET cargado = 1 where id = ?"
+    return this.db.executeSql(sql, [id]);
+  }
+
+  actualizarIdLegal(id) {
+    let sql = "UPDATE gestionLegal SET cargado = 1 where id = ?"
     return this.db.executeSql(sql, [id]);
   }
 

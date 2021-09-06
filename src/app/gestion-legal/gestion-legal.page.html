@@ -10,11 +10,11 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="start">
-      <ion-chip class="plaza" color="success">
-        {{nombrePlaza}}
-      </ion-chip>
-      <ion-chip class="procedimiento" color="success">
+      <ion-chip class="procedimiento" color="secondary">
         Legal
+      </ion-chip>
+      <ion-chip class="plaza" color="secondary">
+        {{nombrePlaza}}
       </ion-chip>
     </ion-fab-list>
   </ion-fab>
@@ -22,6 +22,13 @@
   <hr>
   <hr>
   <hr>
+  <hr>
+  <hr>
+
+
+  <div style="text-align: center;">
+    <ion-chip color="success">Información contribuyente</ion-chip>
+  </div>
 
   <ion-card color="medium">
     <ion-card-content>
@@ -37,6 +44,12 @@
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numeroContacto"></ion-input>
       </ion-item>
+      <ion-item color="medium">
+        <ion-label>
+          <p>Puesto: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="puesto"></ion-input>
+      </ion-item>
     </ion-card-content>
   </ion-card>
 
@@ -49,10 +62,9 @@
           </p>
           <p>
             <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
-              [(ngModel)]="idMotivoNoPago" (ionChange)="cambioMotivoNoPago( $event )">
+              [(ngModel)]="idMotivoNoPago" (ionChange)="resultMotivoNoPago( $event )">
               <ion-select-option value="1">No quiero pagar</ion-select-option>
               <ion-select-option value="2">No tengo dinero</ion-select-option>
-              <ion-select-option value="3">Grupo vulnerable</ion-select-option>
               <ion-select-option value="4">Descontento con administración</ion-select-option>
               <ion-select-option value="5">Otro</ion-select-option>
             </ion-select>
@@ -60,23 +72,14 @@
         </ion-label>
       </ion-item>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>
-            <small>
-              Como considera el trabajo actual de la administración
-            </small>
-          </p>
-          <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
-              [(ngModel)]="idTrabajoActual">
-              <ion-select-option value="1">Bueno</ion-select-option>
-              <ion-select-option value="2">Regular</ion-select-option>
-              <ion-select-option value="3">Malo</ion-select-option>
-            </ion-select>
-          </p>
-        </ion-label>
-      </ion-item>
+      <div *ngIf="activaOtroMotivo">
+        <ion-item color="medium">
+          <ion-label>
+            <p>Especifique: </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="otroMotivo"></ion-input>
+        </ion-item>
+      </div>
 
     </ion-card-content>
   </ion-card>
@@ -98,15 +101,25 @@
           <p>
             <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
               [(ngModel)]="idTipoServicio">
-              <ion-select-option value="1">Comercial</ion-select-option>
-              <ion-select-option value="2">Residencial</ion-select-option>
+              <ion-select-option value="1">Domestico</ion-select-option>
+              <ion-select-option value="2">Comercial</ion-select-option>
               <ion-select-option value="3">Industrial</ion-select-option>
               <ion-select-option value="4">Gobierno</ion-select-option>
-              <ion-select-option value="5">No aplica</ion-select-option>
+              <ion-select-option value="5">Domectico / Comercial</ion-select-option>
+              <ion-select-option value="6">Residencial</ion-select-option>
+              <ion-select-option value="7">Departamental</ion-select-option>
             </ion-select>
           </p>
         </ion-label>
       </ion-item>
+
+      <hr>
+
+      <div style="text-align: center;">
+        <ion-chip color="success">Características del inmueble</ion-chip>
+      </div>
+
+      <hr>
 
       <ion-item color="medium">
         <ion-label>
@@ -127,6 +140,13 @@
           <p>Color puerta: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>Referencia: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="referencia"></ion-input>
       </ion-item>
 
       <ion-item color="medium">
@@ -194,19 +214,17 @@
       <ion-grid>
         <ion-row>
           <ion-col text-center>
-            <ion-button expand="block" color="primary" (click)="takePic(1)">
+            <ion-button expand="block" color="warning" (click)="takePic(1)">
+              <ion-icon name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Fachada Predio</ion-label>
+          </ion-col>
+          <ion-col text-center>
+            <ion-button expand="block" color="primary" (click)="takePic(2)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Evidencia</ion-label>
           </ion-col>
-
-          <ion-col text-center>
-            <ion-button expand="block" color="warning" (click)="takePic(2)">
-              <ion-icon name="camera"></ion-icon>
-            </ion-button>
-            <ion-label class="fotos-visita">Predio</ion-label>
-          </ion-col>
-
         </ion-row>
 
       </ion-grid>

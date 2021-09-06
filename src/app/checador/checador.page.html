@@ -1,26 +1,17 @@
-<hr><hr><hr><hr>
+<hr>
+<hr>
+<hr>
+<hr>
 
+<div id="map_canvas"></div>
 <ion-content color="medium">
-  <hr>
-
-  <div style="text-align: center;">
-    <h3 style="color: white;">Cheador Ser0</h3>
-  </div>
-  <hr><hr>
-
-  <div style="text-align: center;">
-    <ion-chip color="success">Presione el botón</ion-chip>
-  </div>
-  <hr>
-  <div style="text-align: center;">
-    <ion-chip color="success">para escanear el código</ion-chip>
-  </div>
-
-  <hr> <hr> <hr>
-
-  <div style="text-align: center;">
-    <img (click)="scan()" class="logo-checador" src="../../assets/img/logo-checador.jpg" alt="">
-  </div>
+  <ion-card color="medium">
+    <ion-card-content text-center>
+      <ion-button color="tertiary" expand="block" (click)="confirmarRegistroEntrada()">Checar Entrada</ion-button>
+      <hr>
+      <ion-button color="tertiary" expand="block" (click)="confirmarRegistroSalida()">Checar Salida</ion-button>
+    </ion-card-content>
+  </ion-card>
 
 
 </ion-content>
