@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from "@ionic/storage";
 import { MessagesService } from '../services/messages.service';
-import { ModalController, Platform, LoadingController, NavController } from '@ionic/angular';
+import { ModalController, Platform, LoadingController, NavController, AlertController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
@@ -19,8 +19,9 @@ export class GestionLegalPage implements OnInit {
   account: string = "";
   imgs: any;
   personaAtiende: string = '';
-  numeroContacto: string = '';
-  puesto: string = '';
+  //numeroContacto: string = '';
+  idPuesto: number = 0;
+  otroPuesto: string = '';
   idMotivoNoPago: number = 0;
   otroMotivo: string = '';
   idTipoServicio: number = 0;
@@ -59,6 +60,7 @@ export class GestionLegalPage implements OnInit {
   nombrePlaza: any;
   id_plaza: any;
   idServicioPlaza: number = 0;
+  mostrarOtroPuesto: boolean = false;
 
 
   sliderOpts = {
@@ -80,7 +82,8 @@ export class GestionLegalPage implements OnInit {
     private camera: Camera,
     private webview: WebView,
     private navCtrl: NavController,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private alertCtrl: AlertController
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -88,8 +91,9 @@ export class GestionLegalPage implements OnInit {
   async ngOnInit() {
     await this.platform.ready();
     this.getInfoAccount();
-    this.getFechaActual();
     this.getPlaza();
+    this.getFechaActual();
+    this.idServicioPlaza = await this.storage.get('IdServicioActivo');
   }
 
   ionViewWillLeave() {
@@ -114,8 +118,8 @@ export class GestionLegalPage implements OnInit {
     this.idAccountSqlite = this.infoAccount[0].id;
     this.idTareaGestor = this.infoAccount[0].id_tarea;
     let gestionada = this.infoAccount[0].gestionada;
-    this.idTareaGestor = this.infoAccount[0].tarea_asignada;
-    this.tipoServicioPadron = this.infoAccount[0].tipoServicio;
+    this.tareaAsignada = this.infoAccount[0].tarea_asignada;
+    this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
 
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
@@ -133,6 +137,15 @@ export class GestionLegalPage implements OnInit {
 
     this.fechaActual = ionicDate.toISOString();
     let fecha = this.fechaActual.split("T");
+  }
+
+  resultIdPuesto( event ) {
+    let opcion = event.detail.value;
+    if(opcion == 6) {
+      this.mostrarOtroPuesto = true;
+    } else {
+      this.mostrarOtroPuesto = false;
+    }
   }
 
   resultMotivoNoPago(event) {
@@ -239,6 +252,8 @@ export class GestionLegalPage implements OnInit {
           message: 'Guardando la gestión...'
         });
 
+        console.log(resp);
+
         await this.loading.present();
 
         var dateDay = new Date().toISOString();
@@ -261,8 +276,9 @@ export class GestionLegalPage implements OnInit {
           nombrePlaza: this.nombrePlaza,
           account: this.account,
           personaAtiende: this.personaAtiende,
-          numeroContacto: this.numeroContacto,
-          puesto: this.puesto,
+          //numeroContacto: this.numeroContacto,
+          idPuesto: this.idPuesto,
+          otroPuesto: this.otroPuesto,
           idMotivoNoPago: this.idMotivoNoPago,
           otroMotivo: this.otroMotivo,
           idTipoServicio: this.idTipoServicio,
@@ -286,7 +302,11 @@ export class GestionLegalPage implements OnInit {
         this.loading.dismiss();
         this.exit();
       }
-    }).catch(error => this.mensaje.showAlert("No se obtivo la geoposición, verifica gps!!!!"))
+    }).catch(error => {
+      this.loading.dismiss();
+      console.log(error);
+      this.mensaje.showAlert("Hubo un problema al realizar la gestión!!!!")
+    })
   }
 
   async gestionLegal( data ) { 
@@ -316,7 +336,36 @@ export class GestionLegalPage implements OnInit {
     console.log(this.infoImage[0]);
   }
 
+
+  async salida( tipo ) {
+    const alert = await this.alertCtrl.create({
+      header: "Salir",
+      subHeader: "Confirme para salir de la gestión, se perderan los cambios ",
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            this.navegar(tipo)
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+
+
   navegar(tipo) {
+
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');
     } else if (tipo == 2) {

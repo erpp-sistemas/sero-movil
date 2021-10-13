@@ -1,6 +1,13 @@
-<hr><hr><hr><hr><hr>
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
 
 <ion-content [fullscreen]="true" color="medium">
+
+
+
   <div class="resumen-cuentas">
     <ion-chip *ngIf="total" color="secondary">Total: {{total}}</ion-chip>
     <ion-chip color="success">Gestionadas: {{gestionadas}}</ion-chip>
@@ -11,14 +18,22 @@
 
   <div class="contenedor">
 
+
+
+    <div class="coincidencia" *ngFor="let coincidencia of accountBusqueda; let i = index ">
+      <div *ngIf="findText.length > 3 && i == 0">
+        <p>Coincidencias: {{(accountBusqueda | filtro:findText).length}} </p>
+      </div>
+    </div>
+
     <ion-virtual-scroll [items]="account | filtro : findText">
 
-      <ion-item-sliding *virtualItem = "let item" color="white">
+      <ion-item-sliding *virtualItem="let item" color="white">
 
         <ion-item-options side="start">
 
           <ion-item-option color="secondary" (click)="goPanoramaView(item)">
-            <ion-icon slot="icon-only" name="walk"></ion-icon>
+            <ion-icon class="icon-listado" slot="icon-only" name="walk"></ion-icon>
           </ion-item-option>
 
           <ion-item-option (click)="openLink(item)" color="light">
@@ -43,13 +58,13 @@
         <ion-item-options side="end">
 
           <ion-item-option color="tertiary" (click)="gestionarCuenta(item.cuenta)">
-            <ion-icon slot="icon-only" name="document"></ion-icon>
+            <ion-icon class="icon-listado" slot="icon-only" name="reader-outline"></ion-icon>
           </ion-item-option>
 
         </ion-item-options>
 
       </ion-item-sliding>
-  </ion-virtual-scroll>
+    </ion-virtual-scroll>
   </div>
 </ion-content>
 

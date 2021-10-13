@@ -50,48 +50,48 @@ export class ChecadorPage implements OnInit {
     await this.loadMap();
   }
 
-  async obtenerUbicacion() {
-    this.geolocation.getCurrentPosition().then(resp => {
+  // async obtenerUbicacion() {
+  //   this.geolocation.getCurrentPosition().then(resp => {
 
-      this.latitud = resp.coords.latitude;
-      this.longitud = resp.coords.longitude;
+  //     this.latitud = resp.coords.latitude;
+  //     this.longitud = resp.coords.longitude;
 
-      const map = new google.maps.Map(document.getElementById('map_canvas'), {
-        center: {
-          lat: this.latitud,
-          lng: this.longitud
-        },
-        zoom: 12
-      });
+  //     const map = new google.maps.Map(document.getElementById('map_canvas'), {
+  //       center: {
+  //         lat: this.latitud,
+  //         lng: this.longitud
+  //       },
+  //       zoom: 12
+  //     });
 
-      const pos = {
-        lat: this.latitud,
-        lng: this.longitud
-      };
+  //     const pos = {
+  //       lat: this.latitud,
+  //       lng: this.longitud
+  //     };
 
-      map.setCenter(pos);
-      const icon = {
-        url: 'assets/icon/user.png', // image url
-        scaledSize: new google.maps.Size(50, 50), // scaled size
-      };
+  //     map.setCenter(pos);
+  //     const icon = {
+  //       url: 'assets/icon/user.png', // image url
+  //       scaledSize: new google.maps.Size(50, 50), // scaled size
+  //     };
 
-      const marker = new google.maps.Marker({
-        position: pos,
-        map: map,
-        title: 'Posición actual',
-        icon: icon
-      });
+  //     const marker = new google.maps.Marker({
+  //       position: pos,
+  //       map: map,
+  //       title: 'Posición actual',
+  //       icon: icon
+  //     });
 
-      const infowindow = new google.maps.InfoWindow({
-        content: 'Hola',
-        maxWidth: 400
-      });
-      marker.addListener('click', function () {
-        infowindow.open(map, marker);
-      });
+  //     const infowindow = new google.maps.InfoWindow({
+  //       content: 'Hola',
+  //       maxWidth: 400
+  //     });
+  //     marker.addListener('click', function () {
+  //       infowindow.open(map, marker);
+  //     });
 
-    })
-  }
+  //   })
+  // }
 
 
   async loadMap() {
@@ -133,8 +133,7 @@ export class ChecadorPage implements OnInit {
       let marker: Marker = this.map.addMarkerSync({
         title: 'Mi ubicación actual',
         position: location.latLng,
-        animation: GoogleMapsAnimation.BOUNCE,
-        icon: '../../assets/icon/user.png'
+        animation: GoogleMapsAnimation.BOUNCE
       });
       marker.showInfoWindow();
 

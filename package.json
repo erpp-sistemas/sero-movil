@@ -20,6 +20,7 @@
     "@angular/platform-browser": "~12.0.1",
     "@angular/platform-browser-dynamic": "~12.0.1",
     "@angular/router": "~12.0.1",
+    "@ionic-native/background-geolocation": "^5.36.0",
     "@ionic-native/barcode-scanner": "^5.36.0",
     "@ionic-native/base64": "^5.36.0",
     "@ionic-native/call-number": "^5.35.0",
@@ -41,12 +42,12 @@
     "@ionic/storage": "^2.2.0",
     "aws-sdk": "^2.939.0",
     "buffer": "^5.4.0",
-    "cordova-android": "9.1.0",
     "cordova-plugin-add-swift-support": "^2.0.2",
     "cordova-plugin-geolocation": "^4.0.2",
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-nativegeocoder": "^3.4.1",
     "firebase": "^8.6.8",
+    "gl-ionic-background-video": "0.0.5",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "util": "^0.12.4",
@@ -63,6 +64,7 @@
     "@angular/compiler-cli": "~12.0.1",
     "@angular/language-service": "~12.0.1",
     "@ionic/angular-toolkit": "^4.0.0",
+    "@mauron85/cordova-plugin-background-geolocation": "^3.1.0",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.20.15",
@@ -137,9 +139,18 @@
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       }
+      ,
+      "cordova-plugin-background-geolocation": {
+        "GOOGLE_PLAY_SERVICES_VERSION": "11+",
+        "ANDROID_SUPPORT_LIBRARY_VERSION": "26+",
+        "ICON": "@mipmap/icon",
+        "SMALL_ICON": "@mipmap/icon",
+        "ACCOUNT_NAME": "@string/app_name",
+        "ACCOUNT_LABEL": "@string/app_name",
+        "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
+        "CONTENT_AUTHORITY": "$PACKAGE_NAME"
+      }
     },
-    "platforms": [
-      "android"
-    ]
+    "platforms": []
   }
 }

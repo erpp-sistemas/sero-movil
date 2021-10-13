@@ -6,7 +6,7 @@ import { NoLoginGuard } from './guards/no-login.guard';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'video-presentacion',
+    redirectTo: 'inicio-temp',
     pathMatch: 'full'
   },
   {
@@ -68,10 +68,6 @@ const routes: Routes = [
     loadChildren: () => import('./servicios-publicos/servicios-publicos.module').then( m => m.ServiciosPublicosPageModule)
   },
   {
-    path: 'mapa-predio/:id_plaza',
-    loadChildren: () => import('./mapa-predio/mapa-predio.module').then( m => m.MapaPredioPageModule)
-  },
-  {
     path: 'sincronizar-servicios',
     loadChildren: () => import('./sync-servicios/sincronizar-servicios.module').then( m => m.SincronizarServiciosPageModule)
   },
@@ -95,6 +91,11 @@ const routes: Routes = [
     path: 'sync-acciones/:id_servicio_plaza',
     loadChildren: () => import('./sync-acciones/sync-acciones.module').then( m => m.SyncAccionesPageModule)
   },
+  {
+    path: 'inicio-temp',
+    loadChildren: () => import('./inicio-temp/inicio-temp.module').then( m => m.InicioTempPageModule)
+  },
+
 
 ];
 

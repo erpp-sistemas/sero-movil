@@ -17,8 +17,8 @@ import { LoginPage } from '../login/login.page';
 })
 export class AuthService {
 
-  apiUrlSectoresPlazas = 'http://localhost:3000/users/';
-  apiObtenerServiciosUser = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios"
+  apiObtenerServiciosUser = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios";
+  apiObtenerServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios_publicos";
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
@@ -53,6 +53,7 @@ export class AuthService {
               createSubscribe.unsubscribe();
               // guardar la informacion del usuario en el storage
               this.saveUserInfoStorage(this.userInfo);
+              this.obtenerServiciosPublicos();
               this.getServicesPlazaUser(this.userInfo.idaspuser);
               await this.storage.set("idFireBase", id);
               await this.storage.set("ActivateApp", 1);
@@ -69,6 +70,7 @@ export class AuthService {
                 createSubscribe.unsubscribe();
                 this.mensaje.showAlert("Bienvenid@ " + nombreUser);
                 this.saveUserInfoStorage(this.userInfo);
+                this.obtenerServiciosPublicos();
                 this.getServicesPlazaUser(this.userInfo.idaspuser);
                 resolve(nombreUser)
               }
@@ -76,6 +78,7 @@ export class AuthService {
                 console.log("Correo en el storage diferente al ingresado, puede ser null el correo en el storage");
                 createSubscribe.unsubscribe();
                 this.saveUserInfoStorage(this.userInfo);
+                this.obtenerServiciosPublicos();
                 this.getServicesPlazaUser(this.userInfo.idaspuser);
                 let nombreUsuario = await this.storage.get("Nombre")
                 await this.storage.set("idFireBase", id)
@@ -127,41 +130,59 @@ export class AuthService {
     });
   }
 
-  async getPlazaInfo() {
-    const idplaza = await this.storage.get('IdPlaza');
-
-    return new Promise( (resolve, reject ) => {
-      const sectores = [
-        {
-          id_plaza: 1,
-          nombre: 'Leon Guanajuato',
-          id_sector: 1,
-          nombre_sector: 'agua'
-        },
-        {
-          id_plaza: 1,
-          nombre: 'Leon Guanajuato',
-          id_sector: 2,
-          nombre_sector: 'predio'
-        },
-        {
-          id_plaza: 1,
-          nombre: 'Leon Guanajuato',
-          id_sector: 4,
-          nombre_sector: 'antenas'
-        }
-      ]
-      resolve(sectores);
+  async obtenerServiciosPublicos() {
+    console.log("obteniendo los servicios publicos");
+    await this.rest.deleteServiciosPublicos();
+    this.http.get(this.apiObtenerServiciosPublicos).subscribe(data => {
+      console.log(data);
+      this.insertarServiciosPublicos(data);
     })
-    
-    // return new Promise( resolve => {
-    //   this.http.get(this.apiUrlSectoresPlazas + ' ' + idplaza).subscribe( data => {
-    //     console.log(data);
-    //     resolve(data)
-    //   })
-    // });
 
   }
+
+  insertarServiciosPublicos(data) {
+    data.forEach(servicio => {
+      this.rest.insertarServicioPublicoSQL(servicio);
+    });
+  }
+
+  
+
+  // async getPlazaInfo() {
+  //   const idplaza = await this.storage.get('IdPlaza');
+
+  //   return new Promise( (resolve, reject ) => {
+  //     const sectores = [
+  //       {
+  //         id_plaza: 1,
+  //         nombre: 'Leon Guanajuato',
+  //         id_sector: 1,
+  //         nombre_sector: 'agua'
+  //       },
+  //       {
+  //         id_plaza: 1,
+  //         nombre: 'Leon Guanajuato',
+  //         id_sector: 2,
+  //         nombre_sector: 'predio'
+  //       },
+  //       {
+  //         id_plaza: 1,
+  //         nombre: 'Leon Guanajuato',
+  //         id_sector: 4,
+  //         nombre_sector: 'antenas'
+  //       }
+  //     ]
+  //     resolve(sectores);
+  //   })
+    
+  //   // return new Promise( resolve => {
+  //   //   this.http.get(this.apiUrlSectoresPlazas + ' ' + idplaza).subscribe( data => {
+  //   //     console.log(data);
+  //   //     resolve(data)
+  //   //   })
+  //   // });
+
+  // }
 
   saveUserInfoStorage(userInfo: any) {
     this.storage.set('Nombre', userInfo.name);

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -66,6 +66,9 @@ import { Base64 } from "@ionic-native/base64/ngx";
 // Scanner
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'
 
+// BackGroundGeolocation
+//import { BackgroundGeolocation } from "@ionic-native/background-geolocation/ngx";
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -100,6 +103,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'
     EmailComposer,
     Base64,
     BarcodeScanner,
+    //BackgroundGeolocation,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

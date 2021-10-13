@@ -14,11 +14,7 @@
     </ion-card-header>
   </ion-card>
 
-  <div style="text-align: center; font-size: 16px;">
-    <ion-chip color="secondary">Selecciona las acciones a enviar</ion-chip>
-    <ion-chip color="secondary">O presiona enviar todo</ion-chip>
 
-  </div>
   <hr>
 
   <ion-card *ngFor="let servicio of servicios" color="medium" (click)="sync(servicio.id_servicio)">

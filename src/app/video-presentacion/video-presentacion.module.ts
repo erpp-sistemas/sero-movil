@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -8,6 +8,8 @@ import { VideoPresentacionPageRoutingModule } from './video-presentacion-routing
 
 import { VideoPresentacionPage } from './video-presentacion.page';
 //import { VideoPlayer } from '@ionic-native/video-player/ngx';
+
+
 
 @NgModule({
   imports: [
@@ -19,6 +21,7 @@ import { VideoPresentacionPage } from './video-presentacion.page';
   providers: [
     //VideoPlayer
   ],
-  declarations: [VideoPresentacionPage]
+  declarations: [VideoPresentacionPage],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class VideoPresentacionPageModule {}

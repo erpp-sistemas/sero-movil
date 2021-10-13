@@ -37,18 +37,39 @@
                 </ion-label>
                 <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"></ion-input>
             </ion-item>
-            <ion-item color="medium">
+            <!-- <ion-item color="medium">
                 <ion-label>
                     <p>Número de contacto: </p>
                 </ion-label>
                 <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numeroContacto"></ion-input>
-            </ion-item>
+            </ion-item> -->
+
             <ion-item color="medium">
                 <ion-label>
-                    <p>Puesto: </p>
+                    <p>
+                        Seleccione el puesto:
+                    </p>
+                    <p>
+                        <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+                            [(ngModel)]="idPuesto" (ionChange)="resultIdPuesto( $event )">
+                            <ion-select-option value="1">Representante legal</ion-select-option>
+                            <ion-select-option value="2">Gerente</ion-select-option>
+                            <ion-select-option value="3">Encargado</ion-select-option>
+                            <ion-select-option value="4">Empleado</ion-select-option>
+                            <ion-select-option value="5">Vigilante</ion-select-option>
+                            <ion-select-option value="6">Otros</ion-select-option>
+                        </ion-select>
+                    </p>
                 </ion-label>
-                <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="puesto"></ion-input>
             </ion-item>
+            
+            <ion-item *ngIf="mostrarOtroPuesto" color="medium">
+                <ion-label>
+                    <p>Especifique: </p>
+                </ion-label>
+                <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="otroPuesto"></ion-input>
+            </ion-item>
+
         </ion-card-content>
     </ion-card>
 
@@ -434,7 +455,7 @@
             <ion-item color="medium">
                 <ion-label>
                     <p>
-                        Observación del contribuyente
+                        Observación del contribuyente:
                     </p>
                 </ion-label>
                 <ion-textarea rows="5" [(ngModel)]="observacion"></ion-textarea>
@@ -465,14 +486,14 @@
             <ion-grid>
                 <ion-row>
                     <ion-col text-center>
-                        <ion-button expand="block" color="warning" (click)="takePic(1)">
+                        <ion-button expand="block" color="warning" (click)="confirmaFoto(1)">
                             <ion-icon name="camera"></ion-icon>
                         </ion-button>
                         <ion-label class="fotos-visita">Recorrido</ion-label>
                     </ion-col>
 
                     <ion-col text-center>
-                        <ion-button expand="block" color="primary" (click)="takePic(2)">
+                        <ion-button expand="block" color="primary" (click)="confirmaFoto(2)">
                             <ion-icon name="camera"></ion-icon>
                         </ion-button>
                         <ion-label class="fotos-visita">Evidencia</ion-label>
@@ -496,23 +517,23 @@
 
 
 <ion-segment scrollable>
-    <ion-segment-button (click)="navegar(1)">
+    <ion-segment-button (click)="salida(1)">
       <ion-icon color="light" name="home"></ion-icon>
       <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
     </ion-segment-button>
-    <ion-segment-button (click)="navegar(2)">
+    <ion-segment-button (click)="salida(2)">
       <ion-icon color="light" name="layers"></ion-icon>
       <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
     </ion-segment-button>
-    <ion-segment-button (click)="navegar(3)">
+    <ion-segment-button (click)="salida(3)">
       <ion-icon color="light" name="map"></ion-icon>
       <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
     </ion-segment-button>
-    <ion-segment-button (click)="navegar(4)">
+    <ion-segment-button (click)="salida(4)">
       <ion-icon color="light" name="warning"></ion-icon>
       <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
     </ion-segment-button>
-    <ion-segment-button (click)="navegar(5)">
+    <ion-segment-button (click)="salida(5)">
       <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
       <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
     </ion-segment-button>

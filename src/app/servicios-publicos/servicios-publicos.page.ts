@@ -7,7 +7,7 @@ import { MessagesService } from '../services/messages.service';
 import { ModalController, Platform, LoadingController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { Router } from '@angular/router';
-import { CallNumber } from '@ionic-native/call-number/ngx';
+
 
 @Component({
   selector: 'app-servicios-publicos',
@@ -24,11 +24,6 @@ export class ServiciosPublicosPage implements OnInit {
   longitud: number = 0;
 
 
-  agua: boolean;
-  predio: boolean;
-  antenas: boolean;
-  pozos: boolean;
-
   idPlazas = [];
   plazas = [];
   id_plaza: number;
@@ -37,23 +32,24 @@ export class ServiciosPublicosPage implements OnInit {
 
 
   imgs: any;
-  imgs2: any;
+  //imgs2: any;
   infoImage: any[];
   image: string = "";
   indicadorImagen: number = 0;
-  indicadorImagen2: number = 0;
+  //indicadorImagen2: number = 0;
   takePhoto: boolean = false;
   isPhoto: boolean = false;
   idServicio: number = 0;
-  idServicio2: number = 0;
+  //idServicio2: number = 0;
   idServicioMandar: number; // este es el que se va a mandar a guardar en la tabla dependiendo si es la evidencia 1 o 2
   observacion: string = '';
   nombrePlaza: string = '';
   plazasServicios: any;
   idIncidencia1Selected: boolean = false;
-  idIncidencia2Selected: boolean = false;
+  //idIncidencia2Selected: boolean = false;
   colorIncidencia1: string = '';
-  colorIncidencia2: string = '';
+  //colorIncidencia2: string = '';
+  listaServiciosPublicos:any;
 
   sliderOpts = {
     zoom: true,
@@ -62,6 +58,7 @@ export class ServiciosPublicosPage implements OnInit {
     centeredSlides: true
   };
 
+
   constructor(
     private storage: Storage,
     private rest: RestService,
@@ -69,18 +66,17 @@ export class ServiciosPublicosPage implements OnInit {
     private webview: WebView,
     private mensaje: MessagesService,
     private geolocation: Geolocation,
-    private modalController: ModalController,
     private platform: Platform,
     private loadingController: LoadingController,
-    private router: Router,
-    private callNumber: CallNumber,
+    private router: Router
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
-    this.imgs2 = [{ imagen: "assets/img/imgs.png" }];
+    //this.imgs2 = [{ imagen: "assets/img/imgs.png" }];
   }
 
   async ngOnInit() {
     this.getFechaActual();
+    await this.mostrarServiciosPublicos(this.id_plaza)
     this.idAspuser = await this.storage.get('IdAspUser');
   }
 
@@ -90,8 +86,8 @@ export class ServiciosPublicosPage implements OnInit {
     this.idIncidencia1Selected = false;
     this.colorIncidencia1 = '';
 
-    this.idIncidencia2Selected = false;
-    this.colorIncidencia2 = '';
+    // this.idIncidencia2Selected = false;
+    // this.colorIncidencia2 = '';
 
   }
 
@@ -123,17 +119,18 @@ export class ServiciosPublicosPage implements OnInit {
           console.log("No hay coincidencias");
         }
       }
-    } else if (numero_incidencia == 2) {
-      console.log("Borrar foto de incidencia 2");
-      for (let i = 0; i < this.imgs2.length; i++) {
-        console.log(this.imgs2[i].imagen);
-        if (this.imgs2[i].imagen == img) {
-          this.imgs2.splice(i, 1);
-        } else {
-          console.log("No hay coincidencias");
-        }
-      }
-    }
+    } 
+    // else if (numero_incidencia == 2) {
+    //   console.log("Borrar foto de incidencia 2");
+    //   for (let i = 0; i < this.imgs2.length; i++) {
+    //     console.log(this.imgs2[i].imagen);
+    //     if (this.imgs2[i].imagen == img) {
+    //       this.imgs2.splice(i, 1);
+    //     } else {
+    //       console.log("No hay coincidencias");
+    //     }
+    //   }
+    // }
     //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
     this.infoImage = await this.rest.getImageLocalServicios(img);
     console.log(this.infoImage[0]);
@@ -142,18 +139,24 @@ export class ServiciosPublicosPage implements OnInit {
   async resultPlaza(event) {
     let idPlaza = event.detail.value;
     let servicios = await this.rest.mostrarServicios(idPlaza);
-    this.nombrePlaza = servicios[0].plaza
+    this.nombrePlaza = servicios[0].plaza;
+    console.log(this.id_plaza);
+    this.mostrarServiciosPublicos(this.id_plaza);
     console.log(this.nombrePlaza);
   }
 
-  resultIncidencia(tipo) {
-    if (tipo == 1) {
-      this.idIncidencia1Selected = true;
-      this.colorIncidencia1 = 'primary'
-    } else if (tipo == 2) {
-      this.idIncidencia2Selected = true;
-      this.colorIncidencia2 = 'primary'
-    }
+  resultIncidencia( event ) {
+   
+    console.log(event.detail.value);
+    this.idIncidencia1Selected = true;
+    // if (tipo == 1) {
+    //   this.idIncidencia1Selected = true;
+    //   this.colorIncidencia1 = 'primary'
+    // } 
+    // else if (tipo == 2) {
+    //   this.idIncidencia2Selected = true;
+    //   this.colorIncidencia2 = 'primary'
+    // }
   }
 
   async takePic(type) {
@@ -161,10 +164,11 @@ export class ServiciosPublicosPage implements OnInit {
     if (type == 1) {
       this.idServicioMandar = this.idServicio;
       this.photoEvidencia1(tipo);
-    } else if (type == 2) {
-      this.idServicioMandar = this.idServicio2;
-      this.photoEvidencia2(tipo);
-    }
+    } 
+    // else if (type == 2) {
+    //   this.idServicioMandar = this.idServicio2;
+    //   this.photoEvidencia2(tipo);
+    // }
   }
 
   photoEvidencia1(tipo) {
@@ -224,62 +228,62 @@ export class ServiciosPublicosPage implements OnInit {
       });
   }
 
-  photoEvidencia2(tipo) {
-    var dateDay = new Date().toISOString();
-    let date: Date = new Date(dateDay);
-    let ionicDate = new Date(
-      Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds()
-      )
-    );
+  // photoEvidencia2(tipo) {
+  //   var dateDay = new Date().toISOString();
+  //   let date: Date = new Date(dateDay);
+  //   let ionicDate = new Date(
+  //     Date.UTC(
+  //       date.getFullYear(),
+  //       date.getMonth(),
+  //       date.getDate(),
+  //       date.getHours(),
+  //       date.getMinutes(),
+  //       date.getSeconds()
+  //     )
+  //   );
 
-    let fecha = ionicDate.toISOString();
+  //   let fecha = ionicDate.toISOString();
 
-    let options: CameraOptions = {
-      quality: 40,
-      correctOrientation: true,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      sourceType: this.camera.PictureSourceType.CAMERA,
-      encodingType: this.camera.EncodingType.JPEG,
-      mediaType: this.camera.MediaType.PICTURE
-    };
-    this.camera
-      .getPicture(options)
-      .then(imageData => {
-        this.indicadorImagen2 = this.indicadorImagen2 + 1;
-        let rutaBase64 = imageData;
-        this.image = this.webview.convertFileSrc(imageData);
-        console.log(rutaBase64, this.image);
-        this.isPhoto = false;
-        this.takePhoto = true;
-        this.imgs2.push({ imagen: this.image });
-        if (this.indicadorImagen2 == 1) {
-          this.imgs2.splice(0, 1);
-        }
+  //   let options: CameraOptions = {
+  //     quality: 40,
+  //     correctOrientation: true,
+  //     destinationType: this.camera.DestinationType.FILE_URI,
+  //     sourceType: this.camera.PictureSourceType.CAMERA,
+  //     encodingType: this.camera.EncodingType.JPEG,
+  //     mediaType: this.camera.MediaType.PICTURE
+  //   };
+  //   this.camera
+  //     .getPicture(options)
+  //     .then(imageData => {
+  //       this.indicadorImagen2 = this.indicadorImagen2 + 1;
+  //       let rutaBase64 = imageData;
+  //       this.image = this.webview.convertFileSrc(imageData);
+  //       console.log(rutaBase64, this.image);
+  //       this.isPhoto = false;
+  //       this.takePhoto = true;
+  //       this.imgs2.push({ imagen: this.image });
+  //       if (this.indicadorImagen2 == 1) {
+  //         this.imgs2.splice(0, 1);
+  //       }
 
-        this.saveImage(
-          this.id_plaza,
-          this.idAspuser,
-          this.image,
-          //this.account,
-          fecha,
-          rutaBase64,
-          //this.idAspuser,
-          //this.idTareaGestor,
-          tipo,
-          this.idServicioMandar,
-          this.nombrePlaza
-        );
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
+  //       this.saveImage(
+  //         this.id_plaza,
+  //         this.idAspuser,
+  //         this.image,
+  //         //this.account,
+  //         fecha,
+  //         rutaBase64,
+  //         //this.idAspuser,
+  //         //this.idTareaGestor,
+  //         tipo,
+  //         this.idServicioMandar,
+  //         this.nombrePlaza
+  //       );
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //     });
+  // }
 
   saveImage(id_plaza, idAspUser, image, fecha, rutaBase64, tipo, idServicioMandar, nombrePlaza) {
     this.rest
@@ -361,7 +365,7 @@ export class ServiciosPublicosPage implements OnInit {
             nombrePlaza: this.nombrePlaza,
             idAspUser: this.idAspuser,
             idServicio: this.idServicio,
-            idServicio2: this.idServicio2,
+            //idServicio2: this.idServicio2,
             observacion: this.observacion,
             fechaCaptura: this.fechaCaptura,
             latitud: this.latitud,
@@ -428,15 +432,19 @@ export class ServiciosPublicosPage implements OnInit {
   borrarCampos() {
     this.observacion = '';
     this.idServicio = 0;
-    this.idServicio2 = 0;
+    //this.idServicio2 = 0;
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
-    this.imgs2 = [{ imagen: "assets/img/imgs.png" }];
+    //this.imgs2 = [{ imagen: "assets/img/imgs.png" }];
   }
 
   mostrarIncidencias(event) {
     console.log(event.detail.value);
   }
 
+  async mostrarServiciosPublicos(id_plaza) {
+    this.listaServiciosPublicos = await this.rest.mostrarServiciosPublicos(id_plaza);
+    console.log(this.listaServiciosPublicos);
+  }
 
 
 }

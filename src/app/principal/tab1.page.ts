@@ -63,7 +63,6 @@ export class Tab1Page implements OnInit {
   async obtenerPlazasUsuario() {
 
     this.plazasServicios = await this.rest.obtenerPlazasSQL();
-    console.log(this.plazasServicios);
 
     // tomamos el primer registro para ponerlo como defauult en el select
     this.id_plaza = this.plazasServicios[0].id_plaza;
@@ -79,7 +78,9 @@ export class Tab1Page implements OnInit {
    * @param event 
    */
   async resultPlaza(event) {
-    console.log(event.detail.value);
+
+    this.progressTotal = 0;
+
     // si el idPlaza es diferente de 0 entonces verificar la descarga
     if (this.id_plaza != 0) {
       this.asignarSectores(this.id_plaza);
@@ -107,8 +108,13 @@ export class Tab1Page implements OnInit {
 
   // viene del obtenerPlazasUsuario
   async mostrarServicios(servicios) {
-    console.log(servicios);
     this.servicios = await this.rest.mostrarServicios(this.id_plaza)
+    
+    this.servicios.forEach( servicio => {
+      if(servicio.descargado > 0) {
+        this.progressTotal = 100;
+      }
+    });
 
   }
 
@@ -124,7 +130,7 @@ export class Tab1Page implements OnInit {
 
 
   async confirmarDescarga(idServicioPlaza, nombrePlaza, nombreServicio) {
-    console.log(idServicioPlaza, nombrePlaza, nombreServicio);
+    //console.log(idServicioPlaza, nombrePlaza, nombreServicio);
     const alert = await this.alertCtrl.create({
       header: nombrePlaza.toUpperCase(),
       subHeader: "Confirme para iniciar la descarga de " + nombreServicio,

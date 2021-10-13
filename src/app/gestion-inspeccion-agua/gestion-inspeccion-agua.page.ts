@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Storage } from "@ionic/storage";
 import { MessagesService } from '../services/messages.service';
-import { ModalController,  Platform, LoadingController, NavController } from '@ionic/angular';
+import { ModalController,  Platform, LoadingController, NavController, AlertController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
@@ -18,8 +18,10 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   account: string = "";
   personaAtiende: string = '';
-  numeroContacto: string = '';
-  puesto: string = '';
+  //numeroContacto: string = '';
+  //puesto: string = '';
+  idPuesto: number = 0;
+  otroPuesto: string = '';
   idMotivoNoPago: number = 0;
   otroMotivo: string = '';
   idTipoServicio: number = 0
@@ -80,6 +82,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   mostrarInspectores: boolean = false;
   inspectores: boolean = false; // para mostrar la lista de inspectores
   detectedChanges: boolean = false;
+  mostrarOtroPuesto: boolean = false;
   
 
   sliderOpts = {
@@ -103,7 +106,8 @@ export class GestionInspeccionAguaPage implements OnInit {
     private webview: WebView,
     private navCtrl: NavController,
     private router: Router,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private alertCtrl: AlertController
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -119,6 +123,17 @@ export class GestionInspeccionAguaPage implements OnInit {
 
 
   // results
+
+  resultIdPuesto( event ) {
+    let opcion = event.detail.value;
+    if(opcion == 6) {
+      this.mostrarOtroPuesto = true;
+    } else {
+      this.mostrarOtroPuesto = false;
+    }
+  }
+
+
   resultMotivoNoPago( event ) {
     let motivo = event.detail.value;
     if(motivo == 5) {
@@ -221,15 +236,15 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.inspectores = true;
     const idPlaza = await this.storage.get('IdPlaza');
     this.nombreInspectorLogueado = await this.storage.get('Nombre');
-    console.log(idPlaza);
+    //console.log(idPlaza);
     try {
       // cambiar el 10 por el idplaza del storage
       this.rest.getNombreInspectores(10).subscribe(resp => {
-        console.log(resp);
+        //console.log(resp);
         this.nombreInspectores = resp;
       })
     } catch (error) {
-      console.log("Error al traer los datos de los inspectores")
+      //console.log("Error al traer los datos de los inspectores")
     }
   }
 
@@ -241,19 +256,19 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   async getInfoAccount() {
     this.account = await this.storage.get("account");
-    console.log("Cuenta guardada en el storage: " , this.account);
+    //console.log("Cuenta guardada en el storage: " , this.account);
     this.idAspuser = await this.storage.get("IdAspUser");
-    console.log("Idaspuser guardado en el storage: ", this.idAspuser);
+    //console.log("Idaspuser guardado en el storage: ", this.idAspuser);
     this.infoAccount = await this.rest.getInfoAccount(this.account);
-    console.log("InfoAccount: " , this.infoAccount);
+    //console.log("InfoAccount: " , this.infoAccount);
     this.idAccountSqlite = this.infoAccount[0].id;
     this.idTareaGestor = this.infoAccount[0].id_tarea;
     let gestionada = this.infoAccount[0].gestionada;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
-    this.tipoServicioPadron = this.infoAccount[0].tipoServicio;
+    this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
-      this.modalController.dismiss();
+      this.router.navigateByUrl("home/tab2");
     }
   }
 
@@ -276,25 +291,112 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.fechaActual = ionicDate.toISOString();
     let fecha = this.fechaActual.split("T");
     this.fechaActual = fecha[0];
-    console.log("Esta es la fecha Actual :::::::::::" + this.fechaActual);
+    //console.log("Esta es la fecha Actual :::::::::::" + this.fechaActual);
   }
 
   async deletePhoto(img) {
-    console.log(img);
-    console.log(this.imgs);
+    // console.log(img);
+    // console.log(this.imgs);
 
     for (let i = 0; i < this.imgs.length; i++) {
       console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
       } else {
-        console.log("No hay coincidencias");
+        // console.log("No hay coincidencias");
       }
     }
     //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
     this.infoImage = await this.rest.getImageLocal(img);
-    console.log(this.infoImage[0]);
+    //console.log(this.infoImage[0]);
   }
+
+  async confirmaFoto(tipo) {
+    const mensaje = await this.alertCtrl.create({
+      header: "Tomar foto",
+      subHeader: "Selecciona el modo para tomar foto ",
+      buttons: [
+        {
+          text: "Camara",
+          cssClass: "secondary",
+          handler: () => {
+            this.takePic(tipo);
+          }
+        },
+        {
+          text: "Galeria",
+          cssClass: "secondary",
+          handler: () => {
+            this.takePicGallery(tipo)
+          }
+        }
+      ]
+    });
+    await mensaje.present();
+  }
+
+  async takePicGallery(type) {
+    let tipo;
+    if (type == 1) {
+      tipo = "Inspección recorrido";
+    } else if (type == 2) {
+      tipo = "Inspección evidencia";
+    } 
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(
+      Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      )
+    );
+
+    let fecha = ionicDate.toISOString();
+
+    let options: CameraOptions = {
+      quality: 40,
+      correctOrientation: true,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE
+    };
+    this.camera
+      .getPicture(options)
+      .then(imageData => {
+        this.indicadorImagen = this.indicadorImagen + 1;
+        let rutaBase64 = imageData;
+        this.image = this.webview.convertFileSrc(imageData);
+        //console.log(rutaBase64, this.image);
+        this.isPhoto = false;
+        this.takePhoto = true;
+        this.imgs.push({ imagen: this.image });
+        if (this.indicadorImagen == 1) {
+          this.imgs.splice(0, 1);
+        }
+
+        this.saveImage(
+          this.id_plaza,
+          this.nombrePlaza,
+          this.image,
+          this.account,
+          fecha,
+          rutaBase64,
+          this.idAspuser,
+          this.tareaAsignada,
+          tipo,
+          this.idServicioPlaza
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
 
   async takePic(type) {
     let tipo;
@@ -332,7 +434,7 @@ export class GestionInspeccionAguaPage implements OnInit {
         this.indicadorImagen = this.indicadorImagen + 1;
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
-        console.log(rutaBase64, this.image);
+        //console.log(rutaBase64, this.image);
         this.isPhoto = false;
         this.takePhoto = true;
         this.imgs.push({ imagen: this.image });
@@ -373,7 +475,7 @@ export class GestionInspeccionAguaPage implements OnInit {
         idServicioPlaza
       )
       .then(res => {
-        console.log(res);
+        //console.log(res);
         this.mensaje.showToast("Se almacenó la imagen correctamente");
       });
   }
@@ -393,8 +495,8 @@ export class GestionInspeccionAguaPage implements OnInit {
       if (resp) {
         this.latitud = resp.coords.latitude;
         this.longitud = resp.coords.longitude
-        console.log("La latitud es", this.latitud);
-        console.log("La longitud es ", this.longitud);
+        //console.log("La latitud es", this.latitud);
+        //console.log("La longitud es ", this.longitud);
         this.loading.dismiss();
 
 
@@ -424,8 +526,9 @@ export class GestionInspeccionAguaPage implements OnInit {
           nombrePlaza: this.nombrePlaza,
           account: this.account,
           personaAtiende: this.personaAtiende,
-          numeroContacto: this.numeroContacto,
-          puesto: this.puesto,
+          //numeroContacto: this.numeroContacto,
+          idPuesto: this.idPuesto,
+          otroPuesto: this.otroPuesto,
           idMotivoNoPago: this.idMotivoNoPago,
           otroMotivo: this.otroMotivo,
           idTipoServicio: this.idTipoServicio,
@@ -462,10 +565,10 @@ export class GestionInspeccionAguaPage implements OnInit {
 
       } // if
     }).catch(async (error) => {
-      console.log("No se pudo obtener la geolocalizacion " + error);
+      //console.log("No se pudo obtener la geolocalizacion " + error);
       this.latitud = this.infoAccount[0].latitud;
       this.longitud = this.infoAccount[0].longitud;
-      console.log(`La latitud de implementta es ${this.latitud} y la longitud de implementta es ${this.longitud}`);
+      //console.log(`La latitud de implementta es ${this.latitud} y la longitud de implementta es ${this.longitud}`);
       this.loading.dismiss();
 
       this.loading = await this.loadingController.create({
@@ -494,8 +597,9 @@ export class GestionInspeccionAguaPage implements OnInit {
           nombrePlaza: this.nombrePlaza,
           account: this.account,
           personaAtiende: this.personaAtiende,
-          numeroContacto: this.numeroContacto,
-          puesto: this.puesto,
+          //numeroContacto: this.numeroContacto,
+          idPuesto: this.idPuesto,
+          otroPuesto: this.otroPuesto,
           idMotivoNoPago: this.idMotivoNoPago,
           otroMotivo: this.otroMotivo,
           idTipoServicio: this.idTipoServicio,
@@ -536,10 +640,34 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   async gestionInspeccion(data) {
     this.detectedChanges = false;
-    console.log(data);
+    //console.log(data);
     await this.rest.gestionInspeccion(data);
   }
 
+  async salida( tipo ) {
+    const alert = await this.alertCtrl.create({
+      header: "Salir",
+      subHeader: "Confirme para salir de la gestión, se perderan los cambios ",
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            //console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            this.navegar(tipo)
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 
 
   navegar(tipo) {

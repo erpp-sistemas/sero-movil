@@ -38,18 +38,38 @@
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"></ion-input>
       </ion-item>
-      <ion-item color="medium">
+      <!-- <ion-item color="medium">
         <ion-label>
           <p>Número de contacto: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numeroContacto"></ion-input>
-      </ion-item>
+      </ion-item> -->
       <ion-item color="medium">
         <ion-label>
-          <p>Puesto: </p>
+          <p>
+            Seleccione el puesto:
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno" [(ngModel)]="idPuesto"
+              (ionChange)="resultIdPuesto( $event )">
+              <ion-select-option value="1">Representante legal</ion-select-option>
+              <ion-select-option value="2">Gerente</ion-select-option>
+              <ion-select-option value="3">Encargado</ion-select-option>
+              <ion-select-option value="4">Empleado</ion-select-option>
+              <ion-select-option value="5">Vigilante</ion-select-option>
+              <ion-select-option value="6">Otros</ion-select-option>
+            </ion-select>
+          </p>
         </ion-label>
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="puesto"></ion-input>
       </ion-item>
+
+      <ion-item *ngIf="mostrarOtroPuesto" color="medium">
+        <ion-label>
+          <p>Especifique: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="otroPuesto"></ion-input>
+      </ion-item>
+
     </ion-card-content>
   </ion-card>
 
@@ -198,7 +218,7 @@
       <img src={{img.imagen}} class="imagen">
       <ion-fab-button padding size="small" (click)="deletePhoto(img.imagen)" *ngIf="img.imagen != 'assets/img/imgs.png'"
         color="danger">
-        <ion-icon name="trash"></ion-icon>
+        <ion-icon class="icon-trash" name="trash"></ion-icon>
       </ion-fab-button>
     </ion-slide>
   </ion-slides>
@@ -235,7 +255,7 @@
   <ion-grid>
     <ion-row>
       <ion-col size=12 class="ion-text-center">
-        <ion-button color="success" expand="block" (click)="verify()">Terminar</ion-button>
+        <ion-button shape="round" color="success" expand="block" (click)="verify()">Terminar</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -243,3 +263,28 @@
 
 
 </ion-content>
+
+
+
+<ion-segment scrollable>
+  <ion-segment-button (click)="salida(1)">
+    <ion-icon color="light" name="home"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="salida(2)">
+    <ion-icon color="light" name="layers"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="salida(3)">
+    <ion-icon color="light" name="map"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="salida(4)">
+    <ion-icon color="light" name="warning"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="salida(5)">
+    <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
+    <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
+  </ion-segment-button>
+</ion-segment>

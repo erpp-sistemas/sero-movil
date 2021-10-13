@@ -33,7 +33,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
           <strong>Deuda:$</strong>{{debt}}</p>
         </label>
       </div>
-      <button style="background-color: #049c37; padding: 10px; color:white" ion-button size="small" color="success" expand="block" (click)="gestion()">
+      <button style="background-color: #049c37; padding: 10px; color:white" ion-button size="small" color="success" expand="block" (click)="gestion(account)">
         Gestionar
       </button>
       <button style="background-color: #2427e4; padding: 10px; color:white; margin-left:10px" ion-button size="small" color="success" expand="block" (click)="street(position)">
@@ -49,8 +49,9 @@ export class CustomTag {
   debt: string;
   position: any
 
-  gestion() {
-    this.storage.set("accountNumber", this.account)
+  gestion(account) {
+    this.storage.set('account', account);
+    console.log(this.account);
     this.ngZone.run(() => {
       this.router.navigateByUrl("/gestion-page")
     })
@@ -155,19 +156,11 @@ export class GoogleMapsPage implements OnInit {
 
   ionViewWillLeave() {
     console.log("Saliendo");
-    this.appRef.tick();
-    this.markersArrayInfo = null;
-    this.map = null;
-    this.markerCluster.empty();
-    this.markerCluster.removeEventListener();
-    this.compFactory = null;
-    //this.compRef.destroy();
-    //this.appRef.detachView(this.compRef.hostView);
   }
 
   async getAccountInfo(id_plaza, idServicioPlaza) {//realiza la carga de informacion que existe en la base interna sqlite
 
-
+    console.log("GetAccountInfo");
     this.markersArrayInfo = await this.service.getDataVisitPosition(id_plaza, idServicioPlaza);
 
     if (this.markersArrayInfo.length <= 0) {
@@ -188,6 +181,7 @@ export class GoogleMapsPage implements OnInit {
 
 
   setMarkers(data) {//realiza un ciclo para la carga de los markers 
+    console.log("Set markers");
     let array = []
     for (let markers of data) {
       let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
@@ -209,6 +203,7 @@ export class GoogleMapsPage implements OnInit {
 
   async loadMap(data) {
     //////////opciones del mapa
+    console.log("LoadMap");
     let options: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.ROADMAP,
       controls: {
@@ -228,7 +223,7 @@ export class GoogleMapsPage implements OnInit {
     }
     /////////////////////////
     this.map = GoogleMaps.create('map_canvas', options);
-
+    
 
     this.map.getMyLocation().then(async (location: MyLocation) => {
       //  this.loading.dismiss();
@@ -257,6 +252,7 @@ export class GoogleMapsPage implements OnInit {
 
   addCluster(data) {
     console.log("entra")
+    console.log("addCluster");
     console.log(data)
     this.markerCluster = this.map.addMarkerClusterSync({
       markers: data,
@@ -309,13 +305,18 @@ export class GoogleMapsPage implements OnInit {
 
       // Dynamic rendering
       this.ngZone.run(() => {
+        console.log("abriendo popov");
         this.htmlInfoWindow.setContent(this.div);
         this.htmlInfoWindow.open(marker);
+        console.log(this.htmlInfoWindow);
       });
 
       // Destroy the component when the htmlInfoWindow is closed.
       this.htmlInfoWindow.one(GoogleMapsEvent.INFO_CLOSE).then(() => {
+        console.log(this.compRef);
         this.compRef.destroy();
+        console.log("compRef destruido");
+        console.log(this.compRef);
       });
 
 
@@ -323,12 +324,12 @@ export class GoogleMapsPage implements OnInit {
 
   }
 
- 
 
 
   goDetail() {
     this.router.navigateByUrl("/detail");
   }
+
   async getDetail(accountNumber) {
     console.log("this is account to be saved: " + accountNumber)
     await this.storage.set("accountNumber", accountNumber);
@@ -356,6 +357,7 @@ export class GoogleMapsPage implements OnInit {
   }
 
   navegar(tipo) {
+    
     if (tipo == 1) {
       this.ngZone.run(() => {
         this.router.navigateByUrl("home/tab1")

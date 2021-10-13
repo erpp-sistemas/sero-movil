@@ -30,6 +30,7 @@ export class SyncAccionesPage implements OnInit {
     console.log("id_servicio_plaza: ", this.activeRoute.snapshot.paramMap.get('id_servicio_plaza'));
     this.id_servicio_plaza = this.activeRoute.snapshot.paramMap.get('id_servicio_plaza');
     this.listadoGestiones(this.id_servicio_plaza);
+    
   }
 
   async listadoGestiones(idServicioPlaza) {
@@ -70,6 +71,7 @@ export class SyncAccionesPage implements OnInit {
 
     await this.rest.sendInspeccionByIdServicio(this.id_servicio_plaza);
     await this.rest.sendCartaInvitacionByIdServicio(this.id_servicio_plaza);
+    await this.rest.sendLegalByIdServicio(this.id_servicio_plaza);
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
   }

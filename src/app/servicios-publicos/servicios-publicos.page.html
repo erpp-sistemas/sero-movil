@@ -26,29 +26,18 @@
   <hr>
 
   <div style="text-align: center;">
-    <ion-chip color="secondary">Incidencia 1</ion-chip>
+    <ion-chip color="secondary">Incidencia</ion-chip>
   </div>
 
   <ion-card color="medium">
     <ion-card-header color="medium">
-      <p style="text-align: center;">Tipo de incidenia 1</p>
+      <p style="text-align: center;">Tipo de incidenia</p>
     </ion-card-header>
     <ion-card-content color="medium">
       <p>
         <ion-select interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idServicio"
-          (ionChange)="resultIncidencia(1)">
-          <ion-select-option value='1'>Fuga de agua</ion-select-option>
-          <ion-select-option value='2'>Falla en el suministro de agua </ion-select-option>
-          <ion-select-option value='3'>Coladera omisa o en mal estado </ion-select-option>
-          <ion-select-option value='4'>Bache</ion-select-option>
-          <ion-select-option value='5'>Pavimento en mal estado</ion-select-option>
-          <ion-select-option value='6'>Luminaria faltante o fundida</ion-select-option>
-          <ion-select-option value='7'>Señalamiento vial omiso o en mal estado</ion-select-option>
-          <ion-select-option value='8'>Aseo público</ion-select-option>
-          <ion-select-option value='9'>Zona de riesgo</ion-select-option>
-          <ion-select-option value='10'>Situación de riesgo</ion-select-option>
-          <ion-select-option value='11'>Inundación</ion-select-option>
-          <ion-select-option value='12'>Emergencia</ion-select-option>
+          (ionChange)="resultIncidencia( $event )">
+          <ion-select-option *ngFor="let incidencia of listaServiciosPublicos; let i = index" [value]='incidencia.id_servicio_publico'> {{incidencia.nombre_servicio_publico}} </ion-select-option>
         </ion-select>
       </p>
     </ion-card-content>
@@ -59,7 +48,7 @@
     <ion-card-header color="medium">
       <ion-label>
         <p class="fotos-visita">
-          Fotos de incidencia 1
+          Fotos de incidencia
         </p>
       </ion-label>
     </ion-card-header>
@@ -98,7 +87,7 @@
 
 
 
-  <hr>
+  <!-- <hr>
   <hr>
 
   <div style="text-align: center;">
@@ -172,11 +161,11 @@
   </ion-card>
 
 
-  <hr>
+  <hr> -->
 
   <ion-card color="medium">
     <ion-card-header color="medium">
-      <p>Observación incidencias</p>
+      <p>Observaciones</p>
     </ion-card-header>
     <ion-card-content color="medium">
       <ion-item color="medium">

@@ -15,7 +15,6 @@ ion-toolbar img {
     margin-top: 10px;
 }
 
-
 .sliding-cuentas {
     background-color: #323332;
 }
@@ -24,12 +23,23 @@ ion-toolbar img {
     padding: 0 10px;
 }
 
-p {
-    color: white !important;
+.coincidencia p {
+    font-style: italic;
+    color: rgb(0,200,0);
+    text-align: center;
 }
 
-.direccion{
+p {
+    color: white !important;
+    width: 100%;
+}
+
+.direccion {
     font-size: 10px;
+}
+
+.icon-listado {
+    font-size: 30px;
 }
 
 .realizada {
@@ -42,8 +52,8 @@ p {
 }
 
 ion-segment {
-    --background:rgb(37, 64, 97);
-    border-top: 1px solid rgba(0,0,0,.1);
+    --background: rgb(37, 64, 97);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
     height: 60px;
     margin-bottom: -5px;
 }

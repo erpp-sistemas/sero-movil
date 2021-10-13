@@ -24,6 +24,8 @@ export class ListadoCuentasPage implements OnInit {
   total: number; // Es la variable que tendra el total
   gestionadas: number; // Es la ariable que tendra la el total de gestionadas;
   faltantes: number;
+  busqueda: boolean = false;
+  accountBusqueda: any[];
 
 
   constructor(
@@ -52,6 +54,7 @@ export class ListadoCuentasPage implements OnInit {
   async listadoCuentas(id_plaza, idServicioPlaza) {
     console.log("Cargando listado de cuentas del servicio " + idServicioPlaza + " de la plaza " + id_plaza);
     this.account = null;
+    this.accountBusqueda = null;
     this.loading = await this.loadinCtrl.create({
       message: 'Cargando listado agua',
       spinner: 'lines-small'
@@ -75,7 +78,10 @@ export class ListadoCuentasPage implements OnInit {
   async getInfoCuentas(id_plaza, idServicioPlaza) {
     this.account = null;
     this.account = await this.rest.cargarListadoCuentas(id_plaza, idServicioPlaza);
-    console.log("Accounts: ", this.account);
+
+    this.accountBusqueda = null;
+    this.accountBusqueda = await this.rest.cargarListadoCuentas(id_plaza, idServicioPlaza);
+
 
     if (this.account.length == 0) {
       this.message.showAlert("Tienes que descargar información para visualizar las cuentas!!!!");
@@ -86,8 +92,8 @@ export class ListadoCuentasPage implements OnInit {
 
 
   find(event) {
+    this.busqueda = true;
     this.findText = event.detail.value;
-    console.log(this.findText);
   }
 
 

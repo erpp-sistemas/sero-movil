@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Storage } from "@ionic/storage";
 import { MessagesService } from '../services/messages.service';
-import { ModalController, Platform, LoadingController, NavController } from '@ionic/angular';
+import { ModalController, Platform, LoadingController, NavController, AlertController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
@@ -21,7 +21,7 @@ export class GestionCartaPage implements OnInit {
   account: string;
   infoAccount: any = [];
   personaAtiende: string = '';
-  numeroContacto: string = '';
+  // numeroContacto: string = '';
   idMotivoNoPago: number = 0;
   idTrabajoActual: number = 0;
   idGastoImpuesto: number = 0;
@@ -79,7 +79,8 @@ export class GestionCartaPage implements OnInit {
     private webview: WebView,
     private navController: NavController,
     private router: Router,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private alertCtrl: AlertController
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -107,11 +108,11 @@ export class GestionCartaPage implements OnInit {
     this.idTareaGestor = this.infoAccount[0].id_tarea;
     let gestionada = this.infoAccount[0].gestionada;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
-    this.tipoServicioPadron = this.infoAccount[0].tipoServicio;
+    this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
       // ya no es un modal, checar si meter un router
-      this.modalController.dismiss();
+      this.router.navigateByUrl('home/tab2');
     }
   }
 
@@ -269,7 +270,7 @@ export class GestionCartaPage implements OnInit {
           nombrePlaza: this.nombrePlaza,
           account: this.account,
           persona_atiende: this.personaAtiende,
-          numero_contacto: this.numeroContacto,
+          //numero_contacto: this.numeroContacto,
           id_motivo_no_pago: this.idMotivoNoPago,
           id_trabajo_actual: this.idTrabajoActual,
           id_gasto_impuesto: this.idGastoImpuesto,
@@ -313,6 +314,40 @@ export class GestionCartaPage implements OnInit {
     this.router.navigateByUrl('home/tab2');
     // this.router.ngOnDestroy();
     // this.router.dispose();
+  }
+
+  resultPersonaAtiende( event ) {
+    this.detectedChanges = true;
+  }
+
+  resultNumeroContacto( event ) {
+    this.detectedChanges = true;
+  }
+
+
+  async salida( tipo ) {
+    const alert = await this.alertCtrl.create({
+      header: "Salir",
+      subHeader: "Confirme para salir de la gestión, se perderan los cambios ",
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            this.navegar(tipo)
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   navegar(tipo) {

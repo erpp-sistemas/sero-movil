@@ -17,7 +17,7 @@ export class FiltroPipe implements PipeTransform {
       }
     }
 
-    return resultBusqueda
+    return resultBusqueda;
 
   }
 
