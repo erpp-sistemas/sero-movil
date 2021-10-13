@@ -67,7 +67,7 @@ import { Base64 } from "@ionic-native/base64/ngx";
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'
 
 // BackGroundGeolocation
-//import { BackgroundGeolocation } from "@ionic-native/background-geolocation/ngx";
+import { BackgroundGeolocation } from "@ionic-native/background-geolocation/ngx";
 
 
 @NgModule({
@@ -103,7 +103,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'
     EmailComposer,
     Base64,
     BarcodeScanner,
-    //BackgroundGeolocation,
+    BackgroundGeolocation,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

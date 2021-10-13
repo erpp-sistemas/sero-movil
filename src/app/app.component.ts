@@ -12,7 +12,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { MessagesService } from './services/messages.service';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
-//import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
+import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
 //import { auth } from 'firebase';
 //import { UsersFirebaseService } from './services/users-firebase.service';
 
@@ -31,7 +31,7 @@ export class AppComponent {
   constructor(
     private query: QuerysService,
     private platform: Platform,
-    //private backgroundGeolocation: BackgroundGeolocation,
+    private backgroundGeolocation: BackgroundGeolocation,
     private splasScreen: SplashScreen,
     private statusBar: StatusBar,
     private sqlite: SQLite,
@@ -54,7 +54,7 @@ export class AppComponent {
       this.splasScreen.hide();
       this.statusBar.styleBlackOpaque();
       this.createDB();
-      //this.backGroundGeolocation();
+      this.backGroundGeolocation();
       // this.getPermission();
     })
   }
@@ -93,62 +93,62 @@ export class AppComponent {
   }
 
 
-  // backGroundGeolocation() {
+  backGroundGeolocation() {
 
-  //   const config: BackgroundGeolocationConfig = {
-  //     desiredAccuracy: 10,
-  //     stationaryRadius: 20,
-  //     distanceFilter: 10,
-  //     interval: 300000, //300000
-  //     fastestInterval: 5000,
-  //     notificationTitle: 'Implementta Móvil',
-  //     notificationText: 'Activado',
-  //     debug: false, //  enable this hear sounds for background-geolocation life-cycle.
-  //     stopOnTerminate: true, // enable this to clear background location settings when the app terminates
-  //   };
+    const config: BackgroundGeolocationConfig = {
+      desiredAccuracy: 10,
+      stationaryRadius: 20,
+      distanceFilter: 10,
+      interval: 300000, //300000
+      fastestInterval: 5000,
+      notificationTitle: 'Implementta Móvil',
+      notificationText: 'Activado',
+      debug: false, //  enable this hear sounds for background-geolocation life-cycle.
+      stopOnTerminate: true, // enable this to clear background location settings when the app terminates
+    };
 
-  //   this.backgroundGeolocation.configure(config)
-  //     .then(() => {
-  //       this.backgroundGeolocation
-  //         .on(BackgroundGeolocationEvents.location)
-  //         .subscribe((location: BackgroundGeolocationResponse) => {
-  //           console.log(location);
-  //           this.saveLocation(location)
-  //         });
+    this.backgroundGeolocation.configure(config)
+      .then(() => {
+        this.backgroundGeolocation
+          .on(BackgroundGeolocationEvents.location)
+          .subscribe((location: BackgroundGeolocationResponse) => {
+            console.log(location);
+            this.saveLocation(location)
+          });
 
-  //     });
+      });
 
-  //   // start recording location
-  //   this.backgroundGeolocation.start();
-  //   // If you wish to turn OFF background-tracking, call the #stop method.
-  //   this.backgroundGeolocation.stop();
-  // }
+    // start recording location
+    this.backgroundGeolocation.start();
+    // If you wish to turn OFF background-tracking, call the #stop method.
+    this.backgroundGeolocation.stop();
+  }
 
-  // async saveLocation(location) {
-  //   let lat = location.latitude;
-  //   let lng = location.longitude
-  //   let idAspuser = await this.storage.get('IdAspUser')
-  //   //let idPlaza = await this.storage.get('IdPlaza')
-  //   if (idAspuser == null || idAspuser == undefined) {
-  //     console.log(idAspuser, 'el idaspuser del recorrido')
-  //     console.log('Sesion inactiva')
+  async saveLocation(location) {
+    let lat = location.latitude;
+    let lng = location.longitude
+    let idAspuser = await this.storage.get('IdAspUser')
+    //let idPlaza = await this.storage.get('IdPlaza')
+    if (idAspuser == null || idAspuser == undefined) {
+      console.log(idAspuser, 'el idaspuser del recorrido')
+      console.log('Sesion inactiva')
 
-  //   } else {
-  //     console.log(idAspuser, 'el idaspuser del recorrido')
+    } else {
+      console.log(idAspuser, 'el idaspuser del recorrido')
       
-  //     console.log('Sesion activa')
+      console.log('Sesion activa')
 
-  //     var dateDay = new Date().toISOString();
-  //     let date: Date = new Date(dateDay);
-  //     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
-  //     let fecha = ionicDate.toISOString();
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+      let fecha = ionicDate.toISOString();
 
-  //     this.rest.saveLocation(lat, lng, idAspuser, fecha)//guarda localmente
-  //     this.rest.guardarSQl(lat, lng, idAspuser, fecha);
+      this.rest.saveLocation(lat, lng, idAspuser, fecha)//guarda localmente
+      this.rest.guardarSQl(lat, lng, idAspuser, fecha);
       
-  //   }
+    }
 
-  // }
+  }
 
 
 
