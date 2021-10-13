@@ -46,62 +46,27 @@ export class ChecadorPage implements OnInit {
 
   async ngOnInit() {
     await this.platform.ready();
-    //await this.obtenerUbicacion();
     await this.loadMap();
+
   }
 
-  // async obtenerUbicacion() {
-  //   this.geolocation.getCurrentPosition().then(resp => {
-
-  //     this.latitud = resp.coords.latitude;
-  //     this.longitud = resp.coords.longitude;
-
-  //     const map = new google.maps.Map(document.getElementById('map_canvas'), {
-  //       center: {
-  //         lat: this.latitud,
-  //         lng: this.longitud
-  //       },
-  //       zoom: 12
-  //     });
-
-  //     const pos = {
-  //       lat: this.latitud,
-  //       lng: this.longitud
-  //     };
-
-  //     map.setCenter(pos);
-  //     const icon = {
-  //       url: 'assets/icon/user.png', // image url
-  //       scaledSize: new google.maps.Size(50, 50), // scaled size
-  //     };
-
-  //     const marker = new google.maps.Marker({
-  //       position: pos,
-  //       map: map,
-  //       title: 'Posición actual',
-  //       icon: icon
-  //     });
-
-  //     const infowindow = new google.maps.InfoWindow({
-  //       content: 'Hola',
-  //       maxWidth: 400
-  //     });
-  //     marker.addListener('click', function () {
-  //       infowindow.open(map, marker);
-  //     });
-
-  //   })
-  // }
 
 
-  async loadMap() {
+  async getInfo() {
+    this.nombre = await this.storage.get('Nombre')
+    this.email = await this.storage.get('Email')
+    this.plaza = await this.storage.get('Plaza')
+    this.idPlaza = await this.storage.get('IdOficina')
+    console.log(this.nombre, this.email, this.plaza, this.idPlaza)
+  }
+  async loadMap() { //realiza la carga del mapa
     let options: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.ROADMAP,
       controls: {
         'compass': true,
         'myLocationButton': true,
-        'myLocation': true,
-        'mapToolbar': true
+        'myLocation': true,   // (blue dot)
+        'mapToolbar': true     // android only
       },
       gestures: {
         scroll: true,
@@ -114,17 +79,17 @@ export class ChecadorPage implements OnInit {
     this.map = GoogleMaps.create('map_canvas', options);
 
     this.loading = await this.loadingCtrl.create({
-      message: 'Cargando mapa'
-    })
-
+      message: 'Cargando mapa...'
+    });
     await this.loading.present();
 
+    // Get the location of you
     this.map.getMyLocation().then((location: MyLocation) => {
       this.loading.dismiss();
       console.log(JSON.stringify(location, null, 2));
       this.latitud = location.latLng.lat.toString();
       this.longitud = location.latLng.lng.toString();
-
+      // Move the map camera to the location with animation
       this.map.animateCamera({
         target: location.latLng,
         zoom: 12,
@@ -135,70 +100,191 @@ export class ChecadorPage implements OnInit {
         position: location.latLng,
         animation: GoogleMapsAnimation.BOUNCE
       });
+
+      // show the infoWindow
       marker.showInfoWindow();
 
-    }).catch(err => {
-      console.log("Hubo un error");
-      this.loading.dismiss();
-      this.showToast(err)
+      // carga los markers */
     })
-
+      .catch(err => {
+        this.loading.dismiss();
+        this.showToast(err.error_message);
+      });
   }
-
-  async showToast(mensaje: string) {
+  async showToast(message: string) {
     let toast = await this.toastCtrl.create({
-      message: mensaje,
+      message: message,
       duration: 2000,
       position: 'middle'
     });
     toast.present();
   }
 
-  async confirmarRegistroEntrada() {
-    this.loading = await this.loadingCtrl.create( {
-      message: 'Registrando asistencia',
-      spinner: 'dots'
-    })
-    await this.loading.present();
+  async checarEntrada() {
+
 
     setTimeout(() => {
       this.loading.dismiss();
-      this.message.showAlert("Registro entrada correcto");
-    },3000);
+      this.message.showAlert("Registro exitoso");
+    }, 2000);
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Regisrando entrada',
+      spinner: 'dots'
+    });
+
+    this.loading.present();
+
+
+
+    // if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
+    //   alert("La ubicación no esta disponible")
+    // } else {
+    //   let tipo = 1
+    //   const iduser = await this.storage.get('IdUserChecador');
+    //   console.log(this.latitud, this.longitud)
+    //   var dateDay = new Date().toISOString();
+    //   let date: Date = new Date(dateDay);
+    //   let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+
+
+    //   let fecha = ionicDate.toISOString();
+
+    //   let parametros = +tipo + ',' + iduser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
+
+    //   this.rest.loadRegisterChecador(parametros).then(res => {
+    //     alert(res[0].mensaje)
+    //     console.log(res)
+    //   })
+    // }
+
+  }
+
+  async checarSalida() {
+
+
+    setTimeout(() => {
+      this.loading.dismiss();
+      this.message.showAlert("Registro exitoso");
+    }, 2000);
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Regisrando salida',
+      spinner: 'dots'
+    });
+
+    this.loading.present();
+
+    // if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
+    //   alert("La ubicación no esta disponible")
+    // } else {
+    //   console.log(this.latitud, this.longitud);
+
+    //   let tipo = 2
+    //   const iduser = await this.storage.get('IdUserChecador');
+    //   console.log(this.latitud, this.longitud)
+
+    //   var dateDay = new Date().toISOString();
+    //   let date: Date = new Date(dateDay);
+    //   let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+
+    //   let fecha = ionicDate.toISOString();
+
+
+    //   let parametros = +tipo + ',' + iduser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
+
+
+    //   this.rest.loadRegisterChecador(parametros).then(res => {
+    //     console.log(res)
+    //     alert(res[0].mensaje)
+    //   })
+    // }
+
+  }
+
+  async confirmarRegistroEntrada() {
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+
+    let fecha = ionicDate.toISOString();
+    const alert = await this.alertController.create({
+      header: 'Confirmar!',
+      message: 'Registrar <strong>entrada:</strong><br><strong>' + fecha + '</strong>',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Aceptar',
+          handler: () => {
+            this.checarEntrada();
+            console.log('Confirm Okay');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   async confirmarRegistroSalida() {
-    this.loading = await this.loadingCtrl.create( {
-      message: 'Registrando salida',
-      spinner: 'dots'
-    })
-    await this.loading.present();
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+
+    let fecha = ionicDate.toISOString();
+    const alert = await this.alertController.create({
+      header: 'Confirmar!',
+      message: 'Registrar <strong>salida:</strong><br><strong>' + fecha + '</strong>',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Aceptar',
+          handler: () => {
+            this.checarSalida();
+            console.log('Confirm Okay');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // async historico() {
+  //   const modal = await this.modalController.create({
+  //     component: HistoricoAsistenciaPage,
+
+  //   });
+
+  //   await modal.present();
+  // }
+
+  async regresarPrincipal() {
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Regresando...',
+      spinner: 'circles'
+    });
+
+    this.loading.present();
 
     setTimeout(() => {
       this.loading.dismiss();
-      this.message.showAlert("Registro salida correcto");
-    },3000);
-  }
+      this.router.navigateByUrl('principal');
+    }, 1000);
 
-
-
-
-  navegar(tipo) {
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
-
-      this.callNumber.callNumber('18001010101', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
-
-    }
   }
 
 }
