@@ -45,14 +45,14 @@ export class Tab1Page implements OnInit {
     //this.mostrarAvatar();
     console.log("Empieza principal");
     this.obtenerDatosUsuario();
-    this.platform.ready().then(() => {
-      this.obtenerPlazasUsuario();
+    this.platform.ready().then(async () => {
+      await this.obtenerPlazasUsuario();
     });
   }
 
   ionViewDidEnter() {
-    this.platform.ready().then(() => {
-      this.obtenerPlazasUsuario();
+    this.platform.ready().then(async () => {
+      await this.obtenerPlazasUsuario();
     });
   }
 
@@ -65,7 +65,9 @@ export class Tab1Page implements OnInit {
     this.plazasServicios = await this.rest.obtenerPlazasSQL();
 
     // tomamos el primer registro para ponerlo como defauult en el select
-    this.id_plaza = this.plazasServicios[0].id_plaza;
+    if(this.plazasServicios.length > 0) {
+      this.id_plaza = this.plazasServicios[0].id_plaza;
+    }
 
     const servicios = await this.rest.mostrarServicios(this.id_plaza);
     
@@ -290,7 +292,7 @@ export class Tab1Page implements OnInit {
 
 
     
-    this.router.navigate(['/google-maps', idServicioPlaza, this.id_plaza]);
+    this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
   }
 
 

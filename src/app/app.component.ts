@@ -101,7 +101,7 @@ export class AppComponent {
       distanceFilter: 10,
       interval: 300000, //300000
       fastestInterval: 5000,
-      notificationTitle: 'Implementta Móvil',
+      notificationTitle: 'Ser0 Móvil',
       notificationText: 'Activado',
       debug: false, //  enable this hear sounds for background-geolocation life-cycle.
       stopOnTerminate: true, // enable this to clear background location settings when the app terminates

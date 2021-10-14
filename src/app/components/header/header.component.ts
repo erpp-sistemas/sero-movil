@@ -13,8 +13,6 @@ export class HeaderComponent implements OnInit {
 
 
 
-
-
   constructor(
     private menuCtrl: MenuController,
     private auth: AuthService,
@@ -59,7 +57,7 @@ export class HeaderComponent implements OnInit {
 
   irPrincipal() {
     this.menuCtrl.close();
-    this.router.navigateByUrl('home');
+    this.router.navigateByUrl('/home');
   }
 
   directorio() {

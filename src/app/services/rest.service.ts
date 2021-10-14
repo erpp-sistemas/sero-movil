@@ -1737,8 +1737,8 @@ export class RestService {
           resolve(data);
         },
         err => {
-          this.message.showAlert(
-            "Hubo un error en la red, verifica e intentalo de nuevo " + err
+          this.message.showToast(
+            "No tracking routes!!!! " + err
           );
           this.loadingCtrl.dismiss();
           console.log(err);
