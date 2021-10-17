@@ -121,7 +121,7 @@ export class Tab3Page implements OnInit {
 
 
     
-    this.router.navigate(['/google-maps', idServicioPlaza, this.id_plaza]);
+    this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
   }
 
 

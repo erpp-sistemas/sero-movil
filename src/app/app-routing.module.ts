@@ -98,7 +98,7 @@ const routes: Routes = [
   {
     path: 'mapa-google/:id/:id_plaza',
     loadChildren: () => import('./mapa-google/mapa-google.module').then( m => m.MapaGooglePageModule)
-  },
+  }
 
 
 

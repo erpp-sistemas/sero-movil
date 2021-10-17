@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GoogleMaps, GoogleMap, Marker, GoogleMapsAnimation, MyLocation, GoogleMapOptions, GoogleMapsMapTypeId, LatLng, MarkerIcon, HtmlInfoWindow, GoogleMapsEvent } from '@ionic-native/google-maps';
+import { GoogleMaps, GoogleMap, Marker, GoogleMapsAnimation, MyLocation, GoogleMapOptions, GoogleMapsMapTypeId, LatLng, MarkerIcon, HtmlInfoWindow, GoogleMapsEvent, Polyline } from '@ionic-native/google-maps';
 import { LoadingController, Platform } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
@@ -23,6 +23,10 @@ export class MapaGooglePage implements OnInit {
 
   frame: HTMLElement;
   htmlInfoWindow: any;
+
+  accountString: string = "";
+  result: any[];
+
 
   constructor(
     private platform: Platform,
@@ -187,12 +191,13 @@ export class MapaGooglePage implements OnInit {
       '<p style="font-size:14px"> <strong> Cuenta: </strong> ' + data.cuenta + '</p>',
       '<p style="font-size:14px"> <strong> Propietario: </strong> ' + data.propietario + '</p>',
       '<p style="font-size:14px"> <strong> Deuda: </strong>$ ' + data.deuda + '</p>',
-      '<ion-button color="success">Gestionar</ion-button>'
+      '<button style="background-color: rgb(0,200,0); width: 95%; padding: 10px 0; color:white">Gestionar</button>'
     ].join("");
-    this.frame.getElementsByTagName("ion-button")[0].addEventListener("click", () => {
+    this.frame.getElementsByTagName("button")[0].addEventListener("click", () => {
       //this.htmlInfoWindow.setBackgroundColor('red');
       this.gestionar(data.cuenta);
     });
+
 
     this.htmlInfoWindow.setContent(this.frame, {
       width: "280px",
@@ -314,6 +319,65 @@ export class MapaGooglePage implements OnInit {
 
   }
 
+  async trazarRuta() {
+
+    let array = []
+    for (let markers of this.markersArrayInfo) {
+      let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
+      let marker = {
+        position: latlng,
+        cuenta: markers.cuenta,
+        propietario: markers.propietario,
+        deuda: markers.total
+      }
+      array.push(marker)
+
+    }
+
+    setTimeout(() => {
+      this.loading.dismiss();
+
+      this.addPolylines(array);
+    }, 2000);
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Trazando ruta...',
+      spinner: 'dots'
+    });
+
+    this.loading.present();
+  }
+
+  addPolylines(array) {
+
+    console.log(array);
+
+    let arrayPolyline = [];
+
+    for (let p of array) {
+      arrayPolyline.push(p.position);
+    }
+
+    let polyline: Polyline = this.map.addPolylineSync({
+      points: arrayPolyline,
+      color: '#AA00FF',
+      width: 10,
+      geodesic: true,
+      clickable: true  // clickable = false in default
+    })
+
+    polyline.on(GoogleMapsEvent.POLYLINE_CLICK).subscribe((params: any) => {
+      let position: LatLng = <LatLng>params[0];
+      this.map.addMarker({
+        position: position,
+        title: position.toUrlValue(),
+        disableAutoPan: true
+      }).then((marker: Marker) => {
+        marker.showInfoWindow();
+      });
+    });
+  }
+
   navegar(tipo) {
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');
@@ -330,10 +394,6 @@ export class MapaGooglePage implements OnInit {
         .catch(err => console.log('Error launching dialer', err));
 
     }
-  } 
-
-
-
-
+  }
 
 }
