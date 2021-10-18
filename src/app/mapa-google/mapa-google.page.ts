@@ -435,6 +435,26 @@ export class MapaGooglePage implements OnInit {
   }
 
 
+  async find() {
+    if (this.accountString == "") {
+      alert("Ingresa una cuenta")
+    } else {
+
+      this.result = await this.rest.getDataVisitPositionByAccount(this.accountString);
+      console.log(this.result)
+      if (this.result.length == 0) {
+        alert("No hay resultados")
+      } else {
+        let latLng = new LatLng(this.result[0].latitud, this.result[0].longitud)
+        console.log(latLng)
+        this.map.setCameraTarget(latLng)
+        this.map.setCameraZoom(20)
+      }
+    }
+  }
+
+
+
   navegar(tipo) {
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');

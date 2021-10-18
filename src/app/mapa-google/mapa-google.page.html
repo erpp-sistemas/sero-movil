@@ -1,7 +1,22 @@
+<hr>
+<hr>
+<hr>
+<hr>
+
 <ion-content>
 
-  <div id="map_canvas"></div>
 
+
+  <ion-toolbar>
+    <ion-input placeholder="Buscar por cuenta" [(ngModel)]="accountString"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="find()">
+        <ion-icon name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div id="map_canvas"></div>
 
   <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button color="success" (click)="trazarRuta()">
