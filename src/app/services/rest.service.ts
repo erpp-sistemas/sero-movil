@@ -29,6 +29,7 @@ export class RestService {
   apiRegistroFotos = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSero";
   apiRegistroFotosServicios = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSeroServicios";
   apiRegistroRecorrido = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_recorrido";
+  apiObtenerCuentasDistancia = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_distancia";
 
 
   constructor(
@@ -1752,5 +1753,18 @@ export class RestService {
     return this.db.executeSql(sql, [id]);
   }
 
+  obtenerCuentasDistancias(idAspUser, idPlaza, idPlazaServicio, latitud, longitud) {
+    try {
+      return new Promise(resolve => {
+        console.log(this.apiObtenerCuentasDistancia + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio + ", " + latitud, + ", " + longitud);
+        this.http.post(this.apiObtenerCuentasDistancia + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio + ", " + latitud + ", " + longitud, null)
+          .subscribe(data => {
+            resolve(data);
+          }, err => console.log(err));
+      })
+    } catch {
+      console.log("No se pudo obtener la informaciòn");
+    }
+  }
 
 }

@@ -5,6 +5,7 @@ import { LoadingController, Platform } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'app-mapa-google',
@@ -20,6 +21,7 @@ export class MapaGooglePage implements OnInit {
   markersArrayInfo: any;
   idServicioPlaza: any;
   id_plaza: any;
+  cuentasDistancia: any
 
   frame: HTMLElement;
   htmlInfoWindow: any;
@@ -35,7 +37,8 @@ export class MapaGooglePage implements OnInit {
     private mensaje: MessagesService,
     private router: Router,
     private activeRoute: ActivatedRoute,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private storage: Storage
   ) { }
 
   mapStyle =
@@ -191,7 +194,8 @@ export class MapaGooglePage implements OnInit {
       '<p style="font-size:14px"> <strong> Cuenta: </strong> ' + data.cuenta + '</p>',
       '<p style="font-size:14px"> <strong> Propietario: </strong> ' + data.propietario + '</p>',
       '<p style="font-size:14px"> <strong> Deuda: </strong>$ ' + data.deuda + '</p>',
-      '<button style="background-color: rgb(0,200,0); width: 95%; padding: 10px 0; color:white">Gestionar</button>'
+      '<button style="background-color: rgb(0,200,0); width: 95%; padding: 10px 0; color:white; border-radius:10px" ' +
+      '>Gestionar</button>'
     ].join("");
     this.frame.getElementsByTagName("button")[0].addEventListener("click", () => {
       //this.htmlInfoWindow.setBackgroundColor('red');
@@ -207,6 +211,8 @@ export class MapaGooglePage implements OnInit {
 
   gestionar(cuenta) {
     console.log("Cuenta ", cuenta);
+    this.storage.set('account', cuenta);
+    this.router.navigateByUrl("/gestion-page");
   }
 
   async loadMap(array) {
@@ -327,8 +333,8 @@ export class MapaGooglePage implements OnInit {
       let marker = {
         position: latlng,
         cuenta: markers.cuenta,
-        propietario: markers.propietario,
-        deuda: markers.total
+        // propietario: markers.propietario,
+        // deuda: markers.total
       }
       array.push(marker)
 
@@ -348,15 +354,24 @@ export class MapaGooglePage implements OnInit {
     this.loading.present();
   }
 
+
   addPolylines(array) {
 
     console.log(array);
 
+    let latlngPosition = new LatLng(parseFloat(this.latitud), parseFloat(this.longitud))
+    console.log(latlngPosition)
+    
+
     let arrayPolyline = [];
+
+    arrayPolyline.push(latlngPosition);
 
     for (let p of array) {
       arrayPolyline.push(p.position);
     }
+
+    console.log(arrayPolyline);
 
     let polyline: Polyline = this.map.addPolylineSync({
       points: arrayPolyline,
@@ -378,6 +393,48 @@ export class MapaGooglePage implements OnInit {
     });
   }
 
+
+  async obtenerDistancias() {
+
+    let idAspUser = await this.storage.get("IdAspUser");
+
+    this.cuentasDistancia =
+      await this.rest.obtenerCuentasDistancias(idAspUser, this.id_plaza, this.idServicioPlaza, this.latitud, this.longitud)
+
+
+    let array = []
+
+
+    for (let markers of this.cuentasDistancia) {
+      let latlng = new LatLng( markers.latitud , markers.longitud )
+      let marker = {
+        position: latlng
+        // cuenta: markers.cuenta,
+        // propietario: markers.propietario,
+        // total: markers.propietario
+      }
+      array.push(marker)
+
+    }
+
+
+    setTimeout(() => {
+      this.loading.dismiss();
+
+      this.addPolylines(array);
+    }, 2000);
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Trazando ruta...',
+      spinner: 'dots'
+    });
+
+    this.loading.present();
+
+
+  }
+
+
   navegar(tipo) {
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');
@@ -395,5 +452,7 @@ export class MapaGooglePage implements OnInit {
 
     }
   }
+
+
 
 }
