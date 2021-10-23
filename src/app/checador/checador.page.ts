@@ -8,6 +8,7 @@ import { AlertController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { MessagesService } from '../services/messages.service';
+import { MarkerIcon } from '@ionic-native/google-maps/ngx';
 
 declare var google;
 
@@ -59,6 +60,7 @@ export class ChecadorPage implements OnInit {
     this.idPlaza = await this.storage.get('IdOficina')
     console.log(this.nombre, this.email, this.plaza, this.idPlaza)
   }
+  
   async loadMap() { //realiza la carga del mapa
     let options: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.ROADMAP,
@@ -95,10 +97,22 @@ export class ChecadorPage implements OnInit {
         zoom: 12,
         tilt: 30
       });
+
+
+      // icono de la ubicacion
+      let iconUbicacion: MarkerIcon = {
+        url: 'assets/icon/sero.png',
+        size: {
+          width: 30,
+          height: 30
+        }
+      }
+
       let marker: Marker = this.map.addMarkerSync({
         title: 'Mi ubicación actual',
         position: location.latLng,
-        animation: GoogleMapsAnimation.BOUNCE
+        animation: GoogleMapsAnimation.BOUNCE,
+        icon: iconUbicacion
       });
 
       // show the infoWindow
@@ -303,6 +317,6 @@ export class ChecadorPage implements OnInit {
         .catch(err => console.log('Error launching dialer', err));
 
     }
-  } 
+  }
 
 }

@@ -172,8 +172,7 @@ export class MapaGooglePage implements OnInit {
         position: latlng,
         cuenta: markers.cuenta,
         propietario: markers.propietario,
-        deuda: markers.total,
-        icon: 'assets/icon/user.png',
+        deuda: markers.total
       }
       array.push(marker)
 
@@ -189,8 +188,8 @@ export class MapaGooglePage implements OnInit {
 
     this.frame = document.createElement('div');
     this.frame.innerHTML = [
-      '<div style="text-align:center"> <img style="width:30px; height:30px" src="assets/icon/sero.png"> </div>',
-      '<h3 style="font-size:16px; text-align:center">Informacón de la cuenta</h3>',
+      '<div style="text-align:center"> <img style="width:30px; height:30px" src="assets/icon/icono-predio.png"> </div>',
+      '<h3 style="font-size:16px; text-align:center">Información de la cuenta</h3>',
       '<p style="font-size:14px"> <strong> Cuenta: </strong> ' + data.cuenta + '</p>',
       '<p style="font-size:14px"> <strong> Propietario: </strong> ' + data.propietario + '</p>',
       '<p style="font-size:14px"> <strong> Deuda: </strong>$ ' + data.deuda + '</p>',
@@ -266,40 +265,41 @@ export class MapaGooglePage implements OnInit {
         tilt: 30
       });
 
+
       // icono de la ubicacion
       let iconUbicacion: MarkerIcon = {
-        url: 'assets/icon/sero.png',
+        url: './assets/icon/sero.png',
         size: {
           width: 30,
           height: 30
         }
       }
 
-      // marcador de la ubicacion
-      let markerUbicacion: Marker = this.map.addMarkerSync({
-        title: 'Posición actual',
+      let marker: Marker = this.map.addMarkerSync({
+        title: 'Mi ubicación actual',
         position: location.latLng,
-        icon: iconUbicacion,
-        animation: GoogleMapsAnimation.BOUNCE
+        animation: GoogleMapsAnimation.BOUNCE,
+        icon: iconUbicacion
       });
 
-      markerUbicacion.showInfoWindow();
+      // show the infoWindow
+      marker.showInfoWindow();
 
       // icon de los puntos
-      let urlIcon = '';
+      let urlIcon = './assets/icon/icono-predio.png';
 
       if (this.idServicioPlaza == 1) {
-        urlIcon = 'assets/icon/gota.png'
+        urlIcon = './assets/icon/gota.png'
       } else if (this.idServicioPlaza == 2) {
-        urlIcon = 'assets/icon/predio.png'
+        urlIcon = './assets/icon/icono-predio.png'
       }
 
       // marcadores de los puntos
       let icon: MarkerIcon = {
         url: urlIcon,
         size: {
-          width: 30,
-          height: 30
+          width: 35,
+          height: 35
         }
       };
 
@@ -333,8 +333,8 @@ export class MapaGooglePage implements OnInit {
       let marker = {
         position: latlng,
         cuenta: markers.cuenta,
-        // propietario: markers.propietario,
-        // deuda: markers.total
+        propietario: markers.propietario,
+        deuda: markers.total
       }
       array.push(marker)
 
@@ -375,7 +375,7 @@ export class MapaGooglePage implements OnInit {
 
     let polyline: Polyline = this.map.addPolylineSync({
       points: arrayPolyline,
-      color: '#AA00FF',
+      color: '#0995F2',
       width: 10,
       geodesic: true,
       clickable: true  // clickable = false in default
