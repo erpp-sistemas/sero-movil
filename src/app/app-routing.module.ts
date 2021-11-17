@@ -98,7 +98,16 @@ const routes: Routes = [
   {
     path: 'mapa-google/:id/:id_plaza',
     loadChildren: () => import('./mapa-google/mapa-google.module').then( m => m.MapaGooglePageModule)
+  },
+  {
+    path: 'mapa-prueba/:id/:id_plaza',
+    loadChildren: () => import('./mapa-prueba/mapa-prueba.module').then( m => m.MapaPruebaPageModule)
+  },  {
+    path: 'photos-history',
+    loadChildren: () => import('./photos-history/photos-history.module').then( m => m.PhotosHistoryPageModule)
   }
+
+
 
 
 

@@ -14,7 +14,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 })
 export class SyncFotosAccionesPage implements OnInit {
 
-  infoImages:any;
+  infoImages: any;
   loading: HTMLIonLoadingElement;
   isSelected: boolean;
   contadorFotos: number = 0;
@@ -35,6 +35,7 @@ export class SyncFotosAccionesPage implements OnInit {
   async ngOnInit() {
     await this.getTotalFotos();
     await this.getInfo();
+    console.log(this.infoImages);
   }
 
 
@@ -57,7 +58,7 @@ export class SyncFotosAccionesPage implements OnInit {
 
   async getTotalFotos() {
     this.totalFotos = await this.rest.getTotalFotosAcciones();
-    console.log("Fotos acciones " , this.totalFotos);
+    console.log("Fotos acciones ", this.totalFotos);
   }
 
   openPreview(imagen) {
@@ -67,16 +68,42 @@ export class SyncFotosAccionesPage implements OnInit {
       componentProps: {
         imagen
       }
-    }).then( modal => {
+    }).then(modal => {
       modal.present();
     });
   }
 
-  uploadPhoto(id) {
+  async uploadPhoto(id) {
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Enviando foto...',
+      spinner: 'dots'
+    });
+
+    await loading.present();
+
+    await this.rest.uploadPhoto(id);
+    this.getInfo();
+    await this.getTotalFotos();
+
+    loading.dismiss();
 
   }
 
-  deletePhoto( id, rutaBase64) {
+  async deletePhoto(id, rutaBase64) {
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Eliminando la foto...',
+      spinner: 'dots'
+    });
+
+    loading.present();
+
+    this.rest.deletePhoto(id, rutaBase64);
+    this.getInfo();
+    await this.getTotalFotos();
+
+    loading.dismiss();
 
   }
 

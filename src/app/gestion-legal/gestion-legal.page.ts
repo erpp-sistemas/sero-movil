@@ -8,6 +8,7 @@ import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 
 @Component({
   selector: 'app-gestion-legal',
@@ -139,9 +140,9 @@ export class GestionLegalPage implements OnInit {
     let fecha = this.fechaActual.split("T");
   }
 
-  resultIdPuesto( event ) {
+  resultIdPuesto(event) {
     let opcion = event.detail.value;
-    if(opcion == 6) {
+    if (opcion == 6) {
       this.mostrarOtroPuesto = true;
     } else {
       this.mostrarOtroPuesto = false;
@@ -155,6 +156,31 @@ export class GestionLegalPage implements OnInit {
     } else {
       this.activaOtroMotivo = false;
     }
+  }
+
+
+  async confirmaFoto(tipo: number) {
+    const mensaje = await this.alertCtrl.create({
+      header: "Tomar foto",
+      subHeader: "Selecciona el modo para tomar foto ",
+      buttons: [
+        {
+          text: "Camara",
+          cssClass: "secondary",
+          handler: () => {
+            this.takePic(tipo);
+          }
+        },
+        {
+          text: "Galeria",
+          cssClass: "secondary",
+          handler: () => {
+            this.takePicGallery(tipo)
+          }
+        }
+      ]
+    });
+    await mensaje.present();
   }
 
 
@@ -190,30 +216,89 @@ export class GestionLegalPage implements OnInit {
     };
 
     this.camera.getPicture(options)
-    .then(imageData => {
-      this.indicadorImagen = this.indicadorImagen + 1;
-      let rutaBase64 = imageData;
-      this.image = this.webview.convertFileSrc(imageData);
-      this.isPhoto = false;
-      this.takePhoto = true;
-      this.imgs.push({imagen: this.image});
-      if(this.indicadorImagen == 1) {
-        this.imgs.splice(0,1)
-      }
+      .then(imageData => {
+        this.indicadorImagen = this.indicadorImagen + 1;
+        let rutaBase64 = imageData;
+        this.image = this.webview.convertFileSrc(imageData);
+        this.isPhoto = false;
+        this.takePhoto = true;
+        this.imgs.push({ imagen: this.image });
+        if (this.indicadorImagen == 1) {
+          this.imgs.splice(0, 1)
+        }
 
-      this.saveImage(
-        this.id_plaza,
-        this.nombrePlaza,
-        this.image,
-        this.account,
-        fecha,
-        rutaBase64,
-        this.idAspUser,
-        this.tareaAsignada,
-        tipo,
-        this.idServicioPlaza
-      );
-    }).catch(error => console.log(error));
+        this.saveImage(
+          this.id_plaza,
+          this.nombrePlaza,
+          this.image,
+          this.account,
+          fecha,
+          rutaBase64,
+          this.idAspUser,
+          this.tareaAsignada,
+          tipo,
+          this.idServicioPlaza
+        );
+      }).catch(error => console.log(error));
+
+  }
+
+  takePicGallery(type) {
+    let tipo;
+    if (type == 1) {
+      tipo = "Fachada predio"
+    } else if (type == 2) {
+      tipo = "Gestión legal evidencia";
+    }
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(
+      Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      )
+    );
+
+    let fecha = ionicDate.toISOString();
+
+    let options: CameraOptions = {
+      quality: 40,
+      correctOrientation: true,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE
+    };
+
+    this.camera.getPicture(options)
+      .then(imageData => {
+        this.indicadorImagen = this.indicadorImagen + 1;
+        let rutaBase64 = imageData;
+        this.image = this.webview.convertFileSrc(imageData);
+        this.isPhoto = false;
+        this.takePhoto = true;
+        this.imgs.push({ imagen: this.image });
+        if (this.indicadorImagen == 1) {
+          this.imgs.splice(0, 1)
+        }
+
+        this.saveImage(
+          this.id_plaza,
+          this.nombrePlaza,
+          this.image,
+          this.account,
+          fecha,
+          rutaBase64,
+          this.idAspUser,
+          this.tareaAsignada,
+          tipo,
+          this.idServicioPlaza
+        );
+      }).catch(error => console.log(error));
 
   }
 
@@ -234,6 +319,8 @@ export class GestionLegalPage implements OnInit {
       this.mensaje.showToast("Se almaceno la imagen correctamente");
     })
   }
+
+  
 
   async verify() {
     let account = this.account;
@@ -270,9 +357,9 @@ export class GestionLegalPage implements OnInit {
         );
 
         this.fechaCaptura = ionicDate.toISOString();
-        
+
         let data = {
-          id_plaza : this.id_plaza,
+          id_plaza: this.id_plaza,
           nombrePlaza: this.nombrePlaza,
           account: this.account,
           personaAtiende: this.personaAtiende,
@@ -283,8 +370,8 @@ export class GestionLegalPage implements OnInit {
           otroMotivo: this.otroMotivo,
           idTipoServicio: this.idTipoServicio,
           numeroNiveles: this.numeroNiveles,
-          colorFachada: this.colorFachada,
-          colorPuerta: this.colorPuerta,
+          colorFachada: this.colorFachada.substring(1,7),
+          colorPuerta: this.colorPuerta.substring(1,7),
           referencia: this.referencia,
           idTipoPredio: this.idTipoPredio,
           entreCalle1: this.entreCalle1,
@@ -298,6 +385,10 @@ export class GestionLegalPage implements OnInit {
           idServicioPlaza: this.idServicioPlaza,
           id: this.idAccountSqlite
         };
+
+        console.log("Informacion a insertar");
+        console.log(data);
+        
         await this.gestionLegal(data);
         this.loading.dismiss();
         this.exit();
@@ -309,7 +400,7 @@ export class GestionLegalPage implements OnInit {
     })
   }
 
-  async gestionLegal( data ) { 
+  async gestionLegal(data) {
     this.detectedChanges = false;
     console.log(data);
     await this.rest.gestionLegal(data);
@@ -337,7 +428,7 @@ export class GestionLegalPage implements OnInit {
   }
 
 
-  async salida( tipo ) {
+  async salida(tipo) {
     const alert = await this.alertCtrl.create({
       header: "Salir",
       subHeader: "Confirme para salir de la gestión, se perderan los cambios ",
@@ -362,6 +453,26 @@ export class GestionLegalPage implements OnInit {
     await alert.present();
   }
 
+
+
+  async goPhotos() {
+
+    console.log(this.id_plaza);
+    console.log(this.account);
+
+    let idPlaza = this.id_plaza;
+
+    const modal = await this.modalController.create({
+      component: PhotosHistoryPage,
+      componentProps: {
+        "account": this.account,
+        "idPlaza": idPlaza
+      }
+    });
+
+    await modal.present();
+
+  }
 
 
   navegar(tipo) {

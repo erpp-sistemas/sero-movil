@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Storage } from "@ionic/storage";
 import { MessagesService } from '../services/messages.service';
-import { ModalController,  Platform, LoadingController, NavController, AlertController } from '@ionic/angular';
+import { ModalController, Platform, LoadingController, NavController, AlertController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 
 @Component({
   selector: 'app-gestion-inspeccion-agua',
@@ -40,6 +41,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   hallazgoDrenajeClandestino: number = 0;
   hallazgoCambioGiro: number = 0;
   hallazgoFaltaDocumentacion: number = 0;
+  hallazgoNegaronAcceso: number = 0;
 
 
   observacion: string = '';
@@ -72,7 +74,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   takePhoto: boolean = false;
   activaOtroMotivo: boolean = false;
 
-  nombrePlaza:any;
+  nombrePlaza: any;
   id_plaza: any;
   idServicioPlaza: number = 0;
 
@@ -83,7 +85,8 @@ export class GestionInspeccionAguaPage implements OnInit {
   inspectores: boolean = false; // para mostrar la lista de inspectores
   detectedChanges: boolean = false;
   mostrarOtroPuesto: boolean = false;
-  
+  mostrarIrregularidades: boolean = true;
+
 
   sliderOpts = {
     zoom: true,
@@ -112,6 +115,8 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
 
+  @ViewChild('segmentPrincipal', { static: true }) segmentPrincipal;
+
   async ngOnInit() {
     await this.platform.ready();
     await this.getInfoAccount();
@@ -124,9 +129,9 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   // results
 
-  resultIdPuesto( event ) {
+  resultIdPuesto(event) {
     let opcion = event.detail.value;
-    if(opcion == 6) {
+    if (opcion == 6) {
       this.mostrarOtroPuesto = true;
     } else {
       this.mostrarOtroPuesto = false;
@@ -134,73 +139,84 @@ export class GestionInspeccionAguaPage implements OnInit {
   }
 
 
-  resultMotivoNoPago( event ) {
+  resultMotivoNoPago(event) {
     let motivo = event.detail.value;
-    if(motivo == 5) {
+    if (motivo == 5) {
       this.activaOtroMotivo = true;
     } else {
       this.activaOtroMotivo = false;
     }
   }
 
-  resultNinguna( event ) {
-    if(event.detail.value == 'ningunaSi') {
+  resultNinguna(event) {
+    if (event.detail.value == 'ningunaSi') {
       this.hallazgoNinguna = 1
+      // deshabilitar todos los demas segment
+      this.mostrarIrregularidades = false;
     } else {
       this.hallazgoNinguna = 0
+      this.mostrarIrregularidades = true;
     }
   }
 
-  resultMedidorDescompuesto( event ) {
-    if(event.detail.value == 'medidorDescompuestoSi') {
+  resultNegaronAcceso(event) {
+    if (event.detail.value == 'negaronAccesoSi') {
+      this.hallazgoNegaronAcceso = 1
+    } else {
+      this.hallazgoNegaronAcceso = 0
+    }
+  }
+
+  resultMedidorDescompuesto(event) {
+    if (event.detail.value == 'medidorDescompuestoSi') {
       this.hallazgoMedidorDescompuesto = 1
     } else {
       this.hallazgoMedidorDescompuesto = 0
     }
   }
 
-  resultDiferenciaDiametro( event ) {
-    if(event.detail.value == 'diferenciaDiametroSi') {
+  resultDiferenciaDiametro(event) {
+    if (event.detail.value == 'diferenciaDiametroSi') {
       this.hallazgoDiferenciaDiametro = 1
     } else {
       this.hallazgoDiferenciaDiametro = 0
     }
   }
 
-  resultTomaClandestina( event ) {
-    if(event.detail.value == 'tomaClandestinaSi') {
+  resultTomaClandestina(event) {
+    if (event.detail.value == 'tomaClandestinaSi') {
       this.hallazgoTomaClandestina = 1
     } else {
       this.hallazgoTomaClandestina = 0
     }
   }
 
-  resultDerivacionClandestina( event ) {
-    if(event.detail.value == 'derivacionClandestinaSi') {
+  resultDerivacionClandestina(event) {
+    if (event.detail.value == 'derivacionClandestinaSi') {
       this.hallazgoDerivacionClandestina = 1
     } else {
       this.hallazgoDerivacionClandestina = 0
     }
   }
 
-  resultDrenajeClandestino( event ) {
-    if(event.detail.value == 'DrenajeClandestinoSi') {
+  resultDrenajeClandestino(event) {
+    if (event.detail.value == 'DrenajeClandestinoSi') {
       this.hallazgoDrenajeClandestino = 1
     } else {
       this.hallazgoDrenajeClandestino = 0
     }
   }
 
-  resultCambioGiro( event ) {
-    if(event.detail.value == 'cambioGiroSi') {
+  resultCambioGiro(event) {
+    if (event.detail.value == 'cambioGiroSi') {
       this.hallazgoCambioGiro = 1
     } else {
       this.hallazgoCambioGiro = 0
     }
   }
 
-  resultFaltaDocumentacion( event ) {
-    if(event.detail.value == 'faltaDocumentacionSi') {
+  resultFaltaDocumentacion(event) {
+    if (event.detail.value == 'faltaDocumentacionSi') {
       this.hallazgoFaltaDocumentacion = 1
     } else {
       this.hallazgoFaltaDocumentacion = 0
@@ -234,17 +250,13 @@ export class GestionInspeccionAguaPage implements OnInit {
   async muestraInspectores() {
     this.mostrarInspectores = true;
     this.inspectores = true;
-    const idPlaza = await this.storage.get('IdPlaza');
     this.nombreInspectorLogueado = await this.storage.get('Nombre');
-    //console.log(idPlaza);
+    console.log(this.id_plaza);
     try {
-      // cambiar el 10 por el idplaza del storage
-      this.rest.getNombreInspectores(10).subscribe(resp => {
-        //console.log(resp);
-        this.nombreInspectores = resp;
-      })
+      this.nombreInspectores = await this.rest.mostrarEmpleadosPlaza(this.id_plaza);
+      console.log(this.nombreInspectores);
     } catch (error) {
-      //console.log("Error al traer los datos de los inspectores")
+      console.log("Error al traer los datos de los inspectores")
     }
   }
 
@@ -341,7 +353,9 @@ export class GestionInspeccionAguaPage implements OnInit {
       tipo = "Inspección recorrido";
     } else if (type == 2) {
       tipo = "Inspección evidencia";
-    } 
+    } else if (type == 3) {
+      tipo = "Observación contribuyente"
+    }
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(
@@ -404,7 +418,7 @@ export class GestionInspeccionAguaPage implements OnInit {
       tipo = "Inspección recorrido";
     } else if (type == 2) {
       tipo = "Inspección evidencia";
-    } 
+    }
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(
@@ -533,13 +547,14 @@ export class GestionInspeccionAguaPage implements OnInit {
           otroMotivo: this.otroMotivo,
           idTipoServicio: this.idTipoServicio,
           numeroNiveles: this.numeroNiveles,
-          colorFachada: this.colorFachada,
-          colorPuerta: this.colorPuerta,
+          colorFachada: this.colorFachada.substring(1, 7),
+          colorPuerta: this.colorPuerta.substring(1, 7),
           referencia: this.referencia,
           idTipoPredio: this.idTipoPredio,
           entreCalle1: this.entreCalle1,
           entrecalle2: this.entreCalle2,
           hallazgoNinguna: this.hallazgoNinguna,
+          hallazgoNegaronAcceso: this.hallazgoNegaronAcceso,
           hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
           hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
           hallazgoTomaClandestina: this.hallazgoTomaClandestina,
@@ -594,41 +609,42 @@ export class GestionInspeccionAguaPage implements OnInit {
 
       let data = {
         id_plaza: this.id_plaza,
-          nombrePlaza: this.nombrePlaza,
-          account: this.account,
-          personaAtiende: this.personaAtiende,
-          //numeroContacto: this.numeroContacto,
-          idPuesto: this.idPuesto,
-          otroPuesto: this.otroPuesto,
-          idMotivoNoPago: this.idMotivoNoPago,
-          otroMotivo: this.otroMotivo,
-          idTipoServicio: this.idTipoServicio,
-          numeroNiveles: this.numeroNiveles,
-          colorFachada: this.colorFachada,
-          colorPuerta: this.colorPuerta,
-          referencia: this.referencia,
-          idTipoPredio: this.idTipoPredio,
-          entreCalle1: this.entreCalle1,
-          entrecalle2: this.entreCalle2,
-          hallazgoNinguna: this.hallazgoNinguna,
-          hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
-          hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
-          hallazgoTomaClandestina: this.hallazgoTomaClandestina,
-          hallazgoDerivacionClandestina: this.hallazgoDerivacionClandestina,
-          hallazgoDrenajeClandestino: this.hallazgoDrenajeClandestino,
-          hallazgoCambioGiro: this.hallazgoCambioGiro,
-          hallazgoFaltaDocumentacion: this.hallazgoFaltaDocumentacion,
-          idAspUser: this.idAspuser,
-          inspector2: this.inspector2,
-          inspector3: this.inspector3,
-          inspector4: this.inspector4,
-          observacion: this.observacion,
-          idTarea: this.tareaAsignada,
-          fechaCaptura: this.fechaCaptura,
-          latitud: this.latitud,
-          longitud: this.longitud,
-          idServicioPlaza: this.idServicioPlaza,
-          id: this.idAccountSqlite
+        nombrePlaza: this.nombrePlaza,
+        account: this.account,
+        personaAtiende: this.personaAtiende,
+        //numeroContacto: this.numeroContacto,
+        idPuesto: this.idPuesto,
+        otroPuesto: this.otroPuesto,
+        idMotivoNoPago: this.idMotivoNoPago,
+        otroMotivo: this.otroMotivo,
+        idTipoServicio: this.idTipoServicio,
+        numeroNiveles: this.numeroNiveles,
+        colorFachada: this.colorFachada.substring(1, 7),
+        colorPuerta: this.colorPuerta.substring(1, 7),
+        referencia: this.referencia,
+        idTipoPredio: this.idTipoPredio,
+        entreCalle1: this.entreCalle1,
+        entrecalle2: this.entreCalle2,
+        hallazgoNinguna: this.hallazgoNinguna,
+        hallazgoNegaronAcceso: this.hallazgoNegaronAcceso,
+        hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
+        hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
+        hallazgoTomaClandestina: this.hallazgoTomaClandestina,
+        hallazgoDerivacionClandestina: this.hallazgoDerivacionClandestina,
+        hallazgoDrenajeClandestino: this.hallazgoDrenajeClandestino,
+        hallazgoCambioGiro: this.hallazgoCambioGiro,
+        hallazgoFaltaDocumentacion: this.hallazgoFaltaDocumentacion,
+        idAspUser: this.idAspuser,
+        inspector2: this.inspector2,
+        inspector3: this.inspector3,
+        inspector4: this.inspector4,
+        observacion: this.observacion,
+        idTarea: this.tareaAsignada,
+        fechaCaptura: this.fechaCaptura,
+        latitud: this.latitud,
+        longitud: this.longitud,
+        idServicioPlaza: this.idServicioPlaza,
+        id: this.idAccountSqlite
       };
       await this.gestionInspeccion(data);
       this.loading.dismiss();
@@ -644,7 +660,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     await this.rest.gestionInspeccion(data);
   }
 
-  async salida( tipo ) {
+  async salida(tipo) {
     const alert = await this.alertCtrl.create({
       header: "Salir",
       subHeader: "Confirme para salir de la gestión, se perderan los cambios ",
@@ -670,6 +686,26 @@ export class GestionInspeccionAguaPage implements OnInit {
   }
 
 
+  async goPhotos() {
+
+    console.log(this.id_plaza);
+    console.log(this.account);
+
+    let idPlaza = this.id_plaza;
+
+    const modal = await this.modalController.create({
+      component: PhotosHistoryPage,
+      componentProps: {
+        "account": this.account,
+        "idPlaza": idPlaza
+      }
+    });
+
+    await modal.present();
+
+  }
+
+
   navegar(tipo) {
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');
@@ -686,7 +722,7 @@ export class GestionInspeccionAguaPage implements OnInit {
         .catch(err => console.log('Error launching dialer', err));
 
     }
-  } 
+  }
 
 
 }

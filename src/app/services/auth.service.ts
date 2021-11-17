@@ -19,6 +19,7 @@ export class AuthService {
 
   apiObtenerServiciosUser = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios";
   apiObtenerServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios_publicos";
+  apiObtenerEmpleadosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
@@ -54,6 +55,7 @@ export class AuthService {
               // guardar la informacion del usuario en el storage
               this.saveUserInfoStorage(this.userInfo);
               this.obtenerServiciosPublicos();
+              this.obtenerUsuariosPlaza(this.userInfo);
               this.getServicesPlazaUser(this.userInfo.idaspuser);
               await this.storage.set("idFireBase", id);
               await this.storage.set("ActivateApp", 1);
@@ -71,6 +73,7 @@ export class AuthService {
                 this.mensaje.showAlert("Bienvenid@ " + nombreUser);
                 this.saveUserInfoStorage(this.userInfo);
                 this.obtenerServiciosPublicos();
+                this.obtenerUsuariosPlaza(this.userInfo);
                 this.getServicesPlazaUser(this.userInfo.idaspuser);
                 resolve(nombreUser)
               }
@@ -79,6 +82,7 @@ export class AuthService {
                 createSubscribe.unsubscribe();
                 this.saveUserInfoStorage(this.userInfo);
                 this.obtenerServiciosPublicos();
+                this.obtenerUsuariosPlaza(this.userInfo);
                 this.getServicesPlazaUser(this.userInfo.idaspuser);
                 let nombreUsuario = await this.storage.get("Nombre")
                 await this.storage.set("idFireBase", id)
@@ -140,9 +144,28 @@ export class AuthService {
 
   }
 
+
+  async obtenerUsuariosPlaza(userInfo) {
+    console.log("Obteniendo los empleados de la plaza");
+    await this.rest.deleteEmpleadosPlaza();
+    // obtener el id del usuario para mandarlo a la api
+    let idAspUser = userInfo.idaspuser;
+    console.log(idAspUser); 
+    this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe( data => {
+      console.log(data);
+      this.insertaEmpleadosPlaza(data);
+    })
+  }
+
   insertarServiciosPublicos(data) {
     data.forEach(servicio => {
       this.rest.insertarServicioPublicoSQL(servicio);
+    });
+  }
+
+  insertaEmpleadosPlaza(empleados) {
+    empleados.forEach(empleado => {
+      this.rest.insertaEmpleadosPlaza(empleado);
     });
   }
 
@@ -192,24 +215,24 @@ export class AuthService {
     this.storage.set('Rol', userInfo.rol);
     this.storage.set('IdUserChecador', userInfo.idUserChecador)
     this.storage.set('Password', userInfo.password)
-    this.storage.set('ImgAvatar', userInfo.imgAvatar);
+    this.storage.set('Img', userInfo.img);
     this.storage.set('NumeroPlazas', userInfo.plaza.length);
-    let contadorPlaza = 1;
-    let contadorIdPlaza = 1;
-    console.log(userInfo.plaza);
-    userInfo.plaza.forEach(plaza => {
-      console.log("Plaza:", plaza);
-      this.storage.set(`nombre${contadorPlaza}`, plaza);
-      console.log(`nombre${contadorPlaza}`);
-      contadorPlaza++;
-    });
+    // let contadorPlaza = 1;
+    // let contadorIdPlaza = 1;
+    // console.log(userInfo.plaza);
+    // userInfo.plaza.forEach(plaza => {
+    //   console.log("Plaza:", plaza);
+    //   this.storage.set(`nombre${contadorPlaza}`, plaza);
+    //   console.log(`nombre${contadorPlaza}`);
+    //   contadorPlaza++;
+    // });
 
-    userInfo.idPlaza.forEach(idPlaza => {
-      console.log("idPlaza:", idPlaza);
-      this.storage.set(`idPlaza${contadorIdPlaza}`, idPlaza);
-      console.log(`idPlaza${contadorIdPlaza}`);
-      contadorIdPlaza++;
-    });    
+    // userInfo.idPlaza.forEach(idPlaza => {
+    //   console.log("idPlaza:", idPlaza);
+    //   this.storage.set(`idPlaza${contadorIdPlaza}`, idPlaza);
+    //   console.log(`idPlaza${contadorIdPlaza}`);
+    //   contadorIdPlaza++;
+    // });    
 
   }
 

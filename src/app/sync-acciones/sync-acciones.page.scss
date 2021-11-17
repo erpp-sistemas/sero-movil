@@ -2,6 +2,16 @@ p{
     color: white !important;
 }
 
+.trash {
+    color: red !important;
+}
+
+.upload {
+    color: rgb(0,200,0);
+}
+
+
+
 ion-segment {
     --background:rgb(37, 64, 97);
     border-top: 1px solid rgba(0,0,0,.1);

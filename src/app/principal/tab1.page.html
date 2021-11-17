@@ -15,7 +15,8 @@
 
         <ion-row>
             <ion-col>
-                <img class="img-perfil" src="../../assets/img/perfil.jpg" alt="">
+                <!-- <img class="img-perfil" src="../../assets/img/perfil.jpg" alt=""> -->
+                <img class="img-perfil" [src]="imgUser" alt="Foto de perfil no cargada">
             </ion-col>
         </ion-row>
 
@@ -37,6 +38,8 @@
 
         <div *ngIf="id_plaza == 0" style="text-align: center;">
             <img src="../../assets/img/selecciona_plaza.png" style="width: 100px; height: 100px;" alt="">
+            <ion-chip color="success">No se pudo cargar la información</ion-chip>
+            <ion-chip color="success">Actualiza la app cambiando de tab</ion-chip>
         </div>
 
         <div *ngIf="id_plaza != 0">

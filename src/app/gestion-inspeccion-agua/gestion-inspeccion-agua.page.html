@@ -22,15 +22,36 @@
     <hr>
     <hr>
     <hr>
-    <hr><hr><hr>
+    <hr>
+    <hr>
+    <hr>
 
 
-    <div style="text-align: center;">
+    <ion-grid style="margin-top: 30px;">
+        <ion-row>
+            <ion-col size=12 class="ion-text-center">
+                <ion-button shape="round" color="primary" expand="block" (click)="goPhotos()">
+                    <ion-icon slot="start" name="image"></ion-icon>
+                    Ver fotos históricas
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <div style="text-align: center; margin:15 0px 0 20;">
         <ion-chip color="success">Información contribuyente</ion-chip>
     </div>
 
+
     <ion-card color="medium">
         <ion-card-content>
+
+            <ion-item color="medium">
+                <ion-label>
+                    <p> Cuenta a gestionar: <span style="font-weight: bold;"> {{account}} </span> </p>
+                </ion-label>
+            </ion-item>
+
             <ion-item color="medium">
                 <ion-label>
                     <p>Persona que atiende: </p>
@@ -62,7 +83,7 @@
                     </p>
                 </ion-label>
             </ion-item>
-            
+
             <ion-item *ngIf="mostrarOtroPuesto" color="medium">
                 <ion-label>
                     <p>Especifique: </p>
@@ -77,7 +98,7 @@
     <ion-card color="medium">
         <ion-card-content>
 
-            <ion-item color="medium">
+            <!-- <ion-item color="medium">
                 <ion-label>
                     <p>
                         Motivo de no pago
@@ -101,7 +122,7 @@
                     </ion-label>
                     <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="otroMotivo"></ion-input>
                 </ion-item>
-            </div>
+            </div> -->
 
             <ion-item color="medium">
                 <ion-label>
@@ -117,11 +138,11 @@
                     <p>
                         <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
                             [(ngModel)]="idTipoServicio">
-                            <ion-select-option value="1">Domestico</ion-select-option>
+                            <ion-select-option value="1">Doméstico</ion-select-option>
                             <ion-select-option value="2">Comercial</ion-select-option>
                             <ion-select-option value="3">Industrial</ion-select-option>
                             <ion-select-option value="4">Gobierno</ion-select-option>
-                            <ion-select-option value="5">Domectico / Comercial</ion-select-option>
+                            <ion-select-option value="5">Doméstico / Comercial</ion-select-option>
                             <ion-select-option value="6">Residencial</ion-select-option>
                             <ion-select-option value="7">Departamental</ion-select-option>
                         </ion-select>
@@ -154,14 +175,16 @@
                 <ion-label>
                     <p>Color fachada: </p>
                 </ion-label>
-                <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
+                <input type="color" [(ngModel)]="colorFachada">
+                <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input> -->
             </ion-item>
 
             <ion-item color="medium">
                 <ion-label>
                     <p>Color puerta: </p>
                 </ion-label>
-                <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
+                <input type="color" [(ngModel)]="colorPuerta">
+                <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input> -->
             </ion-item>
 
             <ion-item color="medium">
@@ -235,136 +258,158 @@
 
             <hr>
 
-            <ion-item color="medium" style="text-align: center;">
-                <p>
-                    Medidor descompuesto
-                </p>
-            </ion-item>
-            <ion-item color="medium">
-                <ion-segment mode="ios" color="danger" (ionChange)="resultMedidorDescompuesto( $event )"
-                    value="medidorDesconpuestoNo">
-                    <ion-segment-button class="segment-si" value="medidorDescompuestoSi">
-                        <ion-label class="marca-si">Si</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button class="segment-no" value="medidorDesconpuestoNo">
-                        <ion-label class="marca-no">No</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+            <div *ngIf="mostrarIrregularidades">
 
-            <hr>
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Negaron acceso
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultNegaronAcceso( $event )"
+                        value="negaronAccesoNo">
+                        <ion-segment-button class="segment-si" value="negaronAccesoSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="negaronAccesoNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
 
-            <ion-item color="medium" style="text-align: center;">
-                <p>
-                    Diferencia de diámetro
-                </p>
-            </ion-item>
-            <ion-item color="medium">
-                <ion-segment mode="ios" color="danger" (ionChange)="resultDiferenciaDiametro( $event )"
-                    value="diferenciaDiametroNo">
-                    <ion-segment-button class="segment-si" value="diferenciaDiametroSi">
-                        <ion-label class="marca-si">Si</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button class="segment-no" value="diferenciaDiametroNo">
-                        <ion-label class="marca-no">No</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
 
-            <hr>
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Medidor descompuesto
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultMedidorDescompuesto( $event )"
+                        value="medidorDesconpuestoNo">
+                        <ion-segment-button class="segment-si" value="medidorDescompuestoSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="medidorDesconpuestoNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
 
-            <ion-item color="medium" style="text-align: center;">
-                <p>
-                    Toma clandestina
-                </p>
-            </ion-item>
-            <ion-item color="medium">
-                <ion-segment mode="ios" color="danger" (ionChange)="resultTomaClandestina( $event )"
-                    value="tomaClandestinaNo">
-                    <ion-segment-button class="segment-si" value="tomaClandestinaSi">
-                        <ion-label class="marca-si">Si</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button class="segment-no" value="tomaClandestinaNo">
-                        <ion-label class="marca-no">No</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+                <hr>
 
-            <hr>
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Diferencia de diámetro
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultDiferenciaDiametro( $event )"
+                        value="diferenciaDiametroNo">
+                        <ion-segment-button class="segment-si" value="diferenciaDiametroSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="diferenciaDiametroNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
 
-            <ion-item color="medium" style="text-align: center;">
-                <p>
-                    Derivación clandestina
-                </p>
-            </ion-item>
-            <ion-item color="medium">
-                <ion-segment mode="ios" color="danger" (ionChange)="resultDerivacionClandestina( $event )"
-                    value="derivacionClandestinaNo">
-                    <ion-segment-button class="segment-si" value="derivacionClandestinaSi">
-                        <ion-label class="marca-si">Si</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button class="segment-no" value="derivacionClandestinaNo">
-                        <ion-label class="marca-no">No</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+                <hr>
 
-            <hr>
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Toma clandestina
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultTomaClandestina( $event )"
+                        value="tomaClandestinaNo">
+                        <ion-segment-button class="segment-si" value="tomaClandestinaSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="tomaClandestinaNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
 
-            <ion-item color="medium" style="text-align: center;">
-                <p>
-                    Drenaje clandestino
-                </p>
-            </ion-item>
-            <ion-item color="medium">
-                <ion-segment mode="ios" color="danger" (ionChange)="resultDrenajeClandestino( $event )"
-                    value="DrenajeClandestinoNo">
-                    <ion-segment-button class="segment-si" value="DrenajeClandestinoSi">
-                        <ion-label class="marca-si">Si</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button class="segment-no" value="DrenajeClandestinoNo">
-                        <ion-label class="marca-no">No</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+                <hr>
 
-            <hr>
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Derivación clandestina
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultDerivacionClandestina( $event )"
+                        value="derivacionClandestinaNo">
+                        <ion-segment-button class="segment-si" value="derivacionClandestinaSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="derivacionClandestinaNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
 
-            <ion-item color="medium" style="text-align: center;">
-                <p>
-                    Cambio de giro
-                </p>
-            </ion-item>
-            <ion-item color="medium">
-                <ion-segment mode="ios" color="danger" (ionChange)="resultCambioGiro( $event )"
-                    value="cambioGiroNo">
-                    <ion-segment-button class="segment-si" value="cambioGiroSi">
-                        <ion-label class="marca-si">Si</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button class="segment-no" value="cambioGiroNo">
-                        <ion-label class="marca-no">No</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+                <hr>
 
-            <hr>
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Drenaje clandestino
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultDrenajeClandestino( $event )"
+                        value="DrenajeClandestinoNo">
+                        <ion-segment-button class="segment-si" value="DrenajeClandestinoSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="DrenajeClandestinoNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
 
-            <ion-item color="medium" style="text-align: center;">
-                <p>
-                    Falta de documentación
-                </p>
-            </ion-item>
-            <ion-item color="medium">
-                <ion-segment mode="ios" color="danger" (ionChange)="resultFaltaDocumentacion( $event )"
-                    value="faltaDocumentacionNo">
-                    <ion-segment-button class="segment-si" value="faltaDocumentacionSi">
-                        <ion-label class="marca-si">Si</ion-label>
-                    </ion-segment-button>
-                    <ion-segment-button class="segment-no" value="faltaDocumentacionNo">
-                        <ion-label class="marca-no">No</ion-label>
-                    </ion-segment-button>
-                </ion-segment>
-            </ion-item>
+                <hr>
+
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Cambio de giro
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultCambioGiro( $event )"
+                        value="cambioGiroNo">
+                        <ion-segment-button class="segment-si" value="cambioGiroSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="cambioGiroNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
+
+                <hr>
+
+                <ion-item color="medium" style="text-align: center;">
+                    <p>
+                        Falta de documentación
+                    </p>
+                </ion-item>
+                <ion-item color="medium">
+                    <ion-segment mode="ios" color="danger" (ionChange)="resultFaltaDocumentacion( $event )"
+                        value="faltaDocumentacionNo">
+                        <ion-segment-button class="segment-si" value="faltaDocumentacionSi">
+                            <ion-label class="marca-si">Si</ion-label>
+                        </ion-segment-button>
+                        <ion-segment-button class="segment-no" value="faltaDocumentacionNo">
+                            <ion-label class="marca-no">No</ion-label>
+                        </ion-segment-button>
+                    </ion-segment>
+                </ion-item>
+
+            </div>
 
         </ion-card-content>
     </ion-card>
@@ -409,8 +454,8 @@
                     <p>
                         <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
                             [(ngModel)]="inspector2">
-                            <ion-select-option [value]="inspector.id" *ngFor="let inspector of nombreInspectores">
-                                {{inspector.nombre}} </ion-select-option>
+                            <ion-select-option [value]="inspector.idAspUser" *ngFor="let inspector of nombreInspectores">
+                                {{inspector.nombre_empleado}} </ion-select-option>
                         </ion-select>
                     </p>
                 </ion-label>
@@ -501,6 +546,20 @@
                 </ion-row>
 
             </ion-grid>
+
+            <ion-grid>
+
+                <ion-row>
+                    <ion-col text-center>
+                        <ion-button expand="block" color="tertiary" (click)="confirmaFoto(3)">
+                            <ion-icon name="camera"></ion-icon>
+                        </ion-button>
+                        <ion-label class="fotos-visita">Observación contribuyente</ion-label>
+                    </ion-col>
+                </ion-row>
+
+            </ion-grid>
+
         </ion-label>
     </ion-item>
 
@@ -518,23 +577,23 @@
 
 <ion-segment scrollable>
     <ion-segment-button (click)="salida(1)">
-      <ion-icon color="light" name="home"></ion-icon>
-      <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+        <ion-icon color="light" name="home"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
     </ion-segment-button>
     <ion-segment-button (click)="salida(2)">
-      <ion-icon color="light" name="layers"></ion-icon>
-      <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+        <ion-icon color="light" name="layers"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
     </ion-segment-button>
     <ion-segment-button (click)="salida(3)">
-      <ion-icon color="light" name="map"></ion-icon>
-      <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+        <ion-icon color="light" name="map"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
     </ion-segment-button>
     <ion-segment-button (click)="salida(4)">
-      <ion-icon color="light" name="warning"></ion-icon>
-      <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+        <ion-icon color="light" name="warning"></ion-icon>
+        <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
     </ion-segment-button>
     <ion-segment-button (click)="salida(5)">
-      <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
-      <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
+        <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
+        <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
     </ion-segment-button>
-  </ion-segment>
+</ion-segment>

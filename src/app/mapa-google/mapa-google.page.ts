@@ -188,7 +188,7 @@ export class MapaGooglePage implements OnInit {
 
     this.frame = document.createElement('div');
     this.frame.innerHTML = [
-      '<div style="text-align:center"> <img style="width:30px; height:30px" src="assets/icon/icono-predio.png"> </div>',
+      '<div style="text-align:center"> <img style="width:30px; height:30px" src="assets/icon/sero.png"> </div>',
       '<h3 style="font-size:16px; text-align:center">Información de la cuenta</h3>',
       '<p style="font-size:14px"> <strong> Cuenta: </strong> ' + data.cuenta + '</p>',
       '<p style="font-size:14px"> <strong> Propietario: </strong> ' + data.propietario + '</p>',

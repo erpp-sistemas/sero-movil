@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
+import { RestService } from '../services/rest.service';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { EmailComposer } from '@ionic-native/email-composer/ngx';
 export class DirectorioPage implements OnInit {
 
 
-  contactos = [];
+  contactos: any;
   countryCode = '+521';
 
   constructor(
@@ -24,54 +25,17 @@ export class DirectorioPage implements OnInit {
     private menuCtrl: MenuController,
     private auth: AuthService,
     private router: Router,
-    private emailComposer: EmailComposer
+    private emailComposer: EmailComposer,
+    private rest: RestService
   ) { }
 
-  ngOnInit() {
-    this.contactos = [
-      {
-        nombre: 'Miguel Santa Ana',
-        puesto: 'Presidente',
-        area: 'Dirección',
-        telefono: '5525610168',
-        email: 'santaanam@yahoo.com.mx'
-      },
-      {
-        nombre: 'Roberto Gomez Henriquez',
-        puesto: 'Director General',
-        area: 'Dirección',
-        telefono: '7773288310',
-        email: 'roberto_gohr@hotmail.com'
-      },
-      {
-        nombre: 'Jhovanny Cedillo',
-        puesto: 'Director de operaciones',
-        area: 'Dirección',
-        telefono: '5533991401',
-        email: 'jhovanny.cedillo@sero.mx'
-      },
-      {
-        nombre: 'Alejandro Aguilar',
-        puesto: 'Sub-director de operaciones',
-        area: 'Dirección',
-        telefono: '6673070353',
-        email: 'alejandro.alderete@sero.mx'
-      },
-      {
-        nombre: 'Carlos Martinez',
-        puesto: 'Gerente tecnoligía web',
-        area: 'Tecnolgias de la información',
-        telefono: '5537772092',
-        email: 'engineer_carlos@hotmail.com'
-      },
-      {
-        nombre: 'Antonio Ticante',
-        puesto: 'Gerente tecnología móvil',
-        area: 'Tecnolgias de la información',
-        telefono: '5531284105',
-        email: 'antonio.ticante12@gmail.com'
-      }
-    ]
+  async ngOnInit() {
+    await this.obtenerInformacionEmpleados();
+  }
+
+  async obtenerInformacionEmpleados() {
+    this.contactos = await this.rest.obtenerInformacionEmpleados();
+    console.log(this.contactos);
   }
 
   phone( numero: string) {

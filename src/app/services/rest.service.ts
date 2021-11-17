@@ -18,9 +18,9 @@ export class RestService {
 
   // api para obtener las cuentas del agua
   apiObtenerDatos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas";
- 
+
   apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
-  
+
   apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion";
   apiRegistroInspeccion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion";
   apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion";
@@ -30,6 +30,8 @@ export class RestService {
   apiRegistroFotosServicios = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSeroServicios";
   apiRegistroRecorrido = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_recorrido";
   apiObtenerCuentasDistancia = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_distancia";
+  apiObtenerEmpleados = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_empleados";
+  apiObtenerFotosHistoricas = "http://201.163.165.20/seroMovil.aspx?query=sp_get_Photos_History";
 
 
   constructor(
@@ -57,8 +59,21 @@ export class RestService {
     return this.db.executeSql(sql, []);
   }
 
+  /**
+   * Metodo que borra los registros de la tabla listaServiciosPublicos que son todos los servicios publicos con su respectiva plaza
+   * @returns Promise
+   */
   deleteServiciosPublicos() {
     let sql = 'DELETE FROM listaServiciosPublicos';
+    return this.db.executeSql(sql, []);
+  }
+
+  /**
+   * Metodo que borra los registros de la tabla empleadosPlaza que son los empleados por plaza a la que pertenece el usuario logueado
+   * @returns Promise
+   */
+  deleteEmpleadosPlaza() {
+    let sql = 'DELETE FROM empleadosPlaza';
     return this.db.executeSql(sql, []);
   }
 
@@ -82,6 +97,11 @@ export class RestService {
     ]);
   }
 
+  /**
+   * Metodo que inserta los servicios publicos obtenidos de la api
+   * @param data 
+   * @returns Promise
+   */
   insertarServicioPublicoSQL(data) {
     let sql = 'INSERT INTO listaServiciosPublicos (id_plaza, nombre_plaza, id_servicio_publico, nombre_servicio_publico) VALUES (?,?,?,?)';
     return this.db.executeSql(sql, [
@@ -92,8 +112,24 @@ export class RestService {
     ]);
   }
 
+  /**
+   * Metodo que inserta los registros de los empleados por plaza 
+   * @param data 
+   * @returns Promise
+   */
+  insertaEmpleadosPlaza(data) {
+    let sql = 'INSERT INTO empleadosPlaza (id_plaza, idAspUser, nombre_empleado, apellido_paterno_empleado, apellido_materno_empleado) VALUES (?,?,?,?,?)';
+    return this.db.executeSql(sql, [
+      data.id_plaza,
+      data.id_usuario,
+      data.nombre,
+      data.apellido_paterno,
+      data.apellido_materno
+    ]);
+  }
+
   async mostrarServicios(idPlaza) {
-    
+
     let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
 
     return this.db.executeSql(sql, [idPlaza]).then(response => {
@@ -101,7 +137,7 @@ export class RestService {
       for (let index = 0; index < response.rows.length; index++) {
         servicios.push(response.rows.item(index));
       }
-      
+
       return Promise.resolve(servicios);
     }).catch(error => Promise.reject(error));
 
@@ -122,18 +158,41 @@ export class RestService {
 
   }
 
+  /**
+   * Metodo que obtiene los registros de la tabla interna listaServiciosPublicos
+   * @param id_plaza Promise
+   * @returns 
+   */
   async mostrarServiciosPublicos(id_plaza) {
     let sql = "SELECT * FROM listaServiciosPublicos WHERE id_plaza = ?";
 
     return this.db.executeSql(sql, [id_plaza]).then(response => {
       let serviciosPublicos = [];
-      for (let index = 0; index < response.rows.length; index ++) {
+      for (let index = 0; index < response.rows.length; index++) {
         serviciosPublicos.push(response.rows.item(index));
       }
       return Promise.resolve(serviciosPublicos);
     }).catch(error => Promise.reject(error));
 
   }
+
+  /**
+   * Metodo que obtiene los registros de la tabla interna empleadosServicios
+   * @param id_plaza 
+   * @returns Promise
+   */
+  async mostrarEmpleadosPlaza(id_plaza) {
+    let sql = "SELECT * FROM empleadosPlaza WHERE id_plaza = ?";
+    return this.db.executeSql(sql, [id_plaza]).then(response => {
+      let empleados = [];
+      for(let i = 0; i < response.rows.length; i++) {
+        empleados.push(response.rows.item(i));
+      }
+      return Promise.resolve(empleados)
+    }).catch(error => Promise.reject(error));
+  }
+
+
 
 
   /**
@@ -237,7 +296,7 @@ export class RestService {
       for (let i = 0; i < response.rows.length; i++) {
         plazas.push(response.rows.item(i));
       }
-      
+
       return Promise.resolve(plazas);
     } catch (error) {
       return Promise.reject(error);
@@ -400,7 +459,7 @@ export class RestService {
       const response = await this.db.executeSql(sql, [id_plaza, idServicioPlaza]);
       let result = response.rows.item(0).total;
       return Promise.resolve(result);
-    } catch( error ) {
+    } catch (error) {
       return Promise.reject(error);
     }
   }
@@ -524,13 +583,13 @@ export class RestService {
    */
   async getTotalGestionadas(idServicioPlaza) {
     console.log('Obteniendo el total de las gestionadas');
-    let sql = 
-    "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionLegal WHERE id_servicio_plaza = ? and cargado = 0 ) a";
+    let sql =
+      "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionLegal WHERE id_servicio_plaza = ? and cargado = 0 ) a";
     try {
       const response = await this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza]);
       let result = response.rows.item(0).total;
       return Promise.resolve(result);
-    } catch( error ) {
+    } catch (error) {
       return Promise.reject(error);
     }
   }
@@ -546,7 +605,7 @@ export class RestService {
       const response = await this.db.executeSql(sql, []);
       let result = response.rows.item(0).total;
       return Promise.resolve(result);
-    } catch(error) {
+    } catch (error) {
       return Promise.reject(error);
     }
   }
@@ -562,7 +621,7 @@ export class RestService {
       const response = await this.db.executeSql(sql, []);
       let result = response.rows.item(0).total;
       return Promise.resolve(result);
-    } catch(error) {
+    } catch (error) {
       return Promise.reject(error);
     }
   }
@@ -573,8 +632,8 @@ export class RestService {
    * @returns Promise
    */
   getAccountsGestiones(idServicioPlaza) {
-    let sql = 
-    `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?
+    let sql =
+      `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?
     UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Legal' as rol, nombre_plaza FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ?`;
     return this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza]).then(response => {
       let accounts = [];
@@ -731,7 +790,7 @@ export class RestService {
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_motivo_no_pago, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_motivo_no_pago, otro_motivo, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -739,12 +798,13 @@ export class RestService {
       data.account,
       data.persona_atiende,
       data.id_motivo_no_pago,
+      data.otro_motivo_no_pago,
       data.id_trabajo_actual,
       data.id_gasto_impuesto,
       data.id_tipo_servicio,
       data.numero_niveles,
-      data.color_fachada,
-      data.color_puerta,
+      data.colorFachada,
+      data.colorPuerta,
       data.referencia,
       data.id_tipo_predio,
       data.entre_calle1,
@@ -769,8 +829,8 @@ export class RestService {
 
     this.updateAccountGestionada(data.id);
 
-    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, idPuesto, otroPuesto, idMotivoNoPago, otroMotivo, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud, id_servicio_plaza)' +
-      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, idPuesto, otroPuesto, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoNegaronAcceso, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud, id_servicio_plaza)' +
+      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -779,8 +839,6 @@ export class RestService {
       data.personaAtiende,
       data.idPuesto,
       data.otroPuesto,
-      data.idMotivoNoPago,
-      data.otroMotivo,
       data.idTipoServicio,
       data.numeroNiveles,
       data.colorFachada,
@@ -790,6 +848,7 @@ export class RestService {
       data.entreCalle1,
       data.entrecalle2,
       data.hallazgoNinguna,
+      data.hallazgoNegaronAcceso,
       data.hallazgoMedidorDescompuesto,
       data.hallazgoDiferenciaDiametro,
       data.hallazgoTomaClandestina,
@@ -815,7 +874,7 @@ export class RestService {
    * @param data 
    * @returns Promise
    */
-  gestionLegal( data ) {
+  gestionLegal(data) {
 
     this.updateAccountGestionada(data.id);
 
@@ -834,7 +893,7 @@ export class RestService {
       data.otroMotivo,
       data.idTipoServicio,
       data.numeroNiveles,
-      data.clorFachada,
+      data.colorFachada,
       data.colorPuerta,
       data.referencia,
       data.idTipoPredio,
@@ -882,7 +941,7 @@ export class RestService {
       const response = await this.db.executeSql(sql, []);
       let result = response.rows.item(0).total;
       return Promise.resolve(result);
-    } catch( error ) {
+    } catch (error) {
       return Promise.reject(error);
     }
   }
@@ -952,216 +1011,250 @@ export class RestService {
   }
 
 
-  async sendLegalByIdServicio(idServicioPlaza) {
-    console.log("Entrando a enviar la informacion legal del servicio " + idServicioPlaza);
+
+  //////******************************************************************** */
+
+  // Metodos para enviar gestiones de una en una
+
+  /**
+   * Metodo que envia una sola gestion del modulo de carta invitacion del servicio correspondiente
+   * @param idServicioPlaza 
+   * @param account 
+   * @returns 
+   */
+  async sendCartaByIdServicioAccount(idServicioPlaza, account) {
+    console.log("Entrando a enviar la informacion de la cuenta");
     try {
-      let arrayCuentasLegal = [];
-      let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ?';
-      const result = await this.db.executeSql(sql, [idServicioPlaza]);
-      for (let i = 0; i < result.rows.length; i++ ) {
-        arrayCuentasLegal.push(result.rows.item(i));
-      }
-      console.log(arrayCuentasLegal);
+      let arrayCuentaCarta = [];
+      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
 
-      if(arrayCuentasLegal.length == 0) {
-        this.message.showToast("Sin registros legales para enviar");
-      } else {
-        this.avanceGestionesLegal = 0;
-        this.envioGestionesLegal(arrayCuentasLegal);
-      }
-    } catch( error ) {
-      return Promise.reject(error);
-    }
-  }
-
-
-  async sendLegal() {
-    console.log("Entrando a enviar la informacion de legal");
-    try {
-      let arrayCuentasLegal = [];
-      let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0';
-      const result = await this.db.executeSql(sql, []);
-      for (let i = 0; i < result.rows.length; i++ ) {
-        arrayCuentasLegal.push(result.rows.item(i));
-      }
-      console.log(arrayCuentasLegal);
-
-      if(arrayCuentasLegal.length == 0) {
-        this.message.showToast("Sin registros legales para enviar");
-      } else {
-        this.avanceGestionesLegal = 0;
-        this.envioGestionesLegal(arrayCuentasLegal);
-      }
-    } catch( error ) {
-      return Promise.reject(error);
-    }
-  }
-
-  avanceGestionesLegal = 0
-
-  envioGestionesLegal(arrayGestionesLegal) {
-    console.log("envioGestionesLegal");
-    console.log(this.avanceGestionesLegal);
-
-    if (this.avanceGestionesLegal === arrayGestionesLegal.length) {
-      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
-    } else {
-      this.sendGestionesLegal(this.avanceGestionesLegal, arrayGestionesLegal).then(resp => {
-        if (resp) {
-          this.avanceGestionesLegal++;
-          this.envioGestionesLegal(arrayGestionesLegal);
-        } else {
-          this.envioGestionesLegal(arrayGestionesLegal);
-        }
-      })
-    }
-  }
-
-  sendGestionesLegal(i, arrayGestionesLegal) {
-    return new Promise( async (resolve, reject) => {
-      console.log(arrayGestionesLegal);
-
-      let id_plaza = arrayGestionesLegal[i].id_plaza
-      let account = arrayGestionesLegal[i].account;
-      let personaTiende = arrayGestionesLegal[i].persona_atiende;
-      //let numeroContacto = arrayGestionesLegal[i].numero_contacto;
-      let idPuesto = arrayGestionesLegal[i].id_puesto;
-      let otroPuesto = arrayGestionesLegal[i].otro_puesto;
-      let idMotivoNoPago = arrayGestionesLegal[i].id_motivo_no_pago;
-      let otroMotivo = arrayGestionesLegal[i].otro_motivo;
-      let idTipoServicio = arrayGestionesLegal[i].id_tipo_servicio;
-      let numeroNiveles = arrayGestionesLegal[i].numero_niveles;
-      let colorFachada = arrayGestionesLegal[i].color_fachada;
-      let colorPuerta = arrayGestionesLegal[i].color_puerta;
-      let referencia = arrayGestionesLegal[i].referencia;
-      let idTipoPredio = arrayGestionesLegal[i].id_tipo_predio;
-      let entreCalle1 = arrayGestionesLegal[i].entre_calle1;
-      let entreCalle2 = arrayGestionesLegal[i].entre_calle2;
-      let observaciones = arrayGestionesLegal[i].observaciones;
-      let idAspUser = arrayGestionesLegal[i].idAspUser;
-      let idTarea = arrayGestionesLegal[i].id_tarea;
-      let fechaCaptura = arrayGestionesLegal[i].fecha_captura;
-      let latitud = arrayGestionesLegal[i].latitud; let longitud = arrayGestionesLegal[i].longitud;
-      let idServicioPlaza = arrayGestionesLegal[i].id_servicio_plaza
-      let id = arrayGestionesLegal[i].id;
-
-      let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
-      console.log(sql);
-      await this.enviarSQLGestionLegal(sql, id)
-      resolve('Execute Query successfully');
-
-    })
-  }
-
-  async sendCartaInvitacionByIdServicio(idServicioPlaza) {
-    console.log("Entrando a enviar la informacion de cartas invitacion del servicio " + idServicioPlaza);
-    try {
-      let arrayCuentasCarta = [];
-      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ?';
-      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+      const result = await this.db.executeSql(sql, [idServicioPlaza, account]);
 
       for (let i = 0; i < result.rows.length; i++) {
-        arrayCuentasCarta.push(result.rows.item(i));
+        arrayCuentaCarta.push(result.rows.item(i));
       }
-      console.log(arrayCuentasCarta);
 
-      if (arrayCuentasCarta.length == 0) {
-        this.message.showToast("Sin registros de carta invitación por enviar");
+      if (arrayCuentaCarta.length == 0) {
+        this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
       } else {
-        this.avanceGestionesCarta = 0;
-        this.envioGestionesCarta(arrayCuentasCarta);
+        let id_plaza = arrayCuentaCarta[0].id_plaza;
+        let account = arrayCuentaCarta[0].account;
+        let persona_atiende = arrayCuentaCarta[0].persona_atiende;
+        let id_motivo_no_pago = arrayCuentaCarta[0].id_motivo_no_pago;
+        let otro_motivo = arrayCuentaCarta[0].otro_motivo;
+        let id_trabajo_actual = arrayCuentaCarta[0].id_trabajo_admin;
+        let id_gasto_impuesto = arrayCuentaCarta[0].id_gasto_impuesto;
+        let id_tipo_servicio = arrayCuentaCarta[0].id_tipo_servicio;
+        let numero_niveles = arrayCuentaCarta[0].numero_niveles;
+        let color_fachada = arrayCuentaCarta[0].color_fachada;
+        let color_puerta = arrayCuentaCarta[0].color_puerta;
+        let referencia = arrayCuentaCarta[0].referencia;
+        let id_tipo_predio = arrayCuentaCarta[0].tipo_predio;
+        let entre_calle1 = arrayCuentaCarta[0].entre_calle1;
+        let entre_calle2 = arrayCuentaCarta[0].entre_calle2;
+        let observaciones = arrayCuentaCarta[0].observaciones;
+        let idAspUser = arrayCuentaCarta[0].idAspUser;
+        let idTarea = arrayCuentaCarta[0].id_tarea;
+        let fechaCaptura = arrayCuentaCarta[0].fecha_captura;
+        let latitud = arrayCuentaCarta[0].latitud;
+        let longitud = arrayCuentaCarta[0].longitud;
+        let idServicioPaza = arrayCuentaCarta[0].id_servicio_plaza;
+        let id = arrayCuentaCarta[0].id;
+
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_motivo_no_pago},'${otro_motivo}',${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
+        console.log(sql);
+        await this.enviarSQLCartaInvitacion(sql, id)
+
+        this.message.showAlert("Envío de la gestión correctamente");
+
+        return Promise.resolve("Success");
+
       }
 
     } catch (error) {
-      return Promise.reject(error);
+      return Promise.reject("Error");
     }
   }
 
-
-
-  async sendCartaInvitacion() {
-    console.log("Entrando a enviar la informacion de cartas invitacion");
+  /**
+   * Metodo que envia una sola gestion del modulo de legal del servicio correspondiente
+   * @param idServicioPlaza 
+   * @param account 
+   * @returns Promise
+   */
+  async sendLegalByIdServicioAccount(idServicioPlaza, account) {
+    console.log("Entrando a enviar la informacion de la cuenta");
     try {
-      let arrayCuentasCarta = [];
-      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0';
-      const result = await this.db.executeSql(sql, []);
+      let arrayCuentaLegal = [];
+      let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
+
+      const result = await this.db.executeSql(sql, [idServicioPlaza, account]);
 
       for (let i = 0; i < result.rows.length; i++) {
-        arrayCuentasCarta.push(result.rows.item(i));
+        arrayCuentaLegal.push(result.rows.item(i));
       }
-      console.log(arrayCuentasCarta);
 
-      if (arrayCuentasCarta.length == 0) {
-        this.message.showToast("Sin registros de carta invitación por enviar");
+      if (arrayCuentaLegal.length == 0) {
+        this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
       } else {
-        this.avanceGestionesCarta = 0;
-        this.envioGestionesCarta(arrayCuentasCarta);
+        let id_plaza = arrayCuentaLegal[0].id_plaza
+        let account = arrayCuentaLegal[0].account;
+        let personaTiende = arrayCuentaLegal[0].persona_atiende;
+        let idPuesto = arrayCuentaLegal[0].id_puesto;
+        let otroPuesto = arrayCuentaLegal[0].otro_puesto;
+        let idMotivoNoPago = arrayCuentaLegal[0].id_motivo_no_pago;
+        let otroMotivo = arrayCuentaLegal[0].otro_motivo;
+        let idTipoServicio = arrayCuentaLegal[0].id_tipo_servicio;
+        let numeroNiveles = arrayCuentaLegal[0].numero_niveles;
+        let colorFachada = arrayCuentaLegal[0].color_fachada;
+        let colorPuerta = arrayCuentaLegal[0].color_puerta;
+        let referencia = arrayCuentaLegal[0].referencia;
+        let idTipoPredio = arrayCuentaLegal[0].id_tipo_predio;
+        let entreCalle1 = arrayCuentaLegal[0].entre_calle1;
+        let entreCalle2 = arrayCuentaLegal[0].entre_calle2;
+        let observaciones = arrayCuentaLegal[0].observaciones;
+        let idAspUser = arrayCuentaLegal[0].idAspUser;
+        let idTarea = arrayCuentaLegal[0].id_tarea;
+        let fechaCaptura = arrayCuentaLegal[0].fecha_captura;
+        let latitud = arrayCuentaLegal[0].latitud;
+        let longitud = arrayCuentaLegal[0].longitud;
+        let idServicioPlaza = arrayCuentaLegal[0].id_servicio_plaza
+        let id = arrayCuentaLegal[0].id;
+
+        let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
+        console.log(sql);
+        await this.enviarSQLGestionLegal(sql, id)
+
+        this.message.showAlert("Envío de la gestión correctamente");
+
+        return Promise.resolve("Success");
+
       }
 
     } catch (error) {
-      return Promise.reject(error);
+      return Promise.reject("Error");
     }
   }
 
-  avanceGestionesCarta = 0;
+  /**
+   * Metodo que envia una sola gestion del modulo de inspeccion del servicio correspondiente
+   * @param idServicioPlaza 
+   * @param account 
+   * @returns Promise
+   */
+  async sendInspeccionByIdServicioAccount(idServicioPlaza, account) {
+    console.log("Entrando a enviar la informacion de la cuenta");
+    try {
+      let arrayCuentaInspeccion = [];
+      let sql = 'SELECT * FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
 
-  envioGestionesCarta(arrayCuentasCarta) {
-    console.log("envioGestionesCarta");
-    console.log(this.avanceGestionesCarta);
+      const result = await this.db.executeSql(sql, [idServicioPlaza, account]);
 
-    if (this.avanceGestionesCarta === arrayCuentasCarta.length) {
-      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentaInspeccion.push(result.rows.item(i));
+      }
+
+      if (arrayCuentaInspeccion.length == 0) {
+        this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
+      } else {
+        let id_plaza = arrayCuentaInspeccion[0].id_plaza;
+        let account = arrayCuentaInspeccion[0].account;
+        let personaAtiende = arrayCuentaInspeccion[0].personaAtiende;
+        let idPuesto = arrayCuentaInspeccion[0].idPuesto;
+        let otroPuesto = arrayCuentaInspeccion[0].otroPuesto;
+        let idTipoServicio = arrayCuentaInspeccion[0].idTipoServicio;
+        let numeroNiveles = arrayCuentaInspeccion[0].numeroNiveles;
+        let colorFachada = arrayCuentaInspeccion[0].colorFachada;
+        let colorPuerta = arrayCuentaInspeccion[0].colorPuerta;
+        let referencia = arrayCuentaInspeccion[0].referencia;
+        let idTipoPredio = arrayCuentaInspeccion[0].idTipoPredio;
+        let entreCalle1 = arrayCuentaInspeccion[0].entreCalle1;
+        let entreCalle2 = arrayCuentaInspeccion[0].entreCalle2;
+        let hallazgoNinguna = arrayCuentaInspeccion[0].hallazgoNinguna;
+        let hallazgoNegaronAcceso = arrayCuentaInspeccion[0].hallazgoNegaronAcceso;
+        let hallazgoMedidorDescompuesto = arrayCuentaInspeccion[0].hallazgoMedidorDescompuesto;
+        let hallazgoDiferenciaDiametro = arrayCuentaInspeccion[0].hallazgoDiferenciaDiametro;
+        let hallazgoTomaClandestina = arrayCuentaInspeccion[0].hallazgoTomaClandestina;
+        let hallazgoDerivacionClandestina = arrayCuentaInspeccion[0].hallazgoDerivacionClandestina;
+        let hallazgoDrenajeClandestino = arrayCuentaInspeccion[0].hallazgoDrenajeClandestino;
+        let hallazgoCambioGiro = arrayCuentaInspeccion[0].hallazgoCambioGiro;
+        let hallazgoFaltaDocumentacion = arrayCuentaInspeccion[0].hallazgoFaltaDocumentacion;
+        let idAspUser = arrayCuentaInspeccion[0].idAspUser;
+        let inspector2 = arrayCuentaInspeccion[0].inspector2;
+        let inspector3 = arrayCuentaInspeccion[0].inspector3;
+        let inspector4 = arrayCuentaInspeccion[0].inspector4;
+        let observacion = arrayCuentaInspeccion[0].observacion;
+        let idTarea = arrayCuentaInspeccion[0].idTarea;
+        let fechaCaptura = arrayCuentaInspeccion[0].fechaCaptura;
+        let latitud = arrayCuentaInspeccion[0].latitud;
+        let longitud = arrayCuentaInspeccion[0].longitud;
+        let idServicioPlaza = arrayCuentaInspeccion[0].id_servicio_plaza;
+        let id = arrayCuentaInspeccion[0].id;
+
+        let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
+        console.log(sql);
+        await this.enviarSQLInspeccion(sql, id)
+
+        this.message.showAlert("Envío de la gestión correctamente");
+
+        return Promise.resolve("Success");
+
+      }
+
+    } catch (error) {
+      return Promise.reject("Error");
+    }
+  }
+
+  /**
+ * Metodo que elimina una gestion de la cuenta y de la tabla pasadas por parametro
+ * @param table 
+ * @param account 
+ * @returns Promise 
+ */
+  async deleteAccountGestionGeneral(table, account) {
+    let sql = `DELETE FROM ${table} WHERE account = ?`;
+    console.log(sql);
+    let sql0 = `SELECT * FROM ${table} WHERE account = ?`;
+    let arrayDelete = [];
+
+    const result0 = await this.db.executeSql(sql0, [account]);
+    for (let i = 0; i < result0.rows.length; i++) {
+      arrayDelete.push(result0.rows.item(i));
+    }
+    console.log(arrayDelete);
+    if (arrayDelete.length == 0) {
+      this.message.showAlert("No se pudo eliminar la gestión, no se guardo correctamente");
     } else {
-      this.sendGestionesCarta(this.avanceGestionesCarta, arrayCuentasCarta).then(resp => {
-        if (resp) {
-          this.avanceGestionesCarta++;
-          this.envioGestionesCarta(arrayCuentasCarta);
-        } else {
-          this.envioGestionesCarta(arrayCuentasCarta);
-        }
-      })
+      await this.updateGestionadaDelete(account);
+      console.log("borrando la cuenta " + account);
+      return this.db.executeSql(sql, [account]);
     }
+
   }
 
-  async sendGestionesCarta(i, arrayGestionesCarta) {
-    return new Promise(async (resolve, reject) => {
-
-      console.log(arrayGestionesCarta);
-
-      let id_plaza = arrayGestionesCarta[i].id_plaza;
-      let account = arrayGestionesCarta[i].account;
-      let persona_atiende = arrayGestionesCarta[i].persona_atiende;
-      //let numero_contacto = arrayGestionesCarta[i].numero_contacto;
-      let id_motivo_no_pago = arrayGestionesCarta[i].id_motivo_no_pago;
-      let id_trabajo_actual = arrayGestionesCarta[i].id_trabajo_admin;
-      let id_gasto_impuesto = arrayGestionesCarta[i].id_gasto_impuesto;
-      let id_tipo_servicio = arrayGestionesCarta[i].id_tipo_servicio;
-      let numero_niveles = arrayGestionesCarta[i].numero_niveles;
-      let color_fachada = arrayGestionesCarta[i].color_fachada;
-      let color_puerta = arrayGestionesCarta[i].color_puerta;
-      let referencia = arrayGestionesCarta[i].referencia;
-      let id_tipo_predio = arrayGestionesCarta[i].tipo_predio;
-      let entre_calle1 = arrayGestionesCarta[i].entre_calle1;
-      let entre_calle2 = arrayGestionesCarta[i].entre_calle2;
-      let observaciones = arrayGestionesCarta[i].observaciones;
-      let idAspUser = arrayGestionesCarta[i].idAspUser;
-      let idTarea = arrayGestionesCarta[i].id_tarea;
-      let fechaCaptura = arrayGestionesCarta[i].fecha_captura;
-      let latitud = arrayGestionesCarta[i].latitud;
-      let longitud = arrayGestionesCarta[i].longitud;
-      let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
-      let id = arrayGestionesCarta[i].id;
-
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_motivo_no_pago},${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
-      console.log(sql);
-      await this.enviarSQLCartaInvitacion(sql, id)
-      resolve('Execute Query successfully');
-
-    })
+  /**
+   * Metodo que actualiza el campo gestionada a 0 de la tabla sero_principal de la cuenta pasada por parametro
+   * @param cuenta 
+   * @returns Promise
+   */
+  updateGestionadaDelete(cuenta) {
+    let sql = 'UPDATE sero_principal SET gestionada = 0 where cuenta = ?';
+    return this.db.executeSql(sql, [cuenta]);
   }
 
 
-  async sendInspeccionByIdServicio( idServicioPlaza ) {
+  ///////////////////************************************************************************* */
+
+  // Metodos para el envio de gestiones por servicio o todas
+
+
+  /**
+   * Metodo que inicia el envio de gestiones del modulo de inspeccion del servicio correspondiente
+   * @param idServicioPlaza 
+   * @returns Promise
+   */
+  async sendInspeccionByIdServicio(idServicioPlaza) {
     console.log("Entrando a enviar la informacion del servicio " + idServicioPlaza);
     try {
       let arrayCuentasInspeccion = [];
@@ -1186,7 +1279,7 @@ export class RestService {
 
 
   /**
-   * Metodo que inicia el envio de los registros de inspeccion
+   * Metodo que inicia el envio de todas las gestiones del modulo de inspeccion
    * @returns Promise
    */
   async sendInspeccion() {
@@ -1248,11 +1341,11 @@ export class RestService {
       let id_plaza = arrayGestionesInspeccionAgua[i].id_plaza;
       let account = arrayGestionesInspeccionAgua[i].account;
       let personaAtiende = arrayGestionesInspeccionAgua[i].personaAtiende;
-      //let numeroContacto = arrayGestionesInspeccionAgua[i].numeroContacto;
+      //let numeroContacto = arrayGestionesInspeccionAgua[i].numeroContacto; // Lo quitaron en la junta
       let idPuesto = arrayGestionesInspeccionAgua[i].idPuesto;
       let otroPuesto = arrayGestionesInspeccionAgua[i].otroPuesto;
-      let idMotivoNoPago = arrayGestionesInspeccionAgua[i].idMotivoNoPago;
-      let otroMotivo = arrayGestionesInspeccionAgua[i].otroMotivo;
+      //let idMotivoNoPago = arrayGestionesInspeccionAgua[i].idMotivoNoPago; // lo quito Alejandro
+      //let otroMotivo = arrayGestionesInspeccionAgua[i].otroMotivo; // Lo quito Alejandro
       let idTipoServicio = arrayGestionesInspeccionAgua[i].idTipoServicio;
       let numeroNiveles = arrayGestionesInspeccionAgua[i].numeroNiveles;
       let colorFachada = arrayGestionesInspeccionAgua[i].colorFachada;
@@ -1262,6 +1355,7 @@ export class RestService {
       let entreCalle1 = arrayGestionesInspeccionAgua[i].entreCalle1;
       let entreCalle2 = arrayGestionesInspeccionAgua[i].entreCalle2;
       let hallazgoNinguna = arrayGestionesInspeccionAgua[i].hallazgoNinguna;
+      let hallazgoNegaronAcceso = arrayGestionesInspeccionAgua[i].hallazgoNegaronAcceso;
       let hallazgoMedidorDescompuesto = arrayGestionesInspeccionAgua[i].hallazgoMedidorDescompuesto;
       let hallazgoDiferenciaDiametro = arrayGestionesInspeccionAgua[i].hallazgoDiferenciaDiametro;
       let hallazgoTomaClandestina = arrayGestionesInspeccionAgua[i].hallazgoTomaClandestina;
@@ -1281,7 +1375,7 @@ export class RestService {
       let idServicioPlaza = arrayGestionesInspeccionAgua[i].id_servicio_plaza;
       let id = arrayGestionesInspeccionAgua[i].id;
 
-      let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
+      let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
       console.log(sql);
       await this.enviarSQLInspeccion(sql, id)
       resolve('Execute Query successfully');
@@ -1317,6 +1411,138 @@ export class RestService {
   }
 
 
+  /**
+   * Metodo que inicia el envio de gestiones del modulo de carta invitacion del servicio correspondiente
+   * @param idServicioPlaza 
+   * @returns Promise
+   */
+  async sendCartaInvitacionByIdServicio(idServicioPlaza) {
+    console.log("Entrando a enviar la informacion de cartas invitacion del servicio " + idServicioPlaza);
+    try {
+      let arrayCuentasCarta = [];
+      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasCarta.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasCarta);
+
+      if (arrayCuentasCarta.length == 0) {
+        this.message.showToast("Sin registros de carta invitación por enviar");
+      } else {
+        this.avanceGestionesCarta = 0;
+        this.envioGestionesCarta(arrayCuentasCarta);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+
+  /**
+   * Metodo que inicia el envio de todas las gestiones del modulo de carta invitacion
+   * @returns Promise
+   */
+  async sendCartaInvitacion() {
+    console.log("Entrando a enviar la informacion de cartas invitacion");
+    try {
+      let arrayCuentasCarta = [];
+      let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0';
+      const result = await this.db.executeSql(sql, []);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasCarta.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasCarta);
+
+      if (arrayCuentasCarta.length == 0) {
+        this.message.showToast("Sin registros de carta invitación por enviar");
+      } else {
+        this.avanceGestionesCarta = 0;
+        this.envioGestionesCarta(arrayCuentasCarta);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  avanceGestionesCarta = 0;
+
+  /**
+   * Segundo metodo para el envio de gestiones del modulo de cartas invitacion
+   * @param arrayCuentasCarta 
+   */
+  envioGestionesCarta(arrayCuentasCarta) {
+    console.log("envioGestionesCarta");
+    console.log(this.avanceGestionesCarta);
+
+    if (this.avanceGestionesCarta === arrayCuentasCarta.length) {
+      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
+    } else {
+      this.sendGestionesCarta(this.avanceGestionesCarta, arrayCuentasCarta).then(resp => {
+        if (resp) {
+          this.avanceGestionesCarta++;
+          this.envioGestionesCarta(arrayCuentasCarta);
+        } else {
+          this.envioGestionesCarta(arrayCuentasCarta);
+        }
+      })
+    }
+  }
+
+  /**
+   * 
+   * @param i Tercer metodo para el envio de las gestiones del modulo de cartas invitacion
+   * @param arrayGestionesCarta 
+   * @returns 
+   */
+  async sendGestionesCarta(i, arrayGestionesCarta) {
+    return new Promise(async (resolve, reject) => {
+
+      console.log(arrayGestionesCarta);
+
+      let id_plaza = arrayGestionesCarta[i].id_plaza;
+      let account = arrayGestionesCarta[i].account;
+      let persona_atiende = arrayGestionesCarta[i].persona_atiende;
+      //let numero_contacto = arrayGestionesCarta[i].numero_contacto;
+      let id_motivo_no_pago = arrayGestionesCarta[i].id_motivo_no_pago;
+      let otro_motivo = arrayGestionesCarta[i].otro_motivo;
+      let id_trabajo_actual = arrayGestionesCarta[i].id_trabajo_admin;
+      let id_gasto_impuesto = arrayGestionesCarta[i].id_gasto_impuesto;
+      let id_tipo_servicio = arrayGestionesCarta[i].id_tipo_servicio;
+      let numero_niveles = arrayGestionesCarta[i].numero_niveles;
+      let color_fachada = arrayGestionesCarta[i].color_fachada;
+      let color_puerta = arrayGestionesCarta[i].color_puerta;
+      let referencia = arrayGestionesCarta[i].referencia;
+      let id_tipo_predio = arrayGestionesCarta[i].tipo_predio;
+      let entre_calle1 = arrayGestionesCarta[i].entre_calle1;
+      let entre_calle2 = arrayGestionesCarta[i].entre_calle2;
+      let observaciones = arrayGestionesCarta[i].observaciones;
+      let idAspUser = arrayGestionesCarta[i].idAspUser;
+      let idTarea = arrayGestionesCarta[i].id_tarea;
+      let fechaCaptura = arrayGestionesCarta[i].fecha_captura;
+      let latitud = arrayGestionesCarta[i].latitud;
+      let longitud = arrayGestionesCarta[i].longitud;
+      let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
+      let id = arrayGestionesCarta[i].id;
+
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_motivo_no_pago},'${otro_motivo}',${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
+      console.log(sql);
+      await this.enviarSQLCartaInvitacion(sql, id)
+      resolve('Execute Query successfully');
+
+    })
+  }
+
+  /**
+   * Cuarto y ultimo metodo para el envio gestiones del modulo de cartas invitacion
+   * @param query 
+   * @param id 
+   * @returns Promise
+   */
   enviarSQLCartaInvitacion(query, id) {
     return new Promise(resolve => {
 
@@ -1337,6 +1563,132 @@ export class RestService {
     })
   }
 
+  /**
+   * Metodo que inica el envio de gestiones del modulo de legal del servicio correspondiente
+   * @param idServicioPlaza 
+   * @returns Promise
+   */
+  async sendLegalByIdServicio(idServicioPlaza) {
+    console.log("Entrando a enviar la informacion legal del servicio " + idServicioPlaza);
+    try {
+      let arrayCuentasLegal = [];
+      let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasLegal.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasLegal);
+
+      if (arrayCuentasLegal.length == 0) {
+        this.message.showToast("Sin registros legales para enviar");
+      } else {
+        this.avanceGestionesLegal = 0;
+        this.envioGestionesLegal(arrayCuentasLegal);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  /**
+   * 
+   * @returns Metodo que inicia el envio de todas las gestiones del modulo de gestion legal
+   */
+  async sendLegal() {
+    console.log("Entrando a enviar la informacion de legal");
+    try {
+      let arrayCuentasLegal = [];
+      let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0';
+      const result = await this.db.executeSql(sql, []);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasLegal.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasLegal);
+
+      if (arrayCuentasLegal.length == 0) {
+        this.message.showToast("Sin registros legales para enviar");
+      } else {
+        this.avanceGestionesLegal = 0;
+        this.envioGestionesLegal(arrayCuentasLegal);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  avanceGestionesLegal = 0
+
+
+  /**
+   * Segundo metodo para el envio de gestiones del modulo gestion legal
+   * @param arrayGestionesLegal 
+   */
+  envioGestionesLegal(arrayGestionesLegal) {
+    console.log("envioGestionesLegal");
+    console.log(this.avanceGestionesLegal);
+
+    if (this.avanceGestionesLegal === arrayGestionesLegal.length) {
+      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
+    } else {
+      this.sendGestionesLegal(this.avanceGestionesLegal, arrayGestionesLegal).then(resp => {
+        if (resp) {
+          this.avanceGestionesLegal++;
+          this.envioGestionesLegal(arrayGestionesLegal);
+        } else {
+          this.envioGestionesLegal(arrayGestionesLegal);
+        }
+      })
+    }
+  }
+
+  /**
+   * Tercer metodo para el envio de gestiones del modulo de gestion legal
+   * @param i 
+   * @param arrayGestionesLegal 
+   * @returns Promise
+   */
+  sendGestionesLegal(i, arrayGestionesLegal) {
+    return new Promise(async (resolve, reject) => {
+      console.log(arrayGestionesLegal);
+
+      let id_plaza = arrayGestionesLegal[i].id_plaza
+      let account = arrayGestionesLegal[i].account;
+      let personaTiende = arrayGestionesLegal[i].persona_atiende;
+      //let numeroContacto = arrayGestionesLegal[i].numero_contacto;
+      let idPuesto = arrayGestionesLegal[i].id_puesto;
+      let otroPuesto = arrayGestionesLegal[i].otro_puesto;
+      let idMotivoNoPago = arrayGestionesLegal[i].id_motivo_no_pago;
+      let otroMotivo = arrayGestionesLegal[i].otro_motivo;
+      let idTipoServicio = arrayGestionesLegal[i].id_tipo_servicio;
+      let numeroNiveles = arrayGestionesLegal[i].numero_niveles;
+      let colorFachada = arrayGestionesLegal[i].color_fachada;
+      let colorPuerta = arrayGestionesLegal[i].color_puerta;
+      let referencia = arrayGestionesLegal[i].referencia;
+      let idTipoPredio = arrayGestionesLegal[i].id_tipo_predio;
+      let entreCalle1 = arrayGestionesLegal[i].entre_calle1;
+      let entreCalle2 = arrayGestionesLegal[i].entre_calle2;
+      let observaciones = arrayGestionesLegal[i].observaciones;
+      let idAspUser = arrayGestionesLegal[i].idAspUser;
+      let idTarea = arrayGestionesLegal[i].id_tarea;
+      let fechaCaptura = arrayGestionesLegal[i].fecha_captura;
+      let latitud = arrayGestionesLegal[i].latitud; let longitud = arrayGestionesLegal[i].longitud;
+      let idServicioPlaza = arrayGestionesLegal[i].id_servicio_plaza
+      let id = arrayGestionesLegal[i].id;
+
+      let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
+      console.log(sql);
+      await this.enviarSQLGestionLegal(sql, id)
+      resolve('Execute Query successfully');
+
+    })
+  }
+
+  /**
+   * Cuarto y ultimo metodo para el envio de gestiones del modulo de gestion legal
+   * @param query 
+   * @param id 
+   * @returns 
+   */
   enviarSQLGestionLegal(query, id) {
     return new Promise(resolve => {
 
@@ -1357,6 +1709,10 @@ export class RestService {
     })
   }
 
+  /////////////////************************************************************************************************* */
+
+  // Metodos para el envio de servicios publicos
+
   enviarSQLServicios(query, id) {
     return new Promise(resolve => {
 
@@ -1376,6 +1732,10 @@ export class RestService {
       )
     })
   }
+
+  //////////////////////////////////********************************** */
+
+  // Metodos para actualizar el campo cargado de los modulos de gestion que significara que ya se sincronizaron dichas cuentas
 
 
   /**
@@ -1407,6 +1767,9 @@ export class RestService {
     let sql = "UPDATE serviciosPublicos SET cargado = 1 where id = ? ";
     return this.db.executeSql(sql, [id]);
   }
+
+  ////////////////////************************************************************** */
+
 
   // metodos para las fotos
 
@@ -1486,7 +1849,7 @@ export class RestService {
     return new Promise(async (resolve) => {
       await this.base64.encodeFile(arrayImagesServicios[i].rutaBase64).then(async (base64File: string) => {
         let aleatorio = Math.floor((Math.random() * (100 - 1)) + 1);
-        let imageName = "servicio-" + aleatorio + "-" + arrayImagesServicios[i].idServio + arrayImagesServicios[i].fecha;
+        let imageName = "servicio-" + aleatorio + "-" + arrayImagesServicios[i].idServicio + arrayImagesServicios[i].fecha;
         let imagen64 = base64File.split(",");
         let imagenString = imagen64[1];
         // imagen string es el que manda al s3 y el nombre que en este caso es el imageName
@@ -1676,7 +2039,7 @@ export class RestService {
       this.http.post(this.apiRegistroFotosServicios + " " + strinSql0, null).subscribe(
         async data => {
           this.message.showToast(data[0].mensaje + ' ' + cont)
-          await this.updateLoadedItem(id);
+          await this.updateLoadedItemServicios(id);
           console.log('registroCargado al sql')
           //   await this.deletePhotoFile(ruta);
           //  console.log('se borro la foto')
@@ -1698,6 +2061,58 @@ export class RestService {
     return this.db.executeSql(sql, [id]);
   }
 
+  updateLoadedItemServicios(id) {
+    let sql = "UPDATE capturaFotosServicios SET cargado = 1 where id = ?";
+    return this.db.executeSql(sql, [id]);
+  }
+
+  async uploadPhoto(id) {
+    return new Promise(async (resolve) => {
+      let arrayImages = [];
+      let sql = "SELECT * FROM capturaFotos where cargado = 0 and id = ?";
+      let response = await this.db.executeSql(sql, [id]);
+      for (let i = 0; i < response.rows.length; i++) {
+        arrayImages.push(response.rows.item(i));
+      }
+      await this.base64.encodeFile(arrayImages[0].rutaBase64).then(async (base64File: string) => {
+        let imageName = arrayImages[0].cuenta + arrayImages[0].fecha;
+        let imagen64 = base64File.split(",");
+        let imagenString = imagen64[1];
+        let idTarea = arrayImages[0].idTarea;
+        if (idTarea == null) { idTarea = 0; }
+        // await this.uploadPhotoS3V1(item.cuenta,item.idAspUser, idTarea, item.fecha,item.tipo, imagenString,imageName, item.id,item.rutaBase64);
+        try {
+          this.s3Service.uploadS3(imagenString, imageName).then(async uploadResponse => {
+            if (uploadResponse) {
+              let UrlOriginal: any;
+              UrlOriginal = this.s3Service.getURLPresignaded(imageName);
+              console.log('La url::::::')
+              console.log(UrlOriginal)
+              await this.saveSqlServer(arrayImages[0].cuenta, arrayImages[0].idAspUser, imageName, idTarea, arrayImages[0].fecha, arrayImages[0].tipo, arrayImages[0].id, UrlOriginal, arrayImages[0].ruta, 1, arrayImages[0].id_plaza, arrayImages[0].id_servicio_plaza);
+              resolve(true);
+            }
+            else {
+              this.uploadPhoto(id);
+            }
+          });
+
+        } catch (err_1) {
+          alert(err_1)
+          console.log(err_1);
+          resolve(false);
+        }
+
+
+      },
+        err => {
+          alert(err)
+          console.log(err);
+        }
+      );
+
+    });
+  }
+
 
   // obtenerNombrePlazaId(id_plaza) {
   //   console.log('Traer el nombre de la plaza ' + id_plaza);
@@ -1712,6 +2127,11 @@ export class RestService {
   //     return Promise.resolve(data);
   //   }).catch(error => Promise.reject(error));
   // }
+
+
+  //////////////////////////////******************************************* */
+
+  // Metodos para el registro del recorrido de los gestores
 
   saveLocation(lat, lng, idAspuser, fecha) {
 
@@ -1753,10 +2173,24 @@ export class RestService {
     return this.db.executeSql(sql, [id]);
   }
 
+
+  ////////////////////////********************************************************************* */
+
+  /**
+   * Metodo para obtener las cuentas ordenadas de menor a mayor con base en la distancia de la ubicacion actual
+   * @param idAspUser 
+   * @param idPlaza 
+   * @param idPlazaServicio 
+   * @param latitud 
+   * @param longitud 
+   * @returns Promise
+   */
   obtenerCuentasDistancias(idAspUser, idPlaza, idPlazaServicio, latitud, longitud) {
+    console.log("latitud rest ", latitud);
+    console.log("longitud rest", longitud);
     try {
       return new Promise(resolve => {
-        console.log(this.apiObtenerCuentasDistancia + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio + ", " + latitud, + ", " + longitud);
+        console.log(this.apiObtenerCuentasDistancia + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio + ", " + latitud + ", " + longitud);
         this.http.post(this.apiObtenerCuentasDistancia + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio + ", " + latitud + ", " + longitud, null)
           .subscribe(data => {
             resolve(data);
@@ -1766,5 +2200,43 @@ export class RestService {
       console.log("No se pudo obtener la informaciòn");
     }
   }
+
+  /**
+   * Metodo para obtener los empleados que son los que se veran en la seccion del directorio
+   * @returns Promise
+   */
+  obtenerInformacionEmpleados() {
+    try {
+      return new Promise((resolve, reject) => {
+        this.http.get(this.apiObtenerEmpleados).subscribe(data => {
+          resolve(data)
+        }, err => reject(err));
+      })
+    } catch (error) {
+      console.log('No se pudo obtener la informacion');
+    }
+  }
+
+
+
+  /**
+   * Metodo para obtener las fotos historicas
+   * @param id_plaza 
+   * @param account 
+   * @returns Promise
+   */
+  async getPhotosHistory(id_plaza, account) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.http.get(this.apiObtenerFotosHistoricas + " " + id_plaza + " , " + "'" + account + "'").subscribe(data => {
+          resolve(data);
+        })
+      } catch (error) {
+        console.log(error);
+        reject("Hubo un problema al traer las fotos historicas")
+      }
+    })
+  }
+
 
 }

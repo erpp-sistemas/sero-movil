@@ -70,6 +70,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'
 import { BackgroundGeolocation } from "@ionic-native/background-geolocation/ngx";
 
 
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],

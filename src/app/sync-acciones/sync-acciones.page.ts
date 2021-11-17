@@ -30,7 +30,7 @@ export class SyncAccionesPage implements OnInit {
     console.log("id_servicio_plaza: ", this.activeRoute.snapshot.paramMap.get('id_servicio_plaza'));
     this.id_servicio_plaza = this.activeRoute.snapshot.paramMap.get('id_servicio_plaza');
     this.listadoGestiones(this.id_servicio_plaza);
-    
+
   }
 
   async listadoGestiones(idServicioPlaza) {
@@ -74,6 +74,57 @@ export class SyncAccionesPage implements OnInit {
     await this.rest.sendLegalByIdServicio(this.id_servicio_plaza);
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
+  }
+
+  async syncAccount(cuenta: string, rol: string) {
+
+    console.log(rol);
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Enviando la gestión',
+      spinner: 'dots'
+    });
+
+    await this.loading.present();
+
+    if (rol == 'Inspección') {
+      const resultado = await this.rest.sendInspeccionByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      console.log(resultado);
+    } else if (rol == 'Carta invitación') {
+      const resultado = await this.rest.sendCartaByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      console.log(resultado);
+    } else if (rol == 'Legal') {
+      const resultado = await this.rest.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      console.log(resultado);
+    }
+
+    this.loading.dismiss();
+
+    this.listadoGestiones(this.id_servicio_plaza);
+
+  }
+
+  async deleteAccount(cuenta: string, rol: string) {
+
+    console.log(rol);
+
+    let table = ''
+
+    if(rol == 'Inspección') {
+      table = 'gestionInspeccion';
+    } else if ( rol == 'Carta invitación') {
+      table = 'gestionCartaInvitacion';
+    } else if (rol == 'Legal') {
+      table = 'gestionLegal';
+    }
+
+    console.log(table);
+
+    const result = await this.rest.deleteAccountGestionGeneral(table, cuenta);
+    console.log(result);
+
+    this.listadoGestiones(this.id_servicio_plaza);
+
   }
 
 

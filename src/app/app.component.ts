@@ -75,6 +75,7 @@ export class AppComponent {
       name: 'erppMovil.db',
       location: 'default'
     }).then(async (db: SQLiteObject) => {
+      // Pasando el db al servicio
       this.rest.setDatabase(db);
 
       await db.executeSql(table.tableSero, []);
@@ -87,6 +88,7 @@ export class AppComponent {
       await db.executeSql(table.tableServicios, []);
       await db.executeSql(table.tableDescargaServicios, []);
       await db.executeSql(table.tableListaServiciosPublicos, []);
+      await db.executeSql(table.tableEmpleadosPlaza, []);
       await db.executeSql(table.tableRecorrido, []);
 
     }).catch(error => console.log("Error en bd", error));
@@ -112,7 +114,7 @@ export class AppComponent {
         this.backgroundGeolocation
           .on(BackgroundGeolocationEvents.location)
           .subscribe((location: BackgroundGeolocationResponse) => {
-            console.log(location);
+            //console.log(location);
             this.saveLocation(location)
           });
 
@@ -130,8 +132,8 @@ export class AppComponent {
     let idAspuser = await this.storage.get('IdAspUser')
     //let idPlaza = await this.storage.get('IdPlaza')
     if (idAspuser == null || idAspuser == undefined) {
-      console.log(idAspuser, 'el idaspuser del recorrido')
-      console.log('Sesion inactiva')
+      //console.log(idAspuser, 'el idaspuser del recorrido')
+      //console.log('Sesion inactiva')
 
     } else {
       console.log(idAspuser, 'el idaspuser del recorrido')

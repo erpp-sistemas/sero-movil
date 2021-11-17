@@ -14,6 +14,7 @@ export class Tab1Page implements OnInit {
 
   nombre: string = '';
   email: string = '';
+  imgUser: string = '';
   progress: boolean = false;
   progressTotal: number = 0;
   loading: any;
@@ -28,7 +29,7 @@ export class Tab1Page implements OnInit {
   servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
 
 
-  
+
   constructor(
     private storage: Storage,
     private rest: RestService,
@@ -54,6 +55,9 @@ export class Tab1Page implements OnInit {
     this.platform.ready().then(async () => {
       await this.obtenerPlazasUsuario();
     });
+    // this.platform.backButton.subscribeWithPriority(10, () => {
+    //   document.addEventListener('backbutton', () => { }, false);
+    // });
   }
 
 
@@ -64,13 +68,13 @@ export class Tab1Page implements OnInit {
 
     this.plazasServicios = await this.rest.obtenerPlazasSQL();
 
-    // tomamos el primer registro para ponerlo como defauult en el select
-    if(this.plazasServicios.length > 0) {
+    // tomamos el primer registro para ponerlo como default en el select
+    if (this.plazasServicios.length > 0) {
       this.id_plaza = this.plazasServicios[0].id_plaza;
     }
 
     const servicios = await this.rest.mostrarServicios(this.id_plaza);
-    
+
     // En este punto ya se tiene el primer id_plaza obtenido de la base
     this.mostrarServicios(servicios);
   }
@@ -88,7 +92,7 @@ export class Tab1Page implements OnInit {
       this.asignarSectores(this.id_plaza);
     }
   }
- 
+
 
   /**
    * Metodo que activa los servicios segun la plaza que se pasa por parametro viene del result
@@ -111,9 +115,9 @@ export class Tab1Page implements OnInit {
   // viene del obtenerPlazasUsuario
   async mostrarServicios(servicios) {
     this.servicios = await this.rest.mostrarServicios(this.id_plaza)
-    
-    this.servicios.forEach( servicio => {
-      if(servicio.descargado > 0) {
+
+    this.servicios.forEach(servicio => {
+      if (servicio.descargado > 0) {
         this.progressTotal = 100;
       }
     });
@@ -127,6 +131,7 @@ export class Tab1Page implements OnInit {
     console.log('Obteniendo los datos del usuario');
     this.nombre = await this.storage.get('Nombre');
     this.email = await this.storage.get('Email');
+    this.imgUser = await this.storage.get('Img');
   }
 
 
@@ -209,7 +214,7 @@ export class Tab1Page implements OnInit {
       this.loading.dismiss();
 
       // se descargo agua en la plaza this.id_plaza, meter en la tabla descargaServicios
-      
+
       this.actualizarEstatusDescarga(this.id_plaza, idServicioPlaza);
 
       this.message.showAlert("Se han descargado tus cuentas!!!!");
@@ -242,7 +247,7 @@ export class Tab1Page implements OnInit {
   }
 
 
-  
+
   async goCuentasTab(idServicioPlaza) {
     //this.router.navigateByUrl('/home/tab2');
     // if (idServicioPlaza == '1') {
@@ -265,14 +270,14 @@ export class Tab1Page implements OnInit {
 
     await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
     await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
-    await this.storage.set( 'IdServicioActivo', idServicioPlaza);
+    await this.storage.set('IdServicioActivo', idServicioPlaza);
 
     console.log("IdServicioActivo " + idServicioPlaza);
     console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
     console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
 
 
-    
+
     this.router.navigate(['/listado-cuentas', idServicioPlaza, this.id_plaza]);
   }
 
@@ -284,15 +289,16 @@ export class Tab1Page implements OnInit {
 
     await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
     await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
-    await this.storage.set( 'IdServicioActivo', idServicioPlaza);
+    await this.storage.set('IdServicioActivo', idServicioPlaza);
 
     console.log("IdServicioActivo " + idServicioPlaza);
     console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
     console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
 
 
-    
-    this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
+
+    //this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
+    this.router.navigate(['mapa-prueba', idServicioPlaza, this.id_plaza]);
   }
 
 

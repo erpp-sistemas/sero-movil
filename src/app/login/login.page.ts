@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessagesService } from '../services/messages.service';
-import { IonSlides, LoadingController, ModalController } from '@ionic/angular';
+import { IonSlides, LoadingController, ModalController, Platform } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
@@ -44,11 +44,19 @@ export class LoginPage implements OnInit {
     private router: Router,
     private usuarioService: UsersService,
     private mensaje:MessagesService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private platform: Platform
   ) { }
 
   ngOnInit() {
-   
+
+  }
+
+
+  ionViewDidEnter() {
+    this.platform.backButton.subscribeWithPriority(10, () => {
+      document.addEventListener('backbutton', () => { }, false);
+    });
   }
 
   async login() {

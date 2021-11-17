@@ -8,6 +8,7 @@ import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 
 
 @Component({
@@ -54,10 +55,13 @@ export class GestionCartaPage implements OnInit {
   isPhoto: boolean = false;
   image: string = '';
   loading: any;
-  fechaCaptura:any;
+  fechaCaptura: any;
   detectedChanges: boolean = false;
   tipoServicio: number = 0;
   idServicioPlaza: number = 0;
+
+  activaOtroMotivo: boolean = false;
+  otroMotivo: string = '';
 
 
   sliderOpts = {
@@ -145,6 +149,32 @@ export class GestionCartaPage implements OnInit {
     console.log(this.infoImage[0]);
   }
 
+
+  async confirmarFoto(tipo: number) {
+    const mensaje = await this.alertCtrl.create({
+      header: "Tomar foto",
+      subHeader: "Selecciona como tomar la foto ",
+      buttons: [
+        {
+          text: "Camara",
+          cssClass: "secondary",
+          handler: () => {
+            this.takePic(tipo);
+          }
+        },
+        {
+          text: "Galeria",
+          cssClass: "secondary",
+          handler: () => {
+            this.takePicGallery(tipo)
+          }
+        }
+      ]
+    });
+    await mensaje.present();
+  }
+
+
   takePic(type) {
     let tipo;
     if (type == 1) {
@@ -209,6 +239,70 @@ export class GestionCartaPage implements OnInit {
 
   }
 
+  takePicGallery(type) {
+    let tipo;
+    if (type == 1) {
+      tipo = 'Fachada predio'
+    } else if (type == 2) {
+      tipo = 'Evidencia'
+    }
+
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(
+      Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      )
+    );
+
+    let fecha = ionicDate.toISOString();
+
+    let options: CameraOptions = {
+      quality: 40,
+      correctOrientation: true,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE
+    };
+    this.camera
+      .getPicture(options)
+      .then(imageData => {
+        this.indicadorImagen = this.indicadorImagen + 1;
+        let rutaBase64 = imageData;
+        this.image = this.webview.convertFileSrc(imageData);
+        console.log(rutaBase64, this.image);
+        this.isPhoto = false;
+        this.takePhoto = true;
+        this.imgs.push({ imagen: this.image });
+        if (this.indicadorImagen == 1) {
+          this.imgs.splice(0, 1);
+        }
+
+        this.saveImage(
+          this.id_plaza,
+          this.nombrePlaza,
+          this.image,
+          this.account,
+          fecha,
+          rutaBase64,
+          this.idAspUser,
+          this.tareaAsignada,
+          tipo,
+          this.idServicioPlaza
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }
+
   saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
     this.rest
       .saveImage(
@@ -231,6 +325,7 @@ export class GestionCartaPage implements OnInit {
 
   async terminar() {
     let account = this.account;
+
     this.loading = await this.loadingController.create({
       message: 'Obteniendo la ubicación de esta gestión'
     });
@@ -264,7 +359,7 @@ export class GestionCartaPage implements OnInit {
         );
 
         this.fechaCaptura = ionicDate.toISOString();
-        
+
         let data = {
           id_plaza: this.id_plaza,
           nombrePlaza: this.nombrePlaza,
@@ -272,12 +367,13 @@ export class GestionCartaPage implements OnInit {
           persona_atiende: this.personaAtiende,
           //numero_contacto: this.numeroContacto,
           id_motivo_no_pago: this.idMotivoNoPago,
+          otro_motivo_no_pago: this.otroMotivo,
           id_trabajo_actual: this.idTrabajoActual,
           id_gasto_impuesto: this.idGastoImpuesto,
           id_tipo_servicio: this.idTipoServicio,
           numero_niveles: this.numeroNiveles,
-          color_fachada: this.colorFachada,
-          color_puerta: this.colorPuerta,
+          colorFachada: this.colorFachada.substring(1, 7),
+          colorPuerta: this.colorPuerta.substring(1, 7),
           referencia: this.referencia,
           id_tipo_predio: this.idTipoPredio,
           entre_calle1: this.entreCalle1,
@@ -291,7 +387,9 @@ export class GestionCartaPage implements OnInit {
           idServicioPlaza: this.idServicioPlaza,
           id: this.idAccountSqlite
         }
-
+        
+        console.log("Datos a insertar");
+        console.log(data);
         await this.gestionCarta(data);
         this.loading.dismiss();
         this.exit();
@@ -307,7 +405,7 @@ export class GestionCartaPage implements OnInit {
   async gestionCarta(data) {
     console.log(data);
     this.detectedChanges = false;
-    this.rest.gestionCartaInvitacion(data); 
+    this.rest.gestionCartaInvitacion(data);
   }
 
   exit() {
@@ -316,16 +414,26 @@ export class GestionCartaPage implements OnInit {
     // this.router.dispose();
   }
 
-  resultPersonaAtiende( event ) {
+  resultPersonaAtiende(event) {
     this.detectedChanges = true;
   }
 
-  resultNumeroContacto( event ) {
+  resultNumeroContacto(event) {
     this.detectedChanges = true;
   }
 
+  resultMotivoNoPago(event) {
+    let motivo = event.detail.value;
+    console.log(motivo);
+    if (motivo == 5) {
+      this.activaOtroMotivo = true;
+    } else {
+      this.activaOtroMotivo = false;
+    }
+  }
 
-  async salida( tipo ) {
+
+  async salida(tipo) {
     const alert = await this.alertCtrl.create({
       header: "Salir",
       subHeader: "Confirme para salir de la gestión, se perderan los cambios ",
@@ -350,6 +458,27 @@ export class GestionCartaPage implements OnInit {
     await alert.present();
   }
 
+
+  async goPhotos() {
+
+    console.log(this.id_plaza);
+    console.log(this.account);
+
+    let idPlaza = this.id_plaza;
+
+    const modal = await this.modalController.create({
+      component: PhotosHistoryPage,
+      componentProps: {
+        "account": this.account,
+        "idPlaza": idPlaza
+      }
+    });
+
+    await modal.present();
+
+  }
+
+
   navegar(tipo) {
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');
@@ -366,7 +495,7 @@ export class GestionCartaPage implements OnInit {
         .catch(err => console.log('Error launching dialer', err));
 
     }
-  } 
+  }
 
 
 }

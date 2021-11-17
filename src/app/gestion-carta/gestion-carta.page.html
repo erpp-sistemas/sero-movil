@@ -22,19 +22,41 @@
   <hr>
   <hr>
   <hr>
-  <hr><hr><hr>
+  <hr>
+  <hr>
+  <hr>
 
-  <div style="text-align: center;">
+  <ion-grid style="margin-top: 30px;">
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button shape="round" color="primary" expand="block" (click)="goPhotos()">
+          <ion-icon slot="start" name="image"></ion-icon>
+          Ver fotos históricas
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div style="text-align: center; margin:15 0px 0 20;">
     <ion-chip color="success">Información contribuyente</ion-chip>
   </div>
 
+
   <ion-card color="medium">
     <ion-card-content>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Cuenta a gestionar: <span style="font-weight: bold;"> {{account}} </span> </p>
+        </ion-label>
+      </ion-item>
+
       <ion-item color="medium">
         <ion-label>
           <p>Persona que atiende: </p>
         </ion-label>
-        <ion-input (click)="resultPersonaAtiende( $event )" class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"></ion-input>
+        <ion-input (click)="resultPersonaAtiende( $event )" class="myCustomSelect" interface="popover"
+          [(ngModel)]="personaAtiende"></ion-input>
       </ion-item>
       <!-- <ion-item color="medium">
         <ion-label>
@@ -47,6 +69,7 @@
 
   <ion-card color="medium">
     <ion-card-content color="medium">
+
       <ion-item color="medium">
         <ion-label>
           <p>
@@ -54,7 +77,7 @@
           </p>
           <p>
             <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
-              [(ngModel)]="idMotivoNoPago">
+              [(ngModel)]="idMotivoNoPago" (ionChange)="resultMotivoNoPago($event)">
               <ion-select-option value="1">No quiero pagar</ion-select-option>
               <ion-select-option value="2">No tengo dinero</ion-select-option>
               <ion-select-option value="3">Grupo vulnerable</ion-select-option>
@@ -65,6 +88,14 @@
         </ion-label>
       </ion-item>
 
+      <div *ngIf="activaOtroMotivo">
+        <ion-item color="medium">
+          <ion-label>
+            <p>Especifique: </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="otroMotivo"></ion-input>
+        </ion-item>
+      </div>
 
       <ion-item color="medium">
         <ion-label>
@@ -123,11 +154,11 @@
           <p>
             <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
               [(ngModel)]="idTipoServicio">
-              <ion-select-option value="1">Domestico</ion-select-option>
+              <ion-select-option value="1">Doméstico</ion-select-option>
               <ion-select-option value="2">Comercial</ion-select-option>
               <ion-select-option value="3">Industrial</ion-select-option>
               <ion-select-option value="4">Gobierno</ion-select-option>
-              <ion-select-option value="5">Domectico / Comercial</ion-select-option>
+              <ion-select-option value="5">Doméstico / Comercial</ion-select-option>
               <ion-select-option value="6">Residencial</ion-select-option>
               <ion-select-option value="7">Departamental</ion-select-option>
             </ion-select>
@@ -154,14 +185,16 @@
         <ion-label>
           <p>Color fachada: </p>
         </ion-label>
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
+        <input type="color" [(ngModel)]="colorFachada">
+        <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input> -->
       </ion-item>
 
       <ion-item color="medium">
         <ion-label>
           <p>Color puerta: </p>
         </ion-label>
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
+        <input type="color" [(ngModel)]="colorPuerta">
+        <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input> -->
       </ion-item>
 
       <ion-item color="medium">
@@ -235,16 +268,17 @@
 
 
       <ion-grid>
+
         <ion-row>
           <ion-col text-center>
-            <ion-button expand="block" color="primary" (click)="takePic(1)">
+            <ion-button expand="block" color="primary" (click)="confirmarFoto(1)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Fachada predio</ion-label>
           </ion-col>
 
           <ion-col text-center>
-            <ion-button expand="block" color="warning" (click)="takePic(2)">
+            <ion-button expand="block" color="warning" (click)="confirmarFoto(2)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Evidencia</ion-label>
@@ -253,6 +287,7 @@
         </ion-row>
 
       </ion-grid>
+
     </ion-label>
   </ion-item>
 
