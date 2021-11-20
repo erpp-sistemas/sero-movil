@@ -185,17 +185,18 @@ export class MapaPruebaPage implements OnInit {
 
       array.push(marker);
 
-      this.wayPoints.push({
-        location: {
-          lat: parseFloat(markers.latitud),
-          lng: parseFloat(markers.longitud)
-        },
-        stopover: true
-      })
+      // Se llenaba el waypoints cuando se hizo la primera vez que solo habia 25 cuentas
+      // this.wayPoints.push({
+      //   location: {
+      //     lat: parseFloat(markers.latitud),
+      //     lng: parseFloat(markers.longitud)
+      //   },
+      //   stopover: true
+      // })
 
     }
-    console.log("array", array);
-    console.log("wayPoints", this.wayPoints);
+    // console.log("array", array);
+    // console.log("wayPoints", this.wayPoints);
     this.initMap(array);
   }
 
@@ -251,6 +252,8 @@ export class MapaPruebaPage implements OnInit {
 
     this.loading.dismiss();
 
+    this.addInfoWindowUbicacion(marker);
+
     // icono de los marcadores
     let urlIcon = '';
 
@@ -277,6 +280,23 @@ export class MapaPruebaPage implements OnInit {
       this.addInfoWindow(marker, m);
 
     }
+
+  }
+
+
+  addInfoWindowUbicacion(marker) {
+    let infoWindow = new google.maps.InfoWindow({
+      content: `
+        <div style="text-align:center;">
+          <p>Ubicación actual</p>
+        </div>
+      `
+    });
+
+    marker.addListener('click', () => {
+      this.closeAllInfoWindow();
+      infoWindow.open(this.map, marker);
+    })
 
   }
 
@@ -327,74 +347,230 @@ export class MapaPruebaPage implements OnInit {
 
 
 
-  async trazarRuta() {
 
-    var directionsService = new google.maps.DirectionsService();
-    var directionsDisplay = new google.maps.DirectionsRenderer();
+  // Metodo que traza solo una ruta para cuando solo se tengan menos de 25 cuentas en la asignacion
+  // No se usa en este momento
+  // async trazarRuta() {
 
+  //   var directionsService = new google.maps.DirectionsService();
+  //   var directionsDisplay = new google.maps.DirectionsRenderer();
+
+
+  //   this.loading = await this.loadingCtrl.create({
+  //     message: 'Trazando la ruta...',
+  //     spinner: 'dots'
+  //   });
+
+  //   await this.loading.present();
+
+
+  //   //let idAspUser = await this.storage.get("IdAspUser");
+
+  //   const currentPosition = await this.geolocation.getCurrentPosition();
+
+  //   // posicion actual
+  //   this.positionActual = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
+
+  //   setTimeout(() => {
+  //     //let targetPosition = new google.maps.LatLng(this.cuentasDistancia[0].latitud, this.cuentasDistancia[0].longitud)
+
+  //     let request = {
+  //       origin: this.positionActual,
+  //       destination: this.positionActual,
+  //       waypoints: this.wayPoints,
+  //       optimizeWaypoints: true,
+  //       travelMode: google.maps.TravelMode.WALKING,
+  //     }
+
+  //     directionsService.route(request, (result, status) => {
+  //       if (status == 'OK') {
+  //         directionsDisplay.setDirections(result);
+  //       }
+  //     });
+
+  //     this.loading.dismiss();
+
+  //     directionsDisplay.setMap(this.map)
+  //   }, 1500)
+
+
+  // }
+
+  // Metodo que manda calcula rutas de 23 en 23
+  // No se esta ocupando en este momento 
+  // async obtenerDistanciasCuentas() {
+
+  //   let idAspUser = await this.storage.get("IdAspUser");
+
+  //   this.cuentasDistancia =
+  //     await this.rest.obtenerCuentasDistancias(idAspUser, this.id_plaza, this.idServicioPlaza, this.latitud, this.longitud)
+
+  //   console.log("Cuentas distancia");
+  //   console.log(this.cuentasDistancia);
+
+  //   this.loading = await this.loadingCtrl.create({
+  //     message: 'Calculando ruta...',
+  //     spinner: 'dots'
+  //   })
+
+  //   this.loading.present();
+
+
+  //   setTimeout(async () => {
+
+  //     const currentPosition = await this.geolocation.getCurrentPosition();
+
+  //     // posicion actual
+  //     this.positionActual = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
+
+  //     let contador = 1;
+
+  //     let wayPointsContador = [];
+  //     var posicionInicial;
+  //     var posicionFinal;
+
+  //     for (let markers of this.cuentasDistancia) {
+  //       if (contador <= 23) {
+
+  //         wayPointsContador.push({
+  //           location: {
+  //             lat: parseFloat(markers.latitud),
+  //             lng: parseFloat(markers.longitud)
+  //           },
+  //           stopover: false
+  //         });
+
+  //         console.log("Se metio al wayPointsContador");
+
+  //         // Este metodo solo se ejecutara una que es en el primer bloque de los 23
+  //         if (markers.id == 23) {
+  //           console.log("Es el ultimo punto del primer bloque");
+  //           posicionFinal = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           console.log(posicionFinal);
+  //           this.calcularRuta(this.positionActual, posicionFinal, wayPointsContador);
+
+  //           // Resetamos los valores
+  //           wayPointsContador = [];
+  //           posicionInicial = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           contador = 1;
+  //           continue;
+  //         }
+
+
+  //         if (contador == 23 || this.cuentasDistancia.length == markers.id) {
+  //           // Ultimo punto
+  //           console.log("Es el ultimo punto del bloque dos en adelante");
+  //           posicionFinal = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           console.log(posicionFinal);
+  //           this.calcularRuta(posicionInicial, posicionFinal, wayPointsContador);
+
+  //           // Resetamos los valores
+  //           posicionInicial = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           wayPointsContador = [];
+  //           contador = 1;
+  //           continue;
+  //         }
+
+  //         contador++;
+  //       }
+  //     }
+  //     this.loading.dismiss();
+  //   }, 2000);
+
+
+  // }
+
+
+  async trazarRutaParcial() {
+
+    let idAspUser = await this.storage.get("IdAspUser");
+
+    let wayPointsParcial = [];
+    let positionFinal;
+
+    this.cuentasDistancia =
+      await this.rest.obtenerCuentasDistancias(idAspUser, this.id_plaza, this.idServicioPlaza, this.latitud, this.longitud)
+
+    console.log(this.cuentasDistancia);
+
+    let cuentasDistanciaMostrar = [];
+
+    this.rest.getDataVisitPositionDistance(this.id_plaza, this.idServicioPlaza, this.cuentasDistancia).then((data: any[]) => {
+      cuentasDistanciaMostrar = data
+    })      
+
+
+    console.log(cuentasDistanciaMostrar);
 
     this.loading = await this.loadingCtrl.create({
-      message: 'Trazando la ruta...',
+      message: 'Calculando la ruta de máximo 25 cuentas',
       spinner: 'dots'
     });
 
     await this.loading.present();
 
+    setTimeout(async () => {
 
-    //let idAspUser = await this.storage.get("IdAspUser");
+      const currentPosition = await this.geolocation.getCurrentPosition();
 
-    const currentPosition = await this.geolocation.getCurrentPosition();
+      // posicion actual
+      this.positionActual = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
 
-    // posicion actual
-    this.positionActual = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
+      let total = cuentasDistanciaMostrar.length;
 
-    setTimeout(() => {
-      //let targetPosition = new google.maps.LatLng(this.cuentasDistancia[0].latitud, this.cuentasDistancia[0].longitud)
-
-      let request = {
-        origin: this.positionActual,
-        destination: this.positionActual,
-        waypoints: this.wayPoints,
-        optimizeWaypoints: true,
-        travelMode: google.maps.TravelMode.WALKING,
+      if (total >= 25) {
+        console.log("Tiene 25 o mas cuentas");
+        for (let i = 0; i <= 23; i++) {
+          wayPointsParcial.push({
+            location: {
+              lat: parseFloat(this.cuentasDistancia[i].latitud),
+              lng: parseFloat(this.cuentasDistancia[i].longitud)
+            },
+            stopover: true
+          })
+          if (i == 23) {
+            positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
+          }
+        }
+      } else {
+        console.log("Tienes menos de 25 cuentas");
+        for (let i = 0; i < total; i++) {
+          wayPointsParcial.push({
+            location: {
+              lat: parseFloat(this.cuentasDistancia[i].latitud),
+              lng: parseFloat(this.cuentasDistancia[i].longitud)
+            },
+            stopover: true
+          })
+          if (i == (total - 1)) {
+            positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
+          }
+        }
       }
 
-      directionsService.route(request, (result, status) => {
-        if (status == 'OK') {
-          directionsDisplay.setDirections(result);
-        }
-      });
+      this.calcularRuta(this.positionActual, positionFinal, wayPointsParcial);
 
       this.loading.dismiss();
 
-      directionsDisplay.setMap(this.map)
-    }, 1500)
-
+    }, 2000);
 
   }
 
+  // Metodo para calcular la ruta
+  calcularRuta(posicionInicial, posicionFinal, wayPoints) {
 
+    console.log("Calculando ruta");
+    console.log(wayPoints);
 
-
-  async obtenerDistancias() {
     var directionsService = new google.maps.DirectionsService();
     var directionsDisplay = new google.maps.DirectionsRenderer();
 
-
-    const currentPosition = await this.geolocation.getCurrentPosition();
-
-    let position = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
-
-
-    var targetPosition = new google.maps.LatLng(this.latitud, this.longitud);
-
-    console.log(position);
-    console.log(targetPosition);
-
-    var request = {
-      origin: position,
-      destination: targetPosition,
-      travelMode: 'WALKING'
+    let request = {
+      origin: posicionInicial,
+      destination: posicionFinal,
+      waypoints: wayPoints,
+      optimizeWaypoints: true,
+      travelMode: google.maps.TravelMode.WALKING,
     }
 
     directionsService.route(request, (result, status) => {
@@ -404,9 +580,12 @@ export class MapaPruebaPage implements OnInit {
     });
 
     directionsDisplay.setMap(this.map)
+
   }
 
 
+
+ 
   async find() {
     if (this.accountString == "") {
       alert("Ingresa una cuenta")
@@ -416,7 +595,7 @@ export class MapaPruebaPage implements OnInit {
       if (this.result.length == 0) {
         alert("No hay resultados")
       } else {
-        
+
         let latitud = parseFloat(this.result[0].latitud);
         let longitud = parseFloat(this.result[0].longitud);
 

@@ -488,21 +488,21 @@ export class RestService {
    * Metodo que obtiene las cuentas de la tabla pozos_conagua para cargarlas al mapa
    * @returns Promise sqlite
    */
-  getDataVisitPositionPozos() {
-    let sql = 'SELECT folio, numero_titulo, titular, representante_legal, rfc, domicilio, municipio, uso_agua, vol_ext_anu, vol_con_anu, profundidad, latitud, longitud FROM pozos_conagua';
-    return this.db.executeSql(sql, []).then(response => {
-      console.log(response);
-      let posiciones = [];
-      for (let index = 0; index < response.rows.length; index++) {
-        posiciones.push(response.rows.item(index));
-      }
+  // getDataVisitPositionPozos() {
+  //   let sql = 'SELECT folio, numero_titulo, titular, representante_legal, rfc, domicilio, municipio, uso_agua, vol_ext_anu, vol_con_anu, profundidad, latitud, longitud FROM pozos_conagua';
+  //   return this.db.executeSql(sql, []).then(response => {
+  //     console.log(response);
+  //     let posiciones = [];
+  //     for (let index = 0; index < response.rows.length; index++) {
+  //       posiciones.push(response.rows.item(index));
+  //     }
 
-      return Promise.resolve(posiciones)
-    }).catch(error => Promise.reject(error));
-  }
+  //     return Promise.resolve(posiciones)
+  //   }).catch(error => Promise.reject(error));
+  // }
 
   /**
-   * Metodo que obtiene las cuentas de la tabla agua para cargarlas al mapa
+   * Metodo que obtiene las cuentas de la tabla sero_principal para cargarlas al mapa
    * @returns query sqlite
    */
   getDataVisitPosition(id_plaza, id_servicio_plaza) {
@@ -518,6 +518,49 @@ export class RestService {
       return Promise.resolve(posiciones);
 
     }).catch(error => Promise.reject(error));
+  }
+
+  /**
+   * Metodo que recibe un arreglo de cuentas con distancia de la posicion actual y luego regresa un filtrado de esas cuentas de las que no esten gestionadas
+   * @param id_plaza 
+   * @param id_servicio_plaza 
+   * @param data 
+   * @returns Promise
+   */
+  getDataVisitPositionDistance(id_plaza, id_servicio_plaza, data) {
+
+    console.log(data);
+
+    return new Promise( (resolve, reject) => {
+      let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total FROM sero_principal where id_plaza = ? and id_servicio_plaza = ? and latitud > 0 and gestionada = 0';
+
+      this.db.executeSql(sql, [id_plaza, id_servicio_plaza]).then( response => {
+        
+        let result = [];
+        let cuentasMostrar = []
+
+        for (let i = 0; i < response.rows.length; i++) {
+          result.push(response.rows.item(i));
+        }
+
+        console.log(result);
+
+        for (let i = 0; i < result.length; i++ ) {
+          for (let j = 0; j < data.length; j++) {
+            if (data[j].cuenta == result[i].cuenta) {
+              cuentasMostrar.push(data[j]);
+            }
+          }
+
+        }
+  
+        resolve(cuentasMostrar);
+  
+  
+      }).catch(err => reject(err));
+    })
+
+    
   }
 
 
