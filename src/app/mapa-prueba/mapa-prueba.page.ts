@@ -480,7 +480,7 @@ export class MapaPruebaPage implements OnInit {
 
   // }
 
-
+  // Metodo que traza la ruta de 25 cuentas cada que se utiliza
   async trazarRutaParcial() {
 
     let idAspUser = await this.storage.get("IdAspUser");
@@ -488,11 +488,13 @@ export class MapaPruebaPage implements OnInit {
     let wayPointsParcial = [];
     let positionFinal;
 
+    // Obtenemos las cuentas del sql server
     this.cuentasDistancia =
       await this.rest.obtenerCuentasDistancias(idAspUser, this.id_plaza, this.idServicioPlaza, this.latitud, this.longitud)
 
     console.log(this.cuentasDistancia);
 
+    // Esta van las cuentas que no estan gestionadas ya con una distancia
     let cuentasDistanciaMostrar = [];
 
     this.rest.getDataVisitPositionDistance(this.id_plaza, this.idServicioPlaza, this.cuentasDistancia).then((data: any[]) => {
@@ -523,13 +525,13 @@ export class MapaPruebaPage implements OnInit {
         for (let i = 0; i <= 23; i++) {
           wayPointsParcial.push({
             location: {
-              lat: parseFloat(this.cuentasDistancia[i].latitud),
-              lng: parseFloat(this.cuentasDistancia[i].longitud)
+              lat: parseFloat(cuentasDistanciaMostrar[i].latitud),
+              lng: parseFloat(cuentasDistanciaMostrar[i].longitud)
             },
             stopover: true
           })
           if (i == 23) {
-            positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
+            positionFinal = new google.maps.LatLng(parseFloat(cuentasDistanciaMostrar[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
           }
         }
       } else {
@@ -537,13 +539,13 @@ export class MapaPruebaPage implements OnInit {
         for (let i = 0; i < total; i++) {
           wayPointsParcial.push({
             location: {
-              lat: parseFloat(this.cuentasDistancia[i].latitud),
-              lng: parseFloat(this.cuentasDistancia[i].longitud)
+              lat: parseFloat(cuentasDistanciaMostrar[i].latitud),
+              lng: parseFloat(cuentasDistanciaMostrar[i].longitud)
             },
             stopover: true
           })
           if (i == (total - 1)) {
-            positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
+            positionFinal = new google.maps.LatLng(parseFloat(cuentasDistanciaMostrar[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
           }
         }
       }
