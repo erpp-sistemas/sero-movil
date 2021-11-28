@@ -11,6 +11,7 @@ import { LoginPage } from '../login/login.page';
 
 //import { BehaviorSubject } from 'rxjs';
 
+//http://201.163.165.20/sero/image/usuario/
 
 @Injectable({
   providedIn: 'root'
@@ -37,11 +38,35 @@ export class AuthService {
     private modalCtrl: ModalController
   ) { }
 
+    /** 
+     * Especificaciones del servicio
+     * Peticion a Firebase al metodo de autenticacion con el email y el password que nos paso el componente login
+     * Obtener el uid de firebase del usuario
+     * Obtener el documento de firebase de la coleccion usersErpp con el uid que se obtivo anteriormente 
+     * Verificar si esta activo el usuario
+     * Verificar si IMEI = ''
+      * Guardar en el storgae la informacion obtenida del firebase
+      * Obtener los servicios publicos para guardarlos en la base interna SQlite
+      * Obtener los usuarios de la plazas a la que pertenece el usuario a loguearse para guardarlos en la base interna SQlite
+      * Obtener la informacion de las plazas y los servicios de las plazas a las que pertenece el usuario a loguearse para despues insertarlas en la base interna SQlite
+     * Si si tiene IMEI
+      * Se valida el correo y el nombre en el storage con los ingresados para ver si es la misma persona que tenia la sesion anterior
+      * Y se vuelven a generar los 4 metodos anteriores
+      * Si no es el mismo usuario que el de la sesion anterior se borrara la informacion con el metodo deleteInfo
+    */
 
+
+  /**
+   * Metodo que hace la peticion a firebase para la autenticacion
+   * @param email 
+   * @param password 
+   * @returns Promise
+   */
   loginFirebase(email: string, password: string) {
 
     return new Promise((resolve, reject) => {
       this.firebaseAuth.signInWithEmailAndPassword(email, password).then(user => {
+        // creamos una variable que tendra el uid del usuario de firebase
         const id = user.user.uid;
         let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
           // this.userInfo tiene la informacion del usuario del firebase
@@ -128,23 +153,34 @@ export class AuthService {
     
   }
 
+  /**
+   * Metodo que inserta la informacion del usuario de sus plazas y servicios(agua, predio, antenas ...) de las plazas a las que pertenece
+   * @param data 
+   */
   insertarServicios( data ) {
     data.forEach(servicio => {
         this.rest.insertarServiciosSQL(servicio);
     });
   }
 
+  /**
+   * Metodo que obtiene todos los servicios publicos de todas las plazas del SQL Server para despues insertarlos en la tabla 
+   * interna SQlite listaServiciosPublicos
+   */
   async obtenerServiciosPublicos() {
     console.log("obteniendo los servicios publicos");
     await this.rest.deleteServiciosPublicos();
     this.http.get(this.apiObtenerServiciosPublicos).subscribe(data => {
-      console.log(data);
       this.insertarServiciosPublicos(data);
     })
 
   }
 
-
+  /**
+   * Metodo que pide al SQL Server los usuarios de las plazas a la que pertenece el usuario a loguearse, para despues insertarlos en la 
+   * tabla interna SQlite empleadosPlaza
+   * @param userInfo 
+   */
   async obtenerUsuariosPlaza(userInfo) {
     console.log("Obteniendo los empleados de la plaza");
     await this.rest.deleteEmpleadosPlaza();
@@ -157,56 +193,34 @@ export class AuthService {
     })
   }
 
+  /**
+   * Inserta en la tabla interna SQlite listaServiciosPublicos la informacion de los servicios publicos de todas las plazas 
+   * que se recibieron del SQL Server 
+   * @param data 
+   */
   insertarServiciosPublicos(data) {
     data.forEach(servicio => {
       this.rest.insertarServicioPublicoSQL(servicio);
     });
   }
 
+  /**
+   * Inserta en la tabla interna SQlite empleadosPlaza los usuarios de las plazas a la que pertenece el usuario a loguearse
+   * que se recibieron del SQL Server
+   * @param empleados 
+   */
   insertaEmpleadosPlaza(empleados) {
     empleados.forEach(empleado => {
       this.rest.insertaEmpleadosPlaza(empleado);
     });
   }
 
-  
 
-  // async getPlazaInfo() {
-  //   const idplaza = await this.storage.get('IdPlaza');
-
-  //   return new Promise( (resolve, reject ) => {
-  //     const sectores = [
-  //       {
-  //         id_plaza: 1,
-  //         nombre: 'Leon Guanajuato',
-  //         id_sector: 1,
-  //         nombre_sector: 'agua'
-  //       },
-  //       {
-  //         id_plaza: 1,
-  //         nombre: 'Leon Guanajuato',
-  //         id_sector: 2,
-  //         nombre_sector: 'predio'
-  //       },
-  //       {
-  //         id_plaza: 1,
-  //         nombre: 'Leon Guanajuato',
-  //         id_sector: 4,
-  //         nombre_sector: 'antenas'
-  //       }
-  //     ]
-  //     resolve(sectores);
-  //   })
-    
-  //   // return new Promise( resolve => {
-  //   //   this.http.get(this.apiUrlSectoresPlazas + ' ' + idplaza).subscribe( data => {
-  //   //     console.log(data);
-  //   //     resolve(data)
-  //   //   })
-  //   // });
-
-  // }
-
+  /**
+   * Metodo que guarda en el storage los campos del usuario con la informacion obtenida de firebase
+   * estos campos ya necesitan estar en firebase al momento de crear el usuario
+   * @param userInfo (Infotmacion de firebase del usuario que se intenta loguear)
+   */
   saveUserInfoStorage(userInfo: any) {
     this.storage.set('Nombre', userInfo.name);
     this.storage.set('Email', userInfo.email);
@@ -216,6 +230,7 @@ export class AuthService {
     this.storage.set('IdUserChecador', userInfo.idUserChecador)
     this.storage.set('Password', userInfo.password)
     this.storage.set('Img', userInfo.img);
+    //this.storage.set('Img',)
     this.storage.set('NumeroPlazas', userInfo.plaza.length);
     // let contadorPlaza = 1;
     // let contadorIdPlaza = 1;
@@ -236,12 +251,18 @@ export class AuthService {
 
   }
 
-
+  /**
+   * Metodo que genera el identificatvo tomando el idFirebase(uid)
+   * @param id 
+   */
   generaIdentificativo(id) {
-    console.log("General el id tomando el idFirebase " + id);
     this.saveDataCell(id);
   }
 
+  /**
+   * Metodo que actualiza el documento del usuario en firebase de los campos IMEI y lastSession vez que inicio sesion
+   * @param id 
+   */
   async saveDataCell(id) {
     let name = await this.storage.get("Nombre");
     this.storage.set("IMEI", id);
@@ -249,19 +270,35 @@ export class AuthService {
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
     let fecha = ionicDate.toISOString();
-    this.storage.set('LastSession', fecha);
+    this.storage.set('lastSession', fecha);
     this.firestore.collection('usersErpp').doc(id).update({
       IMEI: id,
       lastSession: fecha,
       isActive: true
     });
-    this.firestore.collection('SessionRecords').doc(name + '-' + fecha).set({
-      IMEI: id,
-      lastSession: fecha,
-      user: name
-    })
+    // this.firestore.collection('SessionRecords').doc(name + '-' + fecha).set({
+    //   IMEI: id,
+    //   lastSession: fecha,
+    //   user: name
+    // })
   }
 
+
+
+  /**
+   * Metodo para registrar un usuario, ahorita no se ocupa ya que el usuario se creara desde la web
+   * @param email 
+   * @param password 
+   * @param name 
+   * @param idplaza 
+   * @param idrol 
+   * @param idaspuser 
+   * @param rol 
+   * @param plaza 
+   * @param idUserChecador 
+   * @param imgAvatar 
+   * @returns Promise
+   */
   register(email: string, password: string, name: string, idplaza: string, idrol: number, idaspuser: string, rol: string, plaza: string, idUserChecador: number, imgAvatar: string) {
 
     return new Promise((resolve, reject) => {
@@ -296,7 +333,9 @@ export class AuthService {
 
   }
 
-
+  /**
+   * Metodo para cerrar sesion
+   */
   logout() {
     this.firebaseAuth.signOut().then( async () => {
       // this.router.navigate(['/login']);

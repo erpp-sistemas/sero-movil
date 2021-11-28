@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,7 @@ export class HeaderComponent implements OnInit {
     private menuCtrl: MenuController,
     private auth: AuthService,
     private router: Router,
+    private iab: InAppBrowser,
     private callNumber: CallNumber
   ) { }
 
@@ -39,8 +41,9 @@ export class HeaderComponent implements OnInit {
     this.router.navigateByUrl('/checador');
   }
 
-  manualWeb() {
-    
+  async manualWeb() {
+    let link = 'https://erpp-movil.web.app/'
+    this.iab.create(link, "_system", { location: "yes", zoom: "yes" });
   }
 
   gestionesRealizadas() {

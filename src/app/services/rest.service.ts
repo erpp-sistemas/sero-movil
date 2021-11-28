@@ -84,11 +84,12 @@ export class RestService {
    */
   insertarServiciosSQL(data) {
     console.log("Tratando de insertar los servicios obtenidos");
-    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, plaza, servicio, id_plaza, id_servicio, icono_app_movil) VALUES (?,?,?,?,?,?,?,?)'
+    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, foto, plaza, servicio, id_plaza, id_servicio, icono_app_movil) VALUES (?,?,?,?,?,?,?,?,?)'
     return this.db.executeSql(sql, [
       data.nombre,
       data.apellido_paterno,
       data.apellido_materno,
+      data.foto,
       data.plaza,
       data.servicio,
       data.id_plaza,
@@ -299,6 +300,24 @@ export class RestService {
 
       return Promise.resolve(plazas);
     } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  /**
+   * Metodo que obtiene la foto del usuario de la base interna SQlite
+   * @returns Promise
+   */
+  async obtenerFotoUserSQL() {
+    let foto = [];
+    try {
+      let sql = "SELECT DISTINCT foto FROM serviciosPlazaUser";
+      const response = await this.db.executeSql(sql, []);
+      for (let i = 0; i < response.rows.length; i++) {
+        foto.push(response.rows.item(i));
+      }
+      return Promise.resolve(foto);
+    } catch(error) {
       return Promise.reject(error);
     }
   }
@@ -544,6 +563,8 @@ export class RestService {
         }
 
         console.log(result);
+
+        // result es el reusltado de la consulta a sero_principal
 
         for (let i = 0; i < result.length; i++ ) {
           for (let j = 0; j < data.length; j++) {
@@ -2202,7 +2223,7 @@ export class RestService {
         },
         err => {
           this.message.showToast(
-            "No tracking routes!!!! " + err
+            "Sin trackeo de rutas por falta de red!!!!"
           );
           this.loadingCtrl.dismiss();
           console.log(err);

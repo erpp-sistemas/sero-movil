@@ -39,12 +39,30 @@ export class Tab1Page implements OnInit {
     private router: Router,
     private alertCtrl: AlertController
   ) {
-
+    this.platform.backButton.subscribeWithPriority(10, () => {
+      console.log('Handler was called!');
+    });
   }
 
+
+  /**
+   * Especificaciones de este componente
+   * Es la pantalla principal de ser0 movil que inicia despues de loguearse
+   * Desactiva el backbutton
+   * Obtener los datos del usuario con el metodo obtenerDatosUsuario
+   * Obtener los nombres de las plazas y los ids guardados por el auth.service 
+   * Poner el primer registro de las plazas como default que sera el que se muestre cuando se renderize la pagina
+   * Mostrar sus servicios
+   * Validar descargas
+   * Borrar informacion de sero_principal para poder descargar la nueva
+   * Descarga de informacion
+   * Actualizar estatus descarga
+   * Navegar a listado de cuentas
+   * Navegar a mapa
+   */
+
+
   async ngOnInit() {
-    //this.mostrarAvatar();
-    console.log("Empieza principal");
     this.obtenerDatosUsuario();
     this.platform.ready().then(async () => {
       await this.obtenerPlazasUsuario();
@@ -55,9 +73,6 @@ export class Tab1Page implements OnInit {
     this.platform.ready().then(async () => {
       await this.obtenerPlazasUsuario();
     });
-    // this.platform.backButton.subscribeWithPriority(10, () => {
-    //   document.addEventListener('backbutton', () => { }, false);
-    // });
   }
 
 
@@ -68,53 +83,29 @@ export class Tab1Page implements OnInit {
 
     this.plazasServicios = await this.rest.obtenerPlazasSQL();
 
-    // tomamos el primer registro para ponerlo como default en el select
+    // tomamos el primer registro para ponerlo como plaza default en el select
     if (this.plazasServicios.length > 0) {
       this.id_plaza = this.plazasServicios[0].id_plaza;
     }
 
-    const servicios = await this.rest.mostrarServicios(this.id_plaza);
+    this.asignarServicios();
 
+  }
+
+  /**
+   * Metodo que asigna los servicios y manda a llamar a validar las descargas
+   */
+  async asignarServicios() {
     // En este punto ya se tiene el primer id_plaza obtenido de la base
-    this.mostrarServicios(servicios);
+    this.servicios = await this.rest.mostrarServicios(this.id_plaza);
+
+    this.validaDescarga();
   }
 
   /**
-   * Metodo que se ejcuta cuando cambian en selec option de la plazam este metodo tambien se ejecuta al inicio 
-   * @param event 
-   */
-  async resultPlaza(event) {
-
-    this.progressTotal = 0;
-
-    // si el idPlaza es diferente de 0 entonces verificar la descarga
-    if (this.id_plaza != 0) {
-      this.asignarSectores(this.id_plaza);
-    }
-  }
-
-
-  /**
-   * Metodo que activa los servicios segun la plaza que se pasa por parametro viene del result
-   * @param idPlaza 
-   */
-  async asignarSectores(idPlaza) {
-
-    // validacion para mostrar la manita verde
-    if (idPlaza == 0) {
-      this.selecciona = true;
-    } else {
-      this.selecciona = false;
-    }
-
-    this.servicios = await this.rest.mostrarServicios(idPlaza);
-    this.mostrarServicios(this.servicios);
-
-  }
-
-  // viene del obtenerPlazasUsuario
-  async mostrarServicios(servicios) {
-    this.servicios = await this.rest.mostrarServicios(this.id_plaza)
+ * Metodo que recorre los servicios y verifica su ya estan descargados para poner el progresTotal completo o en 0
+ */
+  validaDescarga() {
 
     this.servicios.forEach(servicio => {
       if (servicio.descargado > 0) {
@@ -125,17 +116,50 @@ export class Tab1Page implements OnInit {
   }
 
   /**
+   * Metodo que se ejecuta cuando cambian el select option de la plaza este metodo tambien se ejecuta al inicio 
+   * @param event 
+   */
+  async resultPlaza(event) {
+
+    this.progressTotal = 0;
+
+    // si el idPlaza es diferente de 0 entonces verificar la descarga
+    if (this.id_plaza != 0) {
+      this.asignarServicios();
+    }
+
+  }
+
+  /**
+   * Metodo que actualiza el campo descargado de la tabla serviciosPlazaUser de la plaza y servicio pasado por parametro
+   * @param id_plaza 
+   * @param servicio 
+   */
+  async actualizarEstatusDescarga(id_plaza, servicio) {
+    await this.rest.actualizaServicioEstatus(id_plaza, servicio);
+    this.asignarServicios();
+  }
+
+
+  /**
    * Metodo que obtiene el nombre y el email del usuario desde el storage
    */
   async obtenerDatosUsuario() {
     console.log('Obteniendo los datos del usuario');
     this.nombre = await this.storage.get('Nombre');
     this.email = await this.storage.get('Email');
-    this.imgUser = await this.storage.get('Img');
+    //this.imgUser = await this.storage.get('Img'); aqui era del firebase pero lo vamos a traer de la base sql
+    let img = await this.rest.obtenerFotoUserSQL();
+    this.imgUser = img[0].foto;
   }
 
 
-
+  /**
+   * Metodo que pregunta si confirma la descarga
+   * @param idServicioPlaza 
+   * @param nombrePlaza 
+   * @param nombreServicio 
+   */
   async confirmarDescarga(idServicioPlaza, nombrePlaza, nombreServicio) {
     //console.log(idServicioPlaza, nombrePlaza, nombreServicio);
     const alert = await this.alertCtrl.create({
@@ -164,7 +188,12 @@ export class Tab1Page implements OnInit {
 
   }
 
-
+  /**
+   * Metodo que realiza la descarga de la informacion de la plaza y del servicio seleccionado
+   * @param id_plaza 
+   * @param idServicioPlaza 
+   * @returns 
+   */
   async descargarInformacion(id_plaza, idServicioPlaza) {
     this.progress = true;
     // aqui solo abra un metodo para borrar la informacion deleteInfo
@@ -213,8 +242,6 @@ export class Tab1Page implements OnInit {
       this.storage.set("FechaSync", fecha);
       this.loading.dismiss();
 
-      // se descargo agua en la plaza this.id_plaza, meter en la tabla descargaServicios
-
       this.actualizarEstatusDescarga(this.id_plaza, idServicioPlaza);
 
       this.message.showAlert("Se han descargado tus cuentas!!!!");
@@ -223,7 +250,12 @@ export class Tab1Page implements OnInit {
     }
   }
 
-
+  /**
+   * Metodo que guarda la informacion obtenida en la tabla interna sero_principal
+   * @param data 
+   * @param id_plaza 
+   * @param idServicioPlaza 
+   */
   async guardarDatosSQL(data, id_plaza, idServicioPlaza) {
     console.log("Guardando la informacion de " + idServicioPlaza);
     console.log(data);
@@ -235,34 +267,22 @@ export class Tab1Page implements OnInit {
     }
   }
 
-  async actualizarEstatusDescarga(id_plaza, servicio) {
-    await this.rest.actualizaServicioEstatus(id_plaza, servicio);
-    this.asignarSectores(this.id_plaza);
-  }
-
-
-
+  /**
+   * Metodo que borra la informacion de la tabla sero_principal
+   * @param id_plaza 
+   * @param id_servicio_plaza 
+   */
   async deleteInfo(id_plaza, id_servicio_plaza) {
     await this.rest.deleteTable(id_plaza, id_servicio_plaza);
   }
 
 
-
+  /**
+   * Metodo que envia al listado de cuentas
+   * @param idServicioPlaza 
+   */
   async goCuentasTab(idServicioPlaza) {
-    //this.router.navigateByUrl('/home/tab2');
-    // if (idServicioPlaza == '1') {
-    //   await this.storage.set('tipo', 'Agua');
-    //   await this.storage.set('IdServicio', 1);
-    // } else if (idServicioPlaza == '2') {
-    //   await this.storage.set('tipo', 'Predio');
-    //   await this.storage.set('IdServicio', 1);
-    // } else if(idServicioPlaza == '3') {
-    //   await this.storage.set('tipo', 'Antenas');
-    //   await this.storage.set('IdServicio', 3);
-    // } else if(idServicioPlaza == '4') {
-    //   await this.storage.set('tipo', 'Pozos');
-    //   await this.storage.set('IdServicio', 4);
-    // }
+
 
     const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
     console.log(plaza_servicio);
@@ -281,7 +301,10 @@ export class Tab1Page implements OnInit {
     this.router.navigate(['/listado-cuentas', idServicioPlaza, this.id_plaza]);
   }
 
-
+  /**
+   * Metodo que manda al mapa
+   * @param idServicioPlaza 
+   */
   async goMapTab(idServicioPlaza) {
     const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
     console.log(plaza_servicio);

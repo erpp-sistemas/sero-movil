@@ -6,7 +6,6 @@ import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 import { RestService } from '../services/rest.service';
 import { MessagesService } from '../services/messages.service';
 import { Storage } from '@ionic/storage';
-import { AuthService } from '../services/auth.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 
 @Component({
@@ -37,9 +36,14 @@ export class ListadoCuentasPage implements OnInit {
     private message: MessagesService,
     private activeRoute: ActivatedRoute,
     private storage: Storage,
-    private auth: AuthService,
     private callNumber: CallNumber
   ) { }
+
+    /**
+     * Primero obtenemos las variables pasadas por el router que son el idservicio y el idplaza
+     * ejecutamos el metodo listadoCuentas que este mismo ejecuta los metodos getInfo y getInfoCuentas 
+    */
+
 
   ngOnInit() {
     console.log("id: ", this.activeRoute.snapshot.paramMap.get('id'));
@@ -50,7 +54,11 @@ export class ListadoCuentasPage implements OnInit {
   }
 
 
-
+  /**
+   * Metodo que muestra el mensaje de cargando las cuentas asi como ejecuta los metodos getInfo y getInfoCuentas
+   * @param id_plaza 
+   * @param idServicioPlaza 
+   */
   async listadoCuentas(id_plaza, idServicioPlaza) {
     console.log("Cargando listado de cuentas del servicio " + idServicioPlaza + " de la plaza " + id_plaza);
     this.account = null;
@@ -66,7 +74,11 @@ export class ListadoCuentasPage implements OnInit {
   }
 
 
-
+  /**
+   * Metodo que que trae del servicio el total de cuentas y el total de cuentas gestionadas por servicio y plaza (sero_principal)
+   * @param id_plaza 
+   * @param idServicioPlaza 
+   */
   async getInfo(id_plaza, idServicioPlaza) {
     this.total = await this.rest.getTotalAccounts(id_plaza, idServicioPlaza);
     console.log("Total del servicio" + idServicioPlaza + " " + this.total);
@@ -74,7 +86,11 @@ export class ListadoCuentasPage implements OnInit {
     console.log("Gestionadas del servicio " + idServicioPlaza + " " + this.gestionadas);
   }
   
-
+  /**
+   * Metodo que trae del servicio las cuentas a cargar en el listado (sero_principal)
+   * @param id_plaza 
+   * @param idServicioPlaza 
+   */
   async getInfoCuentas(id_plaza, idServicioPlaza) {
     this.account = null;
     this.account = await this.rest.cargarListadoCuentas(id_plaza, idServicioPlaza);
@@ -90,13 +106,19 @@ export class ListadoCuentasPage implements OnInit {
 
   }
 
-
+  /**
+   * Metodo para buscar ls informacion
+   * @param event 
+   */
   find(event) {
     this.busqueda = true;
     this.findText = event.detail.value;
   }
 
-
+  /**
+   * Metodo que manda al componente streetview
+   * @param item 
+   */
   async goPanoramaView(item) {
     let position = {
       lat: parseFloat(item.latitud),
@@ -138,7 +160,10 @@ export class ListadoCuentasPage implements OnInit {
   }
 
 
-
+  /**
+   * Metodo que manda al componente de gestion-page para seleccionar el formulario a usar
+   * @param cuenta 
+   */
   async gestionarCuenta(cuenta) {
 
     // guardar en el storage la cuenta que se pasa por parametro
@@ -148,7 +173,10 @@ export class ListadoCuentasPage implements OnInit {
 
   }
 
-
+  /**
+   * Navegacion de los tabs
+   * @param tipo 
+   */
   navegar(tipo) {
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');

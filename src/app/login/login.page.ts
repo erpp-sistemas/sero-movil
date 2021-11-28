@@ -13,8 +13,8 @@ import { UsersService } from '../services/users.service';
 })
 export class LoginPage implements OnInit {
 
-  @ViewChild('slidePrincipal', {static:true}) slides: IonSlides;
-  @ViewChild('passwordEyeRegister', {static:true}) passwordEye;
+  @ViewChild('slidePrincipal', { static: true }) slides: IonSlides;
+  @ViewChild('passwordEyeRegister', { static: true }) passwordEye;
 
   email: string = '';
   password: string = '';
@@ -31,7 +31,7 @@ export class LoginPage implements OnInit {
   loading: any;
   usuarioVerificado: boolean = false;
   avatarSeleccionado: any;
-  sectores:any;
+  sectores: any;
 
 
   avatarSlide = {
@@ -43,10 +43,14 @@ export class LoginPage implements OnInit {
     private auth: AuthService,
     private router: Router,
     private usuarioService: UsersService,
-    private mensaje:MessagesService,
+    private mensaje: MessagesService,
     private modalCtrl: ModalController,
     private platform: Platform
-  ) { }
+  ) {
+    this.platform.backButton.subscribeWithPriority(10, () => {
+      console.log('Handler was called!');
+    });
+  }
 
   ngOnInit() {
 
@@ -54,9 +58,7 @@ export class LoginPage implements OnInit {
 
 
   ionViewDidEnter() {
-    this.platform.backButton.subscribeWithPriority(10, () => {
-      document.addEventListener('backbutton', () => { }, false);
-    });
+
   }
 
   async login() {
@@ -67,10 +69,6 @@ export class LoginPage implements OnInit {
     });
 
     await this.loading.present();
-
-    // setTimeout(() => {
-    //   this.loading.dismiss();
-    // }, 3000);
 
     this.auth.loginFirebase(this.email, this.password).then(user => {
 
@@ -100,7 +98,7 @@ export class LoginPage implements OnInit {
    * Metodo que verifica que el usuario ya este en la base de datos de Erpp para poder crearlo en Erpp móvil
    */
   // async verificarUsuario() {
-    
+
   //   if (this.email == '' || this.idplaza == '') {
   //     this.mensaje.showAlert("Rellena todos los campos solicitados!!!");
   //   } else {
@@ -116,7 +114,7 @@ export class LoginPage implements OnInit {
   //       this.usuarioVerificado = true;
 
   //       this.mensaje.showAlert("Usuario verificado, pulsa el boton Crear usuario");
-        
+
   //     } catch (error) {
   //       this.mensaje.showAlert("Usuario no verificado!!! checar administración de usuarios");
   //     }
