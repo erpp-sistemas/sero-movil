@@ -71,11 +71,12 @@ export class AuthService {
         let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
           // this.userInfo tiene la informacion del usuario del firebase
           this.userInfo = userInfoFirebase
-          console.log("Usuario firebase: " , userInfoFirebase);
+          console.log("Usuario firebase: " , this.userInfo);
           // corroborar si el usuario esta activo
           if (this.userInfo.isActive) {
             if (this.userInfo.IMEI = '') {
               // usuario nuevo
+              console.log("IMEI vacio");
               createSubscribe.unsubscribe();
               // guardar la informacion del usuario en el storage
               this.saveUserInfoStorage(this.userInfo);
@@ -100,6 +101,7 @@ export class AuthService {
                 this.obtenerServiciosPublicos();
                 this.obtenerUsuariosPlaza(this.userInfo);
                 this.getServicesPlazaUser(this.userInfo.idaspuser);
+                this.generaIdentificativo(id);
                 resolve(nombreUser)
               }
               else {
@@ -114,6 +116,7 @@ export class AuthService {
                 await this.storage.set("ActivateApp", "1");
                 await this.storage.set("total", null);
                 await this.storage.set("FechaSync", null);
+                this.generaIdentificativo(id);
                 this.rest.deleteInfo();
                 resolve(nombreUsuario)
               }
@@ -231,7 +234,7 @@ export class AuthService {
     this.storage.set('Password', userInfo.password)
     this.storage.set('Img', userInfo.img);
     //this.storage.set('Img',)
-    this.storage.set('NumeroPlazas', userInfo.plaza.length);
+    //this.storage.set('NumeroPlazas', userInfo.plaza.length);
     // let contadorPlaza = 1;
     // let contadorIdPlaza = 1;
     // console.log(userInfo.plaza);
@@ -264,6 +267,7 @@ export class AuthService {
    * @param id 
    */
   async saveDataCell(id) {
+    console.log("Generando identificativo");
     let name = await this.storage.get("Nombre");
     this.storage.set("IMEI", id);
     let dateDay = new Date().toISOString();
