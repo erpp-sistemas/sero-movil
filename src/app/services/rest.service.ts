@@ -16,13 +16,12 @@ export class RestService {
   db: SQLiteObject = null;
   loading: any;
 
-  // api para obtener las cuentas del agua
+  // api para obtener las cuentas
   apiObtenerDatos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas";
-
   apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
-
   apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion";
   apiRegistroInspeccion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion";
+  apiRegistroInspeccionAntenas = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion_antenas";
   apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion";
   apiRegistroLegal = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_legal";
   apiRegistroServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_servicios_publicos";
@@ -186,7 +185,7 @@ export class RestService {
     let sql = "SELECT * FROM empleadosPlaza WHERE id_plaza = ?";
     return this.db.executeSql(sql, [id_plaza]).then(response => {
       let empleados = [];
-      for(let i = 0; i < response.rows.length; i++) {
+      for (let i = 0; i < response.rows.length; i++) {
         empleados.push(response.rows.item(i));
       }
       return Promise.resolve(empleados)
@@ -213,7 +212,6 @@ export class RestService {
    * @returns Promise
    */
   obtenerDatosSql(idAspUser, idPlaza, idPlazaServicio) {
-
     try {
       return new Promise(resolve => {
 
@@ -317,7 +315,7 @@ export class RestService {
         foto.push(response.rows.item(i));
       }
       return Promise.resolve(foto);
-    } catch(error) {
+    } catch (error) {
       return Promise.reject(error);
     }
   }
@@ -548,25 +546,23 @@ export class RestService {
    */
   getDataVisitPositionDistance(id_plaza, id_servicio_plaza, data) {
 
-    console.log(data);
-
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total FROM sero_principal where id_plaza = ? and id_servicio_plaza = ? and latitud > 0 and gestionada = 0';
 
-      this.db.executeSql(sql, [id_plaza, id_servicio_plaza]).then( response => {
-        
+      this.db.executeSql(sql, [id_plaza, id_servicio_plaza]).then(response => {
+
         let result = [];
         let cuentasMostrar = []
 
         for (let i = 0; i < response.rows.length; i++) {
           result.push(response.rows.item(i));
         }
-
+        
         console.log(result);
 
-        // result es el reusltado de la consulta a sero_principal
+        // result es el resultado de la consulta a sero_principal
 
-        for (let i = 0; i < result.length; i++ ) {
+        for (let i = 0; i < result.length; i++) {
           for (let j = 0; j < data.length; j++) {
             if (data[j].cuenta == result[i].cuenta) {
               cuentasMostrar.push(data[j]);
@@ -574,14 +570,15 @@ export class RestService {
           }
 
         }
-  
+        
+        console.log(cuentasMostrar);
         resolve(cuentasMostrar);
-  
-  
+
+
       }).catch(err => reject(err));
     })
 
-    
+
   }
 
 
@@ -648,7 +645,7 @@ export class RestService {
   async getTotalGestionadas(idServicioPlaza) {
     console.log('Obteniendo el total de las gestionadas');
     let sql =
-      "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionLegal WHERE id_servicio_plaza = ? and cargado = 0 ) a";
+      "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionLegal WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccionAntenas) a";
     try {
       const response = await this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza]);
       let result = response.rows.item(0).total;
@@ -696,10 +693,11 @@ export class RestService {
    * @returns Promise
    */
   getAccountsGestiones(idServicioPlaza) {
+    console.log(idServicioPlaza);
     let sql =
       `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?
-    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Legal' as rol, nombre_plaza FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ?`;
-    return this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza]).then(response => {
+    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Legal' as rol, nombre_plaza FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fechaCaptura, 'Inspección Antenas' as rol, nombre_plaza FROM gestionInspeccionAntenas WHERE cargado = 0 AND id_servicio_plaza = ? `;
+    return this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza, idServicioPlaza]).then(response => {
       let accounts = [];
       for (let i = 0; i < response.rows.length; i++) {
         accounts.push(response.rows.item(i));
@@ -762,6 +760,8 @@ export class RestService {
       })
       .catch(error => Promise.reject(error));
   }
+
+  
 
   getNombreInspectores(idPlaza) {
     return this.http.get<any>(this.apiObtenerInspectoresAgua + ' ' + idPlaza);
@@ -843,6 +843,22 @@ export class RestService {
       data.fechaCaptura,
       data.latitud,
       data.longitud,
+    ]);
+  }
+
+  gestionEncuesta(data) {
+    let sql = 'INSERT INTO encuesta (idPlaza, account, conocePresidente, promesaCamp, cualPromesa, gestionPresidente, idServicioImpuesto, idServicioPlaza, fechaCaptura) VALUES (?,?,?,?,?,?,?,?,?)';
+
+    return this.db.executeSql(sql, [
+      data.idPlaza,
+      data.account,
+      data.conocePresidente,
+      data.promesaCamp,
+      data.cualPromesa,
+      data.gestionPresidente,
+      data.idServicioImpuesto,
+      data.idServicioPlaza,
+      data.fechaCaptura
     ]);
   }
 
@@ -932,6 +948,55 @@ export class RestService {
       data.idServicioPlaza
     ]);
   }
+
+  /**
+ * Metodo que inserta en gestionInspeccionAntenas la informacion capturada
+ * @param data 
+ * @returns Promise (insert gestionInspeccion)
+ */
+  gestionInspeccionAntenas(data) {
+
+    this.updateAccountGestionada(data.id);
+
+    let sql = 'INSERT INTO gestionInspeccionAntenas (id_plaza, nombre_plaza, account, propietario, personaAtiende, idPuesto, otroPuesto, usoSuelo, idTipoAntena, otroTipoAntena, idDetalleAntena, otroDetalleAntena, idTipoComunicacion, otroTipoComunicacion,numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoNegaronAcceso, hallazgoCambioUsoSuelo, hallazgoRefrendoUsoSuelo, hallazgoRezago, idAspUser, idTarea, fechaCaptura, latitud, longitud,id_servicio_plaza)' +
+      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+
+    return this.db.executeSql(sql, [
+      data.id_plaza,
+      data.nombrePlaza,
+      data.account,
+      data.propietario,
+      data.personaAtiende,
+      data.idPuesto,
+      data.otroPuesto,
+      data.usoSuelo,
+      data.idTipoAntena,
+      data.otroTipoAntena,
+      data.idDetalleAntena,
+      data.otroDetalleAntena,
+      data.idTipoComunicacion,
+      data.otroTipoComunicacion,
+      data.numeroNiveles,
+      data.colorFachada,
+      data.colorPuerta,
+      data.referencia,
+      data.idTipoPredio,
+      data.entreCalle1,
+      data.entreCalle2,
+      data.hallazgoNinguna,
+      data.hallazgoNegaronAcceso,
+      data.hallazgoCambioUsoSuelo,
+      data.hallazgoRefrendoUsoSuelo,
+      data.hallazgoRezago,
+      data.idAspUser,
+      data.idTarea,
+      data.fechaCaptura,
+      data.latitud,
+      data.longitud,
+      data.idServicioPlaza
+    ]);
+  }
+
 
   /**
    * Merodo que inserta en la tabla gestionLegal la informacion capturada
@@ -1270,6 +1335,78 @@ export class RestService {
     }
   }
 
+
+
+  /**
+   * Metodo que envia una sola gestion del modulo de inspeccion antenas del servicio correspondiente
+   * @param idServicioPlaza 
+   * @param account 
+   * @returns Promise
+   */
+  async sendInspeccionAntenasByIdServicioAccount(idServicioPlaza, account) {
+    console.log("Entrando a enviar la informacion de la cuenta");
+    try {
+      let arrayCuentaInspeccionAntenas = [];
+      let sql = 'SELECT * FROM gestionInspeccionAntenas WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
+
+      const result = await this.db.executeSql(sql, [idServicioPlaza, account]);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentaInspeccionAntenas.push(result.rows.item(i));
+      }
+
+      if (arrayCuentaInspeccionAntenas.length == 0) {
+        this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
+      } else {
+        let id_plaza = arrayCuentaInspeccionAntenas[0].id_plaza
+        let account = arrayCuentaInspeccionAntenas[0].account;
+        let propietario = arrayCuentaInspeccionAntenas[0].propietario;
+        let personaAtiende = arrayCuentaInspeccionAntenas[0].personaAtiende;
+        let idPuesto = arrayCuentaInspeccionAntenas[0].idPuesto;
+        let otroPuesto = arrayCuentaInspeccionAntenas[0].otroPuesto;
+        let usoSuelo = arrayCuentaInspeccionAntenas[0].usoSuelo;
+        let idTipoAntena = arrayCuentaInspeccionAntenas[0].idTipoAntena;
+        let otroTipoAntena = arrayCuentaInspeccionAntenas[0].otroTipoAntena;
+        let idDetalleAntena = arrayCuentaInspeccionAntenas[0].idDetalleAntena;
+        let otroDetalleAntena = arrayCuentaInspeccionAntenas[0].otroDetalleAntena;
+        let idTipoComunicacion = arrayCuentaInspeccionAntenas[0].idTipoComunicacion;
+        let otroTipoComunicacion = arrayCuentaInspeccionAntenas[0].otroTipoComunicacion;
+        let numeroNiveles = arrayCuentaInspeccionAntenas[0].numeroNiveles;
+        let colorFachada = arrayCuentaInspeccionAntenas[0].colorFachada;
+        let colorPuerta = arrayCuentaInspeccionAntenas[0].colorPuerta;
+        let referencia = arrayCuentaInspeccionAntenas[0].referencia;
+        let idTipoPredio = arrayCuentaInspeccionAntenas[0].idTipoPredio;
+        let entreCalle1 = arrayCuentaInspeccionAntenas[0].entreCalle1;
+        let entreCalle2 = arrayCuentaInspeccionAntenas[0].entreCalle2;
+        let hallazgoNinguna = arrayCuentaInspeccionAntenas[0].hallazgoNinguna;
+        let hallazgoNegaronAcceso = arrayCuentaInspeccionAntenas[0].hallazgoNegaronAcceso;
+        let hallazgoCambioUsoSuelo = arrayCuentaInspeccionAntenas[0].hallazgoCambioUsoSuelo;
+        let hallazgoRefrendoUsoSuelo = arrayCuentaInspeccionAntenas[0].hallazgoRefrendoUsoSuelo;
+        let hallazgoRezago = arrayCuentaInspeccionAntenas[0].hallazgoRezago;
+        let idAspUser = arrayCuentaInspeccionAntenas[0].idAspUser;
+        let idTarea = arrayCuentaInspeccionAntenas[0].idTarea;
+        let fechaCaptura = arrayCuentaInspeccionAntenas[0].fechaCaptura;
+        let latitud = arrayCuentaInspeccionAntenas[0].latitud;
+        let longitud = arrayCuentaInspeccionAntenas[0].longitud;
+        let id_servicio_plaza = arrayCuentaInspeccionAntenas[0].id_servicio_plaza;
+        let id = arrayCuentaInspeccionAntenas[0].id;
+
+        let sql = `${id_plaza},'${account}','${propietario}','${personaAtiende}',${idPuesto},'${otroPuesto}','${usoSuelo}',${idTipoAntena},'${otroTipoAntena}',${idDetalleAntena},'${otroDetalleAntena}',${idTipoComunicacion},'${otroTipoComunicacion}',${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoCambioUsoSuelo},${hallazgoRefrendoUsoSuelo},${hallazgoRezago},'${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${id_servicio_plaza}`;
+
+        console.log(sql);
+        await this.enviarSQLInspeccionAntenas(sql, id)
+
+        this.message.showAlert("Envío de la gestión correctamente");
+
+        return Promise.resolve("Success");
+
+      }
+
+    } catch (error) {
+      return Promise.reject("Error");
+    }
+  }
+
   /**
  * Metodo que elimina una gestion de la cuenta y de la tabla pasadas por parametro
  * @param table 
@@ -1311,6 +1448,164 @@ export class RestService {
   ///////////////////************************************************************************* */
 
   // Metodos para el envio de gestiones por servicio o todas
+
+  /**
+  * Metodo que inicia el envio de gestiones del modulo de inspeccion antenas del servicio correspondiente
+  * @param idServicioPlaza 
+  * @returns Promise
+  */
+  async sendInspeccionAntenasByIdServicio(idServicioPlaza) {
+    console.log("Entrando a enviar la informacion del servicio " + idServicioPlaza);
+    try {
+      let arrayCuentasInspeccionAntenas = [];
+      let sql = 'SELECT * FROM gestionInspeccionAntenas WHERE cargado = 0 AND id_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasInspeccionAntenas.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasInspeccionAntenas);
+
+      if (arrayCuentasInspeccionAntenas.length == 0) {
+        this.message.showToast("Sin registros de inspeccion por enviar");
+      } else {
+        this.avanceGestionesInspeccionAntenas = 0;
+        this.envioGestionesInspeccionAntenas(arrayCuentasInspeccionAntenas);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  /**
+   * Metodo que inicia el envio de todas las gestiones del modulo de inspeccion antenas
+   * @returns Promise
+   */
+  async sendInspeccionAntenas() {
+    console.log("Entrando a enviar la informacion");
+    try {
+      let arrayCuentasInspeccionAntenas = [];
+      let sql = 'SELECT * FROM gestionInspeccionAntenas WHERE cargado = 0';
+      const result = await this.db.executeSql(sql, []);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasInspeccionAntenas.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasInspeccionAntenas);
+
+      if (arrayCuentasInspeccionAntenas.length == 0) {
+        this.message.showToast("Sin registros de inspeccion por enviar");
+      } else {
+        this.avanceGestionesInspeccionAntenas = 0;
+        this.envioGestionesInspeccionAntenas(arrayCuentasInspeccionAntenas);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  avanceGestionesInspeccionAntenas = 0;
+
+  /**
+* Segundo metodo para el envio de registros de inspeccion antenas
+* @param arrayGestionesInspeccionAntenas
+*/
+  envioGestionesInspeccionAntenas(arrayGestionesInspeccionAntenas) {
+    console.log("envioGestionesInspeccionAntenas");
+    console.log(this.avanceGestionesInspeccionAntenas);
+
+    if (this.avanceGestionesInspeccionAntenas === arrayGestionesInspeccionAntenas.length) {
+      this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
+    } else {
+      this.sendGestionesInspeccionAntenas(this.avanceGestionesInspeccionAntenas, arrayGestionesInspeccionAntenas).then(resp => {
+        if (resp) {
+          this.avanceGestionesInspeccionAntenas++;
+          this.envioGestionesInspeccionAntenas(arrayGestionesInspeccionAntenas);
+        } else {
+          this.envioGestionesInspeccionAntenas(arrayGestionesInspeccionAntenas);
+        }
+      })
+    }
+  }
+
+  /**
+ * Tercer metodo que envia los registros de inspeccion antenas
+ * @param i 
+ * @param arrayGestionesInspeccionAntenas
+ * @returns 
+ */
+  async sendGestionesInspeccionAntenas(i, arrayGestionesInspeccionAntenas) {
+    //let idPlaza = await this.storage.get("IdPlaza");
+    return new Promise(async (resolve) => {
+
+      let id_plaza = arrayGestionesInspeccionAntenas[i].id_plaza
+      let account = arrayGestionesInspeccionAntenas[i].account;
+      let propietario = arrayGestionesInspeccionAntenas[i].propietario;
+      let personaAtiende = arrayGestionesInspeccionAntenas[i].personaAtiende;
+      let idPuesto = arrayGestionesInspeccionAntenas[i].idPuesto;
+      let otroPuesto = arrayGestionesInspeccionAntenas[i].otroPuesto;
+      let usoSuelo = arrayGestionesInspeccionAntenas[i].usoSuelo;
+      let idTipoAntena = arrayGestionesInspeccionAntenas[i].idTipoAntena;
+      let otroTipoAntena = arrayGestionesInspeccionAntenas[i].otroTipoAntena;
+      let idDetalleAntena = arrayGestionesInspeccionAntenas[i].idDetalleAntena;
+      let otroDetalleAntena = arrayGestionesInspeccionAntenas[i].otroDetalleAntena;
+      let idTipoComunicacion = arrayGestionesInspeccionAntenas[i].idTipoComunicacion;
+      let otroTipoComunicacion = arrayGestionesInspeccionAntenas[i].otroTipoComunicacion;
+      let numeroNiveles = arrayGestionesInspeccionAntenas[i].numeroNiveles;
+      let colorFachada = arrayGestionesInspeccionAntenas[i].colorFachada;
+      let colorPuerta = arrayGestionesInspeccionAntenas[i].colorPuerta;
+      let referencia = arrayGestionesInspeccionAntenas[i].referencia;
+      let idTipoPredio = arrayGestionesInspeccionAntenas[i].idTipoPredio;
+      let entreCalle1 = arrayGestionesInspeccionAntenas[i].entreCalle1;
+      let entreCalle2 = arrayGestionesInspeccionAntenas[i].entreCalle2;
+      let hallazgoNinguna = arrayGestionesInspeccionAntenas[i].hallazgoNinguna;
+      let hallazgoNegaronAcceso = arrayGestionesInspeccionAntenas[i].hallazgoNegaronAcceso;
+      let hallazgoCambioUsoSuelo = arrayGestionesInspeccionAntenas[i].hallazgoCambioUsoSuelo;
+      let hallazgoRefrendoUsoSuelo = arrayGestionesInspeccionAntenas[i].hallazgoRefrendoUsoSuelo;
+      let hallazgoRezago = arrayGestionesInspeccionAntenas[i].hallazgoRezago;
+      let idAspUser = arrayGestionesInspeccionAntenas[i].idAspUser;
+      let idTarea = arrayGestionesInspeccionAntenas[i].idTarea;
+      let fechaCaptura = arrayGestionesInspeccionAntenas[i].fechaCaptura;
+      let latitud = arrayGestionesInspeccionAntenas[i].latitud;
+      let longitud = arrayGestionesInspeccionAntenas[i].longitud;
+      let id_servicio_plaza = arrayGestionesInspeccionAntenas[i].id_servicio_plaza;
+      let id = arrayGestionesInspeccionAntenas[i].id;
+
+      let sql = `${id_plaza},'${account}','${propietario}','${personaAtiende}',${idPuesto},'${otroPuesto}','${usoSuelo}',${idTipoAntena},'${otroTipoAntena}',${idDetalleAntena},'${otroDetalleAntena}',${idTipoComunicacion},'${otroTipoComunicacion}',${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoCambioUsoSuelo},${hallazgoRefrendoUsoSuelo},${hallazgoRezago},'${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${id_servicio_plaza}`;
+      console.log(sql);
+      await this.enviarSQLInspeccionAntenas(sql, id)
+      resolve('Execute Query successfully');
+    })
+  }
+
+
+  /**
+* Cuarto y ultimo metodo que envia los registros de inspeccion antenas
+* @param query 
+* @param id 
+* @returns 
+*/
+  async enviarSQLInspeccionAntenas(query, id) {
+    return new Promise(resolve => {
+      // cambiar apiObtenerInspectoresAgua por el api que envia la informacion
+      console.log("Enviando...");
+      console.log(this.apiRegistroInspeccionAntenas + " " + query)
+      this.http.post(this.apiRegistroInspeccionAntenas + " " + query, null).subscribe(
+        async data => {
+          await this.actualizarIdInspeccionAntenas(id);
+          console.log(data);
+          resolve(data);
+        },
+        err => {
+          this.message.showAlert(
+            "No se pudo enviar la información, verifica tu red " + err
+          );
+          this.loadingCtrl.dismiss();
+          console.log(err);
+        }
+      );
+    });
+  }
 
 
   /**
@@ -1812,11 +2107,31 @@ export class RestService {
     return this.db.executeSql(sql, [id]);
   }
 
+  /**
+ * Metodo que actualiza el campo cargado a 1 de la tabla de inspeccion antenas
+ * @param id 
+ * @returns Promise
+ */
+  actualizarIdInspeccionAntenas(id) {
+    let sql = "UPDATE gestionInspeccionAntenas SET cargado = 1 where id = ?";
+    return this.db.executeSql(sql, [id]);
+  }
+
+  /**
+   * Metodo que actualiza el campo cargado a 1 de la tabla carta invitacion
+   * @param id 
+   * @returns 
+   */
   actualizarIdCartaInvitacion(id) {
     let sql = "UPDATE gestionCartaInvitacion SET cargado = 1 where id = ?"
     return this.db.executeSql(sql, [id]);
   }
 
+  /**
+ * Metodo que actualiza el campo cargado a 1 de la tabla legal
+ * @param id 
+ * @returns 
+ */
   actualizarIdLegal(id) {
     let sql = "UPDATE gestionLegal SET cargado = 1 where id = ?"
     return this.db.executeSql(sql, [id]);

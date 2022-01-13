@@ -82,6 +82,7 @@ export class AppComponent {
       await db.executeSql(table.tableInspeccion, []);
       await db.executeSql(table.tableCartaInvitacion, []);
       await db.executeSql(table.tableLegal, []);
+      await db.executeSql(table.tableInspeccionAntenas, []);
       await db.executeSql(table.tableServiciosPublicos, []);
       await db.executeSql(table.tableFotos, []);
       await db.executeSql(table.tableFotosServicios, []);
@@ -90,6 +91,7 @@ export class AppComponent {
       await db.executeSql(table.tableListaServiciosPublicos, []);
       await db.executeSql(table.tableEmpleadosPlaza, []);
       await db.executeSql(table.tableRecorrido, []);
+      await db.executeSql(table.tableEncuesta, []);
 
     }).catch(error => console.log("Error en bd", error));
   }

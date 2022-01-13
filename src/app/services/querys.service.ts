@@ -18,6 +18,7 @@ export class QuerysService {
 
     let tableLegal = `CREATE TABLE IF NOT EXISTS gestionLegal (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, account TEXT, persona_atiende TEXT, numero_contacto TEXT, id_puesto INTEGER, otro_puesto TEXT, id_motivo_no_pago INTEGER, otro_motivo TEXT, id_tipo_servicio INTEGER, numero_niveles TEXT, color_fachada TEXT, color_puerta TEXT, referencia TEXT, id_tipo_predio INTEGER, entre_calle1 TEXT, entre_calle2 TEXT, observaciones TEXT, idAspUser TEXT, id_tarea INTEGER, fecha_captura TEXT, latitud TEXT, longitud TEXT, id_servicio_plaza INTEGER, cargado INTEGER NOT NULL DEFAULT 0)`
 
+    let tableInspeccionAntenas = `CREATE TABLE IF NOT EXISTS gestionInspeccionAntenas (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, account TEXT, propietario TEXT, personaAtiende TEXT, idPuesto INTEGER, otroPuesto TEXT, usoSuelo TEXT, idTipoAntena INTEGER, otroTipoAntena TEXT, idDetalleAntena INTEGER, otroDetalleAntena TEXT, idTipoComunicacion INTEGER, otroTipoComunicacion TEXT, numeroNiveles TEXT, colorFachada TEXT, colorPuerta TEXT, referencia TEXT, idTipoPredio INTEGER, entreCalle1 TEXT, entreCalle2 TEXT, hallazgoNinguna INTEGER, hallazgoNegaronAcceso INTEGER, hallazgoCambioUsoSuelo INTEGER, hallazgoRefrendoUsoSuelo INTEGER, hallazgoRezago INTEGER, idAspUser TEXT, idTarea INTEGER,  fechaCaptura TEXT, latitud TEXT, longitud TEXT, id_servicio_plaza INTEGER, cargado INTEGER NOT NULL DEFAULT 0)`
 
     let tableFotos = `CREATE TABLE IF NOT EXISTS capturaFotos (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, imagenLocal TEXT, cuenta TEXT,fecha TEXT,rutaBase64 TEXT,idAspUser TEXT,idTarea INTEGER,tipo TEXT,urlImagen TEXT,isSelected INTEGER NOT NULL DEFAULT 0,  id_servicio_plaza INTEGER, cargado INTEGER NOT NULL DEFAULT 0)`;
 
@@ -36,6 +37,8 @@ export class QuerysService {
 
     let tableRecorrido =  `CREATE TABLE IF NOT EXISTS recorrido (id INTEGER PRIMARY KEY AUTOINCREMENT, latitud TEXT, longitud TEXT, idAspUser TEXT, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
 
+    let tableEncuesta =  `CREATE TABLE IF NOT EXISTS encuesta (id INTEGER PRIMARY KEY AUTOINCREMENT, idPlaza INTEGER, account TEXT, conocePresidente INTEGER, promesaCamp INTEGER, cualPromesa TEXT, gestionPresidente INTEGER, idServicioImpuesto INTEGER, idServicioPlaza INTEGER, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
+
     let tables = {
       tableSero,
       tableFotos,
@@ -46,9 +49,11 @@ export class QuerysService {
       tableInspeccion,
       tableCartaInvitacion,
       tableLegal,
+      tableInspeccionAntenas,
       tableListaServiciosPublicos,
       tableEmpleadosPlaza,
-      tableRecorrido
+      tableRecorrido,
+      tableEncuesta
     }
 
     return tables;

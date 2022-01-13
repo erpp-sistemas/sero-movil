@@ -9,6 +9,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotosHistoryPage } from '../photos-history/photos-history.page';
+import { EncuestaPage } from '../encuesta/encuesta.page';
 
 
 @Component({
@@ -62,6 +63,8 @@ export class GestionCartaPage implements OnInit {
 
   activaOtroMotivo: boolean = false;
   otroMotivo: string = '';
+
+  encuestaRealizada: boolean = false;
 
 
   sliderOpts = {
@@ -495,6 +498,32 @@ export class GestionCartaPage implements OnInit {
         .catch(err => console.log('Error launching dialer', err));
 
     }
+  }
+
+  async encuesta() {
+    console.log(this.id_plaza);
+    console.log(this.account);
+    console.log(this.idServicioPlaza)
+
+    let idPlaza = this.id_plaza;
+
+    const modal = await this.modalController.create({
+      component: EncuestaPage,
+      componentProps: {
+        "account": this.account,
+        "idPlaza": idPlaza,
+        "idServicioPlaza": this.idServicioPlaza
+      }
+    });
+
+    await modal.present();
+
+    const data = await modal.onDidDismiss();
+
+    let resultadoEncuesta = data.data.estatus;
+
+    if(resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
+
   }
 
 

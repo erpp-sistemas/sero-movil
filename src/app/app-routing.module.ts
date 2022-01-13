@@ -105,6 +105,14 @@ const routes: Routes = [
   },  {
     path: 'photos-history',
     loadChildren: () => import('./photos-history/photos-history.module').then( m => m.PhotosHistoryPageModule)
+  },
+  {
+    path: 'gestion-inspeccion-antena',
+    loadChildren: () => import('./gestion-inspeccion-antena/gestion-inspeccion-antena.module').then( m => m.GestionInspeccionAntenaPageModule)
+  },
+  {
+    path: 'encuesta',
+    loadChildren: () => import('./encuesta/encuesta.module').then( m => m.EncuestaPageModule)
   }
 
 

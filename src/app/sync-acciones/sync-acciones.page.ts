@@ -72,6 +72,7 @@ export class SyncAccionesPage implements OnInit {
     await this.rest.sendInspeccionByIdServicio(this.id_servicio_plaza);
     await this.rest.sendCartaInvitacionByIdServicio(this.id_servicio_plaza);
     await this.rest.sendLegalByIdServicio(this.id_servicio_plaza);
+    await this.rest.sendInspeccionAntenasByIdServicio(this.id_servicio_plaza);
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
   }
@@ -96,6 +97,9 @@ export class SyncAccionesPage implements OnInit {
     } else if (rol == 'Legal') {
       const resultado = await this.rest.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
       console.log(resultado);
+    } else if (rol == 'Inspección Antenas') {
+      const resultado = await this.rest.sendInspeccionAntenasByIdServicioAccount(this.id_servicio_plaza, cuenta)
+      console.log(resultado);
     }
 
     this.loading.dismiss();
@@ -116,6 +120,8 @@ export class SyncAccionesPage implements OnInit {
       table = 'gestionCartaInvitacion';
     } else if (rol == 'Legal') {
       table = 'gestionLegal';
+    } else if (rol = 'Inpeccion Antenas') {
+      table = 'gestionInspeccionAntenas'
     }
 
     console.log(table);

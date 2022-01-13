@@ -71,6 +71,8 @@ import { BackgroundGeolocation } from "@ionic-native/background-geolocation/ngx"
 
 
 
+
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],

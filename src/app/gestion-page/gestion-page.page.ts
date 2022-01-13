@@ -69,6 +69,9 @@ export class GestionPagePage implements OnInit {
     this.router.navigateByUrl('/gestion-legal');
   }
 
+  async inspeccionAntenas() {
+    this.router.navigateByUrl('/gestion-inspeccion-antena');
+  }
 
   navegar(tipo) {
     if (tipo == 1) {
