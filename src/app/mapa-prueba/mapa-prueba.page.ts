@@ -263,6 +263,8 @@ export class MapaPruebaPage implements OnInit {
       urlIcon = './assets/icon/icono-predio.png'
     } else if (this.idServicioPlaza == 3) {
       urlIcon = './assets/icon/antena.png'
+    } else if (this.idServicioPlaza == 4) {
+      urlIcon = './assets/icon/comercio.png'
     }
 
     // marcadores de los puntos
