@@ -18,6 +18,8 @@ export class DirectorioPage implements OnInit {
 
   contactos: any;
   countryCode = '+521';
+  findText: string = '';
+  busqueda: boolean = false;
 
   constructor(
     private callNumber: CallNumber,
@@ -47,12 +49,15 @@ export class DirectorioPage implements OnInit {
 
   whatsapp( numero: string ) {
     let url =  `https://api.whatsapp.com/send?phone=${this.countryCode}${numero}`;
+    console.log(numero);
+    console.log(url);
     this.iab.create(url, "_system");
   }
 
 
   find( event ) {
-
+    this.busqueda = true;
+    this.findText = event.detail.value;
   }
 
   email( emailEnviar ) {

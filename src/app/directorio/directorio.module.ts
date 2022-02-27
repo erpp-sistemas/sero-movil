@@ -10,6 +10,7 @@ import { DirectorioPage } from './directorio.page';
 import { ComponentsModule } from '../components/components.module';
 // callNumber
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { EmpleadoPipe } from '../pipes/empleado.pipe';
 
 @NgModule({
   imports: [
@@ -19,7 +20,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
     DirectorioPageRoutingModule,
     ComponentsModule
   ],
-  declarations: [DirectorioPage],
+  declarations: [DirectorioPage, EmpleadoPipe],
   providers: [
     CallNumber
   ]

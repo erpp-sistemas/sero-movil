@@ -10,13 +10,13 @@
 
   <hr>
 
-  <ion-searchbar placeholder="Busqueda por cuenta" (ionChange)="find( $event )"></ion-searchbar>
+  <ion-searchbar placeholder="Busqueda por nombre" (ionChange)="find( $event )"></ion-searchbar>
 
-  <ion-item-sliding color="white" *ngFor="let contacto of contactos">
+  <ion-item-sliding color="white" *ngFor="let contacto of contactos | empleado : findText">
 
     <ion-item-options side="start">
 
-      <ion-item-option color="secondary" (click)="phone(contacto.telefono)">
+      <ion-item-option color="secondary" (click)="phone(contacto.numero_celular)">
         <ion-icon class="icono-directorio" name="call-outline"></ion-icon>
       </ion-item-option>
 
@@ -24,7 +24,7 @@
 
     <ion-item color="medium">
       <ion-label>
-        <p > <ion-chip color="secondary"> Nombre: {{contacto.nombre}} </ion-chip> </p>
+        <p > <ion-chip color="secondary"> Nombre: {{contacto.nombre}} {{contacto.apellido_paterno}} </ion-chip> </p>
         <p >Puesto: {{contacto.puesto}}</p>
         <p >Area: {{contacto.area}}</p>
       </ion-label>
@@ -32,7 +32,7 @@
 
     <ion-item-options side="end">
 
-      <ion-item-option (click)="whatsapp(contacto.telefono)" color="success">
+      <ion-item-option (click)="whatsapp(contacto.numero_celular)" color="success">
         <ion-icon class="icono-directorio" name="logo-whatsapp"></ion-icon>
       </ion-item-option>
 

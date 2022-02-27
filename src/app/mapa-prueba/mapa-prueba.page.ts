@@ -256,21 +256,26 @@ export class MapaPruebaPage implements OnInit {
 
     // icono de los marcadores
     let urlIcon = '';
+    let iconSize;
 
     if (this.idServicioPlaza == 1) {
       urlIcon = './assets/icon/gota.png'
+      iconSize = new google.maps.Size(30, 30)
     } else if (this.idServicioPlaza == 2) {
       urlIcon = './assets/icon/icono-predio.png'
+      iconSize = new google.maps.Size(30, 30)
     } else if (this.idServicioPlaza == 3) {
       urlIcon = './assets/icon/antena.png'
+      iconSize = new google.maps.Size(30, 30)
     } else if (this.idServicioPlaza == 4) {
       urlIcon = './assets/icon/comercio.png'
+      iconSize = new google.maps.Size(60, 30)
     }
 
     // marcadores de los puntos
     let icon = {
       url: urlIcon,
-      scaledSize: new google.maps.Size(30, 30)
+      scaledSize: iconSize
     };
 
 
