@@ -870,17 +870,17 @@ export class RestService {
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_motivo_no_pago, otro_motivo, id_trabajo_admin, id_gasto_impuesto, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,
       data.nombrePlaza,
       data.account,
       data.persona_atiende,
-      data.id_motivo_no_pago,
-      data.otro_motivo_no_pago,
-      data.id_trabajo_actual,
-      data.id_gasto_impuesto,
+      //data.id_motivo_no_pago, // No se estan utilizando va a estar en app de encuesta
+      //data.otro_motivo_no_pago, // No se estan utilizando va a estar en app de encuesta
+      //data.id_trabajo_actual, // No se estan utilizando va a estar en app de encuesta
+      //data.id_gasto_impuesto, // No se estan utilizando va a estar en app de encuesta
       data.id_tipo_servicio,
       data.numero_niveles,
       data.colorFachada,
@@ -1169,10 +1169,6 @@ export class RestService {
         let id_plaza = arrayCuentaCarta[0].id_plaza;
         let account = arrayCuentaCarta[0].account;
         let persona_atiende = arrayCuentaCarta[0].persona_atiende;
-        let id_motivo_no_pago = arrayCuentaCarta[0].id_motivo_no_pago;
-        let otro_motivo = arrayCuentaCarta[0].otro_motivo;
-        let id_trabajo_actual = arrayCuentaCarta[0].id_trabajo_admin;
-        let id_gasto_impuesto = arrayCuentaCarta[0].id_gasto_impuesto;
         let id_tipo_servicio = arrayCuentaCarta[0].id_tipo_servicio;
         let numero_niveles = arrayCuentaCarta[0].numero_niveles;
         let color_fachada = arrayCuentaCarta[0].color_fachada;
@@ -1190,7 +1186,7 @@ export class RestService {
         let idServicioPaza = arrayCuentaCarta[0].id_servicio_plaza;
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_motivo_no_pago},'${otro_motivo}',${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
         console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
 
@@ -1866,11 +1862,6 @@ export class RestService {
       let id_plaza = arrayGestionesCarta[i].id_plaza;
       let account = arrayGestionesCarta[i].account;
       let persona_atiende = arrayGestionesCarta[i].persona_atiende;
-      //let numero_contacto = arrayGestionesCarta[i].numero_contacto;
-      let id_motivo_no_pago = arrayGestionesCarta[i].id_motivo_no_pago;
-      let otro_motivo = arrayGestionesCarta[i].otro_motivo;
-      let id_trabajo_actual = arrayGestionesCarta[i].id_trabajo_admin;
-      let id_gasto_impuesto = arrayGestionesCarta[i].id_gasto_impuesto;
       let id_tipo_servicio = arrayGestionesCarta[i].id_tipo_servicio;
       let numero_niveles = arrayGestionesCarta[i].numero_niveles;
       let color_fachada = arrayGestionesCarta[i].color_fachada;
@@ -1888,7 +1879,7 @@ export class RestService {
       let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_motivo_no_pago},'${otro_motivo}',${id_trabajo_actual},${id_gasto_impuesto},${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
       console.log(sql);
       await this.enviarSQLCartaInvitacion(sql, id)
       resolve('Execute Query successfully');

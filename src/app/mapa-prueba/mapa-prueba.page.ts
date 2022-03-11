@@ -317,10 +317,10 @@ export class MapaPruebaPage implements OnInit {
       content: `
         <div style="text-align:center;">
           <img style="width:40px;" src="assets/icon/sero.png" alt="">
-          <h6>Información de la cuenta</h6>
-          <p> <span style="font-weight: bold;">Cuenta: </span> ${m.cuenta} </p>
-          <p> <span style="font-weight: bold;">Propietario: </span> ${m.propietario} </p>
-          <p> <span style="font-weight: bold;">Deuda: </span>$${m.deuda} </p>
+          <h6 style="color:black">Información de la cuenta</h6>
+          <p style="color:black"> <span style="font-weight: bold;">Cuenta: </span> ${m.cuenta} </p>
+          <p style="color:black"> <span style="font-weight: bold;">Propietario: </span> ${m.propietario} </p>
+          <p style="color:black"> <span style="font-weight: bold;">Deuda: </span>$${m.deuda} </p>
           <ion-button color="success" id="btnGestionar"  >Gestionar</ion-button>
         </div>
       `

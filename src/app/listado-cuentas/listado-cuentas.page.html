@@ -14,11 +14,9 @@
     <ion-chip color="warning">Faltantes: {{total - gestionadas}}</ion-chip>
   </div>
 
-  <ion-searchbar placeholder="Cuenta, propietario o dirección" animated (ionChange)="find($event)"></ion-searchbar>
+  <ion-searchbar color="light" placeholder="Cuenta, propietario o dirección" animated (ionChange)="find($event)"></ion-searchbar>
 
   <div class="contenedor">
-
-
 
     <div class="coincidencia" *ngFor="let coincidencia of accountBusqueda; let i = index ">
       <div *ngIf="findText.length > 3 && i == 0">

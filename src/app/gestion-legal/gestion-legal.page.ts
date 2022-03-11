@@ -27,8 +27,8 @@ export class GestionLegalPage implements OnInit {
   otroMotivo: string = '';
   idTipoServicio: number = 0;
   numeroNiveles: number = 1;
-  colorFachada: string = '';
-  colorPuerta: string = '';
+  colorFachada: string = '000000';
+  colorPuerta: string = '000000';
   referencia: string = '';
   idTipoPredio: number;
   entreCalle1: string = '';
@@ -363,7 +363,7 @@ export class GestionLegalPage implements OnInit {
           nombrePlaza: this.nombrePlaza,
           account: this.account,
           personaAtiende: this.personaAtiende,
-          //numeroContacto: this.numeroContacto,
+          //numeroContacto: this.numeroContacto, se quito para la app de encuesta
           idPuesto: this.idPuesto,
           otroPuesto: this.otroPuesto,
           idMotivoNoPago: this.idMotivoNoPago,

@@ -64,7 +64,7 @@ export class ListadoCuentasPage implements OnInit {
     this.account = null;
     this.accountBusqueda = null;
     this.loading = await this.loadinCtrl.create({
-      message: 'Cargando listado agua',
+      message: 'Cargando listado ',
       spinner: 'lines-small'
     });
     await this.loading.present();

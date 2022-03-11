@@ -10,7 +10,7 @@
 
   <hr>
 
-  <ion-searchbar placeholder="Busqueda por nombre" (ionChange)="find( $event )"></ion-searchbar>
+  <ion-searchbar color="light" placeholder="Busqueda por nombre" (ionChange)="find( $event )"></ion-searchbar>
 
   <ion-item-sliding color="white" *ngFor="let contacto of contactos | empleado : findText">
 

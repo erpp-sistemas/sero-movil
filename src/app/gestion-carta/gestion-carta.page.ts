@@ -24,13 +24,13 @@ export class GestionCartaPage implements OnInit {
   infoAccount: any = [];
   personaAtiende: string = '';
   // numeroContacto: string = '';
-  idMotivoNoPago: number = 0;
-  idTrabajoActual: number = 0;
-  idGastoImpuesto: number = 0;
+  // idMotivoNoPago: number = 0;
+  // idTrabajoActual: number = 0;
+  // idGastoImpuesto: number = 0;
   idTipoServicio: number = 0;
   numeroNiveles: number = 1;
-  colorFachada: string = '';
-  colorPuerta: string = '';
+  colorFachada: string = '000000';
+  colorPuerta: string = '000000';
   idTipoPredio: number = 0;
   entreCalle1: string = '';
   entreCalle2: string = '';
@@ -369,10 +369,10 @@ export class GestionCartaPage implements OnInit {
           account: this.account,
           persona_atiende: this.personaAtiende,
           //numero_contacto: this.numeroContacto,
-          id_motivo_no_pago: this.idMotivoNoPago,
-          otro_motivo_no_pago: this.otroMotivo,
-          id_trabajo_actual: this.idTrabajoActual,
-          id_gasto_impuesto: this.idGastoImpuesto,
+          //id_motivo_no_pago: this.idMotivoNoPago, // No se estan utilizando va a estar en app de encuesta
+          //otro_motivo_no_pago: this.otroMotivo, // No se estan utilizando va a estar en app de encuesta
+          //id_trabajo_actual: this.idTrabajoActual, // No se estan utilizando va a estar en app de encuesta
+          //id_gasto_impuesto: this.idGastoImpuesto, // No se estan utilizando va a estar en app de encuesta
           id_tipo_servicio: this.idTipoServicio,
           numero_niveles: this.numeroNiveles,
           colorFachada: this.colorFachada.substring(1, 7),
