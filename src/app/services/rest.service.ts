@@ -31,6 +31,8 @@ export class RestService {
   apiObtenerCuentasDistancia = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_distancia";
   apiObtenerEmpleados = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_empleados";
   apiObtenerFotosHistoricas = "http://201.163.165.20/seroMovil.aspx?query=sp_get_Photos_History";
+  apiRegistroEncuestaPresidente = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_encuesta";
+  apiRegistroAsistencia = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_asistencia"
 
 
   constructor(
@@ -221,7 +223,7 @@ export class RestService {
           }, err => console.log(err));
       })
     } catch {
-      console.log("No se pudo obtener la informaciòn");
+      console.log("No se pudo obtener la información");
     }
   }
 
@@ -2606,6 +2608,19 @@ export class RestService {
         reject("Hubo un problema al traer las fotos historicas")
       }
     })
+  }
+
+  registroChecador(parametros: string) {
+    console.log(parametros);
+    return new Promise(resolve => {
+      this.http.post(this.apiRegistroAsistencia + " " + parametros, null).subscribe( data => {
+        resolve(data)
+      }, err => {
+        this.message.showAlert("No se realizo el registro, verifique con sistemas");
+      }
+      )
+    })
+
   }
 
 

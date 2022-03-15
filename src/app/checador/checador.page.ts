@@ -29,6 +29,7 @@ export class ChecadorPage implements OnInit {
   longitud: any;
   reloj: string
   map2: any;
+  idAspUser: any = '';
 
 
   constructor(
@@ -48,7 +49,7 @@ export class ChecadorPage implements OnInit {
   async ngOnInit() {
     await this.platform.ready();
     await this.loadMap();
-
+    this.idAspUser = await this.storage.get('IdAspUser');
   }
 
 
@@ -60,7 +61,7 @@ export class ChecadorPage implements OnInit {
     this.idPlaza = await this.storage.get('IdOficina')
     console.log(this.nombre, this.email, this.plaza, this.idPlaza)
   }
-  
+
   async loadMap() { //realiza la carga del mapa
     let options: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.ROADMAP,
@@ -125,6 +126,7 @@ export class ChecadorPage implements OnInit {
         this.showToast(err.error_message);
       });
   }
+
   async showToast(message: string) {
     let toast = await this.toastCtrl.create({
       message: message,
@@ -136,83 +138,65 @@ export class ChecadorPage implements OnInit {
 
   async checarEntrada() {
 
+    if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
+      alert("La ubicación no esta disponible")
+    } else {
 
-    setTimeout(() => {
-      this.loading.dismiss();
-      this.message.showAlert("Registro exitoso");
-    }, 2000);
+      this.loading = await this.loadingCtrl.create({
+        message: 'Registrando entrada',
+        spinner: 'dots'
+      });
 
-    this.loading = await this.loadingCtrl.create({
-      message: 'Regisrando entrada',
-      spinner: 'dots'
-    });
+      await this.loading.present();
 
-    this.loading.present();
-
-
-
-    // if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
-    //   alert("La ubicación no esta disponible")
-    // } else {
-    //   let tipo = 1
-    //   const iduser = await this.storage.get('IdUserChecador');
-    //   console.log(this.latitud, this.longitud)
-    //   var dateDay = new Date().toISOString();
-    //   let date: Date = new Date(dateDay);
-    //   let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+      let tipo = 1
+      console.log(this.latitud, this.longitud)
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
 
 
-    //   let fecha = ionicDate.toISOString();
+      let fecha = ionicDate.toISOString();
 
-    //   let parametros = +tipo + ',' + iduser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
+      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + this.idPlaza
 
-    //   this.rest.loadRegisterChecador(parametros).then(res => {
-    //     alert(res[0].mensaje)
-    //     console.log(res)
-    //   })
-    // }
+      this.rest.registroChecador(parametros).then(res => {
+        this.loading.dismiss();
+        alert(res[0].mensaje)
+        console.log(res)
+      })
+    }
 
   }
 
   async checarSalida() {
 
+    if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
+      alert("La ubicación no esta disponible")
+    } else {
 
-    setTimeout(() => {
-      this.loading.dismiss();
-      this.message.showAlert("Registro exitoso");
-    }, 2000);
+      this.loading = await this.loadingCtrl.create({
+        message: 'Registrando salida',
+        spinner: 'dots'
+      });
 
-    this.loading = await this.loadingCtrl.create({
-      message: 'Regisrando salida',
-      spinner: 'dots'
-    });
-
-    this.loading.present();
-
-    // if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
-    //   alert("La ubicación no esta disponible")
-    // } else {
-    //   console.log(this.latitud, this.longitud);
-
-    //   let tipo = 2
-    //   const iduser = await this.storage.get('IdUserChecador');
-    //   console.log(this.latitud, this.longitud)
-
-    //   var dateDay = new Date().toISOString();
-    //   let date: Date = new Date(dateDay);
-    //   let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
-
-    //   let fecha = ionicDate.toISOString();
+      let tipo = 2
+      console.log(this.latitud, this.longitud)
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
 
 
-    //   let parametros = +tipo + ',' + iduser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
+      let fecha = ionicDate.toISOString();
 
+      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + this.idPlaza
 
-    //   this.rest.loadRegisterChecador(parametros).then(res => {
-    //     console.log(res)
-    //     alert(res[0].mensaje)
-    //   })
-    // }
+      this.rest.registroChecador(parametros).then(res => {
+        this.loading.dismiss();
+        alert(res[0].mensaje)
+        console.log(res)
+      })
+    }
 
   }
 

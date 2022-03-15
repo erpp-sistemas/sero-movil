@@ -36,7 +36,7 @@ export class EncuestaPage implements OnInit {
 
   resultConocePresidente(event) {
 
-    if (event.detail.value == 'conocePresidenteSi') {
+    if (event.detail.value == 'conoceSi') {
       this.conocePresidente = 1
     } else {
       this.conocePresidente = 0
