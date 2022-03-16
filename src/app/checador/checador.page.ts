@@ -49,18 +49,19 @@ export class ChecadorPage implements OnInit {
   async ngOnInit() {
     await this.platform.ready();
     await this.loadMap();
+    //await this.getInfo();
     this.idAspUser = await this.storage.get('IdAspUser');
   }
 
 
 
-  async getInfo() {
-    this.nombre = await this.storage.get('Nombre')
-    this.email = await this.storage.get('Email')
-    this.plaza = await this.storage.get('Plaza')
-    this.idPlaza = await this.storage.get('IdOficina')
-    console.log(this.nombre, this.email, this.plaza, this.idPlaza)
-  }
+  // async getInfo() {
+  //   // this.nombre = await this.storage.get('Nombre')
+  //   // this.email = await this.storage.get('Email')
+  //   // this.plaza = await this.storage.get('Plaza')
+  //   this.idPlaza = await this.storage.get('IdPlazaActiva')
+  //   console.log(this.idPlaza)
+  // }
 
   async loadMap() { //realiza la carga del mapa
     let options: GoogleMapOptions = {
@@ -158,7 +159,7 @@ export class ChecadorPage implements OnInit {
 
       let fecha = ionicDate.toISOString();
 
-      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + this.idPlaza
+      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
 
       this.rest.registroChecador(parametros).then(res => {
         this.loading.dismiss();
@@ -180,6 +181,8 @@ export class ChecadorPage implements OnInit {
         spinner: 'dots'
       });
 
+      await this.loading.present();
+
       let tipo = 2
       console.log(this.latitud, this.longitud)
       var dateDay = new Date().toISOString();
@@ -189,7 +192,7 @@ export class ChecadorPage implements OnInit {
 
       let fecha = ionicDate.toISOString();
 
-      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + this.idPlaza
+      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
 
       this.rest.registroChecador(parametros).then(res => {
         this.loading.dismiss();

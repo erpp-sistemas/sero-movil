@@ -16,7 +16,12 @@
         <ion-row>
             <ion-col>
                 <!-- <img class="img-perfil" src="../../assets/img/perfil.jpg" alt=""> -->
-                <img class="img-perfil" [src]="imgUser" alt="Foto de perfil no cargada">
+                <div *ngIf="imgUser">
+                    <img class="img-perfil" [src]="imgUser" alt="Foto de perfil no cargada">
+                </div>
+                <div *ngIf="!imgUser">
+                    <img class="img-perfil" src="./assets/avatars/av-2.png" alt="Foto de perfil no cargada">
+                </div>
             </ion-col>
         </ion-row>
 

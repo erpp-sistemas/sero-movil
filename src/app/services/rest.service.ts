@@ -2613,6 +2613,7 @@ export class RestService {
   registroChecador(parametros: string) {
     console.log(parametros);
     return new Promise(resolve => {
+      console.log(this.apiRegistroAsistencia + " " + parametros)
       this.http.post(this.apiRegistroAsistencia + " " + parametros, null).subscribe( data => {
         resolve(data)
       }, err => {
