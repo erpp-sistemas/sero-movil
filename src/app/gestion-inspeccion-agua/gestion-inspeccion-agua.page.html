@@ -175,16 +175,16 @@
                 <ion-label>
                     <p>Color fachada: </p>
                 </ion-label>
-                <input type="color" [(ngModel)]="colorFachada">
-                <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input> -->
+                <!-- <input type="color" [(ngModel)]="colorFachada"> -->
+                <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
             </ion-item>
 
             <ion-item color="medium">
                 <ion-label>
                     <p>Color puerta: </p>
                 </ion-label>
-                <input type="color" [(ngModel)]="colorPuerta">
-                <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input> -->
+                <!-- <input type="color" [(ngModel)]="colorPuerta"> -->
+                <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
             </ion-item>
 
             <ion-item color="medium">
@@ -453,7 +453,7 @@
                         Inspector 2
                     </p>
                     <p>
-                        <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+                        <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
                             [(ngModel)]="inspector2">
                             <ion-select-option [value]="inspector.idAspUser" *ngFor="let inspector of nombreInspectores">
                                 {{inspector.nombre_empleado}} </ion-select-option>
@@ -468,7 +468,7 @@
                         Inspector 3
                     </p>
                     <p>
-                        <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+                        <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
                             [(ngModel)]="inspector3">
                             <ion-select-option [value]="inspector.id" *ngFor="let inspector of nombreInspectores">
                                 {{inspector.nombre}} </ion-select-option>
@@ -483,7 +483,7 @@
                         Inspector 4
                     </p>
                     <p>
-                        <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+                        <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
                             [(ngModel)]="inspector4">
                             <ion-select-option [value]="inspector.id" *ngFor="let inspector of nombreInspectores">
                                 {{inspector.nombre}} </ion-select-option>

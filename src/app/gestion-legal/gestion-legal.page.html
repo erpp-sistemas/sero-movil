@@ -68,7 +68,7 @@
             Seleccione el puesto:
           </p>
           <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno" [(ngModel)]="idPuesto"
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idPuesto"
               (ionChange)="resultIdPuesto( $event )">
               <ion-select-option value="1">Representante legal</ion-select-option>
               <ion-select-option value="2">Gerente</ion-select-option>
@@ -170,16 +170,16 @@
         <ion-label>
           <p>Color fachada: </p>
         </ion-label>
-        <input type="color" [(ngModel)]="colorFachada">
-        <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input> -->
+        <!-- <input type="color" [(ngModel)]="colorFachada"> -->
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
       </ion-item>
 
       <ion-item color="medium">
         <ion-label>
           <p>Color puerta: </p>
         </ion-label>
-        <input type="color" [(ngModel)]="colorPuerta">
-        <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input> -->
+        <!-- <input type="color" [(ngModel)]="colorPuerta"> -->
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
       </ion-item>
 
       <ion-item color="medium">

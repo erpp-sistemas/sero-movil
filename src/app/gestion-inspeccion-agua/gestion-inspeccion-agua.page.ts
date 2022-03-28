@@ -28,8 +28,8 @@ export class GestionInspeccionAguaPage implements OnInit {
   idTipoServicio: number = 0
   numeroNiveles: number = 1;
   colorFachada: string = '';
-  colorPuerta: string = '000000';
-  referencia: string = '000000';
+  colorPuerta: string = '';
+  referencia: string = '';
   idTipoPredio: number = 0;
   entreCalle1: string = '';
   entreCalle2: string = '';
@@ -547,8 +547,8 @@ export class GestionInspeccionAguaPage implements OnInit {
           // otroMotivo: this.otroMotivo, se quito por que estara en la app de encuesta
           idTipoServicio: this.idTipoServicio,
           numeroNiveles: this.numeroNiveles,
-          colorFachada: this.colorFachada.substring(1, 7),
-          colorPuerta: this.colorPuerta.substring(1, 7),
+          colorFachada: this.colorFachada,
+          colorPuerta: this.colorPuerta,
           referencia: this.referencia,
           idTipoPredio: this.idTipoPredio,
           entreCalle1: this.entreCalle1,
@@ -619,8 +619,8 @@ export class GestionInspeccionAguaPage implements OnInit {
         // otroMotivo: this.otroMotivo, se quito por que estara en la app de encuesta
         idTipoServicio: this.idTipoServicio,
         numeroNiveles: this.numeroNiveles,
-        colorFachada: this.colorFachada.substring(1, 7),
-        colorPuerta: this.colorPuerta.substring(1, 7),
+        colorFachada: this.colorFachada,
+        colorPuerta: this.colorPuerta,
         referencia: this.referencia,
         idTipoPredio: this.idTipoPredio,
         entreCalle1: this.entreCalle1,

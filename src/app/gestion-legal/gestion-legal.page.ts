@@ -27,8 +27,8 @@ export class GestionLegalPage implements OnInit {
   otroMotivo: string = '';
   idTipoServicio: number = 0;
   numeroNiveles: number = 1;
-  colorFachada: string = '000000';
-  colorPuerta: string = '000000';
+  colorFachada: string = '';
+  colorPuerta: string = '';
   referencia: string = '';
   idTipoPredio: number;
   entreCalle1: string = '';
@@ -370,8 +370,8 @@ export class GestionLegalPage implements OnInit {
           otroMotivo: this.otroMotivo,
           idTipoServicio: this.idTipoServicio,
           numeroNiveles: this.numeroNiveles,
-          colorFachada: this.colorFachada.substring(1,7),
-          colorPuerta: this.colorPuerta.substring(1,7),
+          colorFachada: this.colorFachada,
+          colorPuerta: this.colorPuerta,
           referencia: this.referencia,
           idTipoPredio: this.idTipoPredio,
           entreCalle1: this.entreCalle1,

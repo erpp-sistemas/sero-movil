@@ -559,7 +559,7 @@ export class RestService {
         for (let i = 0; i < response.rows.length; i++) {
           result.push(response.rows.item(i));
         }
-        
+
         console.log(result);
 
         // result es el resultado de la consulta a sero_principal
@@ -572,7 +572,7 @@ export class RestService {
           }
 
         }
-        
+
         console.log(cuentasMostrar);
         resolve(cuentasMostrar);
 
@@ -763,7 +763,7 @@ export class RestService {
       .catch(error => Promise.reject(error));
   }
 
-  
+
 
   getNombreInspectores(idPlaza) {
     return this.http.get<any>(this.apiObtenerInspectoresAgua + ' ' + idPlaza);
@@ -848,6 +848,11 @@ export class RestService {
     ]);
   }
 
+  /**
+   * 
+   * @param data 
+   * @returns Promise (insert into encuesta)
+   */
   gestionEncuesta(data) {
     let sql = 'INSERT INTO encuesta (idPlaza, account, conocePresidente, promesaCamp, cualPromesa, gestionPresidente, idServicioImpuesto, idServicioPlaza, fechaCaptura) VALUES (?,?,?,?,?,?,?,?,?)';
 
@@ -1146,6 +1151,49 @@ export class RestService {
   //////******************************************************************** */
 
   // Metodos para enviar gestiones de una en una
+
+  /**
+ * Metodo que envia la informacion capturada de la encuesta por id_servicio
+ * este metodo se llama cuando se envie una gestion solamente de carta invitacion
+ */
+  async sendEncuestaByCuenta(id_servicio_plaza, account) {
+    console.log("Entrando a enviar la informacion de la encuesta de la cuenta " + account);
+    try {
+      let arrayEncuesta = [];
+      let sql = 'SELECT * FROM encuesta where cargado = 0 AND id_servicio_plaza = ? AND account = ?';
+      const result = await this.db.executeSql(sql, [id_servicio_plaza, account]);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayEncuesta.push(result.rows.item(i));
+      }
+
+      if (arrayEncuesta.length == 0) {
+        return;
+      } else {
+
+        let idPlaza = arrayEncuesta[0].idPlaza;
+        let account = arrayEncuesta[0].account;
+        let conocePresidente = arrayEncuesta[0].conocePresidente;
+        let promesaCamp = arrayEncuesta[0].promesaCamp;
+        let cualPromesa = arrayEncuesta[0].cualPromesa;
+        let gestionPresidente = arrayEncuesta[0].gestionPresidente;
+        let idServicioImpuesto = arrayEncuesta[0].idServicioImpuesto;
+        let idServicioPlaza = arrayEncuesta[0].idServicioPlaza;
+        let fechaCaptura = arrayEncuesta[0].fechaCaptura;
+        let id = arrayEncuesta[0].id;
+
+        let sql = `${idPlaza},'${account}',${conocePresidente},${promesaCamp},'${cualPromesa}',${gestionPresidente},${idServicioImpuesto},${idServicioPlaza}'${fechaCaptura}'`
+        console.log(sql);
+
+        await this.enviarSQLCartaInvitacion(sql, id)
+
+        return Promise.resolve("Success");
+      }
+    } catch (error) {
+
+    }
+  }
+
 
   /**
    * Metodo que envia una sola gestion del modulo de carta invitacion del servicio correspondiente
@@ -1768,11 +1816,59 @@ export class RestService {
   }
 
 
+
   /**
-   * Metodo que inicia el envio de gestiones del modulo de carta invitacion del servicio correspondiente
-   * @param idServicioPlaza 
-   * @returns Promise
-   */
+  * Metodo que envia la informacion capturada de la encuesta por id_servicio
+  * este metodo se llama cuando se envien todas las gestiones
+  */
+  async sendEncuesta(id_servicio_plaza) {
+    console.log("Entrando a enviar la informacion de la encuesta");
+    try {
+      let arrayEncuesta = [];
+      let sql = 'SELECT * FROM encuesta where cargado = 0 AND id_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [id_servicio_plaza]);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayEncuesta.push(result.rows.item(i));
+      }
+
+      if (arrayEncuesta.length == 0) {
+        return;
+      } else {
+
+        for (let i = 0; i < arrayEncuesta.length; i++) {
+          let idPlaza = arrayEncuesta[i].idPlaza;
+          let account = arrayEncuesta[i].account;
+          let conocePresidente = arrayEncuesta[i].conocePresidente;
+          let promesaCamp = arrayEncuesta[i].promesaCamp;
+          let cualPromesa = arrayEncuesta[i].cualPromesa;
+          let gestionPresidente = arrayEncuesta[i].gestionPresidente;
+          let idServicioImpuesto = arrayEncuesta[i].idServicioImpuesto;
+          let idServicioPlaza = arrayEncuesta[i].idServicioPlaza;
+          let fechaCaptura = arrayEncuesta[i].fechaCaptura;
+          let id = arrayEncuesta[i].id;
+
+          let sql = `${idPlaza},'${account}',${conocePresidente},${promesaCamp},'${cualPromesa}',${gestionPresidente},${idServicioImpuesto},${idServicioPlaza}'${fechaCaptura}'`
+          console.log(sql);
+
+          await this.enviarSQLCartaInvitacion(sql, id)
+
+        }
+        return Promise.resolve("Success");
+      }
+    } catch (error) {
+
+    }
+  }
+
+
+
+  /**
+ * Metodo que inicia el envio de gestiones del modulo de carta invitacion del servicio correspondiente
+ * @param idServicioPlaza 
+ * @returns Promise
+ * 
+ */
   async sendCartaInvitacionByIdServicio(idServicioPlaza) {
     console.log("Entrando a enviar la informacion de cartas invitacion del servicio " + idServicioPlaza);
     try {
@@ -1905,11 +2001,28 @@ export class RestService {
         console.log(data);
         resolve(data);
       }, err => {
-        this.message.showAlert(
-          "No se pudo enviar la información, verifica tu red " + err
-        );
+        this.message.showAlert("No se pudo enviar la información, verifica tu red " + err);
         this.loadingCtrl.dismiss();
         console.log(err);
+      }
+      )
+    })
+  }
+
+  /**
+   * Metodo que envia la informacion de las encuestas al sql
+   * @param query 
+   * @param id 
+   * @returns 
+   */
+  enviarSQLEncuesta(query, id) {
+    return new Promise(resolve => {
+      this.http.post(this.apiRegistroEncuestaPresidente + " " + query, null).subscribe(async data => {
+        await this.actualizarIdEncuesta(id);
+        console.log(data);
+        resolve(data);
+      }, error => {
+        console.log(error);
       }
       )
     })
@@ -2117,6 +2230,16 @@ export class RestService {
    */
   actualizarIdCartaInvitacion(id) {
     let sql = "UPDATE gestionCartaInvitacion SET cargado = 1 where id = ?"
+    return this.db.executeSql(sql, [id]);
+  }
+
+  /**
+   * Metodo que actualiza el campo cargado a 1 de la tabla encuesta
+   * @param id 
+   * @returns 
+   */
+  actualizarIdEncuesta(id) {
+    let sql = "UPDATE encuesta SET cargado = 1 where id = ?";
     return this.db.executeSql(sql, [id]);
   }
 
@@ -2614,7 +2737,7 @@ export class RestService {
     console.log(parametros);
     return new Promise(resolve => {
       console.log(this.apiRegistroAsistencia + " " + parametros)
-      this.http.post(this.apiRegistroAsistencia + " " + parametros, null).subscribe( data => {
+      this.http.post(this.apiRegistroAsistencia + " " + parametros, null).subscribe(data => {
         resolve(data)
       }, err => {
         this.message.showAlert("No se realizo el registro, verifique con sistemas");

@@ -24,7 +24,7 @@ export class AuthService {
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
-  modal:any;
+  modal: any;
 
 
   constructor(
@@ -38,22 +38,22 @@ export class AuthService {
     private modalCtrl: ModalController
   ) { }
 
-    /** 
-     * Especificaciones del servicio
-     * Peticion a Firebase al metodo de autenticacion con el email y el password que nos paso el componente login
-     * Obtener el uid de firebase del usuario
-     * Obtener el documento de firebase de la coleccion usersErpp con el uid que se obtivo anteriormente 
-     * Verificar si esta activo el usuario
-     * Verificar si IMEI = ''
-      * Guardar en el storgae la informacion obtenida del firebase
-      * Obtener los servicios publicos para guardarlos en la base interna SQlite
-      * Obtener los usuarios de la plazas a la que pertenece el usuario a loguearse para guardarlos en la base interna SQlite
-      * Obtener la informacion de las plazas y los servicios de las plazas a las que pertenece el usuario a loguearse para despues insertarlas en la base interna SQlite
-     * Si si tiene IMEI
-      * Se valida el correo y el nombre en el storage con los ingresados para ver si es la misma persona que tenia la sesion anterior
-      * Y se vuelven a generar los 4 metodos anteriores
-      * Si no es el mismo usuario que el de la sesion anterior se borrara la informacion con el metodo deleteInfo
-    */
+  /** 
+   * Especificaciones del servicio
+   * Peticion a Firebase al metodo de autenticacion con el email y el password que nos paso el componente login
+   * Obtener el uid de firebase del usuario
+   * Obtener el documento de firebase de la coleccion usersErpp con el uid que se obtivo anteriormente 
+   * Verificar si esta activo el usuario
+   * Verificar si IMEI = ''
+    * Guardar en el storgae la informacion obtenida del firebase
+    * Obtener los servicios publicos para guardarlos en la base interna SQlite
+    * Obtener los usuarios de la plazas a la que pertenece el usuario a loguearse para guardarlos en la base interna SQlite
+    * Obtener la informacion de las plazas y los servicios de las plazas a las que pertenece el usuario a loguearse para despues insertarlas en la base interna SQlite
+   * Si si tiene IMEI
+    * Se valida el correo y el nombre en el storage con los ingresados para ver si es la misma persona que tenia la sesion anterior
+    * Y se vuelven a generar los 4 metodos anteriores
+    * Si no es el mismo usuario que el de la sesion anterior se borrara la informacion con el metodo deleteInfo
+  */
 
 
   /**
@@ -71,7 +71,7 @@ export class AuthService {
         let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
           // this.userInfo tiene la informacion del usuario del firebase
           this.userInfo = userInfoFirebase
-          console.log("Usuario firebase: " , this.userInfo);
+          console.log("Usuario firebase: ", this.userInfo);
           // corroborar si el usuario esta activo
           if (this.userInfo.isActive) {
             if (this.userInfo.IMEI = '') {
@@ -153,16 +153,16 @@ export class AuthService {
       console.log("Servicios", data);
       this.insertarServicios(data);
     })
-    
+
   }
 
   /**
    * Metodo que inserta la informacion del usuario de sus plazas y servicios(agua, predio, antenas ...) de las plazas a las que pertenece
    * @param data 
    */
-  insertarServicios( data ) {
+  insertarServicios(data) {
     data.forEach(servicio => {
-        this.rest.insertarServiciosSQL(servicio);
+      this.rest.insertarServiciosSQL(servicio);
     });
   }
 
@@ -189,8 +189,8 @@ export class AuthService {
     await this.rest.deleteEmpleadosPlaza();
     // obtener el id del usuario para mandarlo a la api
     let idAspUser = userInfo.idaspuser;
-    console.log(idAspUser); 
-    this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe( data => {
+    console.log(idAspUser);
+    this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe(data => {
       console.log(data);
       this.insertaEmpleadosPlaza(data);
     })
@@ -228,11 +228,11 @@ export class AuthService {
     this.storage.set('Nombre', userInfo.name);
     this.storage.set('Email', userInfo.email);
     this.storage.set('IdAspUser', userInfo.idaspuser)
-    this.storage.set('IdRol', userInfo.idrol);
-    this.storage.set('Rol', userInfo.rol);
-    this.storage.set('IdUserChecador', userInfo.idUserChecador)
     this.storage.set('Password', userInfo.password)
-    this.storage.set('Img', userInfo.img);
+    //this.storage.set('Img', userInfo.img);
+    //this.storage.set('IdRol', userInfo.idrol);
+    // this.storage.set('Rol', userInfo.rol);
+    // this.storage.set('IdUserChecador', userInfo.idUserChecador)
     //this.storage.set('Img',)
     //this.storage.set('NumeroPlazas', userInfo.plaza.length);
     // let contadorPlaza = 1;
@@ -341,15 +341,15 @@ export class AuthService {
    * Metodo para cerrar sesion
    */
   logout() {
-    this.firebaseAuth.signOut().then( async () => {
+    this.firebaseAuth.signOut().then(async () => {
       // this.router.navigate(['/login']);
-      
+
       this.modal = await this.modalCtrl.create({
         component: LoginPage
       });
-  
+
       this.modal.present()
-  
+
       this.modal.onDidDismiss().then(data => {
         this.router.navigate(['home/tab1']);
       })

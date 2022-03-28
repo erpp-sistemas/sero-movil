@@ -70,7 +70,7 @@
             Seleccione el puesto:
           </p>
           <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno" [(ngModel)]="idPuesto"
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="idPuesto"
               (ionChange)="resultIdPuesto( $event )">
               <ion-select-option value="1">Representante legal</ion-select-option>
               <ion-select-option value="2">Gerente</ion-select-option>
@@ -121,7 +121,7 @@
             Tipo de antena
           </p>
           <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
               [(ngModel)]="idTipoAntena" (ionChange)="resultIdTipoAntena( $event )">
               <ion-select-option value="1">Emisora</ion-select-option>
               <ion-select-option value="2">Receptora</ion-select-option>
@@ -144,7 +144,7 @@
             Detalle de antena
           </p>
           <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
               [(ngModel)]="idDetalleAntena" (ionChange)="resultIdDetalleAntena( $event )">
               <ion-select-option value="1">Omnidireccional</ion-select-option>
               <ion-select-option value="2">Direccional</ion-select-option>
@@ -170,7 +170,7 @@
             Tipo de comunicación
           </p>
           <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
               [(ngModel)]="idTipoComunicacion" (ionChange)="resultIdTipoComunicacion( $event )">
               <ion-select-option value="1">Telefónica</ion-select-option>
               <ion-select-option value="2">Radiocomunicación</ion-select-option>
@@ -217,16 +217,16 @@
         <ion-label>
           <p>Color fachada: </p>
         </ion-label>
-        <input type="color" [(ngModel)]="colorFachada">
-        <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input> -->
+        <!-- <input type="color" [(ngModel)]="colorFachada"> -->
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
       </ion-item>
 
       <ion-item color="medium">
         <ion-label>
           <p>Color puerta: </p>
         </ion-label>
-        <input type="color" [(ngModel)]="colorPuerta">
-        <!-- <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input> -->
+        <!-- <input type="color" [(ngModel)]="colorPuerta"> -->
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
       </ion-item>
 
       <ion-item color="medium">
@@ -243,7 +243,7 @@
             Tipo de predio
           </p>
           <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
               [(ngModel)]="idTipoPredio">
               <ion-select-option value="1">Esquinero</ion-select-option>
               <ion-select-option value="2">Intermedio</ion-select-option>

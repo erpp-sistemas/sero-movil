@@ -29,8 +29,8 @@ export class GestionCartaPage implements OnInit {
   // idGastoImpuesto: number = 0;
   idTipoServicio: number = 0;
   numeroNiveles: number = 1;
-  colorFachada: string = '000000';
-  colorPuerta: string = '000000';
+  colorFachada: string = '';
+  colorPuerta: string = '';
   idTipoPredio: number = 0;
   entreCalle1: string = '';
   entreCalle2: string = '';
@@ -375,8 +375,8 @@ export class GestionCartaPage implements OnInit {
           //id_gasto_impuesto: this.idGastoImpuesto, // No se estan utilizando va a estar en app de encuesta
           id_tipo_servicio: this.idTipoServicio,
           numero_niveles: this.numeroNiveles,
-          colorFachada: this.colorFachada.substring(1, 7),
-          colorPuerta: this.colorPuerta.substring(1, 7),
+          colorFachada: this.colorFachada,
+          colorPuerta: this.colorPuerta,
           referencia: this.referencia,
           id_tipo_predio: this.idTipoPredio,
           entre_calle1: this.entreCalle1,

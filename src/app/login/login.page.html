@@ -10,12 +10,12 @@
             <h1 class="texto-login">Login</h1>
 
             <div class="contenido-formulario">
-                <ion-item>
+                <ion-item color="light">
                     <ion-input class="btn-login" name="email" type="email" required [(ngModel)]="email"
                         placeholder="Ingresa un usuario"></ion-input>
                 </ion-item>
     
-                <ion-item>
+                <ion-item color="light">
                     <ion-input class="btn-login" #passwordEyeRegister name="password" [type]="passwordTypeInput" required
                         [(ngModel)]="password" placeholder="Ingresa una contraseña"></ion-input>
                     <button item-end class="btn_eye_icon" (click)="togglePasswordMode()">

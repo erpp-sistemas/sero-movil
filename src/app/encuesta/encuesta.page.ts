@@ -95,7 +95,7 @@ export class EncuestaPage implements OnInit {
   }
 
   async gestionEncuesta(data) {
-    this.rest.gestionEncuesta(data);
+    await this.rest.gestionEncuesta(data);
     this.modalCtrl.dismiss({
       estatus: 'Realizado'
     });

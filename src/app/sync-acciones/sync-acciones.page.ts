@@ -73,6 +73,7 @@ export class SyncAccionesPage implements OnInit {
     await this.rest.sendCartaInvitacionByIdServicio(this.id_servicio_plaza);
     await this.rest.sendLegalByIdServicio(this.id_servicio_plaza);
     await this.rest.sendInspeccionAntenasByIdServicio(this.id_servicio_plaza);
+    await this.rest.sendEncuesta(this.id_servicio_plaza);
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
   }
@@ -93,7 +94,9 @@ export class SyncAccionesPage implements OnInit {
       console.log(resultado);
     } else if (rol == 'Carta invitación') {
       const resultado = await this.rest.sendCartaByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      const resultadoEncuesta = await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
       console.log(resultado);
+      console.log(resultadoEncuesta);
     } else if (rol == 'Legal') {
       const resultado = await this.rest.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
       console.log(resultado);
