@@ -1153,11 +1153,11 @@ export class RestService {
   // Metodos para enviar gestiones de una en una
 
   /**
- * Metodo que envia la informacion capturada de la encuesta por id_servicio
+ * Metodo que envia la informacion capturada de la encuesta por cuenta
  * este metodo se llama cuando se envie una gestion solamente de carta invitacion
  */
   async sendEncuestaByCuenta(id_servicio_plaza, account) {
-    console.log("Entrando a enviar la informacion de la encuesta de la cuenta " + account);
+    console.log("Entrando a enviar la informacion de la encuesta de la cuenta " + account + " y del servicio " + id_servicio_plaza);
     try {
       let arrayEncuesta = [];
       let sql = 'SELECT * FROM encuesta where cargado = 0 AND id_servicio_plaza = ? AND account = ?';
@@ -1166,6 +1166,8 @@ export class RestService {
       for (let i = 0; i < result.rows.length; i++) {
         arrayEncuesta.push(result.rows.item(i));
       }
+
+      console.log(arrayEncuesta);
 
       if (arrayEncuesta.length == 0) {
         return;
@@ -1185,7 +1187,7 @@ export class RestService {
         let sql = `${idPlaza},'${account}',${conocePresidente},${promesaCamp},'${cualPromesa}',${gestionPresidente},${idServicioImpuesto},${idServicioPlaza}'${fechaCaptura}'`
         console.log(sql);
 
-        await this.enviarSQLCartaInvitacion(sql, id)
+        await this.enviarSQLEncuesta(sql, id)
 
         return Promise.resolve("Success");
       }
@@ -1501,7 +1503,7 @@ export class RestService {
   * @returns Promise
   */
   async sendInspeccionAntenasByIdServicio(idServicioPlaza) {
-    console.log("Entrando a enviar la informacion del servicio " + idServicioPlaza);
+    console.log("Entrando a enviar la informacion de inspeccion antenas del servicio " + idServicioPlaza);
     try {
       let arrayCuentasInspeccionAntenas = [];
       let sql = 'SELECT * FROM gestionInspeccionAntenas WHERE cargado = 0 AND id_servicio_plaza = ?';
@@ -1816,17 +1818,16 @@ export class RestService {
   }
 
 
-
   /**
-  * Metodo que envia la informacion capturada de la encuesta por id_servicio
-  * este metodo se llama cuando se envien todas las gestiones
+    * Metodo que envia la informacion capturada de la encuesta 
+    * este metodo se llama cuando se presione el boton de enviar todo
   */
-  async sendEncuesta(id_servicio_plaza) {
-    console.log("Entrando a enviar la informacion de la encuesta");
+  async sendEncuesta() {
+    console.log("Entrando a enviar la informacion de la encuesta general");
     try {
       let arrayEncuesta = [];
-      let sql = 'SELECT * FROM encuesta where cargado = 0 AND id_servicio_plaza = ?';
-      const result = await this.db.executeSql(sql, [id_servicio_plaza]);
+      let sql = 'SELECT * FROM encuesta where cargado = 0';
+      const result = await this.db.executeSql(sql);
 
       for (let i = 0; i < result.rows.length; i++) {
         arrayEncuesta.push(result.rows.item(i));
@@ -1851,13 +1852,57 @@ export class RestService {
           let sql = `${idPlaza},'${account}',${conocePresidente},${promesaCamp},'${cualPromesa}',${gestionPresidente},${idServicioImpuesto},${idServicioPlaza}'${fechaCaptura}'`
           console.log(sql);
 
-          await this.enviarSQLCartaInvitacion(sql, id)
+          await this.enviarSQLEncuesta(sql, id)
 
         }
         return Promise.resolve("Success");
       }
     } catch (error) {
 
+    }
+  }
+
+
+  /**
+  * Metodo que envia la informacion capturada de la encuesta por id_servicio
+  * este metodo se llama cuando se envien todas las gestiones
+  */
+  async sendEncuestaByIdServicio(id_servicio_plaza) {
+    console.log("Entrando a enviar la informacion de la encuesta del servicio " + id_servicio_plaza);
+    try {
+      let arrayEncuesta = [];
+      let sql = 'SELECT * FROM encuesta where cargado = 0 AND idServicioPlaza = ?';
+      const result = await this.db.executeSql(sql, [id_servicio_plaza]);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayEncuesta.push(result.rows.item(i));
+      }
+      console.log(arrayEncuesta);
+      if (arrayEncuesta.length == 0) {
+        return;
+      } else {
+
+        for (let i = 0; i < arrayEncuesta.length; i++) {
+          let idPlaza = arrayEncuesta[i].idPlaza;
+          let account = arrayEncuesta[i].account;
+          let conocePresidente = arrayEncuesta[i].conocePresidente;
+          let promesaCamp = arrayEncuesta[i].promesaCamp;
+          let cualPromesa = arrayEncuesta[i].cualPromesa;
+          let gestionPresidente = arrayEncuesta[i].gestionPresidente;
+          let idServicioImpuesto = arrayEncuesta[i].idServicioImpuesto;
+          let idServicioPlaza = arrayEncuesta[i].idServicioPlaza;
+          let fechaCaptura = arrayEncuesta[i].fechaCaptura;
+          let id = arrayEncuesta[i].id;
+
+          let sql = `${idPlaza},'${account}',${conocePresidente},${promesaCamp},'${cualPromesa}',${gestionPresidente},${idServicioImpuesto},${idServicioPlaza},'${fechaCaptura}'`
+          console.log(sql);
+
+          await this.enviarSQLEncuesta(sql, id)
+
+        }
+        return Promise.resolve("Success");
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -1993,7 +2038,6 @@ export class RestService {
    */
   enviarSQLCartaInvitacion(query, id) {
     return new Promise(resolve => {
-
       console.log("Enviando carta invitacion...");
       console.log(this.apiRegistroCartaInvitacion + " " + query);
       this.http.post(this.apiRegistroCartaInvitacion + " " + query, null).subscribe(async data => {

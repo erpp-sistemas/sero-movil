@@ -538,7 +538,7 @@ export class MapaPruebaPage implements OnInit {
               lat: parseFloat(this.cuentasDistancia[i].latitud),
               lng: parseFloat(this.cuentasDistancia[i].longitud)
             },
-            stopover: true
+            stopover: false
           })
           if (i == 23) {
             positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
@@ -552,7 +552,10 @@ export class MapaPruebaPage implements OnInit {
               lat: parseFloat(this.cuentasDistancia[i].latitud),
               lng: parseFloat(this.cuentasDistancia[i].longitud)
             },
-            stopover: true
+            // vamos a meter false por que si tiene true pone los markers pero no deja seleccionar el 
+            // icono de la cuenta
+            stopover: false
+            
           })
           if (i == (total - 1)) {
             positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));

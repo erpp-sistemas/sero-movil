@@ -73,7 +73,7 @@ export class SyncAccionesPage implements OnInit {
     await this.rest.sendCartaInvitacionByIdServicio(this.id_servicio_plaza);
     await this.rest.sendLegalByIdServicio(this.id_servicio_plaza);
     await this.rest.sendInspeccionAntenasByIdServicio(this.id_servicio_plaza);
-    await this.rest.sendEncuesta(this.id_servicio_plaza);
+    await this.rest.sendEncuestaByIdServicio(this.id_servicio_plaza);
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
   }

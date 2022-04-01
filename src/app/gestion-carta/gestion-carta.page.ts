@@ -93,6 +93,7 @@ export class GestionCartaPage implements OnInit {
   }
 
   async ngOnInit() {
+    // tipo es el tipo_servicio que viene de la base de datos
     this.tipo = await this.storage.get('tipo');
     console.log(this.tipo);
     await this.platform.ready();

@@ -283,7 +283,7 @@ export class ChecadorPage implements OnInit {
 
     setTimeout(() => {
       this.loading.dismiss();
-      this.router.navigateByUrl('principal');
+      this.router.navigateByUrl('/home');
     }, 1000);
 
   }

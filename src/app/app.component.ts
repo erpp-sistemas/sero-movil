@@ -134,9 +134,6 @@ export class AppComponent {
     let idAspuser = await this.storage.get('IdAspUser')
     //let idPlaza = await this.storage.get('IdPlaza')
     if (idAspuser == null || idAspuser == undefined) {
-      //console.log(idAspuser, 'el idaspuser del recorrido')
-      //console.log('Sesion inactiva')
-
     } else {
       console.log(idAspuser, 'el idaspuser del recorrido')
       

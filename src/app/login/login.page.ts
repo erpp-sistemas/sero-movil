@@ -47,9 +47,10 @@ export class LoginPage implements OnInit {
     private modalCtrl: ModalController,
     private platform: Platform
   ) {
-    this.platform.backButton.subscribeWithPriority(10, () => {
-      console.log('Handler was called!');
-    });
+    // Inhabilitar el back button
+    // this.platform.backButton.subscribeWithPriority(10, () => {
+    //   console.log('Handler was called!');
+    // });
   }
 
   ngOnInit() {
