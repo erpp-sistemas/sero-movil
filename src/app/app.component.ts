@@ -135,9 +135,9 @@ export class AppComponent {
     //let idPlaza = await this.storage.get('IdPlaza')
     if (idAspuser == null || idAspuser == undefined) {
     } else {
-      console.log(idAspuser, 'el idaspuser del recorrido')
+      //console.log(idAspuser, 'el idaspuser del recorrido')
       
-      console.log('Sesion activa')
+      //console.log('Sesion activa')
 
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);

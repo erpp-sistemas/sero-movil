@@ -90,7 +90,7 @@ export class EncuestaPage implements OnInit {
       fechaCaptura: this.fechaCaptura
     }
 
-    console.log(data);
+    //console.log(data);
     await this.gestionEncuesta(data);
   }
 

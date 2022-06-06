@@ -37,7 +37,7 @@ export class DirectorioPage implements OnInit {
 
   async obtenerInformacionEmpleados() {
     this.contactos = await this.rest.obtenerInformacionEmpleados();
-    console.log(this.contactos);
+    //console.log(this.contactos);
   }
 
   phone( numero: string) {
@@ -49,8 +49,8 @@ export class DirectorioPage implements OnInit {
 
   whatsapp( numero: string ) {
     let url =  `https://api.whatsapp.com/send?phone=${this.countryCode}${numero}`;
-    console.log(numero);
-    console.log(url);
+    // console.log(numero);
+    // console.log(url);
     this.iab.create(url, "_system");
   }
 
@@ -61,8 +61,6 @@ export class DirectorioPage implements OnInit {
   }
 
   email( emailEnviar ) {
-    console.log("Enviando email");
-    console.log(emailEnviar);
     this.emailComposer.open({
       to: emailEnviar
     });

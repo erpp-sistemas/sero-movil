@@ -196,8 +196,6 @@ export class GestionInspeccionAntenaPage implements OnInit {
   }
 
   async goPhotos() {
-    console.log(this.id_plaza);
-    console.log(this.account);
 
     let idPlaza = this.id_plaza;
 
@@ -216,8 +214,6 @@ export class GestionInspeccionAntenaPage implements OnInit {
   async getPlaza() {
     this.nombrePlaza = await this.storage.get('NombrePlazaActiva');
     this.id_plaza = await this.storage.get('IdPlazaActiva');
-    console.log(this.nombrePlaza);
-    console.log(this.id_plaza);
   }
 
   ionViewWillLeave() {
@@ -260,7 +256,7 @@ export class GestionInspeccionAntenaPage implements OnInit {
     this.fechaActual = ionicDate.toISOString();
     let fecha = this.fechaActual.split("T");
     this.fechaActual = fecha[0];
-    //console.log("Esta es la fecha Actual :::::::::::" + this.fechaActual);
+   
   }
 
   async deletePhoto(img) {
@@ -268,12 +264,10 @@ export class GestionInspeccionAntenaPage implements OnInit {
     // console.log(this.imgs);
 
     for (let i = 0; i < this.imgs.length; i++) {
-      console.log(this.imgs[i].imagen);
+      //console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
-      } else {
-        // console.log("No hay coincidencias");
-      }
+      } 
     }
     //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
     this.infoImage = await this.rest.getImageLocal(img);
@@ -597,7 +591,7 @@ export class GestionInspeccionAntenaPage implements OnInit {
         idServicioPlaza: this.idServicioPlaza,
         id: this.idAccountSqlite
       };
-      console.log(data);
+
       await this.gestionInspeccionAntenas(data);
       this.loading.dismiss();
       this.exit();
@@ -608,7 +602,6 @@ export class GestionInspeccionAntenaPage implements OnInit {
 
   async gestionInspeccionAntenas(data) {
     this.detectedChanges = false;
-    console.log(data);
     await this.rest.gestionInspeccionAntenas(data);
   }
 

@@ -102,7 +102,8 @@ const routes: Routes = [
   {
     path: 'mapa-prueba/:id/:id_plaza',
     loadChildren: () => import('./mapa-prueba/mapa-prueba.module').then( m => m.MapaPruebaPageModule)
-  },  {
+  },
+  {
     path: 'photos-history',
     loadChildren: () => import('./photos-history/photos-history.module').then( m => m.PhotosHistoryPageModule)
   },
@@ -116,11 +117,8 @@ const routes: Routes = [
   }
 
 
-
-
-
-
 ];
+
 
 @NgModule({
   imports: [

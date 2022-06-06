@@ -95,7 +95,7 @@ export class GestionCartaPage implements OnInit {
   async ngOnInit() {
     // tipo es el tipo_servicio que viene de la base de datos
     this.tipo = await this.storage.get('tipo');
-    console.log(this.tipo);
+    //console.log(this.tipo);
     await this.platform.ready();
     this.getInfoAccount();
     this.getPlaza();
@@ -137,20 +137,18 @@ export class GestionCartaPage implements OnInit {
   }
 
   async deletePhoto(img) {
-    console.log(img);
-    console.log(this.imgs);
+    // console.log(img);
+    // console.log(this.imgs);
 
     for (let i = 0; i < this.imgs.length; i++) {
-      console.log(this.imgs[i].imagen);
+      //console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
-      } else {
-        console.log("No hay coincidencias");
       }
     }
     //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
     this.infoImage = await this.rest.getImageLocal(img);
-    console.log(this.infoImage[0]);
+    // console.log(this.infoImage[0]);
   }
 
 
@@ -216,7 +214,7 @@ export class GestionCartaPage implements OnInit {
         this.indicadorImagen = this.indicadorImagen + 1;
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
-        console.log(rutaBase64, this.image);
+        // console.log(rutaBase64, this.image);
         this.isPhoto = false;
         this.takePhoto = true;
         this.imgs.push({ imagen: this.image });
@@ -280,7 +278,7 @@ export class GestionCartaPage implements OnInit {
         this.indicadorImagen = this.indicadorImagen + 1;
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
-        console.log(rutaBase64, this.image);
+        // console.log(rutaBase64, this.image);
         this.isPhoto = false;
         this.takePhoto = true;
         this.imgs.push({ imagen: this.image });
@@ -322,7 +320,6 @@ export class GestionCartaPage implements OnInit {
         idServicioPlaza
       )
       .then(res => {
-        console.log(res);
         this.mensaje.showToast("Se almacenó la imagen correctamente");
       });
   }
@@ -392,8 +389,6 @@ export class GestionCartaPage implements OnInit {
           id: this.idAccountSqlite
         }
         
-        console.log("Datos a insertar");
-        console.log(data);
         await this.gestionCarta(data);
         this.loading.dismiss();
         this.exit();
@@ -407,15 +402,13 @@ export class GestionCartaPage implements OnInit {
 
 
   async gestionCarta(data) {
-    console.log(data);
+    // console.log(data);
     this.detectedChanges = false;
     this.rest.gestionCartaInvitacion(data);
   }
 
   exit() {
     this.router.navigateByUrl('home/tab2');
-    // this.router.ngOnDestroy();
-    // this.router.dispose();
   }
 
   resultPersonaAtiende(event) {
@@ -428,7 +421,6 @@ export class GestionCartaPage implements OnInit {
 
   resultMotivoNoPago(event) {
     let motivo = event.detail.value;
-    console.log(motivo);
     if (motivo == 5) {
       this.activaOtroMotivo = true;
     } else {
@@ -446,9 +438,7 @@ export class GestionCartaPage implements OnInit {
           text: "Cancelar",
           role: "cancel",
           cssClass: "secondary",
-          handler: blah => {
-            console.log("Confirm Cancel: blah");
-          }
+          handler: blah => {}
         },
         {
           text: "Confirmar",
@@ -465,8 +455,8 @@ export class GestionCartaPage implements OnInit {
 
   async goPhotos() {
 
-    console.log(this.id_plaza);
-    console.log(this.account);
+    // console.log(this.id_plaza);
+    // console.log(this.account);
 
     let idPlaza = this.id_plaza;
 
@@ -502,9 +492,6 @@ export class GestionCartaPage implements OnInit {
   }
 
   async encuesta() {
-    console.log(this.id_plaza);
-    console.log(this.account);
-    console.log(this.idServicioPlaza)
 
     let idPlaza = this.id_plaza;
 

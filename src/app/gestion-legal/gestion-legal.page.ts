@@ -113,7 +113,7 @@ export class GestionLegalPage implements OnInit {
 
   async getInfoAccount() {
     this.account = await this.storage.get("account");
-    console.log("Cuenta guardada en el storage " + this.account);
+    // console.log("Cuenta guardada en el storage " + this.account);
     this.idAspUser = await this.storage.get("IdAspUser");
     this.infoAccount = await this.rest.getInfoAccount(this.account);
     this.idAccountSqlite = this.infoAccount[0].id;
@@ -315,7 +315,7 @@ export class GestionLegalPage implements OnInit {
       tipo,
       idServicioPlaza
     ).then(res => {
-      console.log(res);
+      //console.log(res);
       this.mensaje.showToast("Se almaceno la imagen correctamente");
     })
   }
@@ -338,8 +338,6 @@ export class GestionLegalPage implements OnInit {
         this.loading = await this.loadingController.create({
           message: 'Guardando la gestión...'
         });
-
-        console.log(resp);
 
         await this.loading.present();
 
@@ -385,9 +383,6 @@ export class GestionLegalPage implements OnInit {
           idServicioPlaza: this.idServicioPlaza,
           id: this.idAccountSqlite
         };
-
-        console.log("Informacion a insertar");
-        console.log(data);
         
         await this.gestionLegal(data);
         this.loading.dismiss();
@@ -402,7 +397,6 @@ export class GestionLegalPage implements OnInit {
 
   async gestionLegal(data) {
     this.detectedChanges = false;
-    console.log(data);
     await this.rest.gestionLegal(data);
   }
 
@@ -411,20 +405,18 @@ export class GestionLegalPage implements OnInit {
   }
 
   async deletePhoto(img) {
-    console.log(img);
-    console.log(this.imgs);
+    // console.log(img);
+    // console.log(this.imgs);
 
     for (let i = 0; i < this.imgs.length; i++) {
-      console.log(this.imgs[i].imagen);
+      // console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
-      } else {
-        console.log("No hay coincidencias");
       }
     }
     //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
     this.infoImage = await this.rest.getImageLocal(img);
-    console.log(this.infoImage[0]);
+    //console.log(this.infoImage[0]);
   }
 
 
@@ -437,9 +429,7 @@ export class GestionLegalPage implements OnInit {
           text: "Cancelar",
           role: "cancel",
           cssClass: "secondary",
-          handler: blah => {
-            console.log("Confirm Cancel: blah");
-          }
+          handler: blah => {}
         },
         {
           text: "Confirmar",
@@ -456,9 +446,6 @@ export class GestionLegalPage implements OnInit {
 
 
   async goPhotos() {
-
-    console.log(this.id_plaza);
-    console.log(this.account);
 
     let idPlaza = this.id_plaza;
 

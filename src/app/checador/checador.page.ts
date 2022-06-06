@@ -90,7 +90,7 @@ export class ChecadorPage implements OnInit {
     // Get the location of you
     this.map.getMyLocation().then((location: MyLocation) => {
       this.loading.dismiss();
-      console.log(JSON.stringify(location, null, 2));
+      //console.log(JSON.stringify(location, null, 2));
       this.latitud = location.latLng.lat.toString();
       this.longitud = location.latLng.lng.toString();
       // Move the map camera to the location with animation
@@ -151,7 +151,7 @@ export class ChecadorPage implements OnInit {
       await this.loading.present();
 
       let tipo = 1
-      console.log(this.latitud, this.longitud)
+      //console.log(this.latitud, this.longitud)
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
       let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
@@ -164,7 +164,7 @@ export class ChecadorPage implements OnInit {
       this.rest.registroChecador(parametros).then(res => {
         this.loading.dismiss();
         alert(res[0].mensaje)
-        console.log(res)
+        //console.log(res)
       })
     }
 
@@ -184,7 +184,7 @@ export class ChecadorPage implements OnInit {
       await this.loading.present();
 
       let tipo = 2
-      console.log(this.latitud, this.longitud)
+      //console.log(this.latitud, this.longitud)
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
       let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
@@ -197,7 +197,7 @@ export class ChecadorPage implements OnInit {
       this.rest.registroChecador(parametros).then(res => {
         this.loading.dismiss();
         alert(res[0].mensaje)
-        console.log(res)
+        //console.log(res)
       })
     }
 
@@ -217,14 +217,11 @@ export class ChecadorPage implements OnInit {
           text: 'Cancelar',
           role: 'cancel',
           cssClass: 'secondary',
-          handler: (blah) => {
-            console.log('Confirm Cancel: blah');
-          }
+          handler: (blah) => {}
         }, {
           text: 'Aceptar',
           handler: () => {
             this.checarEntrada();
-            console.log('Confirm Okay');
           }
         }
       ]
@@ -247,14 +244,12 @@ export class ChecadorPage implements OnInit {
           text: 'Cancelar',
           role: 'cancel',
           cssClass: 'secondary',
-          handler: (blah) => {
-            console.log('Confirm Cancel: blah');
-          }
+          handler: (blah) => {}
         }, {
           text: 'Aceptar',
           handler: () => {
             this.checarSalida();
-            console.log('Confirm Okay');
+          
           }
         }
       ]

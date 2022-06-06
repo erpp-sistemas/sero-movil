@@ -251,10 +251,8 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.mostrarInspectores = true;
     this.inspectores = true;
     this.nombreInspectorLogueado = await this.storage.get('Nombre');
-    console.log(this.id_plaza);
     try {
       this.nombreInspectores = await this.rest.mostrarEmpleadosPlaza(this.id_plaza);
-      console.log(this.nombreInspectores);
     } catch (error) {
       console.log("Error al traer los datos de los inspectores")
     }
@@ -311,7 +309,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     // console.log(this.imgs);
 
     for (let i = 0; i < this.imgs.length; i++) {
-      console.log(this.imgs[i].imagen);
+      //console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
       } else {

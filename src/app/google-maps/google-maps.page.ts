@@ -51,7 +51,6 @@ export class CustomTag {
 
   gestion(account) {
     this.storage.set('account', account);
-    console.log(this.account);
     this.ngZone.run(() => {
       this.router.navigateByUrl("/gestion-page")
     })
@@ -67,8 +66,6 @@ export class CustomTag {
 
   async street(position) {
     let latlong = position
-    console.log("Entra a ver la position")
-    console.log(position)
     this.ngZone.run(() => {
 
       let navigationExtras: NavigationExtras = {
@@ -85,25 +82,6 @@ export class CustomTag {
 
     const rutaArcgis = await this.storage.get('rutaArcgis');
     var url = rutaArcgis + '&find=' + account;
-    //switch (idPlaza) {
-    // case '4': url = 'http://oscarvazquez.maps.arcgis.com/apps/webappviewer/index.html?id=632ea1dc115c4d3fa9960f80b88e37d1&find=' + account; break;
-    // case '7': url = 'https://sis-estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=8c5d59991b2c4676952f46a429ed1e2a&find=' + account; break;
-    // case '3': url = 'http://oscarvazquez.maps.arcgis.com/apps/webappviewer/index.html?id=632ea1dc115c4d3fa9960f80b88e37d1&find=' + account; break;
-    // case '8': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=bde50fa89665458ab23aca1323b980c4&find=' + account; break;
-    // case '10': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=1ff1f324e54e4b1eac49517ee239567f&find=' + account; break;
-    // case '9': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=6ce8f192dd3a415e94793f48054ea92b&find=' + account; break;
-    // case '13': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=09d157d58e464c57875e0b7e590d9b69&find=' + account; break;
-    // case '12': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=e2aa3190ed0245b596e6e890e84e15bc&find=' + account; break;
-    // case '11': url = 'https://carto2estrategas.maps.arcgis.com/apps/webappviewer/index.html?id=e2aa3190ed0245b596e6e890e84e15bc&find=' + account; break;
-    // case '25': url = 'https://cartoestrategas.maps.arcgis.com/apps/webappviewer/index.html?id=2737fe33e0a847039bdb3712984100d4&find=' + account; break;
-    // case '23': url = 'https://claudiagarcia.maps.arcgis.com/apps/webappviewer/index.html?id=27f6cc2518364b718d2f9e248f407393&find=' + account; break;
-    // case '27': url = 'https://claudiagarcia.maps.arcgis.com/apps/webappviewer/index.html?id=0decccf35bd14a6a8c68b277c51a7d1e&find=' + account; break;
-    // case '18': url = 'https://camiloerdm.maps.arcgis.com/apps/webappviewer/index.html?id=8b8e7f78b3af45ca8bcb3016e1ef7c0f&find=' + account; break;
-    // case '24': url = 'https://camiloerdm.maps.arcgis.com/apps/webappviewer/index.html?id=8b8e7f78b3af45ca8bcb3016e1ef7c0f&find=' + account; break;
-
-    //}
-
-    console.log(url)
     this.iab.create(url, "_system", { location: 'yes', zoom: 'yes' });
 
   }
@@ -145,8 +123,6 @@ export class GoogleMapsPage implements OnInit {
 
   async ngOnInit() {
     await this.platform.ready();
-    console.log("id: ", this.activeRoute.snapshot.paramMap.get('id'));
-    console.log("plaza", this.activeRoute.snapshot.paramMap.get('id_plaza'));
     this.idServicioPlaza = this.activeRoute.snapshot.paramMap.get('id');
     this.id_plaza = this.activeRoute.snapshot.paramMap.get('id_plaza');
 
@@ -155,12 +131,11 @@ export class GoogleMapsPage implements OnInit {
 
 
   ionViewWillLeave() {
-    console.log("Saliendo");
+
   }
 
   async getAccountInfo(id_plaza, idServicioPlaza) {//realiza la carga de informacion que existe en la base interna sqlite
 
-    console.log("GetAccountInfo");
     this.markersArrayInfo = await this.service.getDataVisitPosition(id_plaza, idServicioPlaza);
 
     if (this.markersArrayInfo.length <= 0) {
@@ -181,7 +156,6 @@ export class GoogleMapsPage implements OnInit {
 
 
   setMarkers(data) {//realiza un ciclo para la carga de los markers 
-    console.log("Set markers");
     let array = []
     for (let markers of data) {
       let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
@@ -193,9 +167,8 @@ export class GoogleMapsPage implements OnInit {
         icon: '../../assets/icon/gota.png'
       }
       array.push(marker)
-      
+
     }
-    console.log("array", array)
     this.loadMap(array)
   }
 
@@ -203,7 +176,6 @@ export class GoogleMapsPage implements OnInit {
 
   async loadMap(data) {
     //////////opciones del mapa
-    console.log("LoadMap");
     let options: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.ROADMAP,
       controls: {
@@ -223,7 +195,6 @@ export class GoogleMapsPage implements OnInit {
     }
     /////////////////////////
     this.map = GoogleMaps.create('map_canvas', options);
-    
 
     this.map.getMyLocation().then(async (location: MyLocation) => {
       //  this.loading.dismiss();
@@ -251,9 +222,6 @@ export class GoogleMapsPage implements OnInit {
 
 
   addCluster(data) {
-    console.log("entra")
-    console.log("addCluster");
-    console.log(data)
     this.markerCluster = this.map.addMarkerClusterSync({
       markers: data,
       icons: [
@@ -305,18 +273,13 @@ export class GoogleMapsPage implements OnInit {
 
       // Dynamic rendering
       this.ngZone.run(() => {
-        console.log("abriendo popov");
         this.htmlInfoWindow.setContent(this.div);
         this.htmlInfoWindow.open(marker);
-        console.log(this.htmlInfoWindow);
       });
 
       // Destroy the component when the htmlInfoWindow is closed.
       this.htmlInfoWindow.one(GoogleMapsEvent.INFO_CLOSE).then(() => {
-        console.log(this.compRef);
         this.compRef.destroy();
-        console.log("compRef destruido");
-        console.log(this.compRef);
       });
 
 
@@ -331,7 +294,6 @@ export class GoogleMapsPage implements OnInit {
   }
 
   async getDetail(accountNumber) {
-    console.log("this is account to be saved: " + accountNumber)
     await this.storage.set("accountNumber", accountNumber);
     this.goDetail();
 
@@ -344,12 +306,10 @@ export class GoogleMapsPage implements OnInit {
     } else {
 
       this.result = await this.service.getDataVisitPositionByAccount(this.accountString);
-      console.log(this.result)
       if (this.result.length == 0) {
         alert("No hay resultados")
       } else {
         let latLng = new LatLng(this.result[0].latitud, this.result[0].longitud)
-        console.log(latLng)
         this.map.setCameraTarget(latLng)
         this.map.setCameraZoom(20)
       }
@@ -357,7 +317,7 @@ export class GoogleMapsPage implements OnInit {
   }
 
   navegar(tipo) {
-    
+
     if (tipo == 1) {
       this.ngZone.run(() => {
         this.router.navigateByUrl("home/tab1")
