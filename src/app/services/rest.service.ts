@@ -130,6 +130,7 @@ export class RestService {
     ]);
   }
 
+  
   async mostrarServicios(idPlaza) {
 
     let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
@@ -437,9 +438,23 @@ export class RestService {
   /**
    * Metodo que borrara toda la informacion si es que es otro usuario el que se logueo 
    */
-  deleteInfo() {
-    // implementar la logica
-    console.log("Borrando información");
+  async deleteInfo() {
+    console.log("Borrando información de las gestiones");
+    let sqlDeleteSeroPrincipal = 'DELETE FROM sero_principal'
+    let sqlDeleteCartaInvitacion = 'DELETE FROM gestionCartaInvitacion'
+    let sqlDeleteLegal = 'DELETE FROM gestionLegal'
+    let sqlDeleteInspeccion = 'DELETE FROM gestionInspeccion'
+    let sqlDeleteServiciosPublicos = 'DELETE FROM serviciosPublicos'
+    let sqlDeleteFotos = 'DELETE FROM capturaFotos'
+    let sqlDeleteFotosServiciosPublicos = 'DELETE FROM capturaFotosServicios'
+    
+    await this.db.executeSql(sqlDeleteSeroPrincipal, []);
+    await this.db.executeSql(sqlDeleteCartaInvitacion, []);
+    await this.db.executeSql(sqlDeleteLegal, []);
+    await this.db.executeSql(sqlDeleteInspeccion, []);
+    await this.db.executeSql(sqlDeleteServiciosPublicos, []);
+    await this.db.executeSql(sqlDeleteFotos, []);
+    await this.db.executeSql(sqlDeleteFotosServiciosPublicos, []);
   }
 
 

@@ -24,7 +24,7 @@ export class Tab1Page implements OnInit {
 
 
   id_plaza: number = 0; // select option de plaza
-  selecciona: boolean = false; // manitra verde
+  selecciona: boolean = false; // manita verde
   plazasServicios: any; // para almacenar esto (select distinct id_plaza, plaza from serviciosPlazaUser)
   servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
 
@@ -38,17 +38,12 @@ export class Tab1Page implements OnInit {
     private platform: Platform,
     private router: Router,
     private alertCtrl: AlertController
-  ) {
-    this.platform.backButton.subscribeWithPriority(10, () => {
-      console.log('Handler was called!');
-    });
-  }
+  ) { }
 
 
   /**
    * Especificaciones de este componente
    * Es la pantalla principal de ser0 movil que inicia despues de loguearse
-   * Desactiva el backbutton
    * Obtener los datos del usuario con el metodo obtenerDatosUsuario
    * Obtener los nombres de las plazas y los ids guardados por el auth.service 
    * Poner el primer registro de las plazas como default que sera el que se muestre cuando se renderize la pagina
@@ -98,7 +93,6 @@ export class Tab1Page implements OnInit {
   async asignarServicios() {
     // En este punto ya se tiene el primer id_plaza obtenido de la base
     this.servicios = await this.rest.mostrarServicios(this.id_plaza);
-
     this.validaDescarga();
   }
 
@@ -106,13 +100,11 @@ export class Tab1Page implements OnInit {
  * Metodo que recorre los servicios y verifica su ya estan descargados para poner el progresTotal completo o en 0
  */
   validaDescarga() {
-
     this.servicios.forEach(servicio => {
       if (servicio.descargado > 0) {
         this.progressTotal = 100;
       }
     });
-
   }
 
   /**
@@ -120,14 +112,11 @@ export class Tab1Page implements OnInit {
    * @param event 
    */
   async resultPlaza(event) {
-
     this.progressTotal = 0;
-
     // si el idPlaza es diferente de 0 entonces verificar la descarga
     if (this.id_plaza != 0) {
       this.asignarServicios();
     }
-
   }
 
   /**
@@ -145,10 +134,8 @@ export class Tab1Page implements OnInit {
    * Metodo que obtiene el nombre y el email del usuario desde el storage
    */
   async obtenerDatosUsuario() {
-    console.log('Obteniendo los datos del usuario');
     this.nombre = await this.storage.get('Nombre');
     this.email = await this.storage.get('Email');
-    //this.imgUser = await this.storage.get('Img'); aqui era del firebase pero lo vamos a traer de la base sql
     let img = await this.rest.obtenerFotoUserSQL();
     this.imgUser = img[0].foto;
   }

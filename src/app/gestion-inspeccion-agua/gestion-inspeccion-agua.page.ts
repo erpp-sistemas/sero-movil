@@ -18,6 +18,7 @@ import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 export class GestionInspeccionAguaPage implements OnInit {
 
   account: string = "";
+  propietario: string = "";
   personaAtiende: string = '';
   //numeroContacto: string = '';
   //puesto: string = '';
@@ -57,7 +58,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   longitud: number;
   fechaCaptura: string = "";
   idAspuser: string = "";
-  idTareaGestor: number = 0;
+
   fechaActual: string;
   g: any;
   t: any;
@@ -271,11 +272,12 @@ export class GestionInspeccionAguaPage implements OnInit {
     //console.log("Idaspuser guardado en el storage: ", this.idAspuser);
     this.infoAccount = await this.rest.getInfoAccount(this.account);
     //console.log("InfoAccount: " , this.infoAccount);
+    this.propietario = this.infoAccount[0].propietario;
+    console.log("Propietario ", this.propietario);
     this.idAccountSqlite = this.infoAccount[0].id;
-    this.idTareaGestor = this.infoAccount[0].id_tarea;
-    let gestionada = this.infoAccount[0].gestionada;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
     this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
+    let gestionada = this.infoAccount[0].gestionada;
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
       this.router.navigateByUrl("home/tab2");
@@ -352,7 +354,9 @@ export class GestionInspeccionAguaPage implements OnInit {
     } else if (type == 2) {
       tipo = "Inspección evidencia";
     } else if (type == 3) {
-      tipo = "Observación contribuyente"
+      tipo = 'Inspección toma'
+    } else if (type == 4) {
+      tipo = 'Inspección observación contribuyente'
     }
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
@@ -416,7 +420,13 @@ export class GestionInspeccionAguaPage implements OnInit {
       tipo = "Inspección recorrido";
     } else if (type == 2) {
       tipo = "Inspección evidencia";
+    } else if (type == 3) {
+      tipo = 'Inspección toma'
+    } else if (type == 4) {
+      tipo = 'Inspección observación contribuyente'
     }
+
+
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(

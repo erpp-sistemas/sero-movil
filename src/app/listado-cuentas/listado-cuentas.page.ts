@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
-import { LoadingController, MenuController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 import { RestService } from '../services/rest.service';
@@ -46,8 +46,6 @@ export class ListadoCuentasPage implements OnInit {
 
 
   ngOnInit() {
-    console.log("id: ", this.activeRoute.snapshot.paramMap.get('id'));
-    console.log("plaza", this.activeRoute.snapshot.paramMap.get('id_plaza'));
     this.idServicioPlaza = this.activeRoute.snapshot.paramMap.get('id');
     this.id_plaza = this.activeRoute.snapshot.paramMap.get('id_plaza');
     this.listadoCuentas(this.id_plaza, this.idServicioPlaza);
@@ -60,7 +58,6 @@ export class ListadoCuentasPage implements OnInit {
    * @param idServicioPlaza 
    */
   async listadoCuentas(id_plaza, idServicioPlaza) {
-    console.log("Cargando listado de cuentas del servicio " + idServicioPlaza + " de la plaza " + id_plaza);
     this.account = null;
     this.accountBusqueda = null;
     this.loading = await this.loadinCtrl.create({

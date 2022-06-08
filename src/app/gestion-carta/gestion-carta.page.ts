@@ -21,6 +21,7 @@ export class GestionCartaPage implements OnInit {
 
   imgs: any;
   account: string;
+  propietario: string = "";
   infoAccount: any = [];
   personaAtiende: string = '';
   // numeroContacto: string = '';
@@ -112,14 +113,13 @@ export class GestionCartaPage implements OnInit {
     this.account = await this.storage.get("account");
     this.idAspUser = await this.storage.get('IdAspUser');
     this.infoAccount = await this.rest.getInfoAccount(this.account);
+    this.propietario = this.infoAccount[0].propietario;
     this.idAccountSqlite = this.infoAccount[0].id;
-    this.idTareaGestor = this.infoAccount[0].id_tarea;
-    let gestionada = this.infoAccount[0].gestionada;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
     this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
+    let gestionada = this.infoAccount[0].gestionada;
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
-      // ya no es un modal, checar si meter un router
       this.router.navigateByUrl('home/tab2');
     }
   }
@@ -180,9 +180,11 @@ export class GestionCartaPage implements OnInit {
   takePic(type) {
     let tipo;
     if (type == 1) {
-      tipo = 'Fachada predio'
+      tipo = 'Carta invitación fachada predio'
     } else if (type == 2) {
-      tipo = 'Evidencia'
+      tipo = 'Carta invitación evidencia'
+    } else if (type == 3) {
+      tipo = 'Carta invitación toma'
     }
 
     var dateDay = new Date().toISOString();
@@ -244,9 +246,11 @@ export class GestionCartaPage implements OnInit {
   takePicGallery(type) {
     let tipo;
     if (type == 1) {
-      tipo = 'Fachada predio'
+      tipo = 'Carta invitación fachada predio'
     } else if (type == 2) {
-      tipo = 'Evidencia'
+      tipo = 'Carta invitación evidencia'
+    } else if (type == 3) {
+      tipo = 'Carta invitación toma'
     }
 
     var dateDay = new Date().toISOString();

@@ -33,7 +33,6 @@ export class Tab3Page implements OnInit {
   servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
 
   constructor(
-    private modalCtrl: ModalController,
     private router: Router,
     private rest: RestService,
     private platform: Platform,

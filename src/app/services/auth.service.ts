@@ -42,10 +42,10 @@ export class AuthService {
    * Especificaciones del servicio
    * Peticion a Firebase al metodo de autenticacion con el email y el password que nos paso el componente login
    * Obtener el uid de firebase del usuario
-   * Obtener el documento de firebase de la coleccion usersErpp con el uid que se obtivo anteriormente 
+   * Obtener el documento de firebase de la coleccion usersErpp con el uid que se obtuvo anteriormente 
    * Verificar si esta activo el usuario
    * Verificar si IMEI = ''
-    * Guardar en el storgae la informacion obtenida del firebase
+    * Guardar en el storage la informacion obtenida del firebase
     * Obtener los servicios publicos para guardarlos en la base interna SQlite
     * Obtener los usuarios de la plazas a la que pertenece el usuario a loguearse para guardarlos en la base interna SQlite
     * Obtener la informacion de las plazas y los servicios de las plazas a las que pertenece el usuario a loguearse para despues insertarlas en la base interna SQlite
@@ -191,7 +191,6 @@ export class AuthService {
     let idAspUser = userInfo.idaspuser;
     console.log(idAspUser);
     this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe(data => {
-      console.log(data);
       this.insertaEmpleadosPlaza(data);
     })
   }
@@ -229,29 +228,7 @@ export class AuthService {
     this.storage.set('Email', userInfo.email);
     this.storage.set('IdAspUser', userInfo.idaspuser)
     this.storage.set('Password', userInfo.password)
-    //this.storage.set('Img', userInfo.img);
-    //this.storage.set('IdRol', userInfo.idrol);
-    // this.storage.set('Rol', userInfo.rol);
-    // this.storage.set('IdUserChecador', userInfo.idUserChecador)
-    //this.storage.set('Img',)
-    //this.storage.set('NumeroPlazas', userInfo.plaza.length);
-    // let contadorPlaza = 1;
-    // let contadorIdPlaza = 1;
-    // console.log(userInfo.plaza);
-    // userInfo.plaza.forEach(plaza => {
-    //   console.log("Plaza:", plaza);
-    //   this.storage.set(`nombre${contadorPlaza}`, plaza);
-    //   console.log(`nombre${contadorPlaza}`);
-    //   contadorPlaza++;
-    // });
-
-    // userInfo.idPlaza.forEach(idPlaza => {
-    //   console.log("idPlaza:", idPlaza);
-    //   this.storage.set(`idPlaza${contadorIdPlaza}`, idPlaza);
-    //   console.log(`idPlaza${contadorIdPlaza}`);
-    //   contadorIdPlaza++;
-    // });    
-
+    
   }
 
   /**
@@ -280,11 +257,6 @@ export class AuthService {
       lastSession: fecha,
       isActive: true
     });
-    // this.firestore.collection('SessionRecords').doc(name + '-' + fecha).set({
-    //   IMEI: id,
-    //   lastSession: fecha,
-    //   user: name
-    // })
   }
 
 
@@ -355,10 +327,6 @@ export class AuthService {
       })
     })
   }
-
-  // sendObjectSource(data:any) {
-  //   this.objectSource.next(data);
-  // }
 
 
 }
