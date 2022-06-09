@@ -18,8 +18,7 @@ export class RestService {
 
   // api para obtener las cuentas
   apiObtenerDatos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas";
-  apiObtenerPlazasUsuario = "http://172.24.24.24/andro/seroMovil.aspx?query=sp_obtener_plazas_usuario";
-  apiObtenerInspectoresAgua = "https://implementta.net/andro/ImplementtaMovil.aspx?query=sp_NombresGestoresInspeccion";
+  apiObtenerPlazasUsuario = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_plazas_usuario";
   apiRegistroInspeccion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion";
   apiRegistroInspeccionAntenas = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion_antenas";
   apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion";
@@ -677,7 +676,6 @@ export class RestService {
    * @returns Promise
    */
   async getTotalFotosAcciones() {
-    console.log("Obteniendo el total de las fotos de las acciones");
     let sql = "SELECT count(*) AS total from capturaFotos WHERE cargado = 0 ";
     try {
       const response = await this.db.executeSql(sql, []);
@@ -779,10 +777,6 @@ export class RestService {
   }
 
 
-
-  getNombreInspectores(idPlaza) {
-    return this.http.get<any>(this.apiObtenerInspectoresAgua + ' ' + idPlaza);
-  }
 
   async getImageLocal(img) {
     let sql = "SELECT * FROM CapturaFotos where cargado = 0 and imagenLocal = ?"

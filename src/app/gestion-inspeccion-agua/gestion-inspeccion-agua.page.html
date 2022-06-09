@@ -477,8 +477,9 @@
                     <p>
                         <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
                             [(ngModel)]="inspector3">
-                            <ion-select-option [value]="inspector.id" *ngFor="let inspector of nombreInspectores">
-                                {{inspector.nombre}} </ion-select-option>
+                            <ion-select-option [value]="inspector.idAspUser"
+                                *ngFor="let inspector of nombreInspectores">
+                                {{inspector.nombre_empleado}} </ion-select-option>
                         </ion-select>
                     </p>
                 </ion-label>
@@ -492,8 +493,9 @@
                     <p>
                         <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
                             [(ngModel)]="inspector4">
-                            <ion-select-option [value]="inspector.id" *ngFor="let inspector of nombreInspectores">
-                                {{inspector.nombre}} </ion-select-option>
+                            <ion-select-option [value]="inspector.idAspUser"
+                                *ngFor="let inspector of nombreInspectores">
+                                {{inspector.nombre_empleado}} </ion-select-option>
                         </ion-select>
                     </p>
                 </ion-label>

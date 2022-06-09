@@ -47,6 +47,7 @@ export class SyncFotosServiciosPage implements OnInit {
 
     if (this.infoImages.length == 0) {
       this.mensaje.showAlert("No tienes fotos a sincronizar");
+      this.router.navigateByUrl('sincronizar-fotos');
     }
 
     this.loading.dismiss();
