@@ -886,7 +886,7 @@ export class RestService {
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -906,6 +906,7 @@ export class RestService {
       data.entre_calle1,
       data.entre_calle2,
       data.observaciones,
+      data.lectura_medidor,
       data.idAspUser,
       data.idTarea,
       data.fechaCaptura,
@@ -925,8 +926,8 @@ export class RestService {
 
     this.updateAccountGestionada(data.id);
 
-    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, idPuesto, otroPuesto, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoNegaronAcceso, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, idTarea, fechaCaptura, latitud, longitud, id_servicio_plaza)' +
-      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    let sql = 'INSERT INTO gestionInspeccion (id_plaza, nombre_plaza, account, personaAtiende, idPuesto, otroPuesto, idTipoServicio, numeroNiveles, colorFachada, colorPuerta, referencia, idTipoPredio, entreCalle1, entreCalle2, hallazgoNinguna, hallazgoNegaronAcceso, hallazgoMedidorDescompuesto, hallazgoDiferenciaDiametro, hallazgoTomaClandestina, hallazgoDerivacionClandestina, hallazgoDrenajeClandestino, hallazgoCambioGiro, hallazgoFaltaDocumentacion, idAspUser, inspector2, inspector3, inspector4, observacion, lectura_medidor, idTarea, fechaCaptura, latitud, longitud, id_servicio_plaza)' +
+      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -957,6 +958,7 @@ export class RestService {
       data.inspector3,
       data.inspector4,
       data.observacion,
+      data.lectura_medidor,
       data.idTarea,
       data.fechaCaptura,
       data.latitud,
@@ -1023,7 +1025,7 @@ export class RestService {
 
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionLegal (id_plaza, nombre_plaza, account, persona_atiende, id_puesto, otro_puesto, id_motivo_no_pago, otro_motivo, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, id_tipo_predio, entre_calle1, entre_calle2, observaciones, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let sql = "INSERT INTO gestionLegal (id_plaza, nombre_plaza, account, persona_atiende, id_puesto, otro_puesto, id_motivo_no_pago, otro_motivo, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, id_tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     console.log("Insertando");
     console.log(data);
@@ -1045,6 +1047,7 @@ export class RestService {
       data.entreCalle1,
       data.entreCalle2,
       data.observaciones,
+      data.lectura_medidor,
       data.idAspUser,
       data.idTarea,
       data.fechaCaptura,
@@ -1166,7 +1169,6 @@ export class RestService {
  * este metodo se llama cuando se envie una gestion solamente de carta invitacion
  */
   async sendEncuestaByCuenta(id_servicio_plaza, account) {
-    console.log("Entrando a enviar la informacion de la encuesta de la cuenta " + account + " y del servicio " + id_servicio_plaza);
     try {
       let arrayEncuesta = [];
       let sql = 'SELECT * FROM encuesta where cargado = 0 AND id_servicio_plaza = ? AND account = ?';
@@ -1213,7 +1215,6 @@ export class RestService {
    * @returns 
    */
   async sendCartaByIdServicioAccount(idServicioPlaza, account) {
-    console.log("Entrando a enviar la informacion de la cuenta");
     try {
       let arrayCuentaCarta = [];
       let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
@@ -1239,6 +1240,7 @@ export class RestService {
         let entre_calle1 = arrayCuentaCarta[0].entre_calle1;
         let entre_calle2 = arrayCuentaCarta[0].entre_calle2;
         let observaciones = arrayCuentaCarta[0].observaciones;
+        let lectura_medidor = arrayCuentaCarta[0].lectura_medidor;
         let idAspUser = arrayCuentaCarta[0].idAspUser;
         let idTarea = arrayCuentaCarta[0].id_tarea;
         let fechaCaptura = arrayCuentaCarta[0].fecha_captura;
@@ -1247,7 +1249,7 @@ export class RestService {
         let idServicioPaza = arrayCuentaCarta[0].id_servicio_plaza;
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
         console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
 
@@ -1269,7 +1271,6 @@ export class RestService {
    * @returns Promise
    */
   async sendLegalByIdServicioAccount(idServicioPlaza, account) {
-    console.log("Entrando a enviar la informacion de la cuenta");
     try {
       let arrayCuentaLegal = [];
       let sql = 'SELECT * FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
@@ -1299,6 +1300,7 @@ export class RestService {
         let entreCalle1 = arrayCuentaLegal[0].entre_calle1;
         let entreCalle2 = arrayCuentaLegal[0].entre_calle2;
         let observaciones = arrayCuentaLegal[0].observaciones;
+        let lectura_medidor = arrayCuentaLegal[0].lectura_medidor;
         let idAspUser = arrayCuentaLegal[0].idAspUser;
         let idTarea = arrayCuentaLegal[0].id_tarea;
         let fechaCaptura = arrayCuentaLegal[0].fecha_captura;
@@ -1307,7 +1309,7 @@ export class RestService {
         let idServicioPlaza = arrayCuentaLegal[0].id_servicio_plaza
         let id = arrayCuentaLegal[0].id;
 
-        let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
+        let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
         console.log(sql);
         await this.enviarSQLGestionLegal(sql, id)
 
@@ -1329,7 +1331,6 @@ export class RestService {
    * @returns Promise
    */
   async sendInspeccionByIdServicioAccount(idServicioPlaza, account) {
-    console.log("Entrando a enviar la informacion de la cuenta");
     try {
       let arrayCuentaInspeccion = [];
       let sql = 'SELECT * FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
@@ -1370,6 +1371,7 @@ export class RestService {
         let inspector3 = arrayCuentaInspeccion[0].inspector3;
         let inspector4 = arrayCuentaInspeccion[0].inspector4;
         let observacion = arrayCuentaInspeccion[0].observacion;
+        let lectura_medidor = arrayCuentaInspeccion[0].lectura_medidor;
         let idTarea = arrayCuentaInspeccion[0].idTarea;
         let fechaCaptura = arrayCuentaInspeccion[0].fechaCaptura;
         let latitud = arrayCuentaInspeccion[0].latitud;
@@ -1377,7 +1379,7 @@ export class RestService {
         let idServicioPlaza = arrayCuentaInspeccion[0].id_servicio_plaza;
         let id = arrayCuentaInspeccion[0].id;
 
-        let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
+        let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}','${lectura_medidor}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
         console.log(sql);
         await this.enviarSQLInspeccion(sql, id)
 
@@ -1699,7 +1701,6 @@ export class RestService {
    * @returns Promise
    */
   async sendInspeccion() {
-    console.log("Entrando a enviar la informacion");
     try {
       let arrayCuentasInspeccion = [];
       let sql = 'SELECT * FROM gestionInspeccion WHERE cargado = 0';
@@ -1707,7 +1708,7 @@ export class RestService {
       for (let i = 0; i < result.rows.length; i++) {
         arrayCuentasInspeccion.push(result.rows.item(i));
       }
-      console.log(arrayCuentasInspeccion);
+      // console.log(arrayCuentasInspeccion);
 
       if (arrayCuentasInspeccion.length == 0) {
         this.message.showToast("Sin registros de inspeccion por enviar");
@@ -1784,6 +1785,7 @@ export class RestService {
       let inspector3 = arrayGestionesInspeccionAgua[i].inspector3;
       let inspector4 = arrayGestionesInspeccionAgua[i].inspector4;
       let observacion = arrayGestionesInspeccionAgua[i].observacion;
+      let lectura_medidor = arrayGestionesInspeccionAgua[i].lectura_medidor;
       let idTarea = arrayGestionesInspeccionAgua[i].idTarea;
       let fechaCaptura = arrayGestionesInspeccionAgua[i].fechaCaptura;
       let latitud = arrayGestionesInspeccionAgua[i].latitud;
@@ -1791,7 +1793,7 @@ export class RestService {
       let idServicioPlaza = arrayGestionesInspeccionAgua[i].id_servicio_plaza;
       let id = arrayGestionesInspeccionAgua[i].id;
 
-      let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
+      let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}','${lectura_medidor}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
       console.log(sql);
       await this.enviarSQLInspeccion(sql, id)
       resolve('Execute Query successfully');
@@ -1877,7 +1879,7 @@ export class RestService {
   * este metodo se llama cuando se envien todas las gestiones
   */
   async sendEncuestaByIdServicio(id_servicio_plaza) {
-    console.log("Entrando a enviar la informacion de la encuesta del servicio " + id_servicio_plaza);
+    // console.log("Entrando a enviar la informacion de la encuesta del servicio " + id_servicio_plaza);
     try {
       let arrayEncuesta = [];
       let sql = 'SELECT * FROM encuesta where cargado = 0 AND idServicioPlaza = ?';
@@ -1924,7 +1926,7 @@ export class RestService {
  * 
  */
   async sendCartaInvitacionByIdServicio(idServicioPlaza) {
-    console.log("Entrando a enviar la informacion de cartas invitacion del servicio " + idServicioPlaza);
+    // console.log("Entrando a enviar la informacion de cartas invitacion del servicio " + idServicioPlaza);
     try {
       let arrayCuentasCarta = [];
       let sql = 'SELECT * FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ?';
@@ -2023,6 +2025,7 @@ export class RestService {
       let entre_calle1 = arrayGestionesCarta[i].entre_calle1;
       let entre_calle2 = arrayGestionesCarta[i].entre_calle2;
       let observaciones = arrayGestionesCarta[i].observaciones;
+      let lectura_medidor = arrayGestionesCarta[i].lectura_medidor;
       let idAspUser = arrayGestionesCarta[i].idAspUser;
       let idTarea = arrayGestionesCarta[i].id_tarea;
       let fechaCaptura = arrayGestionesCarta[i].fecha_captura;
@@ -2031,7 +2034,7 @@ export class RestService {
       let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza} `
       console.log(sql);
       await this.enviarSQLCartaInvitacion(sql, id)
       resolve('Execute Query successfully');
@@ -2186,6 +2189,7 @@ export class RestService {
       let entreCalle1 = arrayGestionesLegal[i].entre_calle1;
       let entreCalle2 = arrayGestionesLegal[i].entre_calle2;
       let observaciones = arrayGestionesLegal[i].observaciones;
+      let lectura_medidor = arrayGestionesLegal[i].lectura_medidor;
       let idAspUser = arrayGestionesLegal[i].idAspUser;
       let idTarea = arrayGestionesLegal[i].id_tarea;
       let fechaCaptura = arrayGestionesLegal[i].fecha_captura;
@@ -2193,7 +2197,7 @@ export class RestService {
       let idServicioPlaza = arrayGestionesLegal[i].id_servicio_plaza
       let id = arrayGestionesLegal[i].id;
 
-      let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
+      let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
       console.log(sql);
       await this.enviarSQLGestionLegal(sql, id)
       resolve('Execute Query successfully');

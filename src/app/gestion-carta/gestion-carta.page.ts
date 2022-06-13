@@ -36,6 +36,7 @@ export class GestionCartaPage implements OnInit {
   entreCalle1: string = '';
   entreCalle2: string = '';
   observaciones: string = '';
+  lectura_medidor: string = '';
   tipoServicioPadron: string = '';
   referencia: string = '';
 
@@ -66,6 +67,7 @@ export class GestionCartaPage implements OnInit {
   otroMotivo: string = '';
 
   encuestaRealizada: boolean = false;
+  plazaAgua: boolean;
 
 
   sliderOpts = {
@@ -94,14 +96,21 @@ export class GestionCartaPage implements OnInit {
   }
 
   async ngOnInit() {
-    // tipo es el tipo_servicio que viene de la base de datos
-    this.tipo = await this.storage.get('tipo');
-    //console.log(this.tipo);
+    this.tipo = await this.storage.get('IdServicioActivo');
     await this.platform.ready();
     this.getInfoAccount();
     this.getPlaza();
     this.getFechaActual();
+    this.estatusLecturaMedidor();
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
+  }
+
+  async estatusLecturaMedidor() {
+    if(this.tipo === 1) {
+      this.plazaAgua = true;
+    } else {
+      this.plazaAgua = false;
+    }
   }
 
   async getPlaza() {
@@ -384,6 +393,7 @@ export class GestionCartaPage implements OnInit {
           entre_calle1: this.entreCalle1,
           entre_calle2: this.entreCalle2,
           observaciones: this.observaciones,
+          lectura_medidor: this.lectura_medidor,
           idAspUser: this.idAspUser,
           idTarea: this.tareaAsignada,
           fechaCaptura: this.fechaCaptura,
@@ -458,9 +468,6 @@ export class GestionCartaPage implements OnInit {
 
 
   async goPhotos() {
-
-    // console.log(this.id_plaza);
-    // console.log(this.account);
 
     let idPlaza = this.id_plaza;
 

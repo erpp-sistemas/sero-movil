@@ -35,6 +35,7 @@ export class GestionLegalPage implements OnInit {
   entreCalle1: string = '';
   entreCalle2: string = '';
   observaciones: string = '';
+  lectura_medidor: string = '';
   tipoServicioPadron: string = '';
 
   latitud: number;
@@ -58,6 +59,8 @@ export class GestionLegalPage implements OnInit {
   takePhoto: boolean = false;
   activaOtroMotivo: boolean = false;
   detectedChanges: boolean = false;
+  tipo: number = 0;
+  plazaAgua: boolean;
 
   nombrePlaza: any;
   id_plaza: any;
@@ -91,11 +94,20 @@ export class GestionLegalPage implements OnInit {
   }
 
   async ngOnInit() {
+    this.tipo = await this.storage.get('IdServicioActivo');
     await this.platform.ready();
     this.getInfoAccount();
     this.getPlaza();
     this.getFechaActual();
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
+  }
+
+  async estatusLecturaMedidor() {
+    if(this.tipo === 1) {
+      this.plazaAgua = true;
+    } else {
+      this.plazaAgua = false;
+    }
   }
 
   ionViewWillLeave() {
@@ -379,6 +391,7 @@ export class GestionLegalPage implements OnInit {
           entreCalle1: this.entreCalle1,
           entreCalle2: this.entreCalle2,
           observaciones: this.observaciones,
+          lectura_medidor: this.lectura_medidor,
           idAspUser: this.idAspUser,
           idTarea: this.tareaAsignada,
           fechaCaptura: this.fechaCaptura,

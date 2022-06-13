@@ -270,7 +270,7 @@ export class Tab1Page implements OnInit {
    */
   async goCuentasTab(idServicioPlaza) {
 
-    console.log("IdServicioPlaza", idServicioPlaza);
+    //console.log("IdServicioPlaza", idServicioPlaza);
 
     const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
     console.log(plaza_servicio);

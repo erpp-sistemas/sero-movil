@@ -157,6 +157,15 @@
         </ion-label>
       </ion-item>
 
+      <div *ngIf="plazaAgua">
+        <ion-item color="medium">
+          <ion-label>
+            <p>Lectura medidor: </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="lectura_medidor"></ion-input>
+        </ion-item>
+      </div>
+
       <hr>
 
       <div style="text-align: center;">
@@ -234,7 +243,6 @@
         </ion-label>
         <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
       </ion-item>
-
     </ion-card-content>
   </ion-card>
 

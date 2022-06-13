@@ -46,6 +46,7 @@ export class GestionInspeccionAguaPage implements OnInit {
 
 
   observacion: string = '';
+  lectura_medidor: string = '';
   imgs: any;
   nombreInspectores = []; // donde se guardaran todos los inspectores de la plaza
   nombreInspectorLogueado: string = '';
@@ -87,6 +88,8 @@ export class GestionInspeccionAguaPage implements OnInit {
   detectedChanges: boolean = false;
   mostrarOtroPuesto: boolean = false;
   mostrarIrregularidades: boolean = true;
+  tipo: number = 0;
+  plazaAgua: boolean;
 
 
   sliderOpts = {
@@ -119,6 +122,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   @ViewChild('segmentPrincipal', { static: true }) segmentPrincipal;
 
   async ngOnInit() {
+    this.tipo = await this.storage.get('IdServicioActivo');
     await this.platform.ready();
     await this.getInfoAccount();
     //this.getTotals();
@@ -127,6 +131,13 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
   }
 
+  async estatusLecturaMedidor() {
+    if(this.tipo === 1) {
+      this.plazaAgua = true;
+    } else {
+      this.plazaAgua = false;
+    }
+  }
 
   // results
 
@@ -575,6 +586,7 @@ export class GestionInspeccionAguaPage implements OnInit {
           inspector3: this.inspector3,
           inspector4: this.inspector4,
           observacion: this.observacion,
+          lectura_medidor: this.lectura_medidor,
           idTarea: this.tareaAsignada,
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
@@ -647,6 +659,7 @@ export class GestionInspeccionAguaPage implements OnInit {
         inspector3: this.inspector3,
         inspector4: this.inspector4,
         observacion: this.observacion,
+        lectura_medidor: this.lectura_medidor,
         idTarea: this.tareaAsignada,
         fechaCaptura: this.fechaCaptura,
         latitud: this.latitud,
