@@ -160,7 +160,7 @@
           </p>
           <p>
             <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
-              [(ngModel)]="idTipoServicio">
+              [(ngModel)]="idTipoServicio" (ionChange)="resultTipoServicio($event)">
               <ion-select-option value="1">Doméstico</ion-select-option>
               <ion-select-option value="2">Comercial</ion-select-option>
               <ion-select-option value="3">Industrial</ion-select-option>
@@ -168,10 +168,20 @@
               <ion-select-option value="5">Doméstico / Comercial</ion-select-option>
               <ion-select-option value="6">Residencial</ion-select-option>
               <ion-select-option value="7">Departamental</ion-select-option>
+              <ion-select-option value="8">No aplica</ion-select-option>
             </ion-select>
           </p>
         </ion-label>
       </ion-item>
+
+      <div *ngIf="mostrarGiro">
+        <ion-item color="medium">
+          <ion-label>
+            <p>Giro: </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="giro"></ion-input>
+        </ion-item>
+      </div>
 
       <div *ngIf="plazaAgua">
         <ion-item color="medium">

@@ -158,7 +158,7 @@ export class MapaPruebaPage implements OnInit {
     console.log(this.markersArrayInfo);
     if (this.markersArrayInfo.length <= 0) {
       // await this.setMarkers(this.markersArrayInfo);  
-      this.mensaje.showAlert('Tienes que descargar información para visualizar las cuentas en el mapa!!!!')
+      this.mensaje.showAlert('Tienes que descargar información para visualizar las cuentas en el mapa, o tus cuentas aún no tienen posición')
       this.router.navigateByUrl('/home');
       // this.toggleMenu();
     } else {

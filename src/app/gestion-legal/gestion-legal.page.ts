@@ -59,7 +59,9 @@ export class GestionLegalPage implements OnInit {
   takePhoto: boolean = false;
   activaOtroMotivo: boolean = false;
   detectedChanges: boolean = false;
-  tipo: number = 0;
+
+  giro: string = '';
+  mostrarGiro: boolean = false;
   plazaAgua: boolean;
 
   nombrePlaza: any;
@@ -94,16 +96,17 @@ export class GestionLegalPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.tipo = await this.storage.get('IdServicioActivo');
     await this.platform.ready();
     this.getInfoAccount();
     this.getPlaza();
     this.getFechaActual();
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
+    this.estatusLecturaMedidor();
+
   }
 
   async estatusLecturaMedidor() {
-    if(this.tipo === 1) {
+    if (this.idServicioPlaza === 1) {
       this.plazaAgua = true;
     } else {
       this.plazaAgua = false;
@@ -160,6 +163,15 @@ export class GestionLegalPage implements OnInit {
     }
   }
 
+  resultTipoServicio(event) {
+    let tipo = event.detail.value;
+    if(tipo !== '8') {
+      this.mostrarGiro = true;
+    } else {
+      this.mostrarGiro = false;
+    }
+  }
+
   resultMotivoNoPago(event) {
     let motivo = event.detail.value;
     if (motivo == 5) {
@@ -203,7 +215,7 @@ export class GestionLegalPage implements OnInit {
       tipo = "Legal evidencia";
     } else if (type == 3) {
       tipo = "Legal toma"
-    } 
+    }
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(
@@ -264,7 +276,7 @@ export class GestionLegalPage implements OnInit {
       tipo = "Legal evidencia";
     } else if (type == 3) {
       tipo = "Legal toma"
-    } 
+    }
 
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
@@ -336,7 +348,7 @@ export class GestionLegalPage implements OnInit {
     })
   }
 
-  
+
 
   async verify() {
     let account = this.account;
@@ -392,6 +404,7 @@ export class GestionLegalPage implements OnInit {
           entreCalle2: this.entreCalle2,
           observaciones: this.observaciones,
           lectura_medidor: this.lectura_medidor,
+          giro: this.giro,
           idAspUser: this.idAspUser,
           idTarea: this.tareaAsignada,
           fechaCaptura: this.fechaCaptura,
@@ -400,7 +413,7 @@ export class GestionLegalPage implements OnInit {
           idServicioPlaza: this.idServicioPlaza,
           id: this.idAccountSqlite
         };
-        
+
         await this.gestionLegal(data);
         this.loading.dismiss();
         this.exit();
@@ -446,7 +459,7 @@ export class GestionLegalPage implements OnInit {
           text: "Cancelar",
           role: "cancel",
           cssClass: "secondary",
-          handler: blah => {}
+          handler: blah => { }
         },
         {
           text: "Confirmar",

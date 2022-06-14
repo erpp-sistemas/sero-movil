@@ -88,9 +88,10 @@ export class GestionInspeccionAguaPage implements OnInit {
   detectedChanges: boolean = false;
   mostrarOtroPuesto: boolean = false;
   mostrarIrregularidades: boolean = true;
-  tipo: number = 0;
-  plazaAgua: boolean;
 
+  giro: string = '';
+  plazaAgua: boolean;
+  mostrarGiro: boolean = false;
 
   sliderOpts = {
     zoom: true,
@@ -122,17 +123,17 @@ export class GestionInspeccionAguaPage implements OnInit {
   @ViewChild('segmentPrincipal', { static: true }) segmentPrincipal;
 
   async ngOnInit() {
-    this.tipo = await this.storage.get('IdServicioActivo');
     await this.platform.ready();
     await this.getInfoAccount();
     //this.getTotals();
     this.getFechaActual();
     this.getPlaza();
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
+    this.estatusLecturaMedidor();
   }
 
   async estatusLecturaMedidor() {
-    if(this.tipo === 1) {
+    if(this.idServicioPlaza === 1) {
       this.plazaAgua = true;
     } else {
       this.plazaAgua = false;
@@ -147,6 +148,15 @@ export class GestionInspeccionAguaPage implements OnInit {
       this.mostrarOtroPuesto = true;
     } else {
       this.mostrarOtroPuesto = false;
+    }
+  }
+
+  resultTipoServicio(event) {
+    let tipo = event.detail.value;
+    if(tipo !== '8'){
+      this.mostrarGiro = true;
+    } else {
+      this.mostrarGiro = false;
     }
   }
 
@@ -265,6 +275,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.nombreInspectorLogueado = await this.storage.get('Nombre');
     try {
       this.nombreInspectores = await this.rest.mostrarEmpleadosPlaza(this.id_plaza);
+      console.log(this.nombreInspectores);
     } catch (error) {
       console.log("Error al traer los datos de los inspectores")
     }
@@ -587,6 +598,7 @@ export class GestionInspeccionAguaPage implements OnInit {
           inspector4: this.inspector4,
           observacion: this.observacion,
           lectura_medidor: this.lectura_medidor,
+          giro: this.giro,
           idTarea: this.tareaAsignada,
           fechaCaptura: this.fechaCaptura,
           latitud: this.latitud,
@@ -660,6 +672,7 @@ export class GestionInspeccionAguaPage implements OnInit {
         inspector4: this.inspector4,
         observacion: this.observacion,
         lectura_medidor: this.lectura_medidor,
+        giro: this.giro,
         idTarea: this.tareaAsignada,
         fechaCaptura: this.fechaCaptura,
         latitud: this.latitud,

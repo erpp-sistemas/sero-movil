@@ -62,12 +62,14 @@ export class GestionCartaPage implements OnInit {
   detectedChanges: boolean = false;
   tipoServicio: number = 0;
   idServicioPlaza: number = 0;
+  giro: string = '';
 
   activaOtroMotivo: boolean = false;
   otroMotivo: string = '';
 
   encuestaRealizada: boolean = false;
   plazaAgua: boolean;
+  mostrarGiro: boolean = false;
 
 
   sliderOpts = {
@@ -394,6 +396,7 @@ export class GestionCartaPage implements OnInit {
           entre_calle2: this.entreCalle2,
           observaciones: this.observaciones,
           lectura_medidor: this.lectura_medidor,
+          giro: this.giro,
           idAspUser: this.idAspUser,
           idTarea: this.tareaAsignada,
           fechaCaptura: this.fechaCaptura,
@@ -431,6 +434,15 @@ export class GestionCartaPage implements OnInit {
 
   resultNumeroContacto(event) {
     this.detectedChanges = true;
+  }
+
+  resultTipoServicio( event ) {
+    let tipo = event.detail.value;
+    if(tipo !== "8") {
+      this.mostrarGiro = true;
+    } else {
+      this.mostrarGiro = false;
+    }
   }
 
   resultMotivoNoPago(event) {

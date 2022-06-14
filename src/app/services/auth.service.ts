@@ -191,6 +191,7 @@ export class AuthService {
     let idAspUser = userInfo.idaspuser;
     console.log(idAspUser);
     this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe(data => {
+      console.log(data);
       this.insertaEmpleadosPlaza(data);
     })
   }
