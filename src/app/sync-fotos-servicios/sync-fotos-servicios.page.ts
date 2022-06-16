@@ -86,7 +86,7 @@ export class SyncFotosServiciosPage implements OnInit {
       this.router.navigateByUrl('home/tab4');
     } else if (tipo == 5) {
 
-      this.callNumber.callNumber('18001010101', true)
+      this.callNumber.callNumber('911', true)
         .then(res => console.log('Launched dialer!', res))
         .catch(err => console.log('Error launching dialer', err));
 

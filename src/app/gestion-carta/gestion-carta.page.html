@@ -5,25 +5,6 @@
 
 <ion-content color="medium" id="main">
 
-  <ion-fab vertical="top" horizontal="end" slot="fixed">
-    <ion-fab-button>
-      <ion-icon name="arrow-back-outline"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-list side="start">
-      <ion-chip class="procedimiento" color="secondary">
-        Carta Invitación
-      </ion-chip>
-      <ion-chip class="plaza" color="secondary">
-        {{nombrePlaza}}
-      </ion-chip>
-    </ion-fab-list>
-  </ion-fab>
-
-  <hr>
-  <hr>
-  <hr>
-  <hr>
-  <hr>
   <hr>
 
   <ion-grid style="margin-top: 30px;">
@@ -37,13 +18,27 @@
     </ion-row>
   </ion-grid>
 
-  <div style="text-align: center; margin:15 0px 0 20;">
-    <ion-chip color="success">Información contribuyente</ion-chip>
-  </div>
-
-
   <ion-card color="medium">
+    <div style="text-align: center; margin:15 0px 0 20;">
+      <ion-chip color="success">Información de la gestión a realizar</ion-chip>
+    </div>
     <ion-card-content>
+      <ion-item color="medium">
+        <ion-label>
+          <p> Plaza: <span style="font-weight: bold;"> {{nombrePlaza}} </span> </p>
+        </ion-label>
+      </ion-item>
+      <ion-item color="medium">
+        <ion-label>
+          <p> Formulario: <span style="font-weight: bold;"> Carta invitación </span> </p>
+        </ion-label>
+      </ion-item>
+      <ion-item color="medium">
+        <ion-label>
+          <!--  este es solo el id falta traer el nombre -->
+          <p> Acción a realizar: <span style="font-weight: bold;"> {{nombreTareaAsignada}} </span> </p>
+        </ion-label>
+      </ion-item>
 
       <ion-item color="medium">
         <ion-label>
@@ -56,212 +51,167 @@
           <p> Propietario: <span style="font-weight: bold;"> {{propietario}} </span> </p>
         </ion-label>
       </ion-item>
-
-      <ion-item color="medium">
-        <ion-label>
-          <p>Persona que atiende: </p>
-        </ion-label>
-        <ion-input (click)="resultPersonaAtiende( $event )" class="myCustomSelect" interface="popover"
-          [(ngModel)]="personaAtiende"></ion-input>
-      </ion-item>
-      <!-- <ion-item color="medium">
-        <ion-label>
-          <p>Número de contacto: </p>
-        </ion-label>
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numeroContacto"></ion-input>
-      </ion-item> -->
     </ion-card-content>
   </ion-card>
 
-  <!-- <ion-card color="medium">
-    <ion-card-content color="medium"> -->
-
-  <!-- <ion-item color="medium">
-        <ion-label>
-          <p>
-            Motivo de no pago
-          </p>
-          <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
-              [(ngModel)]="idMotivoNoPago" (ionChange)="resultMotivoNoPago($event)">
-              <ion-select-option value="1">No quiero pagar</ion-select-option>
-              <ion-select-option value="2">No tengo dinero</ion-select-option>
-              <ion-select-option value="3">Grupo vulnerable</ion-select-option>
-              <ion-select-option value="4">Descontento con administración</ion-select-option>
-              <ion-select-option value="5">Otro</ion-select-option>
-            </ion-select>
-          </p>
-        </ion-label>
-      </ion-item>
-
-      <div *ngIf="activaOtroMotivo">
-        <ion-item color="medium">
-          <ion-label>
-            <p>Especifique: </p>
-          </ion-label>
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="otroMotivo"></ion-input>
-        </ion-item>
-      </div> -->
-
-  <!-- <ion-item color="medium">
-        <ion-label>
-          <p>
-            <small>
-              Como considera el trabajo actual de la administración
-            </small>
-          </p>
-          <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
-              [(ngModel)]="idTrabajoActual">
-              <ion-select-option value="1">Bueno</ion-select-option>
-              <ion-select-option value="2">Regular</ion-select-option>
-              <ion-select-option value="3">Malo</ion-select-option>
-            </ion-select>
-          </p>
-        </ion-label>
-      </ion-item> -->
-
-  <!-- <ion-item color="medium">
-        <ion-label>
-          <p>
-            <small>
-              En que le gustaría que se gastara su pago de impuestos
-            </small>
-          </p>
-          <p>
-            <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
-              [(ngModel)]="idGastoImpuesto">
-              <ion-select-option value="1">Seguridad</ion-select-option>
-              <ion-select-option value="2">Alumbrado</ion-select-option>
-              <ion-select-option value="3">Pavimentación</ion-select-option>
-              <ion-select-option value="4">Limpieza pública</ion-select-option>
-              <ion-select-option value="5">Parques y camellones</ion-select-option>
-            </ion-select>
-          </p>
-        </ion-label>
-      </ion-item> -->
-
-  <!-- </ion-card-content>
-  </ion-card> -->
 
   <ion-card color="medium">
     <ion-card-content color="medium">
       <ion-item color="medium">
         <ion-label>
-          <p>Tipo de servicio actual</p>
-          <ion-text color="primary"> {{tipoServicioPadron}} </ion-text>
-        </ion-label>
-      </ion-item>
-
-      <ion-item color="medium">
-        <ion-label>
           <p>
-            Cambiar el tipo de servicio
+            Estatus del predio:
           </p>
           <p>
             <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
-              [(ngModel)]="idTipoServicio" (ionChange)="resultTipoServicio($event)">
-              <ion-select-option value="1">Doméstico</ion-select-option>
-              <ion-select-option value="2">Comercial</ion-select-option>
-              <ion-select-option value="3">Industrial</ion-select-option>
-              <ion-select-option value="4">Gobierno</ion-select-option>
-              <ion-select-option value="5">Doméstico / Comercial</ion-select-option>
-              <ion-select-option value="6">Residencial</ion-select-option>
-              <ion-select-option value="7">Departamental</ion-select-option>
-              <ion-select-option value="8">No aplica</ion-select-option>
+              [(ngModel)]="idEstatusPredio" (ionChange)="resultEstatusPredio($event)">
+              <ion-select-option value="1">Predio localizado</ion-select-option>
+              <ion-select-option value="2">Predio baldío</ion-select-option>
+              <ion-select-option value="3">Predio abandonado</ion-select-option>
+              <ion-select-option value="4">Predio no localizado</ion-select-option>
             </ion-select>
           </p>
         </ion-label>
       </ion-item>
+    </ion-card-content>
+  </ion-card>
 
-      <div *ngIf="mostrarGiro">
+
+  <div *ngIf="activaFormulario">
+
+    <div style="text-align: center; margin:15 0px 0 20;">
+      <ion-chip color="success">Información contribuyente</ion-chip>
+    </div>
+
+    <ion-card color="medium">
+      <ion-card-content color="medium">
         <ion-item color="medium">
           <ion-label>
-            <p>Giro: </p>
+            <p>Persona que atiende: </p>
           </ion-label>
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="giro"></ion-input>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"> </ion-input>
         </ion-item>
-      </div>
-
-      <div *ngIf="plazaAgua">
         <ion-item color="medium">
           <ion-label>
-            <p>Lectura medidor: </p>
+            <p>Tipo de servicio actual</p>
+            <ion-text color="primary"> {{tipoServicioPadron}} </ion-text>
           </ion-label>
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="lectura_medidor"></ion-input>
         </ion-item>
-      </div>
 
-      <hr>
+        <ion-item color="medium">
+          <ion-label>
+            <p>
+              Cambiar el tipo de servicio
+            </p>
+            <p>
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                [(ngModel)]="idTipoServicio" (ionChange)="resultTipoServicio($event)">
+                <ion-select-option value="1">Doméstico</ion-select-option>
+                <ion-select-option value="2">Comercial</ion-select-option>
+                <ion-select-option value="3">Industrial</ion-select-option>
+                <ion-select-option value="4">Gobierno</ion-select-option>
+                <ion-select-option value="5">Doméstico / Comercial</ion-select-option>
+                <ion-select-option value="6">Residencial</ion-select-option>
+                <ion-select-option value="7">Departamental</ion-select-option>
+                <ion-select-option value="8">No aplica</ion-select-option>
+              </ion-select>
+            </p>
+          </ion-label>
+        </ion-item>
 
-      <div style="text-align: center;">
-        <ion-chip color="success">Características del inmueble</ion-chip>
-      </div>
+        <div *ngIf="mostrarGiro">
+          <ion-item color="medium">
+            <ion-label>
+              <p>Giro: </p>
+            </ion-label>
+            <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="giro"></ion-input>
+          </ion-item>
+        </div>
 
-      <hr>
+        <div *ngIf="plazaAgua">
+          <ion-item color="medium">
+            <ion-label>
+              <p>Lectura medidor: </p>
+            </ion-label>
+            <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="lectura_medidor"></ion-input>
+          </ion-item>
+        </div>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>Número de niveles: </p>
-        </ion-label>
-        <ion-input type="number" class="myCustomSelect" interface="popover" [(ngModel)]="numeroNiveles"></ion-input>
-      </ion-item>
+        <hr>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>Color fachada: </p>
-        </ion-label>
-        <!-- <input type="color" [(ngModel)]="colorFachada"> -->
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
-      </ion-item>
+        <div style="text-align: center;">
+          <ion-chip color="success">Características del inmueble</ion-chip>
+        </div>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>Color puerta: </p>
-        </ion-label>
-        <!-- <input type="color" [(ngModel)]="colorPuerta"> -->
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
-      </ion-item>
+        <hr>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>Referencia: </p>
-        </ion-label>
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="referencia"></ion-input>
-      </ion-item>
+        <ion-item color="medium">
+          <ion-label>
+            <p>Número de niveles: </p>
+          </ion-label>
+          <ion-input type="number" class="myCustomSelect" interface="popover" [(ngModel)]="numeroNiveles"></ion-input>
+        </ion-item>
+
+        <ion-item color="medium">
+          <ion-label>
+            <p>Color fachada: </p>
+          </ion-label>
+          <!-- <input type="color" [(ngModel)]="colorFachada"> -->
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
+        </ion-item>
+
+        <ion-item color="medium">
+          <ion-label>
+            <p>Color puerta: </p>
+          </ion-label>
+          <!-- <input type="color" [(ngModel)]="colorPuerta"> -->
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
+        </ion-item>
+
+        <ion-item color="medium">
+          <ion-label>
+            <p>Referencia: </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="referencia"></ion-input>
+        </ion-item>
 
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>
-            Tipo de predio
-          </p>
-          <p>
-            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
-              [(ngModel)]="idTipoPredio">
-              <ion-select-option value="1">Esquinero</ion-select-option>
-              <ion-select-option value="2">Intermedio</ion-select-option>
-              <ion-select-option value="3">Manzanero</ion-select-option>
-              <ion-select-option value="4">Ahogado</ion-select-option>
-            </ion-select>
-          </p>
-        </ion-label>
-      </ion-item>
+        <ion-item color="medium">
+          <ion-label>
+            <p>
+              Tipo de predio
+            </p>
+            <p>
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                [(ngModel)]="idTipoPredio">
+                <ion-select-option value="1">Esquinero</ion-select-option>
+                <ion-select-option value="2">Intermedio</ion-select-option>
+                <ion-select-option value="3">Manzanero</ion-select-option>
+                <ion-select-option value="4">Ahogado</ion-select-option>
+              </ion-select>
+            </p>
+          </ion-label>
+        </ion-item>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>Entre calle 1: </p>
-        </ion-label>
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle1"></ion-input>
-      </ion-item>
+        <ion-item color="medium">
+          <ion-label>
+            <p>Entre calle 1: </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle1"></ion-input>
+        </ion-item>
 
-      <ion-item color="medium">
-        <ion-label>
-          <p>Entre calle 2: </p>
-        </ion-label>
-        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle2"></ion-input>
-      </ion-item>
+        <ion-item color="medium">
+          <ion-label>
+            <p>Entre calle 2: </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle2"></ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
+  <ion-card color="medium">
+    <ion-card-content color=""medium>
       <ion-item color="medium">
         <ion-label>
           <p>
@@ -270,10 +220,8 @@
         </ion-label>
         <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
       </ion-item>
-
     </ion-card-content>
   </ion-card>
-
 
   <ion-slides [options]="sliderOpts">
     <ion-slide *ngFor="let img of imgs">
@@ -304,7 +252,7 @@
           </ion-col>
 
           <ion-col text-center>
-            <ion-button expand="block" color="warning" (click)="confirmarFoto(2)">
+            <ion-button [disabled]="desactivaBotonesCamara" expand="block" color="warning" (click)="confirmarFoto(2)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Evidencia</ion-label>
@@ -317,7 +265,7 @@
       <ion-grid>
         <ion-row>
           <ion-col text-center>
-            <ion-button expand="block" color="secondary" (click)="confirmarFoto(3)">
+            <ion-button [disabled]="desactivaBotonesCamara" expand="block" color="secondary" (click)="confirmarFoto(3)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Toma</ion-label>
@@ -337,7 +285,8 @@
     </ion-row>
     <ion-row>
       <ion-col size=12 class="ion-text-center">
-        <ion-button shape="round" color="primary" expand="block" (click)="encuesta()">Abrir encuesta</ion-button>
+        <ion-button [disabled]="desactivaBotonesCamara" shape="round" color="primary" expand="block"
+          (click)="encuesta()">Abrir encuesta</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -355,8 +304,6 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
-
 
 </ion-content>
 

@@ -42,7 +42,6 @@ export class GestionLegalPage implements OnInit {
   longitud: number;
   fechaCaptura: string = "";
   idAspUser: string = "";
-  idTareaGestor: number = 0;
   fechaActual: string;
   g: any;
   t: any;
@@ -51,6 +50,7 @@ export class GestionLegalPage implements OnInit {
   isPhoto: boolean = false;
   isMotive: boolean = false;
   tareaAsignada: string;
+  nombreTareaAsignada: string = '';
   idAccountSqlite: number;
   loading: any;
   userInfo: any;
@@ -135,6 +135,7 @@ export class GestionLegalPage implements OnInit {
     this.propietario = this.infoAccount[0].propietario;
     this.idAccountSqlite = this.infoAccount[0].id;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
+    this.nombreTareaAsignada = this.infoAccount[0].nombre_tarea_asignada,
     this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
     let gestionada = this.infoAccount[0].gestionada;
     if (gestionada == 1) {
@@ -504,7 +505,7 @@ export class GestionLegalPage implements OnInit {
       this.router.navigateByUrl('home/tab4');
     } else if (tipo == 5) {
 
-      this.callNumber.callNumber('18001010101', true)
+      this.callNumber.callNumber('911', true)
         .then(res => console.log('Launched dialer!', res))
         .catch(err => console.log('Error launching dialer', err));
 

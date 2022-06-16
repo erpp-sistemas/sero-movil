@@ -23,11 +23,8 @@ export class GestionCartaPage implements OnInit {
   account: string;
   propietario: string = "";
   infoAccount: any = [];
+  idEstatusPredio: string = ''; // Si es localizado el predio mostrara el formulario
   personaAtiende: string = '';
-  // numeroContacto: string = '';
-  // idMotivoNoPago: number = 0;
-  // idTrabajoActual: number = 0;
-  // idGastoImpuesto: number = 0;
   idTipoServicio: number = 0;
   numeroNiveles: number = 1;
   colorFachada: string = '';
@@ -46,11 +43,11 @@ export class GestionCartaPage implements OnInit {
   longitud: number;
   nombrePlaza: any;
   id_plaza: any;
-  tipo: any;
   idAccountSqlite: any;
   idTareaGestor: any;
   gestionada: number;
   tareaAsignada: number = 0;
+  nombreTareaAsignada: string = '';
   fechaActual: any;
   infoImage: any = [];
   takePhoto: boolean = false;
@@ -59,11 +56,12 @@ export class GestionCartaPage implements OnInit {
   image: string = '';
   loading: any;
   fechaCaptura: any;
-  detectedChanges: boolean = false;
   tipoServicio: number = 0;
   idServicioPlaza: number = 0;
   giro: string = '';
 
+  activaFormulario: boolean = false;
+  desactivaBotonesCamara: boolean = true;
   activaOtroMotivo: boolean = false;
   otroMotivo: string = '';
 
@@ -89,7 +87,6 @@ export class GestionCartaPage implements OnInit {
     private rest: RestService,
     private camera: Camera,
     private webview: WebView,
-    private navController: NavController,
     private router: Router,
     private callNumber: CallNumber,
     private alertCtrl: AlertController
@@ -98,17 +95,16 @@ export class GestionCartaPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.tipo = await this.storage.get('IdServicioActivo');
     await this.platform.ready();
     this.getInfoAccount();
     this.getPlaza();
     this.getFechaActual();
-    this.estatusLecturaMedidor();
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
+    this.estatusLecturaMedidor();
   }
 
   async estatusLecturaMedidor() {
-    if(this.tipo === 1) {
+    if(this.idServicioPlaza === 1) {
       this.plazaAgua = true;
     } else {
       this.plazaAgua = false;
@@ -127,6 +123,7 @@ export class GestionCartaPage implements OnInit {
     this.propietario = this.infoAccount[0].propietario;
     this.idAccountSqlite = this.infoAccount[0].id;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
+    this.nombreTareaAsignada = this.infoAccount[0].nombre_tarea_asignada;
     this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
     let gestionada = this.infoAccount[0].gestionada;
     if (gestionada == 1) {
@@ -150,7 +147,6 @@ export class GestionCartaPage implements OnInit {
   async deletePhoto(img) {
     // console.log(img);
     // console.log(this.imgs);
-
     for (let i = 0; i < this.imgs.length; i++) {
       //console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
@@ -340,14 +336,26 @@ export class GestionCartaPage implements OnInit {
   }
 
   async terminar() {
-    let account = this.account;
 
+    if(this.idEstatusPredio === '') {
+      this.mensaje.showAlert("Debes seleccionar el estatus del predio");
+      return;
+    }
+
+    if(this.idEstatusPredio === '1' && this.personaAtiende === '' ) {
+      this.mensaje.showAlert("Debes ingresar minimo la persona que atendio para poder finalizar la gestión");
+      return;
+    }
+
+    if(this.idEstatusPredio !== '1') {
+      this.numeroNiveles = 0;
+    }
+    
     this.loading = await this.loadingController.create({
       message: 'Obteniendo la ubicación de esta gestión'
     });
 
     await this.loading.present();
-
 
     this.geolocation.getCurrentPosition().then(async (resp) => {
       if (resp) {
@@ -403,6 +411,7 @@ export class GestionCartaPage implements OnInit {
           latitud: this.latitud,
           longitud: this.longitud,
           idServicioPlaza: this.idServicioPlaza,
+          idEstatusPredio: this.idEstatusPredio,
           id: this.idAccountSqlite
         }
         
@@ -420,7 +429,6 @@ export class GestionCartaPage implements OnInit {
 
   async gestionCarta(data) {
     // console.log(data);
-    this.detectedChanges = false;
     this.rest.gestionCartaInvitacion(data);
   }
 
@@ -428,13 +436,18 @@ export class GestionCartaPage implements OnInit {
     this.router.navigateByUrl('home/tab2');
   }
 
-  resultPersonaAtiende(event) {
-    this.detectedChanges = true;
+  resultEstatusPredio(event) {
+    let estatus = event.detail.value;
+    if(estatus === '1') {
+      this.activaFormulario = true;
+      this.desactivaBotonesCamara = false;
+    } else {
+      this.activaFormulario = false;
+      this.desactivaBotonesCamara = true;
+    }
   }
 
-  resultNumeroContacto(event) {
-    this.detectedChanges = true;
-  }
+
 
   resultTipoServicio( event ) {
     let tipo = event.detail.value;
@@ -507,7 +520,7 @@ export class GestionCartaPage implements OnInit {
       this.router.navigateByUrl('home/tab4');
     } else if (tipo == 5) {
 
-      this.callNumber.callNumber('18001010101', true)
+      this.callNumber.callNumber('911', true)
         .then(res => console.log('Launched dialer!', res))
         .catch(err => console.log('Error launching dialer', err));
 
