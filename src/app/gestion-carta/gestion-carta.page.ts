@@ -342,11 +342,6 @@ export class GestionCartaPage implements OnInit {
       return;
     }
 
-    if(this.idEstatusPredio === '1' && this.personaAtiende === '' ) {
-      this.mensaje.showAlert("Debes ingresar minimo la persona que atendio para poder finalizar la gestión");
-      return;
-    }
-
     if(this.idEstatusPredio !== '1') {
       this.numeroNiveles = 0;
     }
