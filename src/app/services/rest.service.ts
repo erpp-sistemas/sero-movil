@@ -30,8 +30,10 @@ export class RestService {
   apiObtenerCuentasDistancia = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_distancia";
   apiObtenerEmpleados = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_empleados";
   apiObtenerFotosHistoricas = "http://201.163.165.20/seroMovil.aspx?query=sp_get_Photos_History";
+  apiObtenerPagosHistoricos = "http://201.163.165.20/seroMovil.aspx?query=sp_get_pagos_history";
   apiRegistroEncuestaPresidente = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_encuesta";
   apiRegistroAsistencia = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_asistencia"
+  apiObtenerEmpleadosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_gestores_plaza";
 
 
   constructor(
@@ -129,7 +131,7 @@ export class RestService {
     ]);
   }
 
-  
+
   async mostrarServicios(idPlaza) {
 
     let sql = "SELECT * FROM serviciosPlazaUser where id_plaza = ?"
@@ -449,7 +451,7 @@ export class RestService {
     let sqlDeleteServiciosPublicos = 'DELETE FROM serviciosPublicos'
     let sqlDeleteFotos = 'DELETE FROM capturaFotos'
     let sqlDeleteFotosServiciosPublicos = 'DELETE FROM capturaFotosServicios'
-    
+
     await this.db.executeSql(sqlDeleteSeroPrincipal, []);
     await this.db.executeSql(sqlDeleteCartaInvitacion, []);
     await this.db.executeSql(sqlDeleteLegal, []);
@@ -889,7 +891,7 @@ export class RestService {
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -917,7 +919,8 @@ export class RestService {
       data.latitud,
       data.longitud,
       data.idServicioPlaza,
-      data.idEstatusPredio
+      data.idEstatusPredio,
+      data.idTipoGestion
     ])
   }
 
@@ -1256,9 +1259,10 @@ export class RestService {
         let longitud = arrayCuentaCarta[0].longitud;
         let idServicioPaza = arrayCuentaCarta[0].id_servicio_plaza;
         let idEstatusPredio = arrayCuentaCarta[0].id_estatus_predio;
+        let idTipoGestion = arrayCuentaCarta[0].id_tipo_gestion;
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio} `
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion} `
         console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
 
@@ -2046,9 +2050,10 @@ export class RestService {
       let longitud = arrayGestionesCarta[i].longitud;
       let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
       let idEstatusPredio = arrayGestionesCarta[i].id_estatus_predio;
+      let idTipoGestion = arrayGestionesCarta[i].id_tipo_gestion;
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio} `
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion} `
       console.log(sql);
       await this.enviarSQLCartaInvitacion(sql, id)
       resolve('Execute Query successfully');
@@ -2805,6 +2810,26 @@ export class RestService {
     })
   }
 
+  /**
+ * Metodo para obtener los pagos historicos
+ * @param id_plaza 
+ * @param account 
+ * @returns Promise
+ */
+  async getPagosHistoryByCuenta(id_plaza, account) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.http.get(this.apiObtenerPagosHistoricos+ " " + id_plaza + " , " + "'" + account + "'").subscribe(data => {
+          resolve(data);
+        })
+      } catch (error) {
+        console.log(error);
+        reject("Hubo un problema al traer las fotos historicas")
+      }
+    })
+  }
+
+
   registroChecador(parametros: string) {
     console.log(parametros);
     return new Promise(resolve => {
@@ -2819,5 +2844,14 @@ export class RestService {
 
   }
 
+  obtenerGestoresPlaza(idPlaza: string) {
+    return new Promise(resolve => {
+      this.http.get(`${this.apiObtenerEmpleadosPlaza} ${idPlaza}`).subscribe(data => {
+        resolve(data)
+      }, err => {
+        this.message.showAlert("No se obtuvieron los usuarios");
+      })
+    })
+  }
 
 }

@@ -211,7 +211,7 @@
   </div>
 
   <ion-card color="medium">
-    <ion-card-content color=""medium>
+    <ion-card-content color="" medium>
       <ion-item color="medium">
         <ion-label>
           <p>
@@ -220,6 +220,69 @@
         </ion-label>
         <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
       </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="medium">
+    <ion-card-content color="medium">
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>
+            Tipo de gestión
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idTipoGestion" (ionChange)="resultPostpago($event)">
+              <ion-select-option value="1">Normal</ion-select-option>
+              <ion-select-option value="2">Postpago</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <div *ngIf="activaPostpago">
+
+        
+        <div style="text-align: center; margin:15 0px 0 20;">
+          <ion-chip color="success">Pagos realizados de la cuenta</ion-chip>
+        </div>
+
+        <ion-item color="medium" *ngFor="let pago of listadoPagos">
+          <ion-label>
+            <p> Total: $ <span style="font-weight: bold;"> {{pago.total}} </span> </p>
+          </ion-label>
+          <ion-label>
+            <p> Fecha: <span style="font-weight: bold;"> {{pago.fecha}} </span> </p>
+          </ion-label>
+        </ion-item>
+
+
+        <ion-item color="medium" style="margin-top:20px">
+          <ion-label>
+            <p>Fecha captura para la gestión</p>
+            <ion-datetime displayFormat="DD-MM-YYYY" min="2020" min="2020-01-01" placeholder="1999-09-09"
+              [(ngModel)]="fechaCapturaPostpago">
+            </ion-datetime>
+          </ion-label>
+        </ion-item>
+        <ion-item color="medium">
+          <ion-label>
+            <p>
+              Nombre gestor:
+            </p>
+            <p>
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                [(ngModel)]="idAspUser">
+                <ion-select-option [value]="gestor.id_usuario" *ngFor="let gestor of listadoGestores">
+                  {{gestor.nombre}} {{gestor.apellido_paterno}}
+                </ion-select-option>
+              </ion-select>
+            </p>
+          </ion-label>
+        </ion-item>
+      </div>
+
     </ion-card-content>
   </ion-card>
 

@@ -56,6 +56,7 @@ export class GestionCartaPage implements OnInit {
   image: string = '';
   loading: any;
   fechaCaptura: any;
+  fechaCapturaFoto: any;
   tipoServicio: number = 0;
   idServicioPlaza: number = 0;
   giro: string = '';
@@ -68,6 +69,13 @@ export class GestionCartaPage implements OnInit {
   encuestaRealizada: boolean = false;
   plazaAgua: boolean;
   mostrarGiro: boolean = false;
+
+
+  idTipoGestion: string = '1';
+  activaPostpago: boolean = false;
+  fechaCapturaPostpago: string = '1989-04-26';
+  listadoGestores: any = [];
+  listadoPagos: any = [];
 
 
   sliderOpts = {
@@ -104,7 +112,7 @@ export class GestionCartaPage implements OnInit {
   }
 
   async estatusLecturaMedidor() {
-    if(this.idServicioPlaza === 1) {
+    if (this.idServicioPlaza === 1) {
       this.plazaAgua = true;
     } else {
       this.plazaAgua = false;
@@ -194,20 +202,46 @@ export class GestionCartaPage implements OnInit {
       tipo = 'Carta invitación toma'
     }
 
-    var dateDay = new Date().toISOString();
-    let date: Date = new Date(dateDay);
-    let ionicDate = new Date(
-      Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds()
-      )
-    );
 
-    let fecha = ionicDate.toISOString();
+    if (this.idTipoGestion === '1') {
+
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(
+        Date.UTC(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds()
+        )
+      );
+
+      this.fechaCapturaFoto = ionicDate.toISOString();
+
+    } else if (this.idTipoGestion === '2') {
+
+      let fecha = new Date(this.fechaCapturaPostpago).toISOString();
+      let fechaDate = new Date(fecha);
+
+      let fechaHoy = new Date().toISOString();
+      let dateHoy = new Date(fechaHoy);
+
+      let ionicDate = new Date(
+        Date.UTC(
+          fechaDate.getFullYear(),
+          fechaDate.getMonth(),
+          fechaDate.getDate(),
+          dateHoy.getHours(),
+          dateHoy.getMinutes(),
+          dateHoy.getSeconds()
+        )
+      );
+      this.fechaCapturaFoto = ionicDate.toISOString();
+    }
+
+    this.fechaCapturaFoto
 
     let options: CameraOptions = {
       quality: 40,
@@ -236,7 +270,7 @@ export class GestionCartaPage implements OnInit {
           this.nombrePlaza,
           this.image,
           this.account,
-          fecha,
+          this.fechaCapturaFoto,
           rutaBase64,
           this.idAspUser,
           this.tareaAsignada,
@@ -260,20 +294,46 @@ export class GestionCartaPage implements OnInit {
       tipo = 'Carta invitación toma'
     }
 
-    var dateDay = new Date().toISOString();
-    let date: Date = new Date(dateDay);
-    let ionicDate = new Date(
-      Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds()
-      )
-    );
 
-    let fecha = ionicDate.toISOString();
+    if (this.idTipoGestion === '1') {
+
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(
+        Date.UTC(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds()
+        )
+      );
+
+      this.fechaCapturaFoto = ionicDate.toISOString();
+
+    } else if (this.idTipoGestion === '2') {
+
+      let fecha = new Date(this.fechaCapturaPostpago).toISOString();
+      let fechaDate = new Date(fecha);
+
+      let fechaHoy = new Date().toISOString();
+      let dateHoy = new Date(fechaHoy);
+
+      let ionicDate = new Date(
+        Date.UTC(
+          fechaDate.getFullYear(),
+          fechaDate.getMonth(),
+          fechaDate.getDate(),
+          dateHoy.getHours(),
+          dateHoy.getMinutes(),
+          dateHoy.getSeconds()
+        )
+      );
+      this.fechaCapturaFoto = ionicDate.toISOString();
+    }
+
+    console.log(this.fechaCapturaFoto);
 
     let options: CameraOptions = {
       quality: 40,
@@ -302,7 +362,7 @@ export class GestionCartaPage implements OnInit {
           this.nombrePlaza,
           this.image,
           this.account,
-          fecha,
+          this.fechaCapturaFoto,
           rutaBase64,
           this.idAspUser,
           this.tareaAsignada,
@@ -337,15 +397,50 @@ export class GestionCartaPage implements OnInit {
 
   async terminar() {
 
-    if(this.idEstatusPredio === '') {
+    if (this.idEstatusPredio === '') {
       this.mensaje.showAlert("Debes seleccionar el estatus del predio");
       return;
     }
 
-    if(this.idEstatusPredio !== '1') {
+    if (this.idEstatusPredio !== '1') {
       this.numeroNiveles = 0;
     }
-    
+
+    if (this.idTipoGestion === '1') {
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(
+        Date.UTC(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds()
+        )
+      );
+      this.fechaCaptura = ionicDate.toISOString();
+    } else if (this.idTipoGestion === '2') {
+
+      let fecha = new Date(this.fechaCapturaPostpago).toISOString();
+      let fechaDate = new Date(fecha);
+
+      let fechaHoy = new Date().toISOString();
+      let dateHoy = new Date(fechaHoy);
+
+      let ionicDate = new Date(
+        Date.UTC(
+          fechaDate.getFullYear(),
+          fechaDate.getMonth(),
+          fechaDate.getDate(),
+          dateHoy.getHours(),
+          dateHoy.getMinutes(),
+          dateHoy.getSeconds()
+        )
+      );
+      this.fechaCaptura = ionicDate.toISOString();
+    }
+
     this.loading = await this.loadingController.create({
       message: 'Obteniendo la ubicación de esta gestión'
     });
@@ -363,21 +458,6 @@ export class GestionCartaPage implements OnInit {
         });
 
         await this.loading.present();
-
-        var dateDay = new Date().toISOString();
-        let date: Date = new Date(dateDay);
-        let ionicDate = new Date(
-          Date.UTC(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            date.getHours(),
-            date.getMinutes(),
-            date.getSeconds()
-          )
-        );
-
-        this.fechaCaptura = ionicDate.toISOString();
 
         let data = {
           id_plaza: this.id_plaza,
@@ -407,9 +487,10 @@ export class GestionCartaPage implements OnInit {
           longitud: this.longitud,
           idServicioPlaza: this.idServicioPlaza,
           idEstatusPredio: this.idEstatusPredio,
+          idTipoGestion: this.idTipoGestion,
           id: this.idAccountSqlite
         }
-        
+
         await this.gestionCarta(data);
         this.loading.dismiss();
         this.exit();
@@ -423,7 +504,7 @@ export class GestionCartaPage implements OnInit {
 
 
   async gestionCarta(data) {
-    // console.log(data);
+    //console.log(data);
     this.rest.gestionCartaInvitacion(data);
   }
 
@@ -433,7 +514,7 @@ export class GestionCartaPage implements OnInit {
 
   resultEstatusPredio(event) {
     let estatus = event.detail.value;
-    if(estatus === '1') {
+    if (estatus === '1') {
       this.activaFormulario = true;
       this.desactivaBotonesCamara = false;
     } else {
@@ -444,9 +525,9 @@ export class GestionCartaPage implements OnInit {
 
 
 
-  resultTipoServicio( event ) {
+  resultTipoServicio(event) {
     let tipo = event.detail.value;
-    if(tipo !== "8") {
+    if (tipo !== "8") {
       this.mostrarGiro = true;
     } else {
       this.mostrarGiro = false;
@@ -462,6 +543,27 @@ export class GestionCartaPage implements OnInit {
     }
   }
 
+  async resultPostpago(event) {
+    let tipo = event.detail.value;
+    if (tipo === '1') {
+      this.activaPostpago = false;
+      this.idAspUser = await this.storage.get('IdAspUser');
+    } else if (tipo === '2') {
+      this.activaPostpago = true;
+      await this.llenarListadoGestores();
+      await this.llenarListadoPagos();
+    }
+  }
+
+  async llenarListadoGestores() {
+    this.listadoGestores = await this.rest.obtenerGestoresPlaza(this.idAspUser);
+  }
+
+  async llenarListadoPagos() {
+    this.listadoPagos = await this.rest.getPagosHistoryByCuenta(this.id_plaza, this.account);
+    console.log(this.listadoPagos);
+  }
+
 
   async salida(tipo) {
     const alert = await this.alertCtrl.create({
@@ -472,7 +574,7 @@ export class GestionCartaPage implements OnInit {
           text: "Cancelar",
           role: "cancel",
           cssClass: "secondary",
-          handler: blah => {}
+          handler: blah => { }
         },
         {
           text: "Confirmar",
@@ -541,7 +643,7 @@ export class GestionCartaPage implements OnInit {
 
     let resultadoEncuesta = data.data.estatus;
 
-    if(resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
+    if (resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
 
   }
 
