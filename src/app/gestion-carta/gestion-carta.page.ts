@@ -196,6 +196,7 @@ export class GestionCartaPage implements OnInit {
     let tipo;
     if (type == 1) {
       tipo = 'Carta invitación fachada predio'
+      this.takePhoto = true;
     } else if (type == 2) {
       tipo = 'Carta invitación evidencia'
     } else if (type == 3) {
@@ -259,7 +260,6 @@ export class GestionCartaPage implements OnInit {
         this.image = this.webview.convertFileSrc(imageData);
         // console.log(rutaBase64, this.image);
         this.isPhoto = false;
-        this.takePhoto = true;
         this.imgs.push({ imagen: this.image });
         if (this.indicadorImagen == 1) {
           this.imgs.splice(0, 1);
@@ -288,6 +288,7 @@ export class GestionCartaPage implements OnInit {
     let tipo;
     if (type == 1) {
       tipo = 'Carta invitación fachada predio'
+      this.takePhoto = true;
     } else if (type == 2) {
       tipo = 'Carta invitación evidencia'
     } else if (type == 3) {
@@ -351,7 +352,6 @@ export class GestionCartaPage implements OnInit {
         this.image = this.webview.convertFileSrc(imageData);
         // console.log(rutaBase64, this.image);
         this.isPhoto = false;
-        this.takePhoto = true;
         this.imgs.push({ imagen: this.image });
         if (this.indicadorImagen == 1) {
           this.imgs.splice(0, 1);
@@ -397,8 +397,12 @@ export class GestionCartaPage implements OnInit {
 
   async terminar() {
 
-    if (this.idEstatusPredio === '') {
-      this.mensaje.showAlert("Debes seleccionar el estatus del predio");
+    if(this.idEstatusPredio === '4') {
+      this.takePhoto = true;
+    }
+
+    if (this.idEstatusPredio === '' || this.takePhoto === false) {
+      this.mensaje.showAlert("Debes seleccionar el estatus del predio y tomar foto de fachada");
       return;
     }
 
@@ -556,7 +560,7 @@ export class GestionCartaPage implements OnInit {
   }
 
   async llenarListadoGestores() {
-    this.listadoGestores = await this.rest.obtenerGestoresPlaza(this.idAspUser);
+    this.listadoGestores = await this.rest.obtenerGestoresPlaza(this.id_plaza);
   }
 
   async llenarListadoPagos() {

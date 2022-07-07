@@ -353,6 +353,12 @@ export class GestionLegalPage implements OnInit {
 
   async verify() {
     let account = this.account;
+
+    if(this.takePhoto === false) {
+      this.mensaje.showAlert("Debes de tomar mínimo una foto para terminar la gestión");
+      return;
+    }
+
     this.loading = await this.loadingController.create({
       message: "Obteniendo la ubicación de esta gestión y guardando..."
     });
