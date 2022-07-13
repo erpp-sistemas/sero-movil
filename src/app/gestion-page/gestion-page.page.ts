@@ -6,6 +6,8 @@ import { GestionCartaPage } from '../gestion-carta/gestion-carta.page';
 import { GestionInspeccionAguaPage } from '../gestion-inspeccion-agua/gestion-inspeccion-agua.page';
 import { GestionLegalPage } from '../gestion-legal/gestion-legal.page';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { RestService } from '../services/rest.service';
+import { Proceso } from '../interfaces/Procesos';
 
 @Component({
   selector: 'app-gestion-page',
@@ -15,63 +17,34 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 export class GestionPagePage implements OnInit {
 
   modal:any;
+  procesos: Proceso[];
 
   constructor(
-    private modalCtrl: ModalController,
+    //private modalCtrl: ModalController,
     private router:Router,
-    private storage: Storage,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private rest: RestService,
+    private storage: Storage
   ) { }
 
   async ngOnInit() {
-
+    await this.getProcesosByIdPlaza();
   }
 
-
-  async inspeccion() {
-    // const modal = await this.modalCtrl.create({
-    //   component: GestionInspeccionAguaPage
-    // });
-
-    // modal.present();
-
-    // modal.onDidDismiss().then( data => {
-    //   this.router.navigate(['home/tab2'])
-    // })
-    // inspeccion-agua es inspeccion se le dejo el nombre para ya no modificarlo en todos los lugares que se llame
-    this.router.navigateByUrl('/gestion-inspeccion-agua');
+  async getProcesosByIdPlaza() {
+    const id_plaza = await this.storage.get('IdPlazaActiva');
+    this.procesos = await this.rest.obtenerProcesosByIdPlaza(id_plaza);
+    console.log(this.procesos);
   }
 
-
-  async cartaInvitacion() {
-    // const modal = await this.modalCtrl.create({
-    //   component: GestionCartaPage
-    // });
-
-    // modal.present()
-
-    // modal.onDidDismiss().then( data => {
-    //   this.router.navigate(['home/tab2']);
-    // })
-    this.router.navigateByUrl('/gestion-carta');
+  irProceso(id_proceso: number) {
+    let procesoUrl = this.procesos.filter(proceso => {
+      return proceso.id_proceso === id_proceso
+    });
+    let url = procesoUrl[0].url_aplicacion_movil;
+    this.router.navigateByUrl(url);
   }
 
-  async legal() {
-    // const modal = await this.modalCtrl.create({
-    //   component: GestionLegalPage
-    // });
-
-    // modal.present()
-
-    // modal.onDidDismiss().then( data => {
-    //   this.router.navigate(['home/tab2']);
-    // })
-    this.router.navigateByUrl('/gestion-legal');
-  }
-
-  async inspeccionAntenas() {
-    this.router.navigateByUrl('/gestion-inspeccion-antena');
-  }
 
   navegar(tipo) {
     if (tipo == 1) {

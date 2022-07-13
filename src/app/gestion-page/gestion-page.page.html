@@ -14,16 +14,25 @@
 
     <hr>
 
-    <ion-card color="medium" (click)="inspeccion()">
+    <ion-card color="medium" *ngFor="let proceso of procesos" (click)="irProceso(proceso.id_proceso)">
+        <ion-card-header>
+            <ion-icon class="icono-proceso" [name]="proceso.imagen"></ion-icon>
+        </ion-card-header>
+        <ion-card-content>
+            <h3>{{proceso.nombre_proceso}}</h3>
+        </ion-card-content>
+    </ion-card>
+    <hr>
+    <!-- <ion-card color="medium" (click)="inspeccion()">
         <ion-card-header>
             <img src="../../assets/img/lupa.png" alt="">
         </ion-card-header>
         <ion-card-content color="dark">
             <h3>Inspección agua</h3>
         </ion-card-content>
-    </ion-card>
+    </ion-card> -->
 
-    <hr>
+    <!-- <hr>
     <hr>
 
     <ion-card color="medium" (click)="legal()">
@@ -36,8 +45,8 @@
     </ion-card>
 
     <hr>
-    <hr>
-
+    <hr> -->
+<!-- 
     <ion-card color="medium" (click)="cartaInvitacion()">
         <ion-card-header>
             <ion-icon color="light" style="font-size: 40px;" name="clipboard-outline"></ion-icon>
@@ -48,17 +57,16 @@
     </ion-card>
     
     <hr>
-    <hr>
+    <hr> -->
     
-    <ion-card color="medium" (click)="inspeccionAntenas()">
+    <!-- <ion-card color="medium" (click)="inspeccionAntenas()">
         <ion-card-header>
-            <!-- <ion-icon color="light" style="font-size: 40px;" name="clipboard-outline"></ion-icon> -->
             <img src="../../assets/img/antena.png" alt="">
         </ion-card-header>
         <ion-card-content color="dark">
             <h3>Inspección antenas</h3>
         </ion-card-content>
-    </ion-card>
+    </ion-card> -->
 
 
 

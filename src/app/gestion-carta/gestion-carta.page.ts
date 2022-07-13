@@ -410,6 +410,9 @@ export class GestionCartaPage implements OnInit {
       this.numeroNiveles = 0;
     }
 
+    // eliminamos los caracteres especiales de los campos abiertos
+    this.eliminarCaracteres();
+
     if (this.idTipoGestion === '1') {
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
@@ -526,8 +529,6 @@ export class GestionCartaPage implements OnInit {
       this.desactivaBotonesCamara = true;
     }
   }
-
-
 
   resultTipoServicio(event) {
     let tipo = event.detail.value;
@@ -649,6 +650,16 @@ export class GestionCartaPage implements OnInit {
 
     if (resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
 
+  }
+
+  eliminarCaracteres() {
+    this.observaciones = this.observaciones.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+    this.entreCalle1 = this.entreCalle1.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+    this.entreCalle2 = this.entreCalle2.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+    this.referencia = this.referencia.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+    this.colorFachada = this.colorFachada.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+    this.colorPuerta = this.colorPuerta.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+    this.giro = this.giro.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
   }
 
 

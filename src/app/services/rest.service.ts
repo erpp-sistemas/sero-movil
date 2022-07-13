@@ -7,6 +7,7 @@ import { Storage } from '@ionic/storage';
 import { LoadingController } from '@ionic/angular';
 import { Base64 } from "@ionic-native/base64/ngx";
 import { S3Service } from './s3.service';
+import { Proceso } from '../interfaces/Procesos';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,7 @@ export class RestService {
   apiRegistroEncuestaPresidente = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_encuesta";
   apiRegistroAsistencia = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_asistencia"
   apiObtenerEmpleadosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_gestores_plaza";
+  apiObtenerProcesosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_procesos_plaza";
 
 
   constructor(
@@ -2076,7 +2078,8 @@ export class RestService {
         console.log(data);
         resolve(data);
       }, err => {
-        this.message.showAlert("No se pudo enviar la información, verifica tu red " + err);
+        this.message.showAlert("No se pudo enviar la información " + err);
+        console.log(err);
         this.loadingCtrl.dismiss();
         console.log(err);
       }
@@ -2819,7 +2822,7 @@ export class RestService {
   async getPagosHistoryByCuenta(id_plaza, account) {
     return new Promise((resolve, reject) => {
       try {
-        this.http.get(this.apiObtenerPagosHistoricos+ " " + id_plaza + " , " + "'" + account + "'").subscribe(data => {
+        this.http.get(this.apiObtenerPagosHistoricos + " " + id_plaza + " , " + "'" + account + "'").subscribe(data => {
           resolve(data);
         })
       } catch (error) {
@@ -2850,6 +2853,17 @@ export class RestService {
         resolve(data)
       }, err => {
         this.message.showAlert("No se obtuvieron los usuarios");
+      })
+    })
+  }
+
+
+  obtenerProcesosByIdPlaza(id_plaza: string) {
+    return new Promise<Proceso[]>(resolve => {
+      this.http.get(`${this.apiObtenerProcesosPlaza} ${id_plaza}`).subscribe((data:Proceso[]) => {
+        resolve(data)
+      }, err => {
+        this.message.showAlert("No se pudieron obtener los procesos de la plaza " + err);
       })
     })
   }
