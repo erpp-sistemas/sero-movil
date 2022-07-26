@@ -4,6 +4,7 @@ import { LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { RestService } from '../services/rest.service';
 import { UsuarioAyuda } from '../interfaces/UsuarioAyuda'
+import { SMS } from '@awesome-cordova-plugins/sms/ngx';
 
 @Component({
   selector: 'app-boton-panico',
@@ -24,11 +25,17 @@ export class BotonPanicoPage implements OnInit {
     private loadingController: LoadingController,
     private geolocation: Geolocation,
     private storage: Storage,
-    private rest: RestService
+    private rest: RestService,
+    private sms: SMS
   ) { }
 
   async ngOnInit() {
     await this.obtenerUsuario();
+  }
+
+  ionViewWillLeave() {
+    console.log("saliendo");
+    this.usuariosAyuda = [];
   }
 
   async confirmarBoton() {
@@ -89,6 +96,20 @@ export class BotonPanicoPage implements OnInit {
     }
     this.usuariosAyuda = await this.rest.registroBotonPanico(data)
     console.log(this.usuariosAyuda);
+    this.enviarMensajes();
+  }
+
+
+  enviarMensajes() {
+    this.sms.hasPermission().then(data => {
+      if (data) {
+        this.sms.send('5527112322', 'hola').then(mensaje => {
+          console.log(mensaje);
+        })
+      } else {
+        console.log(data);
+      }
+    })
   }
 
 }
