@@ -69,8 +69,10 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'
 // BackGroundGeolocation
 import { BackgroundGeolocation } from "@ionic-native/background-geolocation/ngx";
 
-
+// import { SMS } from '@ionic-native/sms/ngx';
 import { SMS } from '@awesome-cordova-plugins/sms/ngx';
+
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
 
 @NgModule({
@@ -107,7 +109,9 @@ import { SMS } from '@awesome-cordova-plugins/sms/ngx';
     Base64,
     BarcodeScanner,
     BackgroundGeolocation,
+    AndroidPermissions,
     SMS,
+
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

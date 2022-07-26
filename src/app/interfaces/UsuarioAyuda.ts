@@ -7,4 +7,5 @@ export interface UsuarioAyuda {
     latitud: number;
     longitud: number;
     fecha_captura: string;
+    distancia: number;
 }

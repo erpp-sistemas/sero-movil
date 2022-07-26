@@ -14,19 +14,51 @@ import { SMS } from '@awesome-cordova-plugins/sms/ngx';
 export class BotonPanicoPage implements OnInit {
 
   id_usuario: any;
+  nombre: string;
   fechaCaptura: any;
   latitud: number;
   longitud: number;
   loading: any
 
-  usuariosAyuda: UsuarioAyuda[] = []
+  usuariosAyuda: UsuarioAyuda[] = [];
+
+  codigoPais: string = '+521'
+  mensajeEnviado: boolean = false;
+
+
+
+  usuarios: UsuarioAyuda[] = [
+    {
+      apellido_materno: "Nava",
+      apellido_paterno: "Perez",
+      distancia: 48473.293960164956,
+      id_usuario: 9,
+      latitud: 19.628384,
+      longitud: -99.206668,
+      nombre: "Guadalupe ",
+      telefono_personal: "5527112322",
+      fecha_captura: ''
+    },
+    {
+      apellido_materno: "Lopez",
+      apellido_paterno: "Ticante",
+      distancia: 48473.293960164956,
+      id_usuario: 54,
+      latitud: 19.628384,
+      longitud: -99.206668,
+      nombre: "Ezequiel",
+      telefono_personal: "5568982899",
+      fecha_captura: ''
+    },
+  ]
 
   constructor(
     private loadingController: LoadingController,
     private geolocation: Geolocation,
     private storage: Storage,
     private rest: RestService,
-    private sms: SMS
+    private sms: SMS,
+
   ) { }
 
   async ngOnInit() {
@@ -34,8 +66,8 @@ export class BotonPanicoPage implements OnInit {
   }
 
   ionViewWillLeave() {
-    console.log("saliendo");
     this.usuariosAyuda = [];
+    this.mensajeEnviado = false;
   }
 
   async confirmarBoton() {
@@ -72,8 +104,6 @@ export class BotonPanicoPage implements OnInit {
         this.longitud = resp.coords.longitude;
 
         await this.mandarInformacion();
-
-        this.loading.dismiss();
       } else {
         this.loading.dismiss();
       }
@@ -85,6 +115,7 @@ export class BotonPanicoPage implements OnInit {
 
   async obtenerUsuario() {
     this.id_usuario = await this.storage.get('IdAspUser');
+    this.nombre = await this.storage.get('Nombre');
   }
 
   async mandarInformacion() {
@@ -94,22 +125,38 @@ export class BotonPanicoPage implements OnInit {
       latitud: this.latitud,
       longitud: this.longitud
     }
+
     this.usuariosAyuda = await this.rest.registroBotonPanico(data)
-    console.log(this.usuariosAyuda);
-    this.enviarMensajes();
+
+    this.usuariosAyuda.forEach(async usuario => {
+      const numero = '+521' + usuario.telefono_personal
+      await this.enviarMensaje(numero, usuario.nombre, usuario.apellido_paterno)
+    });
+
+    this.loading.dismiss();
+    this.mensajeEnviado = true;
+
   }
 
 
-  enviarMensajes() {
-    this.sms.hasPermission().then(data => {
-      if (data) {
-        this.sms.send('5527112322', 'hola').then(mensaje => {
-          console.log(mensaje);
-        })
-      } else {
-        console.log(data);
-      }
+  async enviarMensaje(numero: string, nombre: string, apellido_paterno: string) {
+
+    return new Promise(resolve => {
+      let texto = `Hola que tal ${nombre} ${apellido_paterno} soy ${this.nombre} y solicito ayuda mi ubiación actual es \n 
+      https://www.google.com/maps/place/${this.latitud},${this.longitud}
+     `
+      this.sms.send(numero, texto, {
+        replaceLineBreaks: true
+      }).then(result => {
+        if (result === 'OK') {
+          resolve("Se envio el mensaje")
+        }
+      })
     })
+
   }
+
+
+
 
 }

@@ -16,6 +16,7 @@ import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocati
 //import { auth } from 'firebase';
 //import { UsersFirebaseService } from './services/users-firebase.service';
 
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
 @Component({
   selector: 'app-root',
@@ -41,7 +42,8 @@ export class AppComponent {
     private auth: AuthService,
     private message: MessagesService,
     private storage: Storage,
-    private router: Router
+    private router: Router,
+    private androidPermissions: AndroidPermissions,
   ) {
     this.initializeApp();
 
@@ -55,19 +57,19 @@ export class AppComponent {
       this.statusBar.styleBlackOpaque();
       this.createDB();
       this.backGroundGeolocation();
-      // this.getPermission();
+      this.getPermission();
     })
   }
 
 
-  // async getPermission() {
-  //   this.androidPermissions.requestPermissions(
-  //     [
-  //       this.androidPermissions.PERMISSION.CAMERA,
-  //       this.androidPermissions.PERMISSION.READ_PHONE_STATE,
-  //       this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION
-  //     ])
-  // }
+  async getPermission() {
+    this.androidPermissions.requestPermissions(
+      [
+        this.androidPermissions.PERMISSION.CAMERA,
+        this.androidPermissions.PERMISSION.READ_PHONE_STATE,
+        this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION,
+      ])
+  }
 
   createDB() {
     let table = this.query.getTables();

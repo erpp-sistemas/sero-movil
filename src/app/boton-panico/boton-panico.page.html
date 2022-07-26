@@ -15,19 +15,19 @@
 
   <hr>
 
-  <div *ngIf="usuariosAyuda.length === 0" class="img-boton-panico">
+  <div *ngIf="!mensajeEnviado" class="img-boton-panico">
     <img src="../../assets/img/boton-panico.png" (click)="confirmarBoton()" alt="">
   </div>
 
-  <div *ngIf="usuariosAyuda.length === 0" class="img-selecciona">
+  <div *ngIf="!mensajeEnviado" class="img-selecciona">
     <img src="../../assets/img/mano.png" alt="">
   </div>
 
-  <div *ngIf="usuariosAyuda.length > 0" class="img-good">
+  <div *ngIf="mensajeEnviado" class="img-good">
     <img src="../../assets/img/good.png" alt="">
   </div>
 
-  <div *ngIf="usuariosAyuda.length > 0" class="texto-confimacion-ayuda">
+  <div *ngIf="mensajeEnviado" class="texto-confimacion-ayuda">
     <h1>Se han enviado los mensajes de ayuda</h1>
     <h1>Espera indicaciones</h1>
     <h1>✔✔🚀🚔</h1>
