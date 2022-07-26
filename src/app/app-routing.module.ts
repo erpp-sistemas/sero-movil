@@ -114,7 +114,11 @@ const routes: Routes = [
   {
     path: 'encuesta',
     loadChildren: () => import('./encuesta/encuesta.module').then( m => m.EncuestaPageModule)
+  },  {
+    path: 'boton-panico',
+    loadChildren: () => import('./boton-panico/boton-panico.module').then( m => m.BotonPanicoPageModule)
   }
+
 
 
 ];

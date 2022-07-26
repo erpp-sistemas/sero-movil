@@ -1,4 +1,3 @@
-
 <ion-header class="header" style="z-index: 1 !important;" no-border>
   <ion-toolbar style="z-index: 0 !important;" color="medium">
     <ion-buttons>
@@ -84,6 +83,15 @@
           S.O.S.
         </p>
       </ion-label>
+    </ion-item>
+
+    <ion-item color="medium" (click)="botonPanico()">
+      <ion-label color="light">
+        <p style="color: white;">
+          Botón pánico
+        </p>
+      </ion-label>
+      <ion-icon slot="start" color="warning" name="shield-half-outline"></ion-icon>
     </ion-item>
 
     <ion-item color="medium" (click)="exit()">

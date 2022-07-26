@@ -12,8 +12,6 @@ import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
 })
 export class HeaderComponent implements OnInit {
 
-
-
   constructor(
     private menuCtrl: MenuController,
     private auth: AuthService,
@@ -74,6 +72,12 @@ export class HeaderComponent implements OnInit {
 
   sincronizarFotos() {
     this.router.navigateByUrl('/sincronizar-fotos');
+    this.menuCtrl.close();
+  }
+
+  botonPanico() {
+    console.log("Ir a boton de panico");
+    this.router.navigateByUrl('/boton-panico');
     this.menuCtrl.close();
   }
 

@@ -8,6 +8,7 @@ import { LoadingController } from '@ionic/angular';
 import { Base64 } from "@ionic-native/base64/ngx";
 import { S3Service } from './s3.service';
 import { Proceso } from '../interfaces/Procesos';
+import { UsuarioAyuda } from '../interfaces/UsuarioAyuda';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +37,7 @@ export class RestService {
   apiRegistroAsistencia = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_asistencia"
   apiObtenerEmpleadosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   apiObtenerProcesosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_procesos_plaza";
+  apiRegistroBotonPanico = "http://201.163.165.20/seroMovil.aspx?query=sp_boton_panico";
 
 
   constructor(
@@ -2860,11 +2862,25 @@ export class RestService {
 
   obtenerProcesosByIdPlaza(id_plaza: string) {
     return new Promise<Proceso[]>(resolve => {
-      this.http.get(`${this.apiObtenerProcesosPlaza} ${id_plaza}`).subscribe((data:Proceso[]) => {
+      this.http.get(`${this.apiObtenerProcesosPlaza} ${id_plaza}`).subscribe((data: Proceso[]) => {
         resolve(data)
       }, err => {
         this.message.showAlert("No se pudieron obtener los procesos de la plaza " + err);
       })
+    })
+  }
+
+  registroBotonPanico(data: any) {
+    return new Promise<UsuarioAyuda[]>((resolve, reject) => {
+      try {
+        const {id_usuario, fecha_captura, latitud, longitud} = data;
+        const url = `${this.apiRegistroBotonPanico} ${id_usuario}, '${fecha_captura}', ${latitud}, ${longitud}`
+        this.http.get(url).subscribe((data: any) => {
+          resolve(data);
+        })
+      } catch (error) {
+        reject(error)
+      }
     })
   }
 
