@@ -77,6 +77,17 @@ export class GestionCartaPage implements OnInit {
   listadoGestores: any = [];
   listadoPagos: any = [];
 
+  idTiempoSuministroAgua: string = '';
+  activaOtroSuministroAgua: boolean = false;
+
+  lunes: string = '';
+  martes: string = '';
+  miercoles: string = '';
+  jueves: string = '';
+  viernes: string = '';
+  sabado: string = '';
+  domingo: string = '';
+
 
   sliderOpts = {
     zoom: true,
@@ -413,6 +424,7 @@ export class GestionCartaPage implements OnInit {
     // eliminamos los caracteres especiales de los campos abiertos
     this.eliminarCaracteres();
 
+    
     if (this.idTipoGestion === '1') {
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
@@ -495,6 +507,14 @@ export class GestionCartaPage implements OnInit {
           idServicioPlaza: this.idServicioPlaza,
           idEstatusPredio: this.idEstatusPredio,
           idTipoGestion: this.idTipoGestion,
+          idTiempoSuministroAgua: this.idTiempoSuministroAgua,
+          lunes: this.lunes,
+          martes: this.martes,
+          miercoles: this.miercoles,
+          jueves: this.jueves,
+          viernes: this.viernes,
+          sabado: this.sabado,
+          domingo: this.domingo,
           id: this.idAccountSqlite
         }
 
@@ -511,7 +531,7 @@ export class GestionCartaPage implements OnInit {
 
 
   async gestionCarta(data) {
-    //console.log(data);
+    console.log(data);
     this.rest.gestionCartaInvitacion(data);
   }
 
@@ -559,6 +579,80 @@ export class GestionCartaPage implements OnInit {
       await this.llenarListadoPagos();
     }
   }
+
+  async resultTiempoSuministroAgua( event ) {
+    let tipo = event.detail.value;
+    if(tipo === '4') {
+      this.activaOtroSuministroAgua = true
+    } else {
+      this.activaOtroSuministroAgua = false;
+    }
+  }
+
+  resultLunes(event) {
+    let seleccion = event.target.value;
+    console.log(seleccion);
+    if (seleccion == 'lunesSi') {
+      this.lunes = 'si'
+    } else {
+      this.lunes = 'no'
+    }
+  }
+
+  resultMartes(event) {
+    let seleccion = event.target.value;
+    if (seleccion == 'martesSi') {
+      this.martes = 'si'
+    } else {
+      this.martes = 'no'
+    }
+  }
+
+  resultMiercoles(event) {
+    let seleccion = event.target.value;
+    if (seleccion == 'miercolesSi') {
+      this.miercoles = 'si'
+    } else {
+      this.miercoles = 'no'
+    }
+  }
+
+  resultJueves(event) {
+    let seleccion = event.target.value;
+    if (seleccion == 'juevesSi') {
+      this.jueves = 'si'
+    } else {
+      this.jueves = 'no'
+    }
+  }
+
+  resultViernes(event) {
+    let seleccion = event.target.value;
+    if (seleccion == 'viernesSi') {
+      this.viernes = 'si'
+    } else {
+      this.viernes = 'no'
+    }
+  }
+
+  resultSabado(event) {
+    let seleccion = event.target.value;
+    if (seleccion == 'sabadoSi') {
+      this.sabado = 'si'
+    } else {
+      this.sabado = 'no'
+    }
+  }
+
+  resultDomingo(event) {
+    let seleccion = event.target.value;
+    if (seleccion == 'domingoSi') {
+      this.domingo = 'si'
+    } else {
+      this.domingo = 'no'
+    }
+  }
+  
 
   async llenarListadoGestores() {
     this.listadoGestores = await this.rest.obtenerGestoresPlaza(this.id_plaza);

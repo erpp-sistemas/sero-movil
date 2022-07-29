@@ -129,12 +129,156 @@
         </div>
 
         <div *ngIf="plazaAgua">
+
           <ion-item color="medium">
             <ion-label>
               <p>Lectura medidor: </p>
             </ion-label>
             <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="lectura_medidor"></ion-input>
           </ion-item>
+
+
+          <ion-item color="medium">
+            <ion-label>
+              <p>
+                Cada cuando hay suministro de agua:
+              </p>
+              <p>
+                <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                  [(ngModel)]="idTiempoSuministroAgua" (ionChange)="resultTiempoSuministroAgua($event)">
+                  <ion-select-option value="1">Diario</ion-select-option>
+                  <ion-select-option value="2">Cada tercer dia</ion-select-option>
+                  <ion-select-option value="3">Cada semana</ion-select-option>
+                  <ion-select-option value="4">Otro</ion-select-option>
+                </ion-select>
+              </p>
+            </ion-label>
+          </ion-item>
+
+
+          <div *ngIf="activaOtroSuministroAgua">
+
+            <ion-item color="medium" style="text-align: center;">
+              <p>
+                Lunes:
+              </p>
+            </ion-item>
+            <ion-item color="medium">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultLunes( $event )"
+                value="lunes">
+                <ion-segment-button class="segment-si" value="lunesSi">
+                  <ion-label class="marca-si">Si</ion-label>
+                </ion-segment-button>
+                <ion-segment-button class="segment-no" value="lunesNo">
+                  <ion-label class="marca-no">No</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-item>
+
+            <ion-item color="medium" style="text-align: center;">
+              <p>
+                Martes:
+              </p>
+            </ion-item>
+            <ion-item color="medium">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultMartes( $event )"
+                value="martes">
+                <ion-segment-button class="segment-si" value="martesSi">
+                  <ion-label class="marca-si">Si</ion-label>
+                </ion-segment-button>
+                <ion-segment-button class="segment-no" value="martesNo">
+                  <ion-label class="marca-no">No</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-item>
+
+            <ion-item color="medium" style="text-align: center;">
+              <p>
+                Miércoles
+              </p>
+            </ion-item>
+            <ion-item color="medium">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultMiercoles( $event )"
+                value="lunes">
+                <ion-segment-button class="segment-si" value="miercolesSi">
+                  <ion-label class="marca-si">Si</ion-label>
+                </ion-segment-button>
+                <ion-segment-button class="segment-no" value="miercolesNo">
+                  <ion-label class="marca-no">No</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-item>
+
+            <ion-item color="medium" style="text-align: center;">
+              <p>
+                Jueves:
+              </p>
+            </ion-item>
+            <ion-item color="medium">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultJueves( $event )"
+                value="lunes">
+                <ion-segment-button class="segment-si" value="juevesSi">
+                  <ion-label class="marca-si">Si</ion-label>
+                </ion-segment-button>
+                <ion-segment-button class="segment-no" value="juevesNo">
+                  <ion-label class="marca-no">No</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-item>
+
+            <ion-item color="medium" style="text-align: center;">
+              <p>
+                Viernes:
+              </p>
+            </ion-item>
+            <ion-item color="medium">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultViernes( $event )"
+                value="lunes">
+                <ion-segment-button class="segment-si" value="viernesSi">
+                  <ion-label class="marca-si">Si</ion-label>
+                </ion-segment-button>
+                <ion-segment-button class="segment-no" value="viernesNo">
+                  <ion-label class="marca-no">No</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-item>
+
+            <ion-item color="medium" style="text-align: center;">
+              <p>
+                Sábado:
+              </p>
+            </ion-item>
+            <ion-item color="medium">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultSabado( $event )"
+                value="lunes">
+                <ion-segment-button class="segment-si" value="sabadoSi">
+                  <ion-label class="marca-si">Si</ion-label>
+                </ion-segment-button>
+                <ion-segment-button class="segment-no" value="sabadoNo">
+                  <ion-label class="marca-no">No</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-item>
+
+            <ion-item color="medium" style="text-align: center;">
+              <p>
+                Domingo:
+              </p>
+            </ion-item>
+            <ion-item color="medium">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultDomingo( $event )"
+                value="lunes">
+                <ion-segment-button class="segment-si" value="domingoSi">
+                  <ion-label class="marca-si">Si</ion-label>
+                </ion-segment-button>
+                <ion-segment-button class="segment-no" value="domingoNo">
+                  <ion-label class="marca-no">No</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-item>
+
+          </div>
+
         </div>
 
         <hr>
@@ -243,7 +387,7 @@
 
       <div *ngIf="activaPostpago">
 
-        
+
         <div style="text-align: center; margin:15 0px 0 20;">
           <ion-chip color="success">Pagos realizados de la cuenta</ion-chip>
         </div>

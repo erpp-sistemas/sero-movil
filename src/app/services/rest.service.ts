@@ -895,7 +895,7 @@ export class RestService {
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,
@@ -924,7 +924,15 @@ export class RestService {
       data.longitud,
       data.idServicioPlaza,
       data.idEstatusPredio,
-      data.idTipoGestion
+      data.idTipoGestion,
+      data.idTiempoSuministroAgua,
+      data.lunes,
+      data.martes,
+      data.miercoles,
+      data.jueves,
+      data.viernes,
+      data.sabado,
+      data.domingo
     ])
   }
 
@@ -1239,6 +1247,8 @@ export class RestService {
         arrayCuentaCarta.push(result.rows.item(i));
       }
 
+      console.log(arrayCuentaCarta);
+
       if (arrayCuentaCarta.length == 0) {
         this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
       } else {
@@ -1264,9 +1274,18 @@ export class RestService {
         let idServicioPaza = arrayCuentaCarta[0].id_servicio_plaza;
         let idEstatusPredio = arrayCuentaCarta[0].id_estatus_predio;
         let idTipoGestion = arrayCuentaCarta[0].id_tipo_gestion;
+        let idTiempoSuministroAgua = arrayCuentaCarta[0].id_tiempo_suministro_agua;
+        let lunes = arrayCuentaCarta[0].lunes;
+        let martes = arrayCuentaCarta[0].martes;
+        let miercoles = arrayCuentaCarta[0].miercoles;
+        let jueves = arrayCuentaCarta[0].jueves;
+        let viernes = arrayCuentaCarta[0].viernes;
+        let sabado = arrayCuentaCarta[0].sabado;
+        let domingo = arrayCuentaCarta[0].domingo;
+
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion} `
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}'`
         console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
 
@@ -2055,9 +2074,17 @@ export class RestService {
       let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
       let idEstatusPredio = arrayGestionesCarta[i].id_estatus_predio;
       let idTipoGestion = arrayGestionesCarta[i].id_tipo_gestion;
+      let idTiempoSuministroAgua = arrayGestionesCarta[i].id_tiempo_suministro_agua;
+      let lunes = arrayGestionesCarta[i].lunes;
+      let martes = arrayGestionesCarta[i].martes;
+      let miercoles = arrayGestionesCarta[i].miercoles;
+      let jueves = arrayGestionesCarta[i].jueves;
+      let viernes = arrayGestionesCarta[i].viernes;
+      let sabado = arrayGestionesCarta[i].sabado;
+      let domingo = arrayGestionesCarta[i].domingo;
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion} `
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}' `
       console.log(sql);
       await this.enviarSQLCartaInvitacion(sql, id)
       resolve('Execute Query successfully');

@@ -57,7 +57,7 @@ export class AppComponent {
       this.statusBar.styleBlackOpaque();
       this.createDB();
       this.backGroundGeolocation();
-      this.getPermission();
+      // this.getPermission();
     })
   }
 
