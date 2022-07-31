@@ -39,6 +39,11 @@ export class QuerysService {
 
     let tableEncuesta =  `CREATE TABLE IF NOT EXISTS encuesta (id INTEGER PRIMARY KEY AUTOINCREMENT, idPlaza INTEGER, account TEXT, conocePresidente INTEGER, promesaCamp INTEGER, cualPromesa TEXT, gestionPresidente INTEGER, idServicioImpuesto INTEGER, idServicioPlaza INTEGER, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
 
+    /**
+     * Esta tabla es para guardar los procesos de gestion ejemplo carta invitacion, ejecucion fiscal y demas
+     */
+    let tableProcesoGestion = `CREATE TABLE IF NOT EXISTS proceso (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, id_proceso INTEGER, nombre_proceso TEXT, activo INTEGER, imagen TEXT, url_aplicacion_movil TEXT )`
+
     let tables = {
       tableSero,
       tableFotos,
@@ -53,7 +58,8 @@ export class QuerysService {
       tableListaServiciosPublicos,
       tableEmpleadosPlaza,
       tableRecorrido,
-      tableEncuesta
+      tableEncuesta,
+      tableProcesoGestion
     }
 
     return tables;

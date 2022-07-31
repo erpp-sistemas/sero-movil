@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController, Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { Proceso } from '../interfaces/Procesos';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 
@@ -21,6 +22,7 @@ export class Tab1Page implements OnInit {
   data: any;
   total: any;
   alert: any;
+  dataProcess: Proceso[];
 
 
   id_plaza: number = 0; // select option de plaza
@@ -231,6 +233,9 @@ export class Tab1Page implements OnInit {
 
       this.actualizarEstatusDescarga(this.id_plaza, idServicioPlaza);
 
+      //peticion al sql por los procesos de gestion de la plaza
+      this.getProcessByIdPlaza(this.id_plaza);
+
       this.message.showAlert("Se han descargado tus cuentas!!!!");
     } catch (eror) {
       this.message.showAlert("Error al intentar la descarga");
@@ -261,6 +266,32 @@ export class Tab1Page implements OnInit {
    */
   async deleteInfo(id_plaza, id_servicio_plaza) {
     await this.rest.deleteTable(id_plaza, id_servicio_plaza);
+  }
+
+  async getProcessByIdPlaza(id_plaza: number) {
+    this.dataProcess = await this.rest.obtenerProcesosByIdPlaza(id_plaza);
+    console.log(this.dataProcess);
+    // si obtenemos dataProcess lo guardamos en su tabla interna
+    if(this.dataProcess.length === 0) {
+      this.message.showToast("Esta plaza no tiene procesos de gestión, verificar en ser0 web!!!!");
+      return;
+    }
+
+    // validamos si tenemos descargados procesos de la plaza asignada
+    const validacion = await this.rest.processPlazaExists(id_plaza);
+    console.log(validacion);
+    if(validacion) {
+      await this.rest.deleteProcessByIdPlaza(id_plaza);
+    }
+
+    this.dataProcess.forEach( async process => {
+      let statusProcess = await this.rest.insertProcessTable(process);
+      if(statusProcess) {
+        this.message.showToast(`${process.nombre_proceso} listo...`);
+      } else {
+        this.message.showToast(`${process.nombre_proceso} no se guardo`);
+      }
+    })
   }
 
 
@@ -310,6 +341,11 @@ export class Tab1Page implements OnInit {
 
     //this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
     this.router.navigate(['mapa-prueba', idServicioPlaza, this.id_plaza]);
+  }
+
+  goMapOffline() {
+    console.log("Ir al mapa offline");
+    this.router.navigateByUrl('/mapa-leaflet');
   }
 
 

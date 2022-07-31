@@ -117,6 +117,10 @@ const routes: Routes = [
   },  {
     path: 'boton-panico',
     loadChildren: () => import('./boton-panico/boton-panico.module').then( m => m.BotonPanicoPageModule)
+  },
+  {
+    path: 'mapa-leaflet',
+    loadChildren: () => import('./mapa-leaflet/mapa-leaflet.module').then( m => m.MapaLeafletPageModule)
   }
 
 

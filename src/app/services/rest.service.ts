@@ -235,8 +235,6 @@ export class RestService {
     }
   }
 
-
-
   /**
    * Guarda la informacion descargada en la tabla sero_principal
    * @param data // informacion descargada
@@ -477,7 +475,6 @@ export class RestService {
 
     return this.db.executeSql(sql, [id_plaza, idServicioPlaza]).then(response => {
       let arrayCuentas = [];
-      console.log(response);
       for (let index = 0; index < response.rows.length; index++) {
         arrayCuentas.push(response.rows.item(index));
       }
@@ -2887,7 +2884,7 @@ export class RestService {
   }
 
 
-  obtenerProcesosByIdPlaza(id_plaza: string) {
+  obtenerProcesosByIdPlaza(id_plaza: number) {
     return new Promise<Proceso[]>(resolve => {
       this.http.get(`${this.apiObtenerProcesosPlaza} ${id_plaza}`).subscribe((data: Proceso[]) => {
         resolve(data)
@@ -2897,10 +2894,68 @@ export class RestService {
     })
   }
 
+  async insertProcessTable(proceso: Proceso) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let sql = 'INSERT INTO proceso(id_plaza, nombre_plaza, id_proceso, nombre_proceso, imagen, url_aplicacion_movil) VALUES (?,?,?,?,?,?)';
+        await this.db.executeSql(sql, [
+          proceso.id_plaza,
+          proceso.nombre_plaza,
+          proceso.id_proceso,
+          proceso.nombre_proceso,
+          proceso.imagen,
+          proceso.url_aplicacion_movil
+        ]);
+        resolve(true);
+      } catch (error) {
+        console.log(error);
+        reject("No se pudieron almacenar los procesos de la plaza")
+      }
+    })
+  }
+
+  async processPlazaExists(id_plaza: number) {
+    let sql = 'SELECT * FROM proceso WHERE id_plaza = ?';
+    const response = await this.db.executeSql(sql, [id_plaza]);
+    if (response.rows.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async deleteProcessByIdPlaza(id_plaza: number) {
+    let sql = 'DELETE FROM proceso WHERE id_plaza = ?'
+    try {
+      await this.db.executeSql(sql, [id_plaza]);
+      console.log("Se borraron los procesos de la plaza");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getProcessLocalByIdPlaza(id_plaza: number) {
+    return new Promise<Proceso[]>(async (resolve, reject) => {
+      try {
+        let sql = 'SELECT * FROM proceso WHERE id_plaza = ?';
+        let process: Proceso[] = [];
+        const response = await this.db.executeSql(sql, [id_plaza]);
+        if (response.rows.length > 0) {
+          for (let i = 0; i < response.rows.length; i++) {
+            process.push(response.rows.item(i));
+          }
+        }
+        resolve(process);
+      } catch (error) {
+        reject(error);
+      }
+    })
+  }
+
   registroBotonPanico(data: any) {
     return new Promise<UsuarioAyuda[]>((resolve, reject) => {
       try {
-        const {id_usuario, fecha_captura, latitud, longitud} = data;
+        const { id_usuario, fecha_captura, latitud, longitud } = data;
         const url = `${this.apiRegistroBotonPanico} ${id_usuario}, '${fecha_captura}', ${latitud}, ${longitud}`
         this.http.get(url).subscribe((data: any) => {
           resolve(data);
@@ -2910,5 +2965,6 @@ export class RestService {
       }
     })
   }
+
 
 }

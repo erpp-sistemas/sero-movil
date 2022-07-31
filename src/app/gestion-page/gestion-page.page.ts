@@ -33,7 +33,8 @@ export class GestionPagePage implements OnInit {
 
   async getProcesosByIdPlaza() {
     const id_plaza = await this.storage.get('IdPlazaActiva');
-    this.procesos = await this.rest.obtenerProcesosByIdPlaza(id_plaza);
+    // this.procesos = await this.rest.obtenerProcesosByIdPlaza(id_plaza);
+    this.procesos = await this.rest.getProcessLocalByIdPlaza(id_plaza);
     console.log(this.procesos);
   }
 
