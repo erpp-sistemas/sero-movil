@@ -31,7 +31,7 @@ export class GestionLegalPage implements OnInit {
   colorFachada: string = '';
   colorPuerta: string = '';
   referencia: string = '';
-  idTipoPredio: number;
+  idTipoPredio: number = 0;
   entreCalle1: string = '';
   entreCalle2: string = '';
   observaciones: string = '';
@@ -68,6 +68,8 @@ export class GestionLegalPage implements OnInit {
   id_plaza: any;
   idServicioPlaza: number = 0;
   mostrarOtroPuesto: boolean = false;
+
+  geoPosicion: any = {};
 
 
   sliderOpts = {
@@ -136,7 +138,7 @@ export class GestionLegalPage implements OnInit {
     this.idAccountSqlite = this.infoAccount[0].id;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
     this.nombreTareaAsignada = this.infoAccount[0].nombre_tarea_asignada,
-    this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
+      this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
     let gestionada = this.infoAccount[0].gestionada;
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
@@ -166,7 +168,7 @@ export class GestionLegalPage implements OnInit {
 
   resultTipoServicio(event) {
     let tipo = event.detail.value;
-    if(tipo !== '8') {
+    if (tipo !== '8') {
       this.mostrarGiro = true;
     } else {
       this.mostrarGiro = false;
@@ -352,84 +354,92 @@ export class GestionLegalPage implements OnInit {
 
 
   async verify() {
-    let account = this.account;
 
-    if(this.takePhoto === false) {
+
+    if (this.takePhoto === false) {
       this.mensaje.showAlert("Debes de tomar mínimo una foto para terminar la gestión");
       return;
     }
 
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(
+      Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      )
+    );
+
+    this.fechaCaptura = ionicDate.toISOString();
+
+    let loadingGeolocation = await this.loadingController.create({
+      message: 'Obteniendo ubicación...',
+      spinner: 'dots'
+    })
+
+    await loadingGeolocation.present();
+
+    await this.getGeolocation();
+
+    console.log(this.geoPosicion);
+
+    if (this.geoPosicion.coords) {
+      this.latitud = this.geoPosicion.coords.latitude;
+      this.longitud = this.geoPosicion.coords.longitude;
+    } else {
+      console.log("No se pudo obtener la geolocalización")
+      this.latitud = 0;
+      this.longitud = 0;
+    }
+
+    loadingGeolocation.dismiss();
+
     this.loading = await this.loadingController.create({
-      message: "Obteniendo la ubicación de esta gestión y guardando..."
+      message: 'Guardando la gestión',
+      spinner: 'dots'
     });
+
     await this.loading.present();
 
-    this.geolocation.getCurrentPosition().then(async (resp) => {
-      if (resp) {
-        this.latitud = resp.coords.latitude;
-        this.longitud = resp.coords.longitude;
-        this.loading.dismiss();
+    let data = {
+      id_plaza: this.id_plaza,
+      nombrePlaza: this.nombrePlaza,
+      account: this.account,
+      personaAtiende: this.personaAtiende,
+      //numeroContacto: this.numeroContacto, se quito para la app de encuesta
+      idPuesto: this.idPuesto,
+      otroPuesto: this.otroPuesto,
+      idMotivoNoPago: this.idMotivoNoPago,
+      otroMotivo: this.otroMotivo,
+      idTipoServicio: this.idTipoServicio,
+      numeroNiveles: this.numeroNiveles,
+      colorFachada: this.colorFachada,
+      colorPuerta: this.colorPuerta,
+      referencia: this.referencia,
+      idTipoPredio: this.idTipoPredio,
+      entreCalle1: this.entreCalle1,
+      entreCalle2: this.entreCalle2,
+      observaciones: this.observaciones,
+      lectura_medidor: this.lectura_medidor,
+      giro: this.giro,
+      idAspUser: this.idAspUser,
+      idTarea: this.tareaAsignada,
+      fechaCaptura: this.fechaCaptura,
+      latitud: this.latitud,
+      longitud: this.longitud,
+      idServicioPlaza: this.idServicioPlaza,
+      id: this.idAccountSqlite
+    };
 
-        this.loading = await this.loadingController.create({
-          message: 'Guardando la gestión...'
-        });
+    await this.gestionLegal(data);
+    this.loading.dismiss();
+    this.exit();
 
-        await this.loading.present();
 
-        var dateDay = new Date().toISOString();
-        let date: Date = new Date(dateDay);
-        let ionicDate = new Date(
-          Date.UTC(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            date.getHours(),
-            date.getMinutes(),
-            date.getSeconds()
-          )
-        );
-
-        this.fechaCaptura = ionicDate.toISOString();
-
-        let data = {
-          id_plaza: this.id_plaza,
-          nombrePlaza: this.nombrePlaza,
-          account: this.account,
-          personaAtiende: this.personaAtiende,
-          //numeroContacto: this.numeroContacto, se quito para la app de encuesta
-          idPuesto: this.idPuesto,
-          otroPuesto: this.otroPuesto,
-          idMotivoNoPago: this.idMotivoNoPago,
-          otroMotivo: this.otroMotivo,
-          idTipoServicio: this.idTipoServicio,
-          numeroNiveles: this.numeroNiveles,
-          colorFachada: this.colorFachada,
-          colorPuerta: this.colorPuerta,
-          referencia: this.referencia,
-          idTipoPredio: this.idTipoPredio,
-          entreCalle1: this.entreCalle1,
-          entreCalle2: this.entreCalle2,
-          observaciones: this.observaciones,
-          lectura_medidor: this.lectura_medidor,
-          giro: this.giro,
-          idAspUser: this.idAspUser,
-          idTarea: this.tareaAsignada,
-          fechaCaptura: this.fechaCaptura,
-          latitud: this.latitud,
-          longitud: this.longitud,
-          idServicioPlaza: this.idServicioPlaza,
-          id: this.idAccountSqlite
-        };
-
-        await this.gestionLegal(data);
-        this.loading.dismiss();
-        this.exit();
-      }
-    }).catch(error => {
-      this.loading.dismiss();
-      console.log(error);
-      this.mensaje.showAlert("Hubo un problema al realizar la gestión!!!!")
-    })
   }
 
   async gestionLegal(data) {
@@ -441,10 +451,23 @@ export class GestionLegalPage implements OnInit {
     this.navCtrl.navigateRoot(['/home/tab2']);
   }
 
+  async getGeolocation() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        setTimeout(() => {
+          resolve(this.geoPosicion);
+        }, 8000);
+        this.geoPosicion = await this.geolocation.getCurrentPosition();
+      } catch (error) {
+        console.log(error);
+        reject(error)
+      }
+    })
+  }
+
   async deletePhoto(img) {
     // console.log(img);
     // console.log(this.imgs);
-
     for (let i = 0; i < this.imgs.length; i++) {
       // console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {

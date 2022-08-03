@@ -94,6 +94,8 @@ export class GestionInspeccionAguaPage implements OnInit {
   plazaAgua: boolean;
   mostrarGiro: boolean = false;
 
+  geoPosicion: any = {};
+
   sliderOpts = {
     zoom: true,
     slidesPerView: 1.55,
@@ -134,7 +136,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   }
 
   async estatusLecturaMedidor() {
-    if(this.idServicioPlaza === 1) {
+    if (this.idServicioPlaza === 1) {
       this.plazaAgua = true;
     } else {
       this.plazaAgua = false;
@@ -154,7 +156,7 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   resultTipoServicio(event) {
     let tipo = event.detail.value;
-    if(tipo !== '8'){
+    if (tipo !== '8') {
       this.mostrarGiro = true;
     } else {
       this.mostrarGiro = false;
@@ -528,171 +530,101 @@ export class GestionInspeccionAguaPage implements OnInit {
 
 
   async verify() {
-    let account = this.account;
 
-    if(this.takePhoto === false) {
+
+    if (this.takePhoto === false) {
       this.mensaje.showAlert("Debes de tomar mínimo una foto para terminar la gestión");
       return;
     }
 
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(
+      Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      )
+    );
+
+    this.fechaCaptura = ionicDate.toISOString();
+
+    let loadingGeolocation = await this.loadingController.create({
+      message: 'Obteniendo ubicación...',
+      spinner: 'dots'
+    });
+
+    await loadingGeolocation.present();
+
+    await this.getGeolocation();
+
+    if(this.geoPosicion.coords) {
+      this.latitud = this.geoPosicion.coords.latitude;
+      this.longitud = this.geoPosicion.coords.longitude;
+    } else {
+      console.log("No se pudo obtener la geolocalización");
+      this.latitud = 0;
+      this.longitud = 0;
+    }
+    loadingGeolocation.dismiss();
+
     this.loading = await this.loadingController.create({
-      message: "Obteniendo la ubicación de esta gestión y guardando...."
+      message: 'Guardando la gestión',
+      spinner: 'dots'
     });
 
     await this.loading.present();
 
 
-    this.geolocation.getCurrentPosition().then(async (resp) => {
+    let data = {
+      id_plaza: this.id_plaza,
+      nombrePlaza: this.nombrePlaza,
+      account: this.account,
+      personaAtiende: this.personaAtiende,
+      //numeroContacto: this.numeroContacto, se quito
+      idPuesto: this.idPuesto,
+      otroPuesto: this.otroPuesto,
+      // idMotivoNoPago: this.idMotivoNoPago, se quito por que estara en la app de encuesta
+      // otroMotivo: this.otroMotivo, se quito por que estara en la app de encuesta
+      idTipoServicio: this.idTipoServicio,
+      numeroNiveles: this.numeroNiveles,
+      colorFachada: this.colorFachada,
+      colorPuerta: this.colorPuerta,
+      referencia: this.referencia,
+      idTipoPredio: this.idTipoPredio,
+      entreCalle1: this.entreCalle1,
+      entrecalle2: this.entreCalle2,
+      hallazgoNinguna: this.hallazgoNinguna,
+      hallazgoNegaronAcceso: this.hallazgoNegaronAcceso,
+      hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
+      hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
+      hallazgoTomaClandestina: this.hallazgoTomaClandestina,
+      hallazgoDerivacionClandestina: this.hallazgoDerivacionClandestina,
+      hallazgoDrenajeClandestino: this.hallazgoDrenajeClandestino,
+      hallazgoCambioGiro: this.hallazgoCambioGiro,
+      hallazgoFaltaDocumentacion: this.hallazgoFaltaDocumentacion,
+      idAspUser: this.idAspuser,
+      inspector2: this.inspector2,
+      inspector3: this.inspector3,
+      inspector4: this.inspector4,
+      observacion: this.observacion,
+      lectura_medidor: this.lectura_medidor,
+      giro: this.giro,
+      idTarea: this.tareaAsignada,
+      fechaCaptura: this.fechaCaptura,
+      latitud: this.latitud,
+      longitud: this.longitud,
+      idServicioPlaza: this.idServicioPlaza,
+      id: this.idAccountSqlite
+    };
+    await this.gestionInspeccion(data);
+    this.loading.dismiss();
+    this.exit();
 
-      if (resp) {
-        this.latitud = resp.coords.latitude;
-        this.longitud = resp.coords.longitude
-        //console.log("La latitud es", this.latitud);
-        //console.log("La longitud es ", this.longitud);
-        this.loading.dismiss();
 
-
-        this.loading = await (this.loadingController.create({
-          message: 'Guardando la gestión...'
-        }));
-
-        await this.loading.present();
-
-        var dateDay = new Date().toISOString();
-        let date: Date = new Date(dateDay);
-        let ionicDate = new Date(
-          Date.UTC(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            date.getHours(),
-            date.getMinutes(),
-            date.getSeconds()
-          )
-        );
-
-        this.fechaCaptura = ionicDate.toISOString();
-
-        let data = {
-          id_plaza: this.id_plaza,
-          nombrePlaza: this.nombrePlaza,
-          account: this.account,
-          personaAtiende: this.personaAtiende,
-          //numeroContacto: this.numeroContacto, se quito
-          idPuesto: this.idPuesto,
-          otroPuesto: this.otroPuesto,
-          // idMotivoNoPago: this.idMotivoNoPago, se quito por que estara en la app de encuesta
-          // otroMotivo: this.otroMotivo, se quito por que estara en la app de encuesta
-          idTipoServicio: this.idTipoServicio,
-          numeroNiveles: this.numeroNiveles,
-          colorFachada: this.colorFachada,
-          colorPuerta: this.colorPuerta,
-          referencia: this.referencia,
-          idTipoPredio: this.idTipoPredio,
-          entreCalle1: this.entreCalle1,
-          entrecalle2: this.entreCalle2,
-          hallazgoNinguna: this.hallazgoNinguna,
-          hallazgoNegaronAcceso: this.hallazgoNegaronAcceso,
-          hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
-          hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
-          hallazgoTomaClandestina: this.hallazgoTomaClandestina,
-          hallazgoDerivacionClandestina: this.hallazgoDerivacionClandestina,
-          hallazgoDrenajeClandestino: this.hallazgoDrenajeClandestino,
-          hallazgoCambioGiro: this.hallazgoCambioGiro,
-          hallazgoFaltaDocumentacion: this.hallazgoFaltaDocumentacion,
-          idAspUser: this.idAspuser,
-          inspector2: this.inspector2,
-          inspector3: this.inspector3,
-          inspector4: this.inspector4,
-          observacion: this.observacion,
-          lectura_medidor: this.lectura_medidor,
-          giro: this.giro,
-          idTarea: this.tareaAsignada,
-          fechaCaptura: this.fechaCaptura,
-          latitud: this.latitud,
-          longitud: this.longitud,
-          idServicioPlaza: this.idServicioPlaza,
-          id: this.idAccountSqlite
-        };
-        await this.gestionInspeccion(data);
-        this.loading.dismiss();
-        this.exit();
-
-      } // if
-    }).catch(async (error) => {
-      //console.log("No se pudo obtener la geolocalizacion " + error);
-      this.latitud = this.infoAccount[0].latitud;
-      this.longitud = this.infoAccount[0].longitud;
-      //console.log(`La latitud de implementta es ${this.latitud} y la longitud de implementta es ${this.longitud}`);
-      this.loading.dismiss();
-
-      this.loading = await this.loadingController.create({
-        message: 'Guardando la gestión...'
-      });
-
-      await this.loading.present();
-
-      var dateDay = new Date().toISOString();
-      let date: Date = new Date(dateDay);
-      let ionicDate = new Date(
-        Date.UTC(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          date.getHours(),
-          date.getMinutes(),
-          date.getSeconds()
-        )
-      );
-
-      this.fechaCaptura = ionicDate.toISOString();
-
-      let data = {
-        id_plaza: this.id_plaza,
-        nombrePlaza: this.nombrePlaza,
-        account: this.account,
-        personaAtiende: this.personaAtiende,
-        //numeroContacto: this.numeroContacto,
-        idPuesto: this.idPuesto,
-        otroPuesto: this.otroPuesto,
-        // idMotivoNoPago: this.idMotivoNoPago, se quito por que estara en la app de encuesta
-        // otroMotivo: this.otroMotivo, se quito por que estara en la app de encuesta
-        idTipoServicio: this.idTipoServicio,
-        numeroNiveles: this.numeroNiveles,
-        colorFachada: this.colorFachada,
-        colorPuerta: this.colorPuerta,
-        referencia: this.referencia,
-        idTipoPredio: this.idTipoPredio,
-        entreCalle1: this.entreCalle1,
-        entrecalle2: this.entreCalle2,
-        hallazgoNinguna: this.hallazgoNinguna,
-        hallazgoNegaronAcceso: this.hallazgoNegaronAcceso,
-        hallazgoMedidorDescompuesto: this.hallazgoMedidorDescompuesto,
-        hallazgoDiferenciaDiametro: this.hallazgoDiferenciaDiametro,
-        hallazgoTomaClandestina: this.hallazgoTomaClandestina,
-        hallazgoDerivacionClandestina: this.hallazgoDerivacionClandestina,
-        hallazgoDrenajeClandestino: this.hallazgoDrenajeClandestino,
-        hallazgoCambioGiro: this.hallazgoCambioGiro,
-        hallazgoFaltaDocumentacion: this.hallazgoFaltaDocumentacion,
-        idAspUser: this.idAspuser,
-        inspector2: this.inspector2,
-        inspector3: this.inspector3,
-        inspector4: this.inspector4,
-        observacion: this.observacion,
-        lectura_medidor: this.lectura_medidor,
-        giro: this.giro,
-        idTarea: this.tareaAsignada,
-        fechaCaptura: this.fechaCaptura,
-        latitud: this.latitud,
-        longitud: this.longitud,
-        idServicioPlaza: this.idServicioPlaza,
-        id: this.idAccountSqlite
-      };
-      await this.gestionInspeccion(data);
-      this.loading.dismiss();
-      this.exit();
-
-    }); // catch
 
   }
 
@@ -701,6 +633,22 @@ export class GestionInspeccionAguaPage implements OnInit {
     //console.log(data);
     await this.rest.gestionInspeccion(data);
   }
+
+
+  async getGeolocation() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        setTimeout(() => {
+          resolve(this.geoPosicion);
+        }, 8000);
+        this.geoPosicion = await this.geolocation.getCurrentPosition();
+      } catch (error) {
+        console.log(error);
+        reject(error)
+      }
+    })
+  }
+
 
   async salida(tipo) {
     const alert = await this.alertCtrl.create({

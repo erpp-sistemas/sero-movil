@@ -88,6 +88,8 @@ export class GestionCartaPage implements OnInit {
   sabado: string = '';
   domingo: string = '';
 
+  geoPosicion: any = {};
+
 
   sliderOpts = {
     zoom: true,
@@ -408,7 +410,7 @@ export class GestionCartaPage implements OnInit {
 
   async terminar() {
 
-    if(this.idEstatusPredio === '4') {
+    if (this.idEstatusPredio === '4') {
       this.takePhoto = true;
     }
 
@@ -425,6 +427,8 @@ export class GestionCartaPage implements OnInit {
     this.eliminarCaracteres();
 
     
+
+
     if (this.idTipoGestion === '1') {
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
@@ -460,73 +464,80 @@ export class GestionCartaPage implements OnInit {
       this.fechaCaptura = ionicDate.toISOString();
     }
 
-    this.loading = await this.loadingController.create({
-      message: 'Obteniendo la ubicación de esta gestión'
+    let loadingGeolocation = await this.loadingController.create({
+      message: 'Obteniendo ubicación...',
+      spinner: 'dots'
     });
+
+    await loadingGeolocation.present();
+
+    await this.getGeolocation();
+
+    console.log(this.geoPosicion);
+
+    if(this.geoPosicion.coords){
+      this.latitud = this.geoPosicion.coords.latitude;
+      this.longitud = this.geoPosicion.coords.longitude;
+    } else {
+      console.log("No se pudo obtener la geolocalización");
+      this.latitud = 0;
+      this.longitud = 0;
+    }
+
+    loadingGeolocation.dismiss();
+   
+
+    this.loading = await this.loadingController.create({
+      message: 'Guardando la gestión...',
+      spinner: 'dots'
+    })
 
     await this.loading.present();
 
-    this.geolocation.getCurrentPosition().then(async (resp) => {
-      if (resp) {
-        this.latitud = resp.coords.latitude;
-        this.longitud = resp.coords.longitude;
-        this.loading.dismiss();
+    let data = {
+      id_plaza: this.id_plaza,
+      nombrePlaza: this.nombrePlaza,
+      account: this.account,
+      persona_atiende: this.personaAtiende,
+      //numero_contacto: this.numeroContacto,
+      //id_motivo_no_pago: this.idMotivoNoPago, // No se estan utilizando va a estar en app de encuesta
+      //otro_motivo_no_pago: this.otroMotivo, // No se estan utilizando va a estar en app de encuesta
+      //id_trabajo_actual: this.idTrabajoActual, // No se estan utilizando va a estar en app de encuesta
+      //id_gasto_impuesto: this.idGastoImpuesto, // No se estan utilizando va a estar en app de encuesta
+      id_tipo_servicio: this.idTipoServicio,
+      numero_niveles: this.numeroNiveles,
+      colorFachada: this.colorFachada,
+      colorPuerta: this.colorPuerta,
+      referencia: this.referencia,
+      id_tipo_predio: this.idTipoPredio,
+      entre_calle1: this.entreCalle1,
+      entre_calle2: this.entreCalle2,
+      observaciones: this.observaciones,
+      lectura_medidor: this.lectura_medidor,
+      giro: this.giro,
+      idAspUser: this.idAspUser,
+      idTarea: this.tareaAsignada,
+      fechaCaptura: this.fechaCaptura,
+      latitud: this.latitud,
+      longitud: this.longitud,
+      idServicioPlaza: this.idServicioPlaza,
+      idEstatusPredio: this.idEstatusPredio,
+      idTipoGestion: this.idTipoGestion,
+      idTiempoSuministroAgua: this.idTiempoSuministroAgua,
+      lunes: this.lunes,
+      martes: this.martes,
+      miercoles: this.miercoles,
+      jueves: this.jueves,
+      viernes: this.viernes,
+      sabado: this.sabado,
+      domingo: this.domingo,
+      id: this.idAccountSqlite
+    }
 
-        this.loading = await this.loadingController.create({
-          message: 'Guardando la gestión'
-        });
+    await this.gestionCarta(data);
+    this.loading.dismiss();
+    this.exit();
 
-        await this.loading.present();
-
-        let data = {
-          id_plaza: this.id_plaza,
-          nombrePlaza: this.nombrePlaza,
-          account: this.account,
-          persona_atiende: this.personaAtiende,
-          //numero_contacto: this.numeroContacto,
-          //id_motivo_no_pago: this.idMotivoNoPago, // No se estan utilizando va a estar en app de encuesta
-          //otro_motivo_no_pago: this.otroMotivo, // No se estan utilizando va a estar en app de encuesta
-          //id_trabajo_actual: this.idTrabajoActual, // No se estan utilizando va a estar en app de encuesta
-          //id_gasto_impuesto: this.idGastoImpuesto, // No se estan utilizando va a estar en app de encuesta
-          id_tipo_servicio: this.idTipoServicio,
-          numero_niveles: this.numeroNiveles,
-          colorFachada: this.colorFachada,
-          colorPuerta: this.colorPuerta,
-          referencia: this.referencia,
-          id_tipo_predio: this.idTipoPredio,
-          entre_calle1: this.entreCalle1,
-          entre_calle2: this.entreCalle2,
-          observaciones: this.observaciones,
-          lectura_medidor: this.lectura_medidor,
-          giro: this.giro,
-          idAspUser: this.idAspUser,
-          idTarea: this.tareaAsignada,
-          fechaCaptura: this.fechaCaptura,
-          latitud: this.latitud,
-          longitud: this.longitud,
-          idServicioPlaza: this.idServicioPlaza,
-          idEstatusPredio: this.idEstatusPredio,
-          idTipoGestion: this.idTipoGestion,
-          idTiempoSuministroAgua: this.idTiempoSuministroAgua,
-          lunes: this.lunes,
-          martes: this.martes,
-          miercoles: this.miercoles,
-          jueves: this.jueves,
-          viernes: this.viernes,
-          sabado: this.sabado,
-          domingo: this.domingo,
-          id: this.idAccountSqlite
-        }
-
-        await this.gestionCarta(data);
-        this.loading.dismiss();
-        this.exit();
-
-      }
-    }).catch(async (error) => {
-      this.loading.dismiss();
-      this.mensaje.showAlert("No se pudo obtener la geolocalización, verifica GPS");
-    })
   }
 
 
@@ -537,6 +548,20 @@ export class GestionCartaPage implements OnInit {
 
   exit() {
     this.router.navigateByUrl('home/tab2');
+  }
+
+  async getGeolocation() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        setTimeout(() => {
+          resolve(this.geoPosicion);
+        }, 8000);
+        this.geoPosicion = await this.geolocation.getCurrentPosition();
+      } catch (error) {
+        console.log(error);
+        reject(error)
+      }
+    })
   }
 
   resultEstatusPredio(event) {
@@ -580,9 +605,9 @@ export class GestionCartaPage implements OnInit {
     }
   }
 
-  async resultTiempoSuministroAgua( event ) {
+  async resultTiempoSuministroAgua(event) {
     let tipo = event.detail.value;
-    if(tipo === '4') {
+    if (tipo === '4') {
       this.activaOtroSuministroAgua = true
     } else {
       this.activaOtroSuministroAgua = false;
@@ -652,7 +677,7 @@ export class GestionCartaPage implements OnInit {
       this.domingo = 'no'
     }
   }
-  
+
 
   async llenarListadoGestores() {
     this.listadoGestores = await this.rest.obtenerGestoresPlaza(this.id_plaza);

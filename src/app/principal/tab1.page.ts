@@ -343,10 +343,10 @@ export class Tab1Page implements OnInit {
     this.router.navigate(['mapa-prueba', idServicioPlaza, this.id_plaza]);
   }
 
-  goMapOffline() {
-    console.log("Ir al mapa offline");
-    this.router.navigateByUrl('/mapa-leaflet');
-  }
+  // goMapOffline() {
+  //   console.log("Ir al mapa offline");
+  //   this.router.navigateByUrl('/mapa-leaflet');
+  // }
 
 
 }
