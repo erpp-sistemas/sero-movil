@@ -4,6 +4,12 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 import { LoadingController } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
+import { Storage } from '@ionic/storage';
+import { File } from '@ionic-native/file/ngx';
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
+import * as XLSX from 'xlsx';
+import { Proceso } from '../interfaces/Procesos';
+
 
 @Component({
   selector: 'app-sync-acciones',
@@ -17,13 +23,27 @@ export class SyncAccionesPage implements OnInit {
   gestiones: any;
   totalGestiones: any;
 
+  openSelectType: boolean = false;
+  gestionesLocales: any[] = [];
+  procesos: Proceso[] = [];
+  procesoSeleccionado: any = '';
+
+  procesosObj = {
+    "1": "gestionCartaInvitacion",
+    "3": "gestionInspeccion",
+    "6": "gestionLegal"
+  }
+
   constructor(
     private rest: RestService,
     private router: Router,
     private loadingCtrl: LoadingController,
     private message: MessagesService,
     private activeRoute: ActivatedRoute,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private storage: Storage,
+    private file: File,
+    private email: EmailComposer
   ) { }
 
   ngOnInit() {
@@ -117,9 +137,9 @@ export class SyncAccionesPage implements OnInit {
 
     let table = ''
 
-    if(rol == 'Inspección') {
+    if (rol == 'Inspección') {
       table = 'gestionInspeccion';
-    } else if ( rol == 'Carta invitación') {
+    } else if (rol == 'Carta invitación') {
       table = 'gestionCartaInvitacion';
     } else if (rol == 'Legal') {
       table = 'gestionLegal';
@@ -137,7 +157,95 @@ export class SyncAccionesPage implements OnInit {
   }
 
 
+
+  async selectType() {
+    let id_plaza = await this.storage.get('IdPlazaActiva');
+    console.log(id_plaza);
+    this.procesos = await this.rest.getProcessLocalByIdPlaza(Number(id_plaza));
+    console.log(this.procesos);
+    this.openSelectType = true;
+  }
+
+
+  enviarArchivo() {
+    if (this.procesoSeleccionado === '') {
+      this.message.showAlert("Debe seleccionar el proceso que gestiono");
+      return;
+    }
+    this.sendFile();
+  }
+
+  cancelarEnvioArchivo() {
+    this.openSelectType = false;
+  }
+
+  async sendFile() {
+    console.log("enviando ", this.procesoSeleccionado);
+    let tipo = this.procesosObj[this.procesoSeleccionado];
+    console.log(tipo);
+    this.gestionesLocales = await this.rest.getGestionesLocalByIdServicio(this.id_servicio_plaza, tipo);
+    console.log(this.gestionesLocales);
+    this.createExcel();
+  }
+
+  createExcel() {
+    var ws = XLSX.utils.json_to_sheet(this.gestionesLocales);
+    var wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+    var buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    this.saveToPhone(buffer);
+  }
+
+  async saveToPhone(buffer) {
+    var fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    var fileExtension = '.xlsx';
+    var nameFile = await this.setNameFile();
+    var data: Blob = new Blob([buffer], { type: fileType })
+    this.file.writeFile(this.file.externalRootDirectory, nameFile + fileExtension, data, { replace: true })
+      .then(() => {
+        this.message.showToast("Excel guardado en el dispositivo!!!!");
+        this.file.checkFile(this.file.externalRootDirectory, nameFile + fileExtension).then(() => {
+          console.log("Archivo existe");
+          this.sendEmail(nameFile, fileExtension);
+        }).catch(err => console.log("Archivo no existe ", err))
+      })
+  }
+
+  async sendEmail(name: string, extension: string) {
+    let emailSend = {
+      to: 'oscar.vazquez@erpp.mx',
+      cc: 'antonio.ticante@erpp.mx',
+      bcc: ['carlos.martinez@erpp.mx'],
+      attachments: [
+        `${this.file.externalRootDirectory}${name}${extension}`
+      ],
+      subject: 'Gestiones manuales',
+      body: 'Buen dia tuve un error al enviar mis gestiones realizadas por lo que le mando mi archivo.',
+      isHtml: true
+    }
+
+    this.email.open(emailSend).then(() => {
+      this.message.showAlert("Se ha enviado el correo exitosamente");
+      this.openSelectType = false;
+      this.procesoSeleccionado = '';
+    }).catch(err => console.log(err));
+  }
+
+  async setNameFile() {
+    let email = await this.storage.get('Email');
+    // let id_usuario = await this.storage.get('IdAspUser');
+    let fechaEnvio = this.obtenerFechaActual();
+    let fileName = `${email}-${fechaEnvio}`
+    return fileName;
+  }
+
+  obtenerFechaActual() {
+    let fecha = Date.now().toString();
+    return fecha;
+  }
+
+
   navegar(tipo) {
+    this.openSelectType = false
     if (tipo == 1) {
       this.router.navigateByUrl('home/tab1');
     } else if (tipo == 2) {

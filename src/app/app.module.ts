@@ -75,6 +75,8 @@ import { SMS } from '@awesome-cordova-plugins/sms/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
 
+
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -111,7 +113,6 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
     BackgroundGeolocation,
     AndroidPermissions,
     SMS,
-
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

@@ -6,46 +6,106 @@
 
   <ion-card color="medium">
     <ion-card-header style="text-align: center;" color="medium">
-      <ion-button (click)="syncAccounts()">
+      <ion-button color="secondary" (click)="selectType()">
+        <p style="color: white;">Enviar archivo...</p>
+        <ion-icon color="success" slot="end" name="mail-unread-outline"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="openSelectType === false" (click)="syncAccounts()">
         <p style="color: white;">Enviar registros</p>
         <ion-icon color="success" slot="end" name="cloud-upload"></ion-icon>
       </ion-button>
     </ion-card-header>
   </ion-card>
 
-  <div style="text-align: center;">
-    <ion-chip color="success"> Total gestiones: {{totalGestiones}} </ion-chip>
+
+  <div *ngIf="openSelectType">
+
+    <ion-card color="medium">
+      <ion-card-header style="text-align: center;" color="medium">
+        <p class="mensajeError">Si tienes problemas al enviar tus gestiones, envia tu listado con este procedimiento el cual llegara al área
+          de sistemas para su ingreso manual, posteriormente personal de ellos se comunicara contigo para comentarte
+          como proseguir</p>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item color="medium">
+          <ion-label>
+            <p>
+              Selecciona el proceso gestionado
+            </p>
+            <p>
+
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Proceso gestionado"
+                [(ngModel)]="procesoSeleccionado">
+                <ion-select-option *ngFor="let proceso of procesos" [value]="proceso.id_proceso">
+                  {{proceso.nombre_proceso}}
+                </ion-select-option>
+              </ion-select>
+
+            </p>
+          </ion-label>
+        </ion-item>
+
+
+        <ion-grid>
+
+          <ion-row>
+            <ion-col text-center>
+              <ion-button expand="block" color="primary" (click)="enviarArchivo()">
+                <ion-icon name="send-outline"></ion-icon>
+              </ion-button>
+              <p class="botonesArchivo">Enviar</p>
+            </ion-col>
+
+            <ion-col text-center>
+              <ion-button expand="block" color="warning" (click)="cancelarEnvioArchivo()">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </ion-button>
+              <p class="botonesArchivo">Cancelar</p>
+            </ion-col>
+
+          </ion-row>
+
+        </ion-grid>
+
+      </ion-card-content>
+    </ion-card>
   </div>
 
-  <ion-virtual-scroll [items]="gestiones">
-    
-    <ion-item-sliding *virtualItem="let item;">
-      <ion-item color="medium">
-        <ion-label>
-          <p><strong>Cuenta: </strong>{{item.account}}</p>
-          <p><strong>Fecha captura: </strong>{{item.fechaCaptura}}</p>
-          <p><strong>Tarea: </strong>{{item.rol}}</p>
-          <p><strong>Plaza: </strong>{{item.nombre_plaza}}</p>
-        </ion-label>
-      </ion-item>
+  <div *ngIf="openSelectType === false">
+    <div style="text-align: center;">
+      <ion-chip color="success"> Total gestiones: {{totalGestiones}} </ion-chip>
+    </div>
 
-      <ion-item-options side="start">
-        <ion-item-option color="danger" (click)="deleteAccount(item.account, item.rol)">
-          <ion-icon  class="trash" slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
+    <ion-virtual-scroll [items]="gestiones">
 
-      <ion-item-options side="end">
-        <ion-item-option color="primary" (click)="syncAccount(item.account, item.rol)">
-          <ion-icon  class="upload" slot="icon-only" name="cloud-upload"></ion-icon>
-        </ion-item-option>
-      </ion-item-options> 
+      <ion-item-sliding *virtualItem="let item;">
+        <ion-item color="medium">
+          <ion-label>
+            <p><strong>Cuenta: </strong>{{item.account}}</p>
+            <p><strong>Fecha captura: </strong>{{item.fechaCaptura}}</p>
+            <p><strong>Tarea: </strong>{{item.rol}}</p>
+            <p><strong>Plaza: </strong>{{item.nombre_plaza}}</p>
+          </ion-label>
+        </ion-item>
 
-    </ion-item-sliding>
-  </ion-virtual-scroll>
+        <ion-item-options side="start">
+          <ion-item-option color="danger" (click)="deleteAccount(item.account, item.rol)">
+            <ion-icon class="trash" slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="syncAccount(item.account, item.rol)">
+            <ion-icon class="upload" slot="icon-only" name="cloud-upload"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+
+      </ion-item-sliding>
+    </ion-virtual-scroll>
+  </div>
+
+
 </ion-content>
-
-
 
 <ion-segment scrollable>
   <ion-segment-button (click)="navegar(1)">

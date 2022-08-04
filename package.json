@@ -30,7 +30,7 @@
     "@ionic-native/camera": "^5.34.0",
     "@ionic-native/core": "^5.36.0",
     "@ionic-native/email-composer": "^5.35.0",
-    "@ionic-native/file": "^5.34.0",
+    "@ionic-native/file": "^5.36.0",
     "@ionic-native/geolocation": "^5.11.0",
     "@ionic-native/google-maps": "^5.5.0",
     "@ionic-native/in-app-browser": "^5.33.1",
@@ -51,11 +51,13 @@
     "cordova-plugin-geolocation": "^4.0.2",
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-nativegeocoder": "^3.4.1",
+    "file-saver": "^2.0.5",
     "firebase": "^8.6.8",
     "gl-ionic-background-video": "0.0.5",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "util": "^0.12.4",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

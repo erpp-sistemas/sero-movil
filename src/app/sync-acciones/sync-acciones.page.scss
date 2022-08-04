@@ -11,6 +11,19 @@ p{
 }
 
 
+.botonesArchivo {
+    text-align: center !important;
+    color: white;
+    font-size: 16px;
+}
+
+.mensajeError {
+    font-size: 16px;
+}
+
+ion-label {
+    color: white !important;
+}
 
 ion-segment {
     --background:rgb(37, 64, 97);

@@ -2883,7 +2883,11 @@ export class RestService {
     })
   }
 
-
+  /**
+   * Obtiene los procesos por plaza
+   * @param id_plaza 
+   * @returns 
+   */
   obtenerProcesosByIdPlaza(id_plaza: number) {
     return new Promise<Proceso[]>(resolve => {
       this.http.get(`${this.apiObtenerProcesosPlaza} ${id_plaza}`).subscribe((data: Proceso[]) => {
@@ -2894,6 +2898,11 @@ export class RestService {
     })
   }
 
+  /**
+   * Inserta los procesos en la tabla interna
+   * @param proceso 
+   * @returns 
+   */
   async insertProcessTable(proceso: Proceso) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -2914,6 +2923,11 @@ export class RestService {
     })
   }
 
+  /**
+   * Verifica si ya hay procesos de la plaza en la tabla interna
+   * @param id_plaza 
+   * @returns 
+   */
   async processPlazaExists(id_plaza: number) {
     let sql = 'SELECT * FROM proceso WHERE id_plaza = ?';
     const response = await this.db.executeSql(sql, [id_plaza]);
@@ -2924,6 +2938,10 @@ export class RestService {
     }
   }
 
+  /**
+   * Elimina los procesos de la plaza
+   * @param id_plaza 
+   */
   async deleteProcessByIdPlaza(id_plaza: number) {
     let sql = 'DELETE FROM proceso WHERE id_plaza = ?'
     try {
@@ -2934,6 +2952,11 @@ export class RestService {
     }
   }
 
+  /**
+   * Obtiene los procesos de la plaza en la tabla interna
+   * @param id_plaza 
+   * @returns 
+   */
   async getProcessLocalByIdPlaza(id_plaza: number) {
     return new Promise<Proceso[]>(async (resolve, reject) => {
       try {
@@ -2952,6 +2975,11 @@ export class RestService {
     })
   }
 
+  /**
+   * Inserta el registro de boton de panico asi como obtiene los gestores mas cercanos
+   * @param data 
+   * @returns 
+   */
   registroBotonPanico(data: any) {
     return new Promise<UsuarioAyuda[]>((resolve, reject) => {
       try {
@@ -2962,6 +2990,23 @@ export class RestService {
         })
       } catch (error) {
         reject(error)
+      }
+    })
+  }
+
+  async getGestionesLocalByIdServicio(id_servicio: number, nombre_tabla: string) {
+    return new Promise<any[]>( async (resolve, reject) => {
+      try {
+        let gestiones = [];
+        let sql = ` SELECT *, '${nombre_tabla}' as proceso FROM ${nombre_tabla} WHERE cargado = 0 AND id_servicio_plaza = ?`;
+        const gestionesCarta = await this.db.executeSql(sql, [id_servicio]); 
+        for(let i = 0; i < gestionesCarta.rows.length; i++) {
+          gestiones.push(gestionesCarta.rows.item(i));
+        }
+        resolve(gestiones);
+      } catch (error) {
+        console.log(error)
+        reject(error);
       }
     })
   }
