@@ -3,7 +3,7 @@ import { MessagesService } from '../services/messages.service';
 import { IonSlides, LoadingController, ModalController, Platform } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { UsersService } from '../services/users.service';
+// import { UsersService } from '../services/users.service';
 
 
 @Component({
@@ -42,7 +42,7 @@ export class LoginPage implements OnInit {
     private loadingController: LoadingController,
     private auth: AuthService,
     private router: Router,
-    private usuarioService: UsersService,
+    // private usuarioService: UsersService,
     private mensaje: MessagesService,
     private modalCtrl: ModalController,
     private platform: Platform

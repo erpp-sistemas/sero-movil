@@ -57,6 +57,8 @@ export class GestionLegalPage implements OnInit {
   indicadorImagen: number = 0;
   infoImage: any[];
   takePhoto: boolean = false;
+  takePhotoFachada: boolean = false;
+  takePhotoEvidencia: boolean = false;
   activaOtroMotivo: boolean = false;
   detectedChanges: boolean = false;
 
@@ -70,6 +72,10 @@ export class GestionLegalPage implements OnInit {
   mostrarOtroPuesto: boolean = false;
 
   geoPosicion: any = {};
+
+
+  nombreProceso: string;
+  iconoProceso: string;
 
 
   sliderOpts = {
@@ -131,7 +137,8 @@ export class GestionLegalPage implements OnInit {
 
   async getInfoAccount() {
     this.account = await this.storage.get("account");
-    // console.log("Cuenta guardada en el storage " + this.account);
+    this.nombreProceso = await this.storage.get('proceso_gestion');
+    this.iconoProceso = await this.storage.get('icono_proceso');
     this.idAspUser = await this.storage.get("IdAspUser");
     this.infoAccount = await this.rest.getInfoAccount(this.account);
     this.propietario = this.infoAccount[0].propietario;
@@ -214,8 +221,10 @@ export class GestionLegalPage implements OnInit {
     let tipo;
     if (type == 1) {
       tipo = "Legal fachada predio"
+      this.takePhotoFachada = true;
     } else if (type == 2) {
       tipo = "Legal evidencia";
+      this.takePhotoEvidencia = true;
     } else if (type == 3) {
       tipo = "Legal toma"
     }
@@ -249,7 +258,6 @@ export class GestionLegalPage implements OnInit {
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
         this.isPhoto = false;
-        this.takePhoto = true;
         this.imgs.push({ imagen: this.image });
         if (this.indicadorImagen == 1) {
           this.imgs.splice(0, 1)
@@ -275,8 +283,10 @@ export class GestionLegalPage implements OnInit {
     let tipo;
     if (type == 1) {
       tipo = "Legal fachada predio"
+      this.takePhotoFachada = true;
     } else if (type == 2) {
       tipo = "Legal evidencia";
+      this.takePhotoEvidencia = true;
     } else if (type == 3) {
       tipo = "Legal toma"
     }
@@ -311,7 +321,6 @@ export class GestionLegalPage implements OnInit {
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
         this.isPhoto = false;
-        this.takePhoto = true;
         this.imgs.push({ imagen: this.image });
         if (this.indicadorImagen == 1) {
           this.imgs.splice(0, 1)
@@ -356,8 +365,8 @@ export class GestionLegalPage implements OnInit {
   async verify() {
 
 
-    if (this.takePhoto === false) {
-      this.mensaje.showAlert("Debes de tomar mínimo una foto para terminar la gestión");
+    if (this.takePhotoFachada === false || this.takePhotoEvidencia === false) {
+      this.mensaje.showAlert("Foto de fachada y evidencia son obligatorias para terminar la gestión");
       return;
     }
 

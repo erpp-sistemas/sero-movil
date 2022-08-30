@@ -45,6 +45,7 @@ export class SincronizarGestionesPage implements OnInit {
 
     await this.rest.sendInspeccion();
     await this.rest.sendCartaInvitacion();
+    await this.rest.sendCortes();
     await this.rest.sendLegal();
     await this.rest.sendInspeccionAntenas();
     await this.rest.sendEncuesta();

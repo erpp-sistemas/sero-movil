@@ -5,21 +5,28 @@
 
 <ion-content color="medium" id="main">
 
-  <hr>
-
-  <ion-grid style="margin-top: 30px;">
+  <!-- <ion-grid class="fotos-historicas" style="margin-top: 30px;">
     <ion-row>
       <ion-col size=12 class="ion-text-center">
-        <ion-button shape="round" color="primary" expand="block" (click)="goPhotos()">
+        <ion-button class="button-fotos-historicas" expand="block" (click)="goPhotos()">
           <ion-icon slot="start" name="image"></ion-icon>
           Ver fotos históricas
         </ion-button>
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
+
+  <div class="contenedor-icono-proceso" style="text-align: center;">
+    <ion-icon class="icono-proceso" [name]="iconoProceso"></ion-icon>
+  </div>
+  <div class="contenedor-nombre-proceso">
+    <ion-label>
+      <p>{{nombreProceso}}</p>
+    </ion-label>
+  </div>
 
   <ion-card color="medium">
-    <div style="text-align: center; margin:15 0px 0 20;">
+    <div style="text-align: center;">
       <ion-chip color="success">Información de la gestión a realizar</ion-chip>
     </div>
     <ion-card-content>
@@ -28,11 +35,7 @@
           <p> Plaza: <span style="font-weight: bold;"> {{nombrePlaza}} </span> </p>
         </ion-label>
       </ion-item>
-      <ion-item color="medium">
-        <ion-label>
-          <p> Formulario: <span style="font-weight: bold;"> Carta invitación </span> </p>
-        </ion-label>
-      </ion-item>
+
       <ion-item color="medium">
         <ion-label>
           <!--  este es solo el id falta traer el nombre -->
@@ -51,6 +54,12 @@
           <p> Propietario: <span style="font-weight: bold;"> {{propietario}} </span> </p>
         </ion-label>
       </ion-item>
+
+      <ion-button fill="outline" class="button-fotos-historicas" expand="block" (click)="goPhotos()">
+        <ion-icon slot="start" name="image"></ion-icon>
+        Ver fotos históricas
+      </ion-button>
+
     </ion-card-content>
   </ion-card>
 
@@ -164,8 +173,7 @@
               </p>
             </ion-item>
             <ion-item color="medium">
-              <ion-segment mode="ios" color="danger" (ionChange)="resultLunes( $event )"
-                value="lunes">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultLunes( $event )" value="lunes">
                 <ion-segment-button class="segment-si" value="lunesSi">
                   <ion-label class="marca-si">Si</ion-label>
                 </ion-segment-button>
@@ -181,8 +189,7 @@
               </p>
             </ion-item>
             <ion-item color="medium">
-              <ion-segment mode="ios" color="danger" (ionChange)="resultMartes( $event )"
-                value="martes">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultMartes( $event )" value="martes">
                 <ion-segment-button class="segment-si" value="martesSi">
                   <ion-label class="marca-si">Si</ion-label>
                 </ion-segment-button>
@@ -198,8 +205,7 @@
               </p>
             </ion-item>
             <ion-item color="medium">
-              <ion-segment mode="ios" color="danger" (ionChange)="resultMiercoles( $event )"
-                value="lunes">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultMiercoles( $event )" value="lunes">
                 <ion-segment-button class="segment-si" value="miercolesSi">
                   <ion-label class="marca-si">Si</ion-label>
                 </ion-segment-button>
@@ -215,8 +221,7 @@
               </p>
             </ion-item>
             <ion-item color="medium">
-              <ion-segment mode="ios" color="danger" (ionChange)="resultJueves( $event )"
-                value="lunes">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultJueves( $event )" value="lunes">
                 <ion-segment-button class="segment-si" value="juevesSi">
                   <ion-label class="marca-si">Si</ion-label>
                 </ion-segment-button>
@@ -232,8 +237,7 @@
               </p>
             </ion-item>
             <ion-item color="medium">
-              <ion-segment mode="ios" color="danger" (ionChange)="resultViernes( $event )"
-                value="lunes">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultViernes( $event )" value="lunes">
                 <ion-segment-button class="segment-si" value="viernesSi">
                   <ion-label class="marca-si">Si</ion-label>
                 </ion-segment-button>
@@ -249,8 +253,7 @@
               </p>
             </ion-item>
             <ion-item color="medium">
-              <ion-segment mode="ios" color="danger" (ionChange)="resultSabado( $event )"
-                value="lunes">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultSabado( $event )" value="lunes">
                 <ion-segment-button class="segment-si" value="sabadoSi">
                   <ion-label class="marca-si">Si</ion-label>
                 </ion-segment-button>
@@ -266,8 +269,7 @@
               </p>
             </ion-item>
             <ion-item color="medium">
-              <ion-segment mode="ios" color="danger" (ionChange)="resultDomingo( $event )"
-                value="lunes">
+              <ion-segment mode="ios" color="danger" (ionChange)="resultDomingo( $event )" value="lunes">
                 <ion-segment-button class="segment-si" value="domingoSi">
                   <ion-label class="marca-si">Si</ion-label>
                 </ion-segment-button>
@@ -459,7 +461,7 @@
           </ion-col>
 
           <ion-col text-center>
-            <ion-button [disabled]="desactivaBotonesCamara" expand="block" color="warning" (click)="confirmarFoto(2)">
+            <ion-button expand="block" color="warning" (click)="confirmarFoto(2)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Evidencia</ion-label>
@@ -472,7 +474,7 @@
       <ion-grid>
         <ion-row>
           <ion-col text-center>
-            <ion-button [disabled]="desactivaBotonesCamara" expand="block" color="secondary" (click)="confirmarFoto(3)">
+            <ion-button expand="block" color="secondary" (click)="confirmarFoto(3)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Toma</ion-label>

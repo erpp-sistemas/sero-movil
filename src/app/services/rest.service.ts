@@ -19,25 +19,26 @@ export class RestService {
   loading: any;
 
   // api para obtener las cuentas
-  apiObtenerDatos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas";
-  apiObtenerPlazasUsuario = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_plazas_usuario";
-  apiRegistroInspeccion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion";
-  apiRegistroInspeccionAntenas = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_inspeccion_antenas";
-  apiRegistroCartaInvitacion = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_carta_invitacion";
-  apiRegistroLegal = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_legal";
-  apiRegistroServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_servicios_publicos";
-  apiRegistroFotos = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSero";
-  apiRegistroFotosServicios = "http://201.163.165.20/seroMovil.aspx?query=sp_savePhotosSeroServicios";
-  apiRegistroRecorrido = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_recorrido";
-  apiObtenerCuentasDistancia = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_cuentas_distancia";
-  apiObtenerEmpleados = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_empleados";
-  apiObtenerFotosHistoricas = "http://201.163.165.20/seroMovil.aspx?query=sp_get_Photos_History";
-  apiObtenerPagosHistoricos = "http://201.163.165.20/seroMovil.aspx?query=sp_get_pagos_history";
-  apiRegistroEncuestaPresidente = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_encuesta";
-  apiRegistroAsistencia = "http://201.163.165.20/seroMovil.aspx?query=sp_registro_asistencia"
-  apiObtenerEmpleadosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_gestores_plaza";
-  apiObtenerProcesosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_procesos_plaza";
-  apiRegistroBotonPanico = "http://201.163.165.20/seroMovil.aspx?query=sp_boton_panico";
+  apiObtenerDatos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_cuentas";
+  apiObtenerPlazasUsuario = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_plazas_usuario";
+  apiRegistroInspeccion = "https://ser0.mx/seroMovil.aspx?query=sp_registro_inspeccion";
+  apiRegistroInspeccionAntenas = "https://ser0.mx/seroMovil.aspx?query=sp_registro_inspeccion_antenas";
+  apiRegistroCartaInvitacion = "https://ser0.mx/seroMovil.aspx?query=sp_registro_carta_invitacion";
+  apiRegistroCortes = "https://ser0.mx/seroMovil.aspx?query=sp_registro_cortes";
+  apiRegistroLegal = "https://ser0.mx/seroMovil.aspx?query=sp_registro_legal";
+  apiRegistroServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_registro_servicios_publicos";
+  apiRegistroFotos = "https://ser0.mx/seroMovil.aspx?query=sp_savePhotosSero";
+  apiRegistroFotosServicios = "https://ser0.mx/seroMovil.aspx?query=sp_savePhotosSeroServicios";
+  apiRegistroRecorrido = "https://ser0.mx/seroMovil.aspx?query=sp_registro_recorrido";
+  apiObtenerCuentasDistancia = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_cuentas_distancia";
+  apiObtenerEmpleados = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_empleados";
+  apiObtenerFotosHistoricas = "https://ser0.mx/seroMovil.aspx?query=sp_get_Photos_History";
+  apiObtenerPagosHistoricos = "https://ser0.mx/seroMovil.aspx?query=sp_get_pagos_history";
+  apiRegistroEncuestaPresidente = "https://ser0.mx/seroMovil.aspx?query=sp_registro_encuesta";
+  apiRegistroAsistencia = "https://ser0.mx/seroMovil.aspx?query=sp_registro_asistencia"
+  apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
+  apiObtenerProcesosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_procesos_plaza";
+  apiRegistroBotonPanico = "https://ser0.mx/seroMovil.aspx?query=sp_boton_panico";
 
 
   constructor(
@@ -244,7 +245,7 @@ export class RestService {
    */
   guardarInfoSQL(data, id_plaza, idServicioPlaza) {
 
-    let sql = `INSERT INTO sero_principal (id_plaza, id_servicio_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud, nombre_tarea_asignada) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    let sql = `INSERT INTO sero_principal (id_plaza, id_servicio_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud, nombre_tarea_asignada, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
     return this.db.executeSql(sql, [
       id_plaza,
@@ -273,7 +274,11 @@ export class RestService {
       data.tarea_asignada,
       data.latitud,
       data.longitud,
-      data.nombreTareaAsignada
+      data.nombreTareaAsignada,
+      data.id_proceso,
+      data.proceso_gestion,
+      data.url_aplicacion_movil,
+      data.icono_proceso
     ])
 
 
@@ -471,7 +476,7 @@ export class RestService {
   cargarListadoCuentas(id_plaza, idServicioPlaza) {
     console.log("Cargando el listado de cuentas de la plaza " + id_plaza + " del servicio " + idServicioPlaza);
     // let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM sero_principal WHERE id_plaza = ? and id_servicio_plaza = ? and propietario NOT NULL`;
-    let sql = `SELECT cuenta, propietario, calle || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM sero_principal WHERE id_plaza = ? AND id_servicio_plaza = ? AND propietario NOT NULL`;
+    let sql = `SELECT cuenta, propietario, calle || ' ' || colonia as direccion, total, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso, latitud, longitud, gestionada FROM sero_principal WHERE id_plaza = ? AND id_servicio_plaza = ? AND propietario NOT NULL`;
 
     return this.db.executeSql(sql, [id_plaza, idServicioPlaza]).then(response => {
       let arrayCuentas = [];
@@ -546,7 +551,7 @@ export class RestService {
    */
   getDataVisitPosition(id_plaza, id_servicio_plaza) {
     // Carga las posiciones
-    let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total FROM sero_principal where id_plaza = ? and id_servicio_plaza = ? and latitud > 0 and gestionada = 0';
+    let sql = 'SELECT gestionada, cuenta, latitud, longitud, propietario, total, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso FROM sero_principal where id_plaza = ? and id_servicio_plaza = ? and latitud > 0 and gestionada = 0';
     return this.db.executeSql(sql, [id_plaza, id_servicio_plaza]).then(response => {
       let posiciones = [];
 
@@ -664,18 +669,18 @@ export class RestService {
    * @param idServicioPlaza 
    * @returns Promise
    */
-  async getTotalGestionadas(idServicioPlaza) {
-    console.log('Obteniendo el total de las gestionadas');
-    let sql =
-      "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionLegal WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccionAntenas) a";
-    try {
-      const response = await this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza]);
-      let result = response.rows.item(0).total;
-      return Promise.resolve(result);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
+  // async getTotalGestionadas(idServicioPlaza) {
+  //   console.log('Obteniendo el total de las gestionadas');
+  //   let sql =
+  //     "SELECT COUNT(a.account) AS total FROM (SELECT account FROM gestionCartaInvitacion where id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccion WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionLegal WHERE id_servicio_plaza = ? and cargado = 0 UNION SELECT account FROM gestionInspeccionAntenas WHERE id_servicio_plaza = ? AND cargado = 0 UNION SELECT account FROM gestionCortes WHERE id_servicio_plaza = ? AND cargado = 0 ) a";
+  //   try {
+  //     const response = await this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza, idServicioPlaza, idServicioPlaza]);
+  //     let result = response.rows.item(0).total;
+  //     return Promise.resolve(result);
+  //   } catch (error) {
+  //     return Promise.reject(error);
+  //   }
+  // }
 
   /**
    * Metodo que obtiene el total de los registros de capturaFotos donde cargado = 0
@@ -717,8 +722,8 @@ export class RestService {
     console.log(idServicioPlaza);
     let sql =
       `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?
-    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Legal' as rol, nombre_plaza FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fechaCaptura, 'Inspección Antenas' as rol, nombre_plaza FROM gestionInspeccionAntenas WHERE cargado = 0 AND id_servicio_plaza = ? `;
-    return this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza, idServicioPlaza]).then(response => {
+    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Legal' as rol, nombre_plaza FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fechaCaptura, 'Inspección Antenas' as rol, nombre_plaza FROM gestionInspeccionAntenas WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Cortes' as rol, nombre_plaza FROM gestionCortes WHERE cargado = 0 AND id_servicio_plaza = ? `;
+    return this.db.executeSql(sql, [idServicioPlaza, idServicioPlaza, idServicioPlaza, idServicioPlaza, idServicioPlaza]).then(response => {
       let accounts = [];
       for (let i = 0; i < response.rows.length; i++) {
         accounts.push(response.rows.item(i));
@@ -932,6 +937,56 @@ export class RestService {
       data.domingo
     ])
   }
+
+
+  /**
+ * Metodo que inserta la informacion capturada en cortes
+ * @param data 
+ * @returns Promise (insert into gestionCortes) 
+ */
+  gestionCortes(data) {
+    this.updateAccountGestionada(data.id);
+    let sql = "INSERT INTO gestionCortes(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+
+    return this.db.executeSql(sql, [
+      data.id_plaza,
+      data.nombrePlaza,
+      data.account,
+      data.persona_atiende,
+      //data.id_motivo_no_pago, // No se estan utilizando va a estar en app de encuesta
+      //data.otro_motivo_no_pago, // No se estan utilizando va a estar en app de encuesta
+      //data.id_trabajo_actual, // No se estan utilizando va a estar en app de encuesta
+      //data.id_gasto_impuesto, // No se estan utilizando va a estar en app de encuesta
+      data.id_tipo_servicio,
+      data.numero_niveles,
+      data.colorFachada,
+      data.colorPuerta,
+      data.referencia,
+      data.id_tipo_predio,
+      data.entre_calle1,
+      data.entre_calle2,
+      data.observaciones,
+      data.lectura_medidor,
+      data.giro,
+      data.idAspUser,
+      data.idTarea,
+      data.fechaCaptura,
+      data.latitud,
+      data.longitud,
+      data.idServicioPlaza,
+      data.idEstatusPredio,
+      data.idTipoGestion,
+      data.idTiempoSuministroAgua,
+      data.lunes,
+      data.martes,
+      data.miercoles,
+      data.jueves,
+      data.viernes,
+      data.sabado,
+      data.domingo
+    ])
+  }
+
 
 
   /**
@@ -1285,6 +1340,75 @@ export class RestService {
         let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}'`
         console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
+
+        this.message.showAlert("Envío de la gestión correctamente");
+
+        return Promise.resolve("Success");
+
+      }
+
+    } catch (error) {
+      return Promise.reject("Error");
+    }
+  }
+
+
+  /**
+  * Metodo que envia una sola gestion del modulo de cortes del servicio correspondiente
+  * @param idServicioPlaza 
+  * @param account 
+  * @returns 
+  */
+  async sendCortesByIdServicioAccount(idServicioPlaza, account) {
+    try {
+      let arrayCuentaCortes = [];
+      let sql = 'SELECT * FROM gestionCortes WHERE cargado = 0 AND id_servicio_plaza = ? and account = ?';
+
+      const result = await this.db.executeSql(sql, [idServicioPlaza, account]);
+
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentaCortes.push(result.rows.item(i));
+      }
+      console.log(arrayCuentaCortes);
+      if (arrayCuentaCortes.length == 0) {
+        this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
+      } else {
+        let id_plaza = arrayCuentaCortes[0].id_plaza;
+        let account = arrayCuentaCortes[0].account;
+        let persona_atiende = arrayCuentaCortes[0].persona_atiende;
+        let id_tipo_servicio = arrayCuentaCortes[0].id_tipo_servicio;
+        let numero_niveles = arrayCuentaCortes[0].numero_niveles;
+        let color_fachada = arrayCuentaCortes[0].color_fachada;
+        let color_puerta = arrayCuentaCortes[0].color_puerta;
+        let referencia = arrayCuentaCortes[0].referencia;
+        let id_tipo_predio = arrayCuentaCortes[0].tipo_predio;
+        let entre_calle1 = arrayCuentaCortes[0].entre_calle1;
+        let entre_calle2 = arrayCuentaCortes[0].entre_calle2;
+        let observaciones = arrayCuentaCortes[0].observaciones;
+        let lectura_medidor = arrayCuentaCortes[0].lectura_medidor;
+        let giro = arrayCuentaCortes[0].giro;
+        let idAspUser = arrayCuentaCortes[0].idAspUser;
+        let idTarea = arrayCuentaCortes[0].id_tarea;
+        let fechaCaptura = arrayCuentaCortes[0].fecha_captura;
+        let latitud = arrayCuentaCortes[0].latitud;
+        let longitud = arrayCuentaCortes[0].longitud;
+        let idServicioPaza = arrayCuentaCortes[0].id_servicio_plaza;
+        let idEstatusPredio = arrayCuentaCortes[0].id_estatus_predio;
+        let idTipoGestion = arrayCuentaCortes[0].id_tipo_gestion;
+        let idTiempoSuministroAgua = arrayCuentaCortes[0].id_tiempo_suministro_agua;
+        let lunes = arrayCuentaCortes[0].lunes;
+        let martes = arrayCuentaCortes[0].martes;
+        let miercoles = arrayCuentaCortes[0].miercoles;
+        let jueves = arrayCuentaCortes[0].jueves;
+        let viernes = arrayCuentaCortes[0].viernes;
+        let sabado = arrayCuentaCortes[0].sabado;
+        let domingo = arrayCuentaCortes[0].domingo;
+
+        let id = arrayCuentaCortes[0].id;
+
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}'`
+        console.log(sql);
+        await this.enviarSQLCortes(sql, id)
 
         this.message.showAlert("Envío de la gestión correctamente");
 
@@ -1954,6 +2078,156 @@ export class RestService {
   }
 
 
+  /**
+ * Metodo que inicia el envio de gestiones del modulo de cortes del servicio correspondiente
+ * @param idServicioPlaza 
+ * @returns Promise
+ * 
+ */
+  async sendCortesByIdServicio(idServicioPlaza) {
+    try {
+      let arrayCuentasCortes = [];
+      let sql = 'SELECT * FROM gestionCortes WHERE cargado = 0 AND id_servicio_plaza = ?';
+      const result = await this.db.executeSql(sql, [idServicioPlaza]);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasCortes.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasCortes);
+      if (arrayCuentasCortes.length === 0) {
+        this.message.showToast('Sin registros de restriccioón por enviar');
+      } else {
+        this.avanceGestionesCortes = 0;
+        this.envioGestionesCortes(arrayCuentasCortes);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+
+  /**
+ * Metodo que inicia el envio de todas las gestiones del modulo de cortes
+ * @returns Promise
+ */
+  async sendCortes() {
+    console.log("Entrando a enviar la informacion de cortes");
+    try {
+      let arrayCuentasCortes = [];
+      let sql = 'SELECT * FROM gestionCortes WHERE cargado = 0';
+      const result = await this.db.executeSql(sql, []);
+      for (let i = 0; i < result.rows.length; i++) {
+        arrayCuentasCortes.push(result.rows.item(i));
+      }
+      console.log(arrayCuentasCortes);
+      if (arrayCuentasCortes.length === 0) {
+        this.message.showToast("Sin registros de cortes por enviar");
+      } else {
+        this.avanceGestionesCortes = 0;
+        this.envioGestionesCortes(arrayCuentasCortes);
+      }
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  avanceGestionesCortes = 0;
+
+
+  /**
+ * Segundo metodo para el envio de gestiones del modulo de cortes
+ * @param arrayCuentasCarta 
+ */
+  envioGestionesCortes(arrayCuentasCortes) {
+    console.log("envioGestionesCortes");
+    console.log(this.avanceGestionesCortes);
+    if (this.avanceGestionesCortes === arrayCuentasCortes.length) {
+      this.message.showToastLarge('Sincronización de sus gestiones correctas');
+    } else {
+      this.sendGestionesCortes(this.avanceGestionesCortes, arrayCuentasCortes).then(resp => {
+        if (resp) {
+          this.avanceGestionesCortes++;
+          this.envioGestionesCortes(arrayCuentasCortes);
+        } else {
+          this.envioGestionesCortes(arrayCuentasCortes);
+        }
+      })
+    }
+  }
+
+
+  /**
+  * 
+  * @param i Tercer metodo para el envio de las gestiones del modulo de cortes
+  * @param arrayGestionesCarta 
+  * @returns 
+  */
+  async sendGestionesCortes(i, arrayGestionesCortes) {
+    return new Promise(async (resolve) => {
+      console.log(arrayGestionesCortes);
+      let id_plaza = arrayGestionesCortes[i].id_plaza;
+      let account = arrayGestionesCortes[i].account;
+      let persona_atiende = arrayGestionesCortes[i].persona_atiende;
+      let id_tipo_servicio = arrayGestionesCortes[i].id_tipo_servicio;
+      let numero_niveles = arrayGestionesCortes[i].numero_niveles;
+      let color_fachada = arrayGestionesCortes[i].color_fachada;
+      let color_puerta = arrayGestionesCortes[i].color_puerta;
+      let referencia = arrayGestionesCortes[i].referencia;
+      let id_tipo_predio = arrayGestionesCortes[i].tipo_predio;
+      let entre_calle1 = arrayGestionesCortes[i].entre_calle1;
+      let entre_calle2 = arrayGestionesCortes[i].entre_calle2;
+      let observaciones = arrayGestionesCortes[i].observaciones;
+      let lectura_medidor = arrayGestionesCortes[i].lectura_medidor;
+      let giro = arrayGestionesCortes[i].giro;
+      let idAspUser = arrayGestionesCortes[i].idAspUser;
+      let idTarea = arrayGestionesCortes[i].id_tarea;
+      let fechaCaptura = arrayGestionesCortes[i].fecha_captura;
+      let latitud = arrayGestionesCortes[i].latitud;
+      let longitud = arrayGestionesCortes[i].longitud;
+      let idServicioPaza = arrayGestionesCortes[i].id_servicio_plaza;
+      let idEstatusPredio = arrayGestionesCortes[i].id_estatus_predio;
+      let idTipoGestion = arrayGestionesCortes[i].id_tipo_gestion;
+      let idTiempoSuministroAgua = arrayGestionesCortes[i].id_tiempo_suministro_agua;
+      let lunes = arrayGestionesCortes[i].lunes;
+      let martes = arrayGestionesCortes[i].martes;
+      let miercoles = arrayGestionesCortes[i].miercoles;
+      let jueves = arrayGestionesCortes[i].jueves;
+      let viernes = arrayGestionesCortes[i].viernes;
+      let sabado = arrayGestionesCortes[i].sabado;
+      let domingo = arrayGestionesCortes[i].domingo;
+      let id = arrayGestionesCortes[i].id;
+
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}' `
+      console.log(sql);
+      await this.enviarSQLCortes(sql, id)
+      resolve('Execute Query successfully');
+
+    })
+  }
+
+  /**
+* Cuarto y ultimo metodo para el envio gestiones del modulo de cortes
+* @param query 
+* @param id 
+* @returns Promise
+*/
+  enviarSQLCortes(query, id) {
+    return new Promise(resolve => {
+      console.log("Enviando cortes...");
+      console.log(this.apiRegistroCortes + " " + query);
+      this.http.post(this.apiRegistroCortes + " " + query, null).subscribe(async data => {
+        await this.actualizarIdCortes(id);
+        console.log(data);
+        resolve(data);
+      }, err => {
+        this.message.showAlert("No se pudo enviar la información " + err);
+        console.log(err);
+        this.loadingCtrl.dismiss();
+      }
+      )
+    })
+  }
+
 
   /**
  * Metodo que inicia el envio de gestiones del modulo de carta invitacion del servicio correspondiente
@@ -2336,6 +2610,11 @@ export class RestService {
    */
   actualizarIdCartaInvitacion(id) {
     let sql = "UPDATE gestionCartaInvitacion SET cargado = 1 where id = ?"
+    return this.db.executeSql(sql, [id]);
+  }
+
+  actualizarIdCortes(id) {
+    let sql = 'UPDATE gestionCortes SET cargado = 1 where id = ?';
     return this.db.executeSql(sql, [id]);
   }
 
@@ -2995,12 +3274,12 @@ export class RestService {
   }
 
   async getGestionesLocalByIdServicio(id_servicio: number, nombre_tabla: string) {
-    return new Promise<any[]>( async (resolve, reject) => {
+    return new Promise<any[]>(async (resolve, reject) => {
       try {
         let gestiones = [];
         let sql = ` SELECT *, '${nombre_tabla}' as proceso FROM ${nombre_tabla} WHERE cargado = 0 AND id_servicio_plaza = ?`;
-        const gestionesCarta = await this.db.executeSql(sql, [id_servicio]); 
-        for(let i = 0; i < gestionesCarta.rows.length; i++) {
+        const gestionesCarta = await this.db.executeSql(sql, [id_servicio]);
+        for (let i = 0; i < gestionesCarta.rows.length; i++) {
           gestiones.push(gestionesCarta.rows.item(i));
         }
         resolve(gestiones);

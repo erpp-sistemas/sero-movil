@@ -96,6 +96,9 @@ export class GestionInspeccionAguaPage implements OnInit {
 
   geoPosicion: any = {};
 
+  nombreProceso: string;
+  iconoProceso: string;
+
   sliderOpts = {
     zoom: true,
     slidesPerView: 1.55,

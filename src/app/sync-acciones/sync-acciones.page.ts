@@ -61,15 +61,17 @@ export class SyncAccionesPage implements OnInit {
       spinner: 'dots'
     });
     await this.loading.present();
-    this.getInfo(idServicioPlaza);
-    this.getInfoCuentas(idServicioPlaza);
+    await this.getInfoCuentas(idServicioPlaza);
+    this.totalGestiones = this.gestiones!.length;
+    console.log(this.totalGestiones);
+    //this.getInfo(idServicioPlaza);
     this.loading.dismiss();
   }
 
-  async getInfo(idServicioPlaza) {
-    this.totalGestiones = await this.rest.getTotalGestionadas(idServicioPlaza);
-    console.log("Total de gestiones " + this.totalGestiones);
-  }
+  // async getInfo(idServicioPlaza) {
+  //   this.totalGestiones = await this.rest.getTotalGestionadas(idServicioPlaza);
+  //   console.log("Total de gestiones " + this.totalGestiones);
+  // }
 
 
   async getInfoCuentas(idServicioPlaza) {
@@ -94,6 +96,7 @@ export class SyncAccionesPage implements OnInit {
     await this.rest.sendLegalByIdServicio(this.id_servicio_plaza);
     await this.rest.sendInspeccionAntenasByIdServicio(this.id_servicio_plaza);
     await this.rest.sendEncuestaByIdServicio(this.id_servicio_plaza);
+    await this.rest.sendCortesByIdServicio(this.id_servicio_plaza);
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
   }
@@ -112,17 +115,22 @@ export class SyncAccionesPage implements OnInit {
     if (rol == 'Inspección') {
       const resultado = await this.rest.sendInspeccionByIdServicioAccount(this.id_servicio_plaza, cuenta);
       console.log(resultado);
-    } else if (rol == 'Carta invitación') {
+    } else if (rol === 'Carta invitación') {
       const resultado = await this.rest.sendCartaByIdServicioAccount(this.id_servicio_plaza, cuenta);
       const resultadoEncuesta = await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
       console.log(resultado);
       console.log(resultadoEncuesta);
-    } else if (rol == 'Legal') {
+    } else if (rol === 'Legal') {
       const resultado = await this.rest.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
       console.log(resultado);
-    } else if (rol == 'Inspección Antenas') {
+    } else if (rol === 'Inspección Antenas') {
       const resultado = await this.rest.sendInspeccionAntenasByIdServicioAccount(this.id_servicio_plaza, cuenta)
       console.log(resultado);
+    } else if (rol === 'Cortes') {
+      const resultado = await this.rest.sendCortesByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      const resultadoEncuesta = await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
+      console.log(resultado);
+      console.log(resultadoEncuesta);
     }
 
     this.loading.dismiss();

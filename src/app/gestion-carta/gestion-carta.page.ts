@@ -51,6 +51,8 @@ export class GestionCartaPage implements OnInit {
   fechaActual: any;
   infoImage: any = [];
   takePhoto: boolean = false;
+  takePhotoFachada: boolean = false;
+  takePhotoEvidencia: boolean = false;
   indicadorImagen: number = 0;
   isPhoto: boolean = false;
   image: string = '';
@@ -90,6 +92,9 @@ export class GestionCartaPage implements OnInit {
 
   geoPosicion: any = {};
 
+  id_proceso: any;
+  nombreProceso: string;
+  iconoProceso: string;
 
   sliderOpts = {
     zoom: true,
@@ -139,6 +144,9 @@ export class GestionCartaPage implements OnInit {
 
   async getInfoAccount() {
     this.account = await this.storage.get("account");
+    this.id_proceso = await this.storage.get('id_proceso');
+    this.nombreProceso = await this.storage.get('proceso_gestion');
+    this.iconoProceso = await this.storage.get('icono_proceso');
     this.idAspUser = await this.storage.get('IdAspUser');
     this.infoAccount = await this.rest.getInfoAccount(this.account);
     this.propietario = this.infoAccount[0].propietario;
@@ -208,12 +216,25 @@ export class GestionCartaPage implements OnInit {
   takePic(type) {
     let tipo;
     if (type == 1) {
-      tipo = 'Carta invitación fachada predio'
-      this.takePhoto = true;
+      if(this.id_proceso === 7) {
+        tipo = 'Cortes fachada predio'
+      } else {
+        tipo = 'Carta invitación fachada predio'
+      }
+      this.takePhotoFachada = true;
     } else if (type == 2) {
-      tipo = 'Carta invitación evidencia'
+      if(this.id_proceso === 7) {
+        tipo = 'Cortes evidencia'
+      } else {
+        tipo = 'Carta invitación evidencia' 
+      }
+      this.takePhotoEvidencia = true;
     } else if (type == 3) {
-      tipo = 'Carta invitación toma'
+      if(this.id_proceso === 7) {
+        tipo = 'Cortes toma'
+      } else {
+        tipo = 'Carta invitación toma' 
+      }
     }
 
 
@@ -259,6 +280,7 @@ export class GestionCartaPage implements OnInit {
 
     let options: CameraOptions = {
       quality: 40,
+      //saveToPhotoAlbum: true,
       correctOrientation: true,
       destinationType: this.camera.DestinationType.FILE_URI,
       sourceType: this.camera.PictureSourceType.CAMERA,
@@ -300,12 +322,25 @@ export class GestionCartaPage implements OnInit {
   takePicGallery(type) {
     let tipo;
     if (type == 1) {
-      tipo = 'Carta invitación fachada predio'
-      this.takePhoto = true;
+      if(this.id_proceso === 7) {
+        tipo = 'Cortes fachada predio'
+      } else {
+        tipo = 'Carta invitación fachada predio'
+      }
+      this.takePhotoFachada = true;
     } else if (type == 2) {
-      tipo = 'Carta invitación evidencia'
+      if(this.id_proceso === 7) {
+        tipo = 'Cortes evidencia'
+      } else {
+        tipo = 'Carta invitación evidencia'
+      }
+      this.takePhotoEvidencia = true;
     } else if (type == 3) {
-      tipo = 'Carta invitación toma'
+      if(this.id_proceso === 7) {
+        tipo = 'Cortes toma'
+      } else {
+        tipo = 'Carta invitación toma'
+      }
     }
 
 
@@ -411,11 +446,13 @@ export class GestionCartaPage implements OnInit {
   async terminar() {
 
     if (this.idEstatusPredio === '4') {
-      this.takePhoto = true;
+      //this.takePhoto = true;
+      this.takePhotoFachada = true;
+      this.takePhotoEvidencia = true;
     }
 
-    if (this.idEstatusPredio === '' || this.takePhoto === false) {
-      this.mensaje.showAlert("Debes seleccionar el estatus del predio y tomar foto de fachada");
+    if (this.idEstatusPredio === '' || this.takePhotoFachada === false || this.takePhotoEvidencia === false) {
+      this.mensaje.showAlert("Debes seleccionar el estatus del predio, tomar foto de fachada y evidencia");
       return;
     }
 
@@ -425,8 +462,6 @@ export class GestionCartaPage implements OnInit {
 
     // eliminamos los caracteres especiales de los campos abiertos
     this.eliminarCaracteres();
-
-    
 
 
     if (this.idTipoGestion === '1') {
@@ -475,7 +510,7 @@ export class GestionCartaPage implements OnInit {
 
     console.log(this.geoPosicion);
 
-    if(this.geoPosicion.coords){
+    if (this.geoPosicion.coords) {
       this.latitud = this.geoPosicion.coords.latitude;
       this.longitud = this.geoPosicion.coords.longitude;
     } else {
@@ -485,7 +520,7 @@ export class GestionCartaPage implements OnInit {
     }
 
     loadingGeolocation.dismiss();
-   
+
 
     this.loading = await this.loadingController.create({
       message: 'Guardando la gestión...',
@@ -542,8 +577,13 @@ export class GestionCartaPage implements OnInit {
 
 
   async gestionCarta(data) {
-    console.log(data);
-    this.rest.gestionCartaInvitacion(data);
+    //console.log(data);
+    console.log(this.id_proceso);
+    if (this.id_proceso === 7) {
+      this.rest.gestionCortes(data)
+    } else {
+      this.rest.gestionCartaInvitacion(data);
+    }
   }
 
   exit() {

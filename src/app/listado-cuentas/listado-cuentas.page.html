@@ -49,13 +49,14 @@
             <p color="light" class="border">Propietario: {{item.propietario}}</p>
             <p color="light" class='border direccion'>Dirección: {{item.direccion}}</p>
             <p color="light" class='border'>Deuda:{{item.total | currency:'USD':'symbol' }}</p>
+            <p color="light" class='border'>Proceso: {{item.proceso_gestion}} </p>
             <p *ngIf="item.gestionada == 1" class="realizada">Realizada</p>
           </ion-label>
         </ion-item>
 
         <ion-item-options side="end">
 
-          <ion-item-option color="tertiary" (click)="gestionarCuenta(item.cuenta)">
+          <ion-item-option color="tertiary" (click)="gestionarCuenta(item)">
             <ion-icon class="icon-listado" slot="icon-only" name="reader-outline"></ion-icon>
           </ion-item-option>
 

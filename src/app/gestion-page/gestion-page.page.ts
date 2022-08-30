@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
-import { GestionCartaPage } from '../gestion-carta/gestion-carta.page';
-import { GestionInspeccionAguaPage } from '../gestion-inspeccion-agua/gestion-inspeccion-agua.page';
-import { GestionLegalPage } from '../gestion-legal/gestion-legal.page';
+// import { GestionCartaPage } from '../gestion-carta/gestion-carta.page';
+// import { GestionInspeccionAguaPage } from '../gestion-inspeccion-agua/gestion-inspeccion-agua.page';
+// import { GestionLegalPage } from '../gestion-legal/gestion-legal.page';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { RestService } from '../services/rest.service';
 import { Proceso } from '../interfaces/Procesos';

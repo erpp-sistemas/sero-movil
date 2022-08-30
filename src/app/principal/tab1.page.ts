@@ -185,7 +185,7 @@ export class Tab1Page implements OnInit {
    */
   async descargarInformacion(id_plaza, idServicioPlaza) {
     this.progress = true;
-    // aqui solo abra un metodo para borrar la informacion deleteInfo
+    
     this.deleteInfo(id_plaza, idServicioPlaza);
 
     this.loading = await this.loadinCtrl.create({

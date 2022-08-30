@@ -39,10 +39,10 @@ export class ListadoCuentasPage implements OnInit {
     private callNumber: CallNumber
   ) { }
 
-    /**
-     * Primero obtenemos las variables pasadas por el router que son el idservicio y el idplaza
-     * ejecutamos el metodo listadoCuentas que este mismo ejecuta los metodos getInfo y getInfoCuentas 
-    */
+  /**
+   * Primero obtenemos las variables pasadas por el router que son el idservicio y el idplaza
+   * ejecutamos el metodo listadoCuentas que este mismo ejecuta los metodos getInfo y getInfoCuentas 
+  */
 
 
   ngOnInit() {
@@ -65,7 +65,7 @@ export class ListadoCuentasPage implements OnInit {
       spinner: 'lines-small'
     });
     await this.loading.present();
-    await this.getInfo(id_plaza, idServicioPlaza );
+    await this.getInfo(id_plaza, idServicioPlaza);
     await this.getInfoCuentas(id_plaza, idServicioPlaza);
     this.loading.dismiss();
   }
@@ -82,7 +82,7 @@ export class ListadoCuentasPage implements OnInit {
     this.gestionadas = await this.rest.getGestionadas(id_plaza, idServicioPlaza);
     console.log("Gestionadas del servicio " + idServicioPlaza + " " + this.gestionadas);
   }
-  
+
   /**
    * Metodo que trae del servicio las cuentas a cargar en el listado (sero_principal)
    * @param id_plaza 
@@ -161,12 +161,23 @@ export class ListadoCuentasPage implements OnInit {
    * Metodo que manda al componente de gestion-page para seleccionar el formulario a usar
    * @param cuenta 
    */
-  async gestionarCuenta(cuenta) {
+  async gestionarCuenta(item: any) {
 
-    // guardar en el storage la cuenta que se pasa por parametro
+    console.log(item);
+    let { cuenta, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso } = item;
+
+    // guardar en el storage la cuenta y los doatos que serviran para la gestion
     await this.storage.set('account', cuenta)
+    await this.storage.set('id_proceso', id_proceso);
+    await this.storage.set('proceso_gestion', proceso_gestion);
+    await this.storage.set('icono_proceso', icono_proceso);
 
-    this.router.navigate(["gestion-page"]);
+    /**
+    * Ya no se muestra la pantalla de gestion-page al ya traer el icono, el nombre, el id y la ruta del proceso
+    */
+    //this.router.navigate(["gestion-page"]);
+
+    this.router.navigateByUrl(url_aplicacion_movil);
 
   }
 

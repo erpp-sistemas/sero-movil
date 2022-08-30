@@ -180,7 +180,11 @@ export class MapaPruebaPage implements OnInit {
         position: latlng,
         cuenta: markers.cuenta,
         propietario: markers.propietario,
-        deuda: markers.total
+        deuda: markers.total,
+        id_proceso: markers.id_proceso,
+        proceso_gestion: markers.proceso_gestion,
+        url_aplicacion_movil: markers.url_aplicacion_movil,
+        icono_proceso: markers.icono_proceso
       }
 
       array.push(marker);
@@ -242,7 +246,7 @@ export class MapaPruebaPage implements OnInit {
       scaledSize: new google.maps.Size(30, 30)
     }
 
-    // marcador d ela ubicacion actual
+    // marcador de la ubicacion actual
     let marker = new google.maps.Marker({
       map: this.map,
       animation: google.maps.Animation.DROP,
@@ -318,9 +322,10 @@ export class MapaPruebaPage implements OnInit {
         <div style="text-align:center;">
           <img style="width:40px;" src="assets/icon/sero.png" alt="">
           <h6 style="color:black">Información de la cuenta</h6>
-          <p style="color:black"> <span style="font-weight: bold;">Cuenta: </span> ${m.cuenta} </p>
-          <p style="color:black"> <span style="font-weight: bold;">Propietario: </span> ${m.propietario} </p>
-          <p style="color:black"> <span style="font-weight: bold;">Deuda: </span>$${m.deuda} </p>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Cuenta: </span> ${m.cuenta} </p>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Propietario: </span> ${m.propietario} </p>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Deuda: </span>$${m.deuda} </p>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Proceso: </span>${m.proceso_gestion} </p>
           <ion-button color="success" id="btnGestionar"  >Gestionar</ion-button>
         </div>
       `
@@ -334,7 +339,7 @@ export class MapaPruebaPage implements OnInit {
         document.getElementById('btnGestionar').addEventListener('click', () => {
           // metodo para ir a la gestion
           console.log(m);
-          this.gestionar(m.cuenta);
+          this.gestionar(m);
         })
       })
 
@@ -348,10 +353,20 @@ export class MapaPruebaPage implements OnInit {
     }
   }
 
-  gestionar(cuenta) {
+  async gestionar(item) {
+    let { cuenta, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso } = item;
     console.log("Cuenta ", cuenta);
-    this.storage.set('account', cuenta);
-    this.router.navigateByUrl("/gestion-page");
+    await this.storage.set('account', cuenta);
+    await this.storage.set('id_proceso', id_proceso);
+    await this.storage.set('proceso_gestion', proceso_gestion);
+    await this.storage.set('icono_proceso', icono_proceso);
+
+    /**
+    * Ya no se muestra la pantalla de gestion-page al ya traer el icono, el nombre, el id y la ruta del proceso
+    */
+    // this.router.navigateByUrl("/gestion-page");
+
+    this.router.navigateByUrl(url_aplicacion_movil);
   }
 
 
@@ -508,7 +523,7 @@ export class MapaPruebaPage implements OnInit {
 
     this.rest.getDataVisitPositionDistance(this.id_plaza, this.idServicioPlaza, this.cuentasDistancia).then((data: any[]) => {
       cuentasDistanciaMostrar = data
-    })      
+    })
 
 
     this.loading = await this.loadingCtrl.create({
@@ -528,7 +543,7 @@ export class MapaPruebaPage implements OnInit {
       console.log(cuentasDistanciaMostrar);
 
       let total = cuentasDistanciaMostrar.length;
-      
+
 
       if (total >= 25) {
         console.log("Tiene 25 o mas cuentas");
@@ -555,7 +570,7 @@ export class MapaPruebaPage implements OnInit {
             // vamos a meter false por que si tiene true pone los markers pero no deja seleccionar el 
             // icono de la cuenta
             stopover: false
-            
+
           })
           if (i == (total - 1)) {
             positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
@@ -600,7 +615,7 @@ export class MapaPruebaPage implements OnInit {
 
 
 
- 
+
   async find() {
     if (this.accountString == "") {
       alert("Ingresa una cuenta")

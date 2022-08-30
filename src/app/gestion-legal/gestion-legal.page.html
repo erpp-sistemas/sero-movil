@@ -7,16 +7,15 @@
 
   <hr>
 
-  <ion-grid style="margin-top: 30px;">
-    <ion-row>
-      <ion-col size=12 class="ion-text-center">
-        <ion-button shape="round" color="primary" expand="block" (click)="goPhotos()">
-          <ion-icon slot="start" name="image"></ion-icon>
-          Ver fotos históricas
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+
+  <div class="contenedor-icono-proceso" style="text-align: center;">
+    <ion-icon class="icono-proceso" [name]="iconoProceso"></ion-icon>
+  </div>
+  <div class="contenedor-nombre-proceso">
+    <ion-label>
+      <p>{{nombreProceso}}</p>
+    </ion-label>
+  </div>
 
 
   <ion-card color="medium">
@@ -29,11 +28,7 @@
           <p> Plaza: <span style="font-weight: bold;"> {{nombrePlaza}} </span> </p>
         </ion-label>
       </ion-item>
-      <ion-item color="medium">
-        <ion-label>
-          <p> Formulario: <span style="font-weight: bold;"> Ejecución Fiscal </span> </p>
-        </ion-label>
-      </ion-item>
+
       <ion-item color="medium">
         <ion-label>
           <p> Acción a realizar: <span style="font-weight: bold;"> {{nombreTareaAsignada}} </span> </p>
@@ -51,6 +46,12 @@
           <p> Propietario: <span style="font-weight: bold;"> {{propietario}} </span> </p>
         </ion-label>
       </ion-item>
+
+      <ion-button fill="outline" class="button-fotos-historicas" color="primary" expand="block" (click)="goPhotos()">
+        <ion-icon slot="start" name="image"></ion-icon>
+        Ver fotos históricas
+      </ion-button>
+
     </ion-card-content>
   </ion-card>
 

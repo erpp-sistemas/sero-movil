@@ -18,9 +18,9 @@ import { LoginPage } from '../login/login.page';
 })
 export class AuthService {
 
-  apiObtenerServiciosUser = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios";
-  apiObtenerServiciosPublicos = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_servicios_publicos";
-  apiObtenerEmpleadosPlaza = "http://201.163.165.20/seroMovil.aspx?query=sp_obtener_gestores_plaza";
+  apiObtenerServiciosUser = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios";
+  apiObtenerServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios_publicos";
+  apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
@@ -70,6 +70,10 @@ export class AuthService {
         const id = user.user.uid;
         let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
           // this.userInfo tiene la informacion del usuario del firebase
+          if(!userInfoFirebase) {
+            this.mensaje.showAlert("Usuario no creado en la app móvil");
+            return;
+          }
           this.userInfo = userInfoFirebase
           console.log("Usuario firebase: ", this.userInfo);
           // corroborar si el usuario esta activo
