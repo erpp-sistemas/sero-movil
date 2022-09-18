@@ -72,9 +72,14 @@ import { BackgroundGeolocation } from "@ionic-native/background-geolocation/ngx"
 // import { SMS } from '@ionic-native/sms/ngx';
 import { SMS } from '@awesome-cordova-plugins/sms/ngx';
 
+// Permissions
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
+// App version
+import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx'
 
+// One signal
+import { OneSignal } from '@awesome-cordova-plugins/onesignal/ngx';
 
 
 @NgModule({
@@ -113,6 +118,8 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
     BackgroundGeolocation,
     AndroidPermissions,
     SMS,
+    AppVersion,
+    OneSignal,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

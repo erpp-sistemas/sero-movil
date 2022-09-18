@@ -17,6 +17,7 @@ import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocati
 //import { UsersFirebaseService } from './services/users-firebase.service';
 
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+import { PushService } from './services/push.service';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +45,7 @@ export class AppComponent {
     private storage: Storage,
     private router: Router,
     private androidPermissions: AndroidPermissions,
+    private push: PushService
   ) {
     this.initializeApp();
 
@@ -58,6 +60,7 @@ export class AppComponent {
       this.createDB();
       this.backGroundGeolocation();
       // this.getPermission();
+      this.push.configuracionInicial();
     })
   }
 

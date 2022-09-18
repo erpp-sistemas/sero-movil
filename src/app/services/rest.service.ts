@@ -10,6 +10,7 @@ import { S3Service } from './s3.service';
 import { Proceso } from '../interfaces/Procesos';
 import { UsuarioAyuda } from '../interfaces/UsuarioAyuda';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -39,6 +40,7 @@ export class RestService {
   apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   apiObtenerProcesosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_procesos_plaza";
   apiRegistroBotonPanico = "https://ser0.mx/seroMovil.aspx?query=sp_boton_panico";
+ 
 
 
   constructor(
@@ -3289,6 +3291,5 @@ export class RestService {
       }
     })
   }
-
 
 }

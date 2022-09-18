@@ -8,6 +8,7 @@ import { RestService } from './rest.service';
 import { HttpClient } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { LoginPage } from '../login/login.page';
+import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 
 //import { BehaviorSubject } from 'rxjs';
 
@@ -21,6 +22,7 @@ export class AuthService {
   apiObtenerServiciosUser = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios";
   apiObtenerServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios_publicos";
   apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
+  apiUpdateAppVersion = "https://ser0.mx/seroMovil.aspx?query=sp_user_app_version";
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: any;
@@ -35,7 +37,8 @@ export class AuthService {
     private storage: Storage,
     private rest: RestService,
     private http: HttpClient,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private appVersion: AppVersion
   ) { }
 
   /** 
@@ -251,6 +254,7 @@ export class AuthService {
   async saveDataCell(id) {
     console.log("Generando identificativo");
     let name = await this.storage.get("Nombre");
+    await this.updateAppVersion();
     this.storage.set("IMEI", id);
     let dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
@@ -265,6 +269,23 @@ export class AuthService {
   }
 
 
+  async obtenerVersionApp() {
+    let versionApp = await this.appVersion.getVersionNumber();
+    return versionApp;
+  }
+
+  async updateAppVersion() {
+    let appVersion = await this.obtenerVersionApp();
+    let idUsuario = await this.storage.get('IdAspUser');
+    let sql = `${this.apiUpdateAppVersion} ${idUsuario}, '${appVersion}'`
+    try {
+      this.http.post(sql, null).subscribe((data) => {
+        console.log(data);
+      })
+    } catch (error) {
+      console.log("No se pudo actualizar la version de la app en el SQL ", error);
+    }
+  }
 
   /**
    * Metodo para registrar un usuario, ahorita no se ocupa ya que el usuario se creara desde la web
