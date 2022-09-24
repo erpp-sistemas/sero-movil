@@ -94,6 +94,15 @@
       <ion-icon slot="start" color="warning" name="shield-half-outline"></ion-icon>
     </ion-item>
 
+    <ion-item color="medium" (click)="notificaciones()">
+      <ion-label color="light">
+        <p style="color: white;">
+          Notificaciones
+        </p>
+      </ion-label>
+      <ion-icon color="success" name="notifications-outline" slot="start"></ion-icon>
+    </ion-item>
+
     <ion-item color="medium" (click)="exit()">
       <ion-label color="light">
         <p style="color: white;">
@@ -102,6 +111,7 @@
       </ion-label>
       <ion-icon color="success" name="log-out-outline" slot="start"></ion-icon>
     </ion-item>
+
 
   </ion-content>
 </ion-menu>

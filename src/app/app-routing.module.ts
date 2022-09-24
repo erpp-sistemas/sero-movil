@@ -121,6 +121,10 @@ const routes: Routes = [
   {
     path: 'mapa-leaflet',
     loadChildren: () => import('./mapa-leaflet/mapa-leaflet.module').then( m => m.MapaLeafletPageModule)
+  },
+  {
+    path: 'push-notifications',
+    loadChildren: () => import('./push-notifications/push-notifications.module').then( m => m.PushNotificationsPageModule)
   }
 
 

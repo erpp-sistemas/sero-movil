@@ -1,0 +1,61 @@
+<ion-content color="medium">
+  <hr>
+  <hr>
+  <hr>
+  <hr>
+  <hr>
+  <hr>
+  <hr>
+  <hr>
+
+  <div style="text-align: center;">
+    <h3>Notificaciones</h3>
+    <ion-icon class="icono-titulo" name="notifications-outline"></ion-icon>
+  </div>
+
+  <ion-card *ngFor="let push of pushNotifications, let i = index">
+    <ion-card-subtitle class="subtitle">{{i + 1 }}</ion-card-subtitle>
+    <div *ngIf="push.url_img !== 'none'" class="img-titulo">
+      <img [src]="push.url_img" alt="imagen notificacion">
+    </div>
+    <ion-card-header>
+      <ion-card-title class="title">{{push.titulo_push}}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="content">
+      {{push.mensaje}}
+    </ion-card-content>
+    <ion-button color="warning" class="button-delete-push" (click)="deletePush(push.id_push_notification)">
+      <ion-icon name="trash-outline"></ion-icon>
+    </ion-button>
+  </ion-card>
+
+  <div *ngIf="pushNotifications.length === 0" class="sin-notificaciones">
+    <h3>No tienes notificaciones...</h3>
+    <h3>😔😔😔</h3>
+  </div>
+
+</ion-content>
+
+
+<ion-segment scrollable>
+  <ion-segment-button (click)="navegar(1)">
+    <ion-icon color="light" name="home"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Inicio</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(2)">
+    <ion-icon color="light" name="layers"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Cuentas</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(3)">
+    <ion-icon color="light" name="map"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>Mapa</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(4)">
+    <ion-icon color="light" name="warning"></ion-icon>
+    <ion-label color="light" style="font-size:2px"><small>S.Públicos</small></ion-label>
+  </ion-segment-button>
+  <ion-segment-button (click)="navegar(5)">
+    <img src="../../../assets/img/sos.png" style="width: 30px; height: 30px; margin-bottom: -15px; " alt="">
+    <ion-label color="light" style="font-size:3px; margin-bottom: -1px;"><small>S.O.S.</small></ion-label>
+  </ion-segment-button>
+</ion-segment>

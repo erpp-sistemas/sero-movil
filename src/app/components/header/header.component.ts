@@ -81,4 +81,10 @@ export class HeaderComponent implements OnInit {
     this.menuCtrl.close();
   }
 
+  notificaciones() {
+    console.log("Ir a las notificaciones");
+    this.router.navigateByUrl('/push-notifications');
+    this.menuCtrl.close();
+  }
+
 }

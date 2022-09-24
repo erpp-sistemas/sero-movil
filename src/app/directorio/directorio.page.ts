@@ -24,8 +24,6 @@ export class DirectorioPage implements OnInit {
   constructor(
     private callNumber: CallNumber,
     private iab: InAppBrowser,
-    private menuCtrl: MenuController,
-    private auth: AuthService,
     private router: Router,
     private emailComposer: EmailComposer,
     private rest: RestService
