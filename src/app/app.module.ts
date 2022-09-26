@@ -108,7 +108,7 @@ import { OneSignal } from '@awesome-cordova-plugins/onesignal/ngx';
     File,
     S3Service,
     SystemVariableService,
-   // AndroidPermissions,
+    //AndroidPermissions,
     SQLite,
     NativeStorage,
     StreamingMedia,

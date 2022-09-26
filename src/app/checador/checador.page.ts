@@ -6,8 +6,6 @@ import { LoadingController, ToastController, Platform, ModalController } from '@
 import { Storage } from '@ionic/storage';
 import { AlertController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { MessagesService } from '../services/messages.service';
 import { MarkerIcon } from '@ionic-native/google-maps/ngx';
 
 declare var google;
@@ -41,27 +39,14 @@ export class ChecadorPage implements OnInit {
     private platform: Platform,
     private storage: Storage,
     private rest: RestService,
-    private modalController: ModalController,
-    private geolocation: Geolocation,
-    private message: MessagesService
   ) { }
 
   async ngOnInit() {
     await this.platform.ready();
     await this.loadMap();
-    //await this.getInfo();
     this.idAspUser = await this.storage.get('IdAspUser');
   }
 
-
-
-  // async getInfo() {
-  //   // this.nombre = await this.storage.get('Nombre')
-  //   // this.email = await this.storage.get('Email')
-  //   // this.plaza = await this.storage.get('Plaza')
-  //   this.idPlaza = await this.storage.get('IdPlazaActiva')
-  //   console.log(this.idPlaza)
-  // }
 
   async loadMap() { //realiza la carga del mapa
     let options: GoogleMapOptions = {
@@ -258,14 +243,6 @@ export class ChecadorPage implements OnInit {
     await alert.present();
   }
 
-  // async historico() {
-  //   const modal = await this.modalController.create({
-  //     component: HistoricoAsistenciaPage,
-
-  //   });
-
-  //   await modal.present();
-  // }
 
   async regresarPrincipal() {
 

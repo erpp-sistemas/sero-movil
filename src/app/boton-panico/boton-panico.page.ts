@@ -5,6 +5,7 @@ import { Storage } from '@ionic/storage';
 import { RestService } from '../services/rest.service';
 import { UsuarioAyuda } from '../interfaces/UsuarioAyuda'
 import { SMS } from '@awesome-cordova-plugins/sms/ngx';
+import { MessagesService } from '../services/messages.service';
 
 @Component({
   selector: 'app-boton-panico',
@@ -19,6 +20,7 @@ export class BotonPanicoPage implements OnInit {
   latitud: number;
   longitud: number;
   loading: any
+  error: boolean;
 
   usuariosAyuda: UsuarioAyuda[] = [];
 
@@ -58,7 +60,7 @@ export class BotonPanicoPage implements OnInit {
     private storage: Storage,
     private rest: RestService,
     private sms: SMS,
-
+    private message: MessagesService
   ) { }
 
   async ngOnInit() {
@@ -98,7 +100,6 @@ export class BotonPanicoPage implements OnInit {
   async obtenerGeolocalizacion() {
 
     this.geolocation.getCurrentPosition().then(async (resp) => {
-
       if (resp) {
         this.latitud = resp.coords.latitude;
         this.longitud = resp.coords.longitude;
@@ -107,8 +108,6 @@ export class BotonPanicoPage implements OnInit {
       } else {
         this.loading.dismiss();
       }
-
-
     });
 
   }
@@ -126,30 +125,38 @@ export class BotonPanicoPage implements OnInit {
       longitud: this.longitud
     }
 
-    this.usuariosAyuda = await this.rest.registroBotonPanico(data)
+    this.usuariosAyuda = await this.rest.registroBotonPanico(data);
+
+    console.log(this.usuariosAyuda);
 
     this.usuariosAyuda.forEach(async usuario => {
       const numero = '+521' + usuario.telefono_personal
-      await this.enviarMensaje(numero, usuario.nombre, usuario.apellido_paterno)
+        let mensajeEstatus = await this.enviarMensaje(numero, usuario.nombre, usuario.apellido_paterno);
+        if(mensajeEstatus === 'Mensaje enviado') {
+          this.mensajeEnviado = true;
+          this.error = false;
+        } else {
+          this.error = true
+          this.mensajeEnviado = false;
+        }
     });
-
     this.loading.dismiss();
-    this.mensajeEnviado = true;
 
   }
 
 
   async enviarMensaje(numero: string, nombre: string, apellido_paterno: string) {
+    return new Promise(async (resolve, reject) => {
 
-    return new Promise(resolve => {
-      let texto = `Hola que tal ${nombre} ${apellido_paterno} soy ${this.nombre} y solicito ayuda mi ubiación actual es \n 
-      https://www.google.com/maps/place/${this.latitud},${this.longitud}
-     `
-      this.sms.send(numero, texto, {
-        replaceLineBreaks: true
-      }).then(result => {
-        if (result === 'OK') {
-          resolve("Se envio el mensaje")
+      let permiso = await this.sms.hasPermission();
+      if(!permiso) {
+        this.message.showToast("Activa el permiso para mandar mensajes");
+        return;
+      }
+
+      this.sms.send(numero, `Hola que tal ${nombre} ${apellido_paterno} soy ${this.nombre} y necesito ayuda, mi ubicacion actual es https://www.google.com/maps/place/${this.latitud},${this.longitud} `, {replaceLineBreaks: true}).then(result => {
+        if(result === 'OK') {
+          resolve("Mensaje enviado")
         }
       })
     })
