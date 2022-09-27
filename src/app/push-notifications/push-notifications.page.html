@@ -29,7 +29,7 @@
     </ion-button>
   </ion-card>
 
-  <div *ngIf="pushNotifications.length === 0" class="sin-notificaciones">
+  <div *ngIf="pushCargadas && pushNotifications.length === 0" class="sin-notificaciones">
     <h3>No tienes notificaciones...</h3>
     <h3>😔😔😔</h3>
   </div>

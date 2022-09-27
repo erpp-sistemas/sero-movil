@@ -25,8 +25,8 @@ export class PushNotificationsPage implements OnInit {
     
   }
 
-  ionViewDidEnter() {
-    this.getAllPushNotifications();
+  async ionViewDidEnter() {
+    await this.getAllPushNotifications();
   }
 
   async getAllPushNotifications() {

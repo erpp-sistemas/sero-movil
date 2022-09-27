@@ -4,18 +4,9 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SQLiteObject, SQLite } from '@ionic-native/sqlite/ngx';
 import { RestService } from '../app/services/rest.service';
-// import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
-import { AuthService } from './services/auth.service';
 import { QuerysService } from './services/querys.service';
-
-import { AngularFirestore } from '@angular/fire/firestore';
-import { MessagesService } from './services/messages.service';
 import { Storage } from '@ionic/storage';
-import { Router } from '@angular/router';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
-//import { auth } from 'firebase';
-//import { UsersFirebaseService } from './services/users-firebase.service';
-
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 import { PushService } from './services/push.service';
 
@@ -38,12 +29,7 @@ export class AppComponent {
     private statusBar: StatusBar,
     private sqlite: SQLite,
     private rest: RestService,
-    // private androidPermissions: AndroidPermissions,
-    private db: AngularFirestore,
-    private auth: AuthService,
-    private message: MessagesService,
     private storage: Storage,
-    private router: Router,
     private androidPermissions: AndroidPermissions,
     private push: PushService
   ) {
@@ -59,7 +45,7 @@ export class AppComponent {
       this.statusBar.styleBlackOpaque();
       this.createDB();
       this.backGroundGeolocation();
-      // this.getPermission();
+      this.getPermission();
       this.push.configuracionInicial();
     })
   }
@@ -68,9 +54,10 @@ export class AppComponent {
   async getPermission() {
     this.androidPermissions.requestPermissions(
       [
-        this.androidPermissions.PERMISSION.CAMERA,
-        this.androidPermissions.PERMISSION.READ_PHONE_STATE,
+        //this.androidPermissions.PERMISSION.CAMERA,
+        //this.androidPermissions.PERMISSION.READ_PHONE_STATE,
         this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION,
+        this.androidPermissions.PERMISSION.SEND_SMS
       ])
   }
 
@@ -108,9 +95,9 @@ export class AppComponent {
 
     const config: BackgroundGeolocationConfig = {
       desiredAccuracy: 10,
-      stationaryRadius: 20,
-      distanceFilter: 10,
-      interval: 300000, //300000
+      stationaryRadius: .3,
+      distanceFilter: .3,
+      interval: 5000, //300000
       fastestInterval: 5000,
       notificationTitle: 'Ser0 Móvil',
       notificationText: 'Activado',
@@ -140,12 +127,8 @@ export class AppComponent {
     let lng = location.longitude
     let idAspuser = await this.storage.get('IdAspUser')
     //let idPlaza = await this.storage.get('IdPlaza')
-    if (idAspuser == null || idAspuser == undefined) {
-    } else {
-      //console.log(idAspuser, 'el idaspuser del recorrido')
-      
-      //console.log('Sesion activa')
-
+    if (idAspuser !== null || idAspuser !== undefined) {
+     
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
       let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
