@@ -23,6 +23,7 @@
     "@awesome-cordova-plugins/android-permissions": "^5.44.0",
     "@awesome-cordova-plugins/app-version": "^5.45.0",
     "@awesome-cordova-plugins/core": "^5.44.0",
+    "@awesome-cordova-plugins/network": "^5.45.0",
     "@awesome-cordova-plugins/onesignal": "^5.45.0",
     "@awesome-cordova-plugins/sms": "^5.44.0",
     "@ionic-native/background-geolocation": "^5.36.0",
@@ -93,6 +94,7 @@
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
     "cordova-plugin-nativestorage": "^2.3.2",
+    "cordova-plugin-network-information": "^3.0.0",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-streaming-media": "^2.3.0",
@@ -153,7 +155,8 @@
       "cordova-plugin-android-permissions": {},
       "cordova-plugin-app-version": {},
       "cordova-plugin-androidx-adapter": {},
-      "onesignal-cordova-plugin": {}
+      "onesignal-cordova-plugin": {},
+      "cordova-plugin-network-information": {}
     },
     "platforms": [
       "android"

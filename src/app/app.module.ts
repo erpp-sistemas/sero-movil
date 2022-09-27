@@ -81,6 +81,9 @@ import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx'
 // One signal
 import { OneSignal } from '@awesome-cordova-plugins/onesignal/ngx';
 
+// Network
+import { Network } from '@awesome-cordova-plugins/network/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -120,6 +123,7 @@ import { OneSignal } from '@awesome-cordova-plugins/onesignal/ngx';
     SMS,
     AppVersion,
     OneSignal,
+    Network,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

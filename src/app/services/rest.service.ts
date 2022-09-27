@@ -226,12 +226,11 @@ export class RestService {
    */
   obtenerDatosSql(idAspUser, idPlaza, idPlazaServicio) {
     try {
-      return new Promise(resolve => {
-
+      return new Promise((resolve) => {
         this.http.post(this.apiObtenerDatos + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio, null)
           .subscribe(data => {
             resolve(data);
-          }, err => console.log(err));
+          });
       })
     } catch {
       console.log("No se pudo obtener la información");

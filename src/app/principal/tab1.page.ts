@@ -5,6 +5,7 @@ import { Storage } from '@ionic/storage';
 import { Proceso } from '../interfaces/Procesos';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
+import { Network } from '@awesome-cordova-plugins/network/ngx';
 
 @Component({
   selector: 'app-tab1',
@@ -30,6 +31,7 @@ export class Tab1Page implements OnInit {
   plazasServicios: any; // para almacenar esto (select distinct id_plaza, plaza from serviciosPlazaUser)
   servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
 
+  typeNetwork: string = '';
 
 
   constructor(
@@ -39,7 +41,8 @@ export class Tab1Page implements OnInit {
     private message: MessagesService,
     private platform: Platform,
     private router: Router,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private network: Network
   ) { }
 
 
@@ -198,6 +201,8 @@ export class Tab1Page implements OnInit {
 
     try {
 
+      console.log(this.network.type);
+
       this.data = await this.rest.obtenerDatosSql(idaspuser, id_plaza, idServicioPlaza);
       this.total = this.data.length;
 
@@ -337,16 +342,10 @@ export class Tab1Page implements OnInit {
     console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
     console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
 
-
-
     //this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
     this.router.navigate(['mapa-prueba', idServicioPlaza, this.id_plaza]);
   }
 
-  // goMapOffline() {
-  //   console.log("Ir al mapa offline");
-  //   this.router.navigateByUrl('/mapa-leaflet');
-  // }
 
 
 }
