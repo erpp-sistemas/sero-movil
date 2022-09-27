@@ -3033,6 +3033,7 @@ export class RestService {
   }
 
   async recorridoSync(query, id) {
+
     return new Promise(resolve => {
       this.http.post(this.apiRegistroRecorrido + " " + query, null).subscribe(
         async data => {

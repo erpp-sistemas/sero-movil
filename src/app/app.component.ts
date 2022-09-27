@@ -5,10 +5,9 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SQLiteObject, SQLite } from '@ionic-native/sqlite/ngx';
 import { RestService } from '../app/services/rest.service';
 import { QuerysService } from './services/querys.service';
-import { Storage } from '@ionic/storage';
-import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 import { PushService } from './services/push.service';
+import { TrackingService } from './services/tracking.service';
 
 @Component({
   selector: 'app-root',
@@ -24,32 +23,30 @@ export class AppComponent {
   constructor(
     private query: QuerysService,
     private platform: Platform,
-    private backgroundGeolocation: BackgroundGeolocation,
     private splasScreen: SplashScreen,
     private statusBar: StatusBar,
     private sqlite: SQLite,
     private rest: RestService,
-    private storage: Storage,
     private androidPermissions: AndroidPermissions,
-    private push: PushService
+    private push: PushService,
+    private tracking: TrackingService
   ) {
     this.initializeApp();
-
   }
 
 
   initializeApp() {
     this.platform.ready().then(() => {
-
       this.splasScreen.hide();
       this.statusBar.styleBlackOpaque();
       this.createDB();
-      this.backGroundGeolocation();
       this.getPermission();
       this.push.configuracionInicial();
+      setInterval(async () => {
+        await this.tracking.pushGeolocationSQL();
+      }, 300000);
     })
   }
-
 
   async getPermission() {
     this.androidPermissions.requestPermissions(
@@ -60,6 +57,7 @@ export class AppComponent {
         this.androidPermissions.PERMISSION.SEND_SMS
       ])
   }
+
 
   createDB() {
     let table = this.query.getTables();
@@ -89,58 +87,6 @@ export class AppComponent {
 
     }).catch(error => console.log("Error en bd", error));
   }
-
-
-  backGroundGeolocation() {
-
-    const config: BackgroundGeolocationConfig = {
-      desiredAccuracy: 10,
-      stationaryRadius: .3,
-      distanceFilter: .3,
-      interval: 5000, //300000
-      fastestInterval: 5000,
-      notificationTitle: 'Ser0 Móvil',
-      notificationText: 'Activado',
-      debug: false, //  enable this hear sounds for background-geolocation life-cycle.
-      stopOnTerminate: true, // enable this to clear background location settings when the app terminates
-    };
-
-    this.backgroundGeolocation.configure(config)
-      .then(() => {
-        this.backgroundGeolocation
-          .on(BackgroundGeolocationEvents.location)
-          .subscribe((location: BackgroundGeolocationResponse) => {
-            //console.log(location);
-            this.saveLocation(location)
-          });
-
-      });
-
-    // start recording location
-    this.backgroundGeolocation.start();
-    // If you wish to turn OFF background-tracking, call the #stop method.
-    this.backgroundGeolocation.stop();
-  }
-
-  async saveLocation(location) {
-    let lat = location.latitude;
-    let lng = location.longitude
-    let idAspuser = await this.storage.get('IdAspUser')
-    //let idPlaza = await this.storage.get('IdPlaza')
-    if (idAspuser !== null || idAspuser !== undefined) {
-     
-      var dateDay = new Date().toISOString();
-      let date: Date = new Date(dateDay);
-      let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
-      let fecha = ionicDate.toISOString();
-
-      this.rest.saveLocation(lat, lng, idAspuser, fecha)//guarda localmente
-      this.rest.guardarSQl(lat, lng, idAspuser, fecha);
-      
-    }
-
-  }
-
 
 
 }
