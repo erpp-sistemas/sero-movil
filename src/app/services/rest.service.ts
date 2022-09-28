@@ -224,17 +224,15 @@ export class RestService {
    * @param idPlazaServicio 
    * @returns Promise
    */
-  obtenerDatosSql(idAspUser, idPlaza, idPlazaServicio) {
-    try {
-      return new Promise((resolve) => {
-        this.http.post(this.apiObtenerDatos + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio, null)
-          .subscribe(data => {
-            resolve(data);
-          });
+  obtenerDatosSql(idAspUser, idPlaza, idPlazaServicio) { 
+    return new Promise((resolve, reject) => {
+      this.http.get(this.apiObtenerDatos + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio).subscribe(data => {
+        resolve(data);
+      }, error => {
+        console.log(error);
+        reject(error)
       })
-    } catch {
-      console.log("No se pudo obtener la información");
-    }
+    })
   }
 
   /**
@@ -484,7 +482,7 @@ export class RestService {
       for (let index = 0; index < response.rows.length; index++) {
         arrayCuentas.push(response.rows.item(index));
       }
-      console.log(arrayCuentas);
+      //console.log(arrayCuentas);
 
       return Promise.resolve(arrayCuentas);
 
@@ -1975,7 +1973,7 @@ export class RestService {
       this.http.post(this.apiRegistroInspeccion + " " + query, null).subscribe(
         async data => {
           await this.actualizarIdInspeccion(id);
-          console.log(data);
+          //console.log(data);
           resolve(data);
         },
         err => {
@@ -1983,7 +1981,7 @@ export class RestService {
             "No se pudo enviar la información, verifica tu red " + err
           );
           this.loadingCtrl.dismiss();
-          console.log(err);
+          //console.log(err);
         }
       );
     });
@@ -2382,7 +2380,6 @@ export class RestService {
         this.message.showAlert("No se pudo enviar la información " + err);
         console.log(err);
         this.loadingCtrl.dismiss();
-        console.log(err);
       }
       )
     })

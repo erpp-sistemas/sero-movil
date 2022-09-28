@@ -163,7 +163,7 @@ export class ListadoCuentasPage implements OnInit {
    */
   async gestionarCuenta(item: any) {
 
-    console.log(item);
+    //console.log(item);
     let { cuenta, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso } = item;
 
     // guardar en el storage la cuenta y los doatos que serviran para la gestion

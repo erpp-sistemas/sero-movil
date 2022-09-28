@@ -56,7 +56,7 @@ export class Tab2Page implements OnInit {
    async obtenerPlazasUsuario() {
 
     this.plazasServicios = await this.rest.obtenerPlazasSQL();
-    console.log(this.plazasServicios);
+    
 
     // tomamos el primer registro para ponerlo como defauult en el select
     this.id_plaza = this.plazasServicios[0].id_plaza;
@@ -100,7 +100,7 @@ export class Tab2Page implements OnInit {
 
   // viene del obtenerPlazasUsuario
   async mostrarServicios(servicios) {
-    console.log(servicios);
+    
     this.servicios = await this.rest.mostrarServicios(this.id_plaza)
 
   }

@@ -5,6 +5,7 @@ import { ImagePreviewPage } from '../image-preview/image-preview.page';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { Network } from '@awesome-cordova-plugins/network/ngx';
 
 
 @Component({
@@ -29,10 +30,12 @@ export class SyncFotosAccionesPage implements OnInit {
     private mensaje: MessagesService,
     private modalCtrl: ModalController,
     private router: Router,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private network: Network
   ) { }
 
   async ngOnInit() {
+    console.log(this.network.type);
     await this.getTotalFotos();
     await this.getInfo();
     console.log(this.infoImages);
@@ -108,8 +111,13 @@ export class SyncFotosAccionesPage implements OnInit {
   }
 
   syncFotos() {
+    let typeNetwork = this.network.type;
+    console.log(typeNetwork);
+    if (typeNetwork !== 'wifi') {
+      this.mensaje.showToastLarge("No estas conectado a una red wifi, recuerda que se recomienda enviar tus fotos con wifi")
+    }
     this.rest.uploadPhotos().then(() => {
-      console.log("Se mandaron las fotos");
+      //console.log("Se mandaron las fotos");
       this.router.navigateByUrl('/sincronizar-fotos');
     })
   }

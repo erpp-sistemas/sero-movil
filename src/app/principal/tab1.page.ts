@@ -5,7 +5,6 @@ import { Storage } from '@ionic/storage';
 import { Proceso } from '../interfaces/Procesos';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
-import { Network } from '@awesome-cordova-plugins/network/ngx';
 
 @Component({
   selector: 'app-tab1',
@@ -31,7 +30,6 @@ export class Tab1Page implements OnInit {
   plazasServicios: any; // para almacenar esto (select distinct id_plaza, plaza from serviciosPlazaUser)
   servicios: any; // para almacenar los servicios (select * from serviciosPlazaUser where id_plaza = ?)
 
-  typeNetwork: string = '';
 
 
   constructor(
@@ -41,8 +39,7 @@ export class Tab1Page implements OnInit {
     private message: MessagesService,
     private platform: Platform,
     private router: Router,
-    private alertCtrl: AlertController,
-    private network: Network
+    private alertCtrl: AlertController
   ) { }
 
 
@@ -201,8 +198,6 @@ export class Tab1Page implements OnInit {
 
     try {
 
-      console.log(this.network.type);
-
       this.data = await this.rest.obtenerDatosSql(idaspuser, id_plaza, idServicioPlaza);
       this.total = this.data.length;
 
@@ -242,8 +237,12 @@ export class Tab1Page implements OnInit {
       this.getProcessByIdPlaza(this.id_plaza);
 
       this.message.showAlert("Se han descargado tus cuentas!!!!");
-    } catch (eror) {
-      this.message.showAlert("Error al intentar la descarga");
+    } catch (error) {
+      console.log(error);
+      await this.loading.dismiss();
+      if(error.name === 'HttpErrorResponse') {
+        this.message.showAlert("Error al descargar las cuentas, verificar conexión a internet");
+      }
     }
   }
 
