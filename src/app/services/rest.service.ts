@@ -896,17 +896,13 @@ export class RestService {
   gestionCartaInvitacion(data) {
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo, coloco_sello) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
     return this.db.executeSql(sql, [
       data.id_plaza,
       data.nombrePlaza,
       data.account,
       data.persona_atiende,
-      //data.id_motivo_no_pago, // No se estan utilizando va a estar en app de encuesta
-      //data.otro_motivo_no_pago, // No se estan utilizando va a estar en app de encuesta
-      //data.id_trabajo_actual, // No se estan utilizando va a estar en app de encuesta
-      //data.id_gasto_impuesto, // No se estan utilizando va a estar en app de encuesta
       data.id_tipo_servicio,
       data.numero_niveles,
       data.colorFachada,
@@ -933,7 +929,8 @@ export class RestService {
       data.jueves,
       data.viernes,
       data.sabado,
-      data.domingo
+      data.domingo,
+      data.colocoSello
     ])
   }
 
@@ -1333,10 +1330,11 @@ export class RestService {
         let viernes = arrayCuentaCarta[0].viernes;
         let sabado = arrayCuentaCarta[0].sabado;
         let domingo = arrayCuentaCarta[0].domingo;
+        let colocoSello = arrayCuentaCarta[0].coloco_sello
 
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}'`
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}`
         console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
 
@@ -1815,7 +1813,7 @@ export class RestService {
         },
         err => {
           this.message.showAlert(
-            "No se pudo enviar la información, verifica tu red " + err
+            "No se pudo enviar la información..."
           );
           this.loadingCtrl.dismiss();
           console.log(err);
@@ -1978,7 +1976,7 @@ export class RestService {
         },
         err => {
           this.message.showAlert(
-            "No se pudo enviar la información, verifica tu red " + err
+            "No se pudo enviar la información..."
           );
           this.loadingCtrl.dismiss();
           //console.log(err);
@@ -2219,7 +2217,7 @@ export class RestService {
         console.log(data);
         resolve(data);
       }, err => {
-        this.message.showAlert("No se pudo enviar la información " + err);
+        this.message.showAlert("No se pudo enviar la información...");
         console.log(err);
         this.loadingCtrl.dismiss();
       }
@@ -2352,9 +2350,10 @@ export class RestService {
       let viernes = arrayGestionesCarta[i].viernes;
       let sabado = arrayGestionesCarta[i].sabado;
       let domingo = arrayGestionesCarta[i].domingo;
+      let colocoSello = arrayGestionesCarta[i].coloco_sello;
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}' `
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}`
       console.log(sql);
       await this.enviarSQLCartaInvitacion(sql, id)
       resolve('Execute Query successfully');
@@ -2377,7 +2376,7 @@ export class RestService {
         console.log(data);
         resolve(data);
       }, err => {
-        this.message.showAlert("No se pudo enviar la información " + err);
+        this.message.showAlert("No se pudo enviar la información... ");
         console.log(err);
         this.loadingCtrl.dismiss();
       }
@@ -2543,7 +2542,7 @@ export class RestService {
         resolve(data);
       }, err => {
         this.message.showAlert(
-          "No se pudo enviar la información, verifica tu red " + err
+          "No se pudo enviar la información..."
         );
         this.loadingCtrl.dismiss();
         console.log(err);

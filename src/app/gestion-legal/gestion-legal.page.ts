@@ -78,6 +78,8 @@ export class GestionLegalPage implements OnInit {
   iconoProceso: string;
 
 
+  sello: boolean = false;
+
   sliderOpts = {
     zoom: true,
     slidesPerView: 1.55,
@@ -528,6 +530,31 @@ export class GestionLegalPage implements OnInit {
 
     await modal.present();
 
+  }
+
+  async colocacionSello() {
+    const alert = await this.alertCtrl.create({
+      header: "Colocación de sello",
+      subHeader: "Aceptar para confirmar la colocación del sello",
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            this.sello = true;
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
 

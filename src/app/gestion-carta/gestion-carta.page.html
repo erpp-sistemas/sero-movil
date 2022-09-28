@@ -356,8 +356,10 @@
     </ion-card>
   </div>
 
+
+
   <ion-card color="medium">
-    <ion-card-content color="" medium>
+    <ion-card-content color="medium">
       <ion-item color="medium">
         <ion-label>
           <p>
@@ -366,6 +368,13 @@
         </ion-label>
         <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
       </ion-item>
+
+      <ion-button [disabled]="sello" fill="outline" color="success" class="button-fotos-historicas" expand="block" (click)="colocacionSello()">
+        <ion-icon slot="start" name="albums-outline"></ion-icon>
+        Colocación de sello
+        <ion-icon *ngIf="sello" color="success" slot="end" name="checkmark-done-circle-outline"></ion-icon>
+      </ion-button>
+
     </ion-card-content>
   </ion-card>
 

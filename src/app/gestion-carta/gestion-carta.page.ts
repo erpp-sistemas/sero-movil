@@ -96,6 +96,8 @@ export class GestionCartaPage implements OnInit {
   nombreProceso: string;
   iconoProceso: string;
 
+  sello: boolean = false;
+
   sliderOpts = {
     zoom: true,
     slidesPerView: 1.55,
@@ -216,24 +218,24 @@ export class GestionCartaPage implements OnInit {
   takePic(type) {
     let tipo;
     if (type == 1) {
-      if(this.id_proceso === 7) {
+      if (this.id_proceso === 7) {
         tipo = 'Cortes fachada predio'
       } else {
         tipo = 'Carta invitación fachada predio'
       }
       this.takePhotoFachada = true;
     } else if (type == 2) {
-      if(this.id_proceso === 7) {
+      if (this.id_proceso === 7) {
         tipo = 'Cortes evidencia'
       } else {
-        tipo = 'Carta invitación evidencia' 
+        tipo = 'Carta invitación evidencia'
       }
       this.takePhotoEvidencia = true;
     } else if (type == 3) {
-      if(this.id_proceso === 7) {
+      if (this.id_proceso === 7) {
         tipo = 'Cortes toma'
       } else {
-        tipo = 'Carta invitación toma' 
+        tipo = 'Carta invitación toma'
       }
     }
 
@@ -323,21 +325,21 @@ export class GestionCartaPage implements OnInit {
   takePicGallery(type) {
     let tipo;
     if (type == 1) {
-      if(this.id_proceso === 7) {
+      if (this.id_proceso === 7) {
         tipo = 'Cortes fachada predio'
       } else {
         tipo = 'Carta invitación fachada predio'
       }
       this.takePhotoFachada = true;
     } else if (type == 2) {
-      if(this.id_proceso === 7) {
+      if (this.id_proceso === 7) {
         tipo = 'Cortes evidencia'
       } else {
         tipo = 'Carta invitación evidencia'
       }
       this.takePhotoEvidencia = true;
     } else if (type == 3) {
-      if(this.id_proceso === 7) {
+      if (this.id_proceso === 7) {
         tipo = 'Cortes toma'
       } else {
         tipo = 'Carta invitación toma'
@@ -530,16 +532,18 @@ export class GestionCartaPage implements OnInit {
 
     await this.loading.present();
 
+    let colocoSello: number = 2;
+    if(this.sello === true) {
+      colocoSello = 1;
+    } else {
+      colocoSello = 0;
+    } 
+
     let data = {
       id_plaza: this.id_plaza,
       nombrePlaza: this.nombrePlaza,
       account: this.account,
       persona_atiende: this.personaAtiende,
-      //numero_contacto: this.numeroContacto,
-      //id_motivo_no_pago: this.idMotivoNoPago, // No se estan utilizando va a estar en app de encuesta
-      //otro_motivo_no_pago: this.otroMotivo, // No se estan utilizando va a estar en app de encuesta
-      //id_trabajo_actual: this.idTrabajoActual, // No se estan utilizando va a estar en app de encuesta
-      //id_gasto_impuesto: this.idGastoImpuesto, // No se estan utilizando va a estar en app de encuesta
       id_tipo_servicio: this.idTipoServicio,
       numero_niveles: this.numeroNiveles,
       colorFachada: this.colorFachada,
@@ -567,6 +571,7 @@ export class GestionCartaPage implements OnInit {
       viernes: this.viernes,
       sabado: this.sabado,
       domingo: this.domingo,
+      colocoSello: colocoSello,
       id: this.idAccountSqlite
     }
 
@@ -579,7 +584,7 @@ export class GestionCartaPage implements OnInit {
 
   async gestionCarta(data) {
     //console.log(data);
-    console.log(this.id_proceso);
+    //console.log(this.id_proceso);
     if (this.id_proceso === 7) {
       this.rest.gestionCortes(data)
     } else {
@@ -822,5 +827,29 @@ export class GestionCartaPage implements OnInit {
     this.giro = this.giro.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
   }
 
+  async colocacionSello() {
+    const alert = await this.alertCtrl.create({
+      header: "Colocación de sello",
+      subHeader: "Aceptar para confirmar la colocación del sello",
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            this.sello = true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 
 }
