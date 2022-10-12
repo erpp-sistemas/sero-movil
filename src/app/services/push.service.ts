@@ -16,7 +16,7 @@ export class PushService {
   apiUpdateUserIdPushSQL = 'https://ser0.mx/seroMovil.aspx?query=sp_user_id_push';
   apiInsertPushNotificationSQL = 'https://ser0.mx/seroMovil.aspx?query=sp_registro_push_notifications';
   apiGetPushNotifications = 'https://ser0.mx/seroMovil.aspx?query=sp_obtener_push_notification';
-  apiDetelePushNotification = 'https://ser0.mx/seroMovil.aspx?query=sp_disabled_push_notification';
+  apiDeletePushNotification = 'https://ser0.mx/seroMovil.aspx?query=sp_disabled_push_notification';
 
   constructor(
     private oneSignal: OneSignal,
@@ -119,7 +119,8 @@ export class PushService {
   }
 
   async deletePushNotificationById(id_push_notification: string) {
-    let sql = `${this.apiDetelePushNotification} '${id_push_notification}'`;
+    let idUsuario = await this.storage.get('IdAspUser');
+    let sql = `${this.apiDeletePushNotification} '${id_push_notification}', ${idUsuario}`;
     console.log(sql);
     return new Promise((resolve, reject) => {
       try {
