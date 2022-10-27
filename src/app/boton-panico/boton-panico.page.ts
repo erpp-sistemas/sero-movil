@@ -131,14 +131,14 @@ export class BotonPanicoPage implements OnInit {
 
     this.usuariosAyuda.forEach(async usuario => {
       const numero = '+521' + usuario.telefono_personal
-        let mensajeEstatus = await this.enviarMensaje(numero, usuario.nombre, usuario.apellido_paterno);
-        if(mensajeEstatus === 'Mensaje enviado') {
-          this.mensajeEnviado = true;
-          this.error = false;
-        } else {
-          this.error = true
-          this.mensajeEnviado = false;
-        }
+      let mensajeEstatus = await this.enviarMensaje(numero, usuario.nombre, usuario.apellido_paterno);
+      if (mensajeEstatus === 'Mensaje enviado') {
+        this.mensajeEnviado = true;
+        this.error = false;
+      } else {
+        this.error = true
+        this.mensajeEnviado = false;
+      }
     });
     this.loading.dismiss();
 
@@ -149,16 +149,22 @@ export class BotonPanicoPage implements OnInit {
     return new Promise(async (resolve, reject) => {
 
       let permiso = await this.sms.hasPermission();
-      if(!permiso) {
-        this.message.showToast("Activa el permiso para mandar mensajes");
+
+      if (!permiso) {
+        this.message.showToast("Activa el permiso para mandar mensajes sms");
         return;
       }
 
-      this.sms.send(numero, `Hola que tal ${nombre} ${apellido_paterno} soy ${this.nombre} y necesito ayuda, mi ubicacion actual es https://www.google.com/maps/place/${this.latitud},${this.longitud} `, {replaceLineBreaks: true}).then(result => {
-        if(result === 'OK') {
-          resolve("Mensaje enviado")
-        }
-      })
+      try {
+        this.sms.send(numero, `Hola ${nombre} ${apellido_paterno} soy ${this.nombre} y necesito ayuda, mi ubicacion es https://www.google.com/maps/place/${this.latitud},${this.longitud} `, { replaceLineBreaks: true }).then(result => {
+          if (result === 'OK') {
+            resolve("Mensaje enviado")
+          }
+        })
+      } catch (error) {
+        reject(error)
+      }
+
     })
 
   }

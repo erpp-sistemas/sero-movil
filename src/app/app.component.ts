@@ -18,7 +18,8 @@ export class AppComponent {
 
 
   login: boolean;
-  _router: any;
+  router: any;
+  intervalTracking: any;
 
   constructor(
     private query: QuerysService,
@@ -42,9 +43,7 @@ export class AppComponent {
       this.createDB();
       this.getPermission();
       this.push.configuracionInicial();
-      setInterval(async () => {
-        await this.tracking.pushGeolocationSQL();
-      }, 300000);
+      this.initTracking();
     })
   }
 
@@ -56,6 +55,12 @@ export class AppComponent {
         this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION,
         this.androidPermissions.PERMISSION.SEND_SMS
       ])
+  }
+
+  initTracking() {
+    this.intervalTracking = setInterval(async () => {
+      await this.tracking.pushGeolocationSQL();
+    }, 300000);
   }
 
 

@@ -54,7 +54,9 @@ export class RestService {
   ) { }
 
   setDatabase(db: SQLiteObject) {
+    console.log(db);
     if (this.db === null) {
+      console.log("Base interna igual a null");
       this.db = db;
     }
   }

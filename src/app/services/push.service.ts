@@ -33,15 +33,15 @@ export class PushService {
     this.oneSignal.handleNotificationReceived().subscribe(async (noti) => {
       // do something when notification is received
       console.log("Notificación recibida", noti);
-      let { notificationID, title, body } = noti.payload;
-      let image = noti.payload.bigPicture; // puede ser undefined
-      if(image) {
-        console.log("Trae imagen");
-        await this.insertRegistroPushNotifications(notificationID, title, body, image);
-      } else {
-        console.log("No trae imagen");
-        await this.insertRegistroPushNotifications(notificationID, title, body, 'none');
-      }
+      // let { notificationID, title, body } = noti.payload;
+      // let image = noti.payload.bigPicture; // puede ser undefined
+      // if(image) {
+      //   console.log("Trae imagen");
+      //   await this.insertRegistroPushNotifications(notificationID, title, body, image);
+      // } else {
+      //   console.log("No trae imagen");
+      //   await this.insertRegistroPushNotifications(notificationID, title, body, 'none');
+      // }
     });
 
     this.oneSignal.handleNotificationOpened().subscribe(async (noti) => {
@@ -99,7 +99,7 @@ export class PushService {
         console.log(data);
       })
     } catch (error) {
-      console.log("Error al actualizar el estatus de liedo de la notificacion ", error);
+      console.log("Error al actualizar el estatus de leido de la notificacion ", error);
     }
   }
 
