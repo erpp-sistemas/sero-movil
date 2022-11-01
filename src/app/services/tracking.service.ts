@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { Storage } from '@ionic/storage';
 import { RestService } from './rest.service';
-import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
+//import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -19,11 +19,10 @@ export class TrackingService {
     //private backgroundGeolocation: BackgroundGeolocation,
   ) { }
 
-
+  
   async pushGeolocationSQL() {
     await this.saveLocation();
   }
-
 
   async getGeolocation() {
     return new Promise(async (resolve, reject) => {
@@ -61,8 +60,6 @@ export class TrackingService {
   // backGroundGeolocation() {
   //   const config: BackgroundGeolocationConfig = {
   //     desiredAccuracy: 10,
-  //     stationaryRadius: .3,
-  //     distanceFilter: .3,
   //     interval: 5000, //300000
   //     fastestInterval: 5000,
   //     notificationTitle: 'Ser0 Móvil',

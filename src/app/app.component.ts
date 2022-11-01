@@ -60,7 +60,7 @@ export class AppComponent {
   initTracking() {
     this.intervalTracking = setInterval(async () => {
       await this.tracking.pushGeolocationSQL();
-    }, 300000);
+    }, 180000);
   }
 
 

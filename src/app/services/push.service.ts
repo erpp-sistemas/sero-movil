@@ -14,7 +14,6 @@ export class PushService {
   userId: any;
 
   apiUpdateUserIdPushSQL = 'https://ser0.mx/seroMovil.aspx?query=sp_user_id_push';
-  apiInsertPushNotificationSQL = 'https://ser0.mx/seroMovil.aspx?query=sp_registro_push_notifications';
   apiGetPushNotifications = 'https://ser0.mx/seroMovil.aspx?query=sp_obtener_push_notification';
   apiDeletePushNotification = 'https://ser0.mx/seroMovil.aspx?query=sp_disabled_push_notification';
 
@@ -30,25 +29,14 @@ export class PushService {
 
     this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification);
 
+    // cuando la recibe
     this.oneSignal.handleNotificationReceived().subscribe(async (noti) => {
-      // do something when notification is received
       console.log("Notificación recibida", noti);
-      // let { notificationID, title, body } = noti.payload;
-      // let image = noti.payload.bigPicture; // puede ser undefined
-      // if(image) {
-      //   console.log("Trae imagen");
-      //   await this.insertRegistroPushNotifications(notificationID, title, body, image);
-      // } else {
-      //   console.log("No trae imagen");
-      //   await this.insertRegistroPushNotifications(notificationID, title, body, 'none');
-      // }
     });
 
+    // cuando la abre
     this.oneSignal.handleNotificationOpened().subscribe(async (noti) => {
-      // do something when a notification is opened
       console.log("Notificacion abierta", noti);
-      let id_push_notification = noti.notification.payload.notificationID;
-      await this.updateEstatusLeido(id_push_notification);
       this.router.navigateByUrl('/push-notifications')
     });
 
@@ -75,33 +63,6 @@ export class PushService {
     }
   }
 
-  async insertRegistroPushNotifications(id_push_notification: string, titulo: string, mensaje: string, url_img: string) {
-    let idUsuario = await this.storage.get('IdAspUser');
-    let leido = 0;
-    let sql = `${this.apiInsertPushNotificationSQL} ${idUsuario}, '${this.userId}', '${id_push_notification}', '${titulo}', '${mensaje}', ${leido}, '${url_img}'`;
-    console.log(sql);
-    try {
-      this.http.post(sql, null).subscribe((data) => {
-        console.log(data);
-      })
-    } catch (error) {
-      console.log("Error al insertar la informacion de la notificacion ", error);
-    }
-  }
-
-  async updateEstatusLeido(id_push_notification: string) {
-    let idUsuario = await this.storage.get('IdAspUser');
-    let leido = 1;
-    let sql = `${this.apiInsertPushNotificationSQL} ${idUsuario}, '${this.userId}', '${id_push_notification}', '0', '0', ${leido}, 'none'`;
-    console.log(sql);
-    try {
-      this.http.post(sql, null).subscribe((data) => {
-        console.log(data);
-      })
-    } catch (error) {
-      console.log("Error al actualizar el estatus de leido de la notificacion ", error);
-    }
-  }
 
   async getPushNotificationsByIdUser() {
     let idUsuario = await this.storage.get('IdAspUser');
