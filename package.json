@@ -24,7 +24,7 @@
     "@awesome-cordova-plugins/app-version": "^5.45.0",
     "@awesome-cordova-plugins/core": "^5.44.0",
     "@awesome-cordova-plugins/network": "^5.45.0",
-    "@awesome-cordova-plugins/onesignal": "^5.45.0",
+    "@awesome-cordova-plugins/onesignal": "^5.46.0",
     "@awesome-cordova-plugins/sms": "^5.44.0",
     "@ionic-native/background-geolocation": "^5.36.0",
     "@ionic-native/barcode-scanner": "^5.36.0",

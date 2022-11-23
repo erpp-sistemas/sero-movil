@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.ser0.mx" version="1.1.8" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="io.ser0.mx" version="1.1.9" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Ser0 móvil</name>
     <description>Es un software que consta de una aplicación móvil, administrada desde una plataforma web, que proporciona servicios desde la nube, para ayudar en la gestión de la cobranza y regularización de impuestos, derechos y aprovechamientos, entre otros; de entidades federativas y organismos desconcentrados.</description>
     <author email="antonio.ticante12@gmail.com" href="http://ionicframework.com/">Ionic Framework Team</author>

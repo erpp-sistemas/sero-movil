@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-hkvideoplayer" version="1.0.12" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+    <name>hkvideoplayer</name>
+    <description>Cordova Video Plugin</description>
+    <keywords>cordova,Video</keywords>
+
+    <js-module src="www/HKVideoPlayer.js" name="HKVideoPlayer" >
+        <clobbers target="HKVideoPlayer" />
+    </js-module>
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="HKVideoPlayer">
+                <param name="ios-package" value="HKVideoPlayer" onload="true" />
+            </feature>
+        </config-file>
+        <source-file src="src/ios/HKVideoPlayer.swift" />
+    </platform>
+</plugin>

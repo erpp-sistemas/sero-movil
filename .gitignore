@@ -26,8 +26,6 @@ npm-debug.log*
 /coverage
 /dist
 /node_modules
-/platforms
-/plugins
 /www
 src/environments/
 src/environments/environment.prod.ts

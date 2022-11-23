@@ -1,0 +1,56 @@
+{
+  "_from": "cordova-plugin-hkvideoplayer",
+  "_id": "cordova-plugin-hkvideoplayer@1.0.12",
+  "_inBundle": false,
+  "_integrity": "sha512-IS4nArVE32ZQqB0IE8cnzg3Dw95tb1YLtipHOS40pPrqBwdrVMToR/pWAFJckwFKlZ/yaqxUss/GyMhw4bIPRw==",
+  "_location": "/cordova-plugin-hkvideoplayer",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-hkvideoplayer",
+    "name": "cordova-plugin-hkvideoplayer",
+    "escapedName": "cordova-plugin-hkvideoplayer",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#DEV:/",
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-hkvideoplayer/-/cordova-plugin-hkvideoplayer-1.0.12.tgz",
+  "_shasum": "17dfa30e471a1a304dbdc82caaabc577aa4461ee",
+  "_spec": "cordova-plugin-hkvideoplayer",
+  "_where": "C:\\Users\\lenovo3\\Documents\\erpp-movil",
+  "author": {
+    "name": "Hardik Shah"
+  },
+  "bugs": {
+    "url": "https://github.com/hardikdevios/cordova-plugin-hkvideoplayer/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "ionic Video Player For iOS",
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=4.3.0"
+    }
+  ],
+  "homepage": "https://github.com/hardikdevios/cordova-plugin-hkvideoplayer#readme",
+  "keywords": [
+    "media",
+    "streaming",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "cordova-plugin-hkvideoplayer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hardikdevios/cordova-plugin-hkvideoplayer.git"
+  },
+  "version": "1.0.12"
+}
