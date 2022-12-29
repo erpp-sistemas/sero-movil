@@ -576,6 +576,8 @@ export class GestionCartaPage implements OnInit {
     }
 
     await this.gestionCarta(data);
+    await this.sendGestionServer();
+    
     this.loading.dismiss();
     this.exit();
 
@@ -589,6 +591,15 @@ export class GestionCartaPage implements OnInit {
       this.rest.gestionCortes(data)
     } else {
       this.rest.gestionCartaInvitacion(data);
+    }
+  }
+
+  async sendGestionServer() {
+    // sincronizar la gestion
+    try {
+      await this.rest.sendCartaByIdServicioAccount(this.idServicioPlaza, this.account)
+    } catch(error) {
+      console.log(error);
     }
   }
 
