@@ -5,20 +5,10 @@
 
 <ion-content color="medium" id="main">
 
-  <!-- <ion-grid class="fotos-historicas" style="margin-top: 30px;">
-    <ion-row>
-      <ion-col size=12 class="ion-text-center">
-        <ion-button class="button-fotos-historicas" expand="block" (click)="goPhotos()">
-          <ion-icon slot="start" name="image"></ion-icon>
-          Ver fotos históricas
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid> -->
-
   <div class="contenedor-icono-proceso" style="text-align: center;">
     <ion-icon class="icono-proceso" [name]="iconoProceso"></ion-icon>
   </div>
+
   <div class="contenedor-nombre-proceso">
     <ion-label>
       <p>{{nombreProceso}}</p>
@@ -57,7 +47,12 @@
 
       <ion-button fill="outline" class="button-fotos-historicas" expand="block" (click)="goPhotos()">
         <ion-icon slot="start" name="image"></ion-icon>
-        Ver fotos históricas
+        Fotos históricas
+      </ion-button>
+
+      <ion-button fill="outline" class="button-acciones-historicas" color="success" expand="block" (click)="goActions()">
+        <ion-icon slot="start" name="cube-outline"></ion-icon>
+        Acciones históricas
       </ion-button>
 
     </ion-card-content>
@@ -69,8 +64,11 @@
       <ion-item color="medium">
         <ion-label>
           <p>
-            Estatus del predio:
+            * Estatus del predio:
           </p>
+          <ion-text *ngIf="leyendaEstatusPredio" color="warning">
+            <h4> --- Error: Estatus del predio requerido --- </h4>
+          </ion-text>
           <p>
             <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
               [(ngModel)]="idEstatusPredio" (ionChange)="resultEstatusPredio($event)">
@@ -96,6 +94,43 @@
       <ion-card-content color="medium">
         <ion-item color="medium">
           <ion-label>
+            <p>
+              * Motivo de no pago
+            </p>
+            <ion-text *ngIf="leyendaMotivoNoPago" color="warning">
+              <h4> --- Error: Motivo de no pago requerido --- </h4>
+            </ion-text>
+            <p>
+              <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+                [(ngModel)]="idMotivoNoPago" (ionChange)="resultMotivoNoPago( $event )">
+                <ion-select-option value="1">No quiero pagar</ion-select-option>
+                <ion-select-option value="2">No tengo dinero</ion-select-option>
+                <ion-select-option value="4">Descontento con administración</ion-select-option>
+                <ion-select-option value="5">Otro</ion-select-option>
+              </ion-select>
+            </p>
+          </ion-label>
+        </ion-item>
+
+        <div *ngIf="activaOtroMotivo">
+          <ion-item color="medium">
+            <ion-label>
+              <p>* Especifique: </p>
+              <ion-text *ngIf="leyendaOtroMotivo" color="warning">
+                <h4> --- Error: Especifica el otro motivo de no pago --- </h4>
+              </ion-text>
+            </ion-label>
+            <ion-input class="myCustomSelect" interface="popover" (ionChange)="resultOtroMotivoNoPago($event)" [(ngModel)]="otroMotivo"></ion-input>
+          </ion-item>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card color="medium">
+      <ion-card-content color="medium">
+        <ion-item color="medium">
+          <ion-label>
             <p>Persona que atiende: </p>
           </ion-label>
           <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"> </ion-input>
@@ -110,8 +145,11 @@
         <ion-item color="medium">
           <ion-label>
             <p>
-              Cambiar el tipo de servicio
+              * Tipo de servicio detectado
             </p>
+            <ion-text color="warning">
+              <h4 *ngIf="leyendaTipoServicioObligatorio"> --- Error: Tipo de servicio detectado requerido --- </h4>
+            </ion-text>
             <p>
               <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
                 [(ngModel)]="idTipoServicio" (ionChange)="resultTipoServicio($event)">
@@ -369,7 +407,8 @@
         <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
       </ion-item>
 
-      <ion-button [disabled]="sello" fill="outline" color="success" class="button-fotos-historicas" expand="block" (click)="colocacionSello()">
+      <ion-button [disabled]="sello" fill="outline" color="success" class="button-fotos-historicas" expand="block"
+        (click)="colocacionSello()">
         <ion-icon slot="start" name="albums-outline"></ion-icon>
         Colocación de sello
         <ion-icon *ngIf="sello" color="success" slot="end" name="checkmark-done-circle-outline"></ion-icon>
@@ -463,14 +502,14 @@
 
         <ion-row>
           <ion-col text-center>
-            <ion-button expand="block" color="primary" (click)="confirmarFoto(1)">
+            <ion-button expand="block" color="primary" (click)="takePic(1)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Fachada predio</ion-label>
           </ion-col>
 
           <ion-col text-center>
-            <ion-button expand="block" color="warning" (click)="confirmarFoto(2)">
+            <ion-button expand="block" color="warning" (click)="takePic(2)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Evidencia</ion-label>
@@ -483,7 +522,7 @@
       <ion-grid>
         <ion-row>
           <ion-col text-center>
-            <ion-button expand="block" color="secondary" (click)="confirmarFoto(3)">
+            <ion-button expand="block" color="secondary" (click)="takePic(3)">
               <ion-icon name="camera"></ion-icon>
             </ion-button>
             <ion-label class="fotos-visita">Toma</ion-label>

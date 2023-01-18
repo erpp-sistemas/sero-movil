@@ -125,6 +125,10 @@ const routes: Routes = [
   {
     path: 'push-notifications',
     loadChildren: () => import('./push-notifications/push-notifications.module').then( m => m.PushNotificationsPageModule)
+  },
+  {
+    path: 'actions-history',
+    loadChildren: () => import('./actions-history/actions-history.module').then( m => m.ActionsHistoryPageModule)
   }
 
 

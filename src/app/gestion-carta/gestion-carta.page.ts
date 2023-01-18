@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 import { EncuestaPage } from '../encuesta/encuesta.page';
+import { ActionsHistoryPage } from '../actions-history/actions-history.page';
 
 
 @Component({
@@ -97,6 +98,14 @@ export class GestionCartaPage implements OnInit {
   iconoProceso: string;
 
   sello: boolean = false;
+  idMotivoNoPago: number = 0;
+
+  // campos obligatorios
+  leyendaEstatusPredio: boolean = false;
+  leyendaTipoServicioObligatorio: boolean = false;
+  leyendaMotivoNoPago: boolean = false;
+  leyendaOtroMotivo: boolean = false;
+
 
   sliderOpts = {
     zoom: true,
@@ -190,33 +199,33 @@ export class GestionCartaPage implements OnInit {
   }
 
 
-  async confirmarFoto(tipo: number) {
-    const mensaje = await this.alertCtrl.create({
-      header: "Tomar foto",
-      subHeader: "Selecciona como tomar la foto ",
-      buttons: [
-        {
-          text: "Camara",
-          cssClass: "secondary",
-          handler: () => {
-            this.takePic(tipo);
-          }
-        },
-        {
-          text: "Galeria",
-          cssClass: "secondary",
-          handler: () => {
-            this.takePicGallery(tipo)
-          }
-        }
-      ]
-    });
-    await mensaje.present();
-  }
+  // async confirmarFoto(tipo: number) {
+  //   const mensaje = await this.alertCtrl.create({
+  //     header: "Tomar foto",
+  //     subHeader: "Selecciona como tomar la foto ",
+  //     buttons: [
+  //       {
+  //         text: "Camara",
+  //         cssClass: "secondary",
+  //         handler: () => {
+  //           this.takePic(tipo);
+  //         }
+  //       },
+  //       {
+  //         text: "Galeria",
+  //         cssClass: "secondary",
+  //         handler: () => {
+  //           this.takePicGallery(tipo)
+  //         }
+  //       }
+  //     ]
+  //   });
+  //   await mensaje.present();
+  // }
 
 
-  takePic(type) {
-    let tipo;
+  takePic(type: any) {
+    let tipo: any;
     if (type == 1) {
       if (this.id_proceso === 7) {
         tipo = 'Cortes fachada predio'
@@ -448,82 +457,18 @@ export class GestionCartaPage implements OnInit {
 
   async terminar() {
 
-    if (this.idEstatusPredio === '4') {
-      //this.takePhoto = true;
-      this.takePhotoFachada = true;
-      this.takePhotoEvidencia = true;
-    }
+    await this.validarCamposObligatorios();
 
-    if (this.idEstatusPredio === '' || this.takePhotoFachada === false || this.takePhotoEvidencia === false) {
-      this.mensaje.showAlert("Debes seleccionar el estatus del predio, tomar foto de fachada y evidencia");
+    if (this.leyendaEstatusPredio || this.leyendaTipoServicioObligatorio || this.leyendaOtroMotivo || this.takePhotoFachada === false || this.takePhotoEvidencia === false) {
+      this.mensaje.showAlert("Ingresa los campos obligatorios * y toma mínimo una foto de fachada y una foto de evidencia");
       return;
     }
 
-    if (this.idEstatusPredio !== '1') {
-      this.numeroNiveles = 0;
-    }
-
-    // eliminamos los caracteres especiales de los campos abiertos
     this.eliminarCaracteres();
 
+    this.obetenerFechaGestion();
 
-    if (this.idTipoGestion === '1') {
-      var dateDay = new Date().toISOString();
-      let date: Date = new Date(dateDay);
-      let ionicDate = new Date(
-        Date.UTC(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          date.getHours(),
-          date.getMinutes(),
-          date.getSeconds()
-        )
-      );
-      this.fechaCaptura = ionicDate.toISOString();
-    } else if (this.idTipoGestion === '2') {
-
-      let fecha = new Date(this.fechaCapturaPostpago).toISOString();
-      let fechaDate = new Date(fecha);
-
-      let fechaHoy = new Date().toISOString();
-      let dateHoy = new Date(fechaHoy);
-
-      let ionicDate = new Date(
-        Date.UTC(
-          fechaDate.getFullYear(),
-          fechaDate.getMonth(),
-          fechaDate.getDate(),
-          dateHoy.getHours(),
-          dateHoy.getMinutes(),
-          dateHoy.getSeconds()
-        )
-      );
-      this.fechaCaptura = ionicDate.toISOString();
-    }
-
-    let loadingGeolocation = await this.loadingController.create({
-      message: 'Obteniendo ubicación...',
-      spinner: 'dots'
-    });
-
-    await loadingGeolocation.present();
-
-    await this.getGeolocation();
-
-    console.log(this.geoPosicion);
-
-    if (this.geoPosicion.coords) {
-      this.latitud = this.geoPosicion.coords.latitude;
-      this.longitud = this.geoPosicion.coords.longitude;
-    } else {
-      console.log("No se pudo obtener la geolocalización");
-      this.latitud = 0;
-      this.longitud = 0;
-    }
-
-    loadingGeolocation.dismiss();
-
+    await this.obtenerUbicacion();
 
     this.loading = await this.loadingController.create({
       message: 'Guardando la gestión...',
@@ -533,11 +478,11 @@ export class GestionCartaPage implements OnInit {
     await this.loading.present();
 
     let colocoSello: number = 2;
-    if(this.sello === true) {
+    if (this.sello === true) {
       colocoSello = 1;
     } else {
       colocoSello = 0;
-    } 
+    }
 
     let data = {
       id_plaza: this.id_plaza,
@@ -572,25 +517,131 @@ export class GestionCartaPage implements OnInit {
       sabado: this.sabado,
       domingo: this.domingo,
       colocoSello: colocoSello,
+      idMotivoNoPago: this.idMotivoNoPago,
+      otroMotivoNoPago: this.otroMotivo,
       id: this.idAccountSqlite
     }
 
     await this.gestionCarta(data);
     await this.sendGestionServer();
-    
+
     this.loading.dismiss();
     this.exit();
 
   }
 
+  async obtenerUbicacion() {
+    let loadingGeolocation = await this.loadingController.create({
+      message: 'Obteniendo ubicación...',
+      spinner: 'dots'
+    });
+
+    await loadingGeolocation.present();
+
+    await this.getGeolocation();
+
+    console.log(this.geoPosicion);
+
+    if (this.geoPosicion.coords) {
+      this.latitud = this.geoPosicion.coords.latitude;
+      this.longitud = this.geoPosicion.coords.longitude;
+    } else {
+      console.log("No se pudo obtener la geolocalización");
+      this.latitud = 0;
+      this.longitud = 0;
+    }
+
+    loadingGeolocation.dismiss();
+  }
+
+  obetenerFechaGestion() {
+    if (this.idTipoGestion === '1') {
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(
+        Date.UTC(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds()
+        )
+      );
+      this.fechaCaptura = ionicDate.toISOString();
+    } else if (this.idTipoGestion === '2') {
+
+      let fecha = new Date(this.fechaCapturaPostpago).toISOString();
+      let fechaDate = new Date(fecha);
+
+      let fechaHoy = new Date().toISOString();
+      let dateHoy = new Date(fechaHoy);
+
+      let ionicDate = new Date(
+        Date.UTC(
+          fechaDate.getFullYear(),
+          fechaDate.getMonth(),
+          fechaDate.getDate(),
+          dateHoy.getHours(),
+          dateHoy.getMinutes(),
+          dateHoy.getSeconds()
+        )
+      );
+      this.fechaCaptura = ionicDate.toISOString();
+    }
+  }
+
+  async validarCamposObligatorios() {
+
+    if (this.idEstatusPredio === '') {
+      this.leyendaEstatusPredio = true;
+      return;
+    }
+
+    if (this.idEstatusPredio === '4' || this.idEstatusPredio === '3' || this.idEstatusPredio === '2') { // es predio no localizado
+      //this.takePhoto = true; no hacen falta las fotos
+      this.takePhotoFachada = true;
+      this.takePhotoEvidencia = true;
+      this.hideLeyendas();
+      return;
+    }
+
+    if (this.idMotivoNoPago === 0) {
+      this.leyendaMotivoNoPago = true;
+    }
+
+    if (this.idMotivoNoPago == 5 && this.otroMotivo === '') {
+      this.leyendaOtroMotivo = true;
+    }
+
+    if (this.idTipoServicio === 0) {
+      this.leyendaTipoServicioObligatorio = true;
+    }
+
+
+    if (this.idEstatusPredio !== '1') {
+      this.numeroNiveles = 0;
+    }
+
+  }
+
+  hideLeyendas() {
+    this.leyendaTipoServicioObligatorio = false;
+    this.leyendaEstatusPredio = false;
+    this.leyendaOtroMotivo = false;
+    this.leyendaMotivoNoPago = false;
+  }
+
 
   async gestionCarta(data) {
-    //console.log(data);
+    console.log(data);
     //console.log(this.id_proceso);
     if (this.id_proceso === 7) {
-      this.rest.gestionCortes(data)
+      await this.rest.gestionCortes(data)
     } else {
-      this.rest.gestionCartaInvitacion(data);
+      this.rest.gestionCartaInvitacion(data)
+        .then((respuesta: string) => this.mensaje.showToast(respuesta))
+        .catch((error: string) => this.mensaje.showToast(error));
     }
   }
 
@@ -598,7 +649,7 @@ export class GestionCartaPage implements OnInit {
     // sincronizar la gestion
     try {
       await this.rest.sendCartaByIdServicioAccount(this.idServicioPlaza, this.account)
-    } catch(error) {
+    } catch (error) {
       console.log(error);
     }
   }
@@ -623,6 +674,7 @@ export class GestionCartaPage implements OnInit {
 
   resultEstatusPredio(event) {
     let estatus = event.detail.value;
+    this.leyendaEstatusPredio = false
     if (estatus === '1') {
       this.activaFormulario = true;
       this.desactivaBotonesCamara = false;
@@ -634,6 +686,7 @@ export class GestionCartaPage implements OnInit {
 
   resultTipoServicio(event) {
     let tipo = event.detail.value;
+    this.leyendaTipoServicioObligatorio = false;
     if (tipo !== "8") {
       this.mostrarGiro = true;
     } else {
@@ -643,11 +696,18 @@ export class GestionCartaPage implements OnInit {
 
   resultMotivoNoPago(event) {
     let motivo = event.detail.value;
-    if (motivo == 5) {
+    this.leyendaMotivoNoPago = false
+    if (motivo === '5') {
       this.activaOtroMotivo = true;
     } else {
       this.activaOtroMotivo = false;
+      this.leyendaOtroMotivo = false;
     }
+  }
+
+  resultOtroMotivoNoPago(event) {
+    let otroMotivo = event.detail.value;
+    if (otroMotivo !== '') this.leyendaOtroMotivo = false
   }
 
   async resultPostpago(event) {
@@ -786,6 +846,18 @@ export class GestionCartaPage implements OnInit {
 
   }
 
+  async goActions() {
+    let idPlaza = Number(this.id_plaza);
+    const modal = await this.modalController.create({
+      component: ActionsHistoryPage,
+      componentProps: {
+        "account": this.account,
+        "idPlaza": idPlaza
+      }
+    });
+    await modal.present();
+  }
+
 
   navegar(tipo) {
     if (tipo == 1) {
@@ -836,6 +908,7 @@ export class GestionCartaPage implements OnInit {
     this.colorFachada = this.colorFachada.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
     this.colorPuerta = this.colorPuerta.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
     this.giro = this.giro.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
+    this.otroMotivo = this.otroMotivo.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '')
   }
 
   async colocacionSello() {

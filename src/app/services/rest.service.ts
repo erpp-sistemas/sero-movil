@@ -40,7 +40,9 @@ export class RestService {
   apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   apiObtenerProcesosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_procesos_plaza";
   apiRegistroBotonPanico = "https://ser0.mx/seroMovil.aspx?query=sp_boton_panico";
- 
+  apiObtenerAccionesHistoricas = "https://ser0.mx/seroMovil.aspx?query=sp_get_actions_history";
+
+
 
 
   constructor(
@@ -226,7 +228,7 @@ export class RestService {
    * @param idPlazaServicio 
    * @returns Promise
    */
-  obtenerDatosSql(idAspUser, idPlaza, idPlazaServicio) { 
+  obtenerDatosSql(idAspUser, idPlaza, idPlazaServicio) {
     return new Promise((resolve, reject) => {
       this.http.get(this.apiObtenerDatos + " '" + idAspUser + "', " + idPlaza + ", " + idPlazaServicio).subscribe(data => {
         resolve(data);
@@ -896,44 +898,56 @@ export class RestService {
    * @returns Promise (insert into gestionCartaINvitacion) 
    */
   gestionCartaInvitacion(data) {
-    this.updateAccountGestionada(data.id);
+    return new Promise(async (resolve, reject) => {
+      try {
+        let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo, coloco_sello, id_motivo_no_pago, otro_motivo_no_pago) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
-    let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo, coloco_sello) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        await this.db.executeSql(sql, [
+          data.id_plaza,
+          data.nombrePlaza,
+          data.account,
+          data.persona_atiende,
+          data.id_tipo_servicio,
+          data.numero_niveles,
+          data.colorFachada,
+          data.colorPuerta,
+          data.referencia,
+          data.id_tipo_predio,
+          data.entre_calle1,
+          data.entre_calle2,
+          data.observaciones,
+          data.lectura_medidor,
+          data.giro,
+          data.idAspUser,
+          data.idTarea,
+          data.fechaCaptura,
+          data.latitud,
+          data.longitud,
+          data.idServicioPlaza,
+          data.idEstatusPredio,
+          data.idTipoGestion,
+          data.idTiempoSuministroAgua,
+          data.lunes,
+          data.martes,
+          data.miercoles,
+          data.jueves,
+          data.viernes,
+          data.sabado,
+          data.domingo,
+          data.colocoSello,
+          data.idMotivoNoPago,
+          data.otroMotivoNoPago
+        ])
 
-    return this.db.executeSql(sql, [
-      data.id_plaza,
-      data.nombrePlaza,
-      data.account,
-      data.persona_atiende,
-      data.id_tipo_servicio,
-      data.numero_niveles,
-      data.colorFachada,
-      data.colorPuerta,
-      data.referencia,
-      data.id_tipo_predio,
-      data.entre_calle1,
-      data.entre_calle2,
-      data.observaciones,
-      data.lectura_medidor,
-      data.giro,
-      data.idAspUser,
-      data.idTarea,
-      data.fechaCaptura,
-      data.latitud,
-      data.longitud,
-      data.idServicioPlaza,
-      data.idEstatusPredio,
-      data.idTipoGestion,
-      data.idTiempoSuministroAgua,
-      data.lunes,
-      data.martes,
-      data.miercoles,
-      data.jueves,
-      data.viernes,
-      data.sabado,
-      data.domingo,
-      data.colocoSello
-    ])
+        this.updateAccountGestionada(data.id);
+        resolve("Gestión guardada correctamente en el dispositivo")
+
+      } catch (error) {
+        console.log(error);
+        reject("Error no se pudo guardar la gestión en el dispositivo, verifica con soporte técnico")
+      }
+
+    })
   }
 
 
@@ -1332,11 +1346,13 @@ export class RestService {
         let viernes = arrayCuentaCarta[0].viernes;
         let sabado = arrayCuentaCarta[0].sabado;
         let domingo = arrayCuentaCarta[0].domingo;
-        let colocoSello = arrayCuentaCarta[0].coloco_sello
+        let colocoSello = arrayCuentaCarta[0].coloco_sello;
+        let idMotivoNoPago = arrayCuentaCarta[0].id_motivo_no_pago;
+        let otroMotivoNoPago = arrayCuentaCarta[0].otro_motivo_no_pago;
 
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}`
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}, ${idMotivoNoPago}, '${otroMotivoNoPago}'`
         console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
 
@@ -3290,4 +3306,20 @@ export class RestService {
     })
   }
 
+  async getActionsHistory(id_plaza: number, account: string) {
+    return new Promise((resolve, reject) => {
+      try {
+        let url = `${this.apiObtenerAccionesHistoricas} ${id_plaza}, '${account}'`;
+        console.log(url);
+        this.http.get(url).subscribe((data: any) => {
+          resolve(data)
+        })
+      } catch (error) {
+        console.log(error)
+        reject(error)
+      }
+    })
+  }
+
 }
+
