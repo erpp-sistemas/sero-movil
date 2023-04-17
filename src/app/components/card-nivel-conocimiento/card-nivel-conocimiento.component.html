@@ -1,0 +1,287 @@
+<div *ngIf="activaCard">
+  <ion-card color="medium">
+    <ion-card-content>
+
+      <div style="text-align: center; margin:15 0px 0 20;">
+        <ion-chip color="success">Nivel de conocimiento</ion-chip>
+      </div>
+
+      <!-- 1.1 -->
+      <ion-item color="medium" style="text-align: center;">
+        <p>
+          1.1 - ¿Conoce usted a su presidente (a) municipal?
+        </p>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-segment mode="ios" color="danger" [(ngModel)]="conocePresidenteMunicipalS" (ionChange)="resultConocePresidenteMunicipal( $event )" value="no">
+          <ion-segment-button class="segment-si" value="si">
+            <ion-label class="marca-si">Si</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-no" value="no">
+            <ion-label class="marca-no">No</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item>
+
+      <!-- 1.2 solo si en la 1.1 es true -->
+      <div *ngIf="conocePresidenteMunicipal">
+        <ion-item color="medium">
+          <ion-label>
+            <p>1.2 - ¿Cuál es su nombre? </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="nombrePresidenteMunicipal"></ion-input>
+        </ion-item>
+        <hr>
+        <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoNombrePresidenteMunicipal">
+          <ion-segment-button class="segment-si" value="acerto">
+            <ion-label class="marca-si">Acertó</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-si" value="parcialmente">
+            <ion-label class="marca-parcialmente">Parcialmente</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-no" value="nada">
+            <ion-label class="marca-no">Nada</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+      <hr>
+
+      <!-- 1.3 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            1.3 - ¿Sabe usted de qué partido político es su presidente (a) municipal?
+          </p>
+          <app-select-partidos (sendIdPartido)="idPartidoPoliticoPresidenteMunicipal = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+
+      <!-- 1.4 -->
+      <ion-item color="medium" style="text-align: center;">
+        <p>
+          1.4 - ¿Conoce usted al gobernador (a) de su estado?
+        </p>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-segment mode="ios" color="danger" [(ngModel)]="conoceGobernadorEstadoS" (ionChange)="resultConoceGobernadorEstado( $event )" value="no">
+          <ion-segment-button class="segment-si" value="si">
+            <ion-label class="marca-si">Si</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-no" value="no">
+            <ion-label class="marca-no">No</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item>
+
+      <!-- 1.5 solo si la 1.4 es true -->
+      <div *ngIf="conoceGobernadorEstado">
+        <ion-item color="medium">
+          <ion-label>
+            <p>1.5 - ¿Cuál es su nombre? </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="nombreGobernadorEstado"></ion-input>
+        </ion-item>
+        <hr>
+        <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoNombreGobernadorEstado">
+          <ion-segment-button class="segment-si" value="acerto">
+            <ion-label class="marca-si">Acertó</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-si" value="parcialmente">
+            <ion-label class="marca-parcialmente">Parcialmente</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-no" value="nada">
+            <ion-label class="marca-no">Nada</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+      <hr>
+
+      <!-- 1.6 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            1.6 - ¿Sabe usted de qué partido político es el gobernador (a) de su estado?
+          </p>
+          <app-select-partidos (sendIdPartido)="idPartidoPoliticoGobernadorEstado = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+
+      <!-- 1.7 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            1.7 - ¿Conoce usted al presidente (a) de México?
+          </p>
+        </ion-text>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-segment mode="ios" color="danger" [(ngModel)]="conocePresidenteMexicoS" (ionChange)="resultConocePresidenteMexico( $event )" value="no">
+          <ion-segment-button class="segment-si" value="si">
+            <ion-label class="marca-si">Si</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-no" value="no">
+            <ion-label class="marca-no">No</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item>
+
+      <!-- 1.8 solo si la respuesta de la 1.7 es si -->
+      <div *ngIf="conocePresidenteMexico">
+        <ion-item color="medium">
+          <ion-label>
+            <p>1.8 - ¿Cuál es su nombre? </p>
+          </ion-label>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="nombrePresidenteMexico"></ion-input>
+        </ion-item>
+        <hr>
+        <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoNombrePresidenteMexico">
+          <ion-segment-button class="segment-si" value="acerto">
+            <ion-label class="marca-si">Acertó</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-si" value="parcialmente">
+            <ion-label class="marca-parcialmente">Parcialmente</ion-label>
+          </ion-segment-button>
+          <ion-segment-button class="segment-no" value="nada">
+            <ion-label class="marca-no">Nada</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+      <hr>
+
+      <!-- 1.9 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            1.9 - ¿Sabe usted de qué partido político es el presidente (a) de México?
+          </p>
+          <app-select-partidos (sendIdPartido)="idPartidoPoliticoPresidenteMexico = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 1.10 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            1.10 - ¿Sabe usted en qué estado (s) de la República Mexicana habrá elecciones este año?
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              (ionChange)="resultEstadoElecciones($event)">
+              <ion-select-option value="1">ESTADO DE MÉXICO</ion-select-option>
+              <ion-select-option value="2">COAHUILA</ion-select-option>
+              <ion-select-option value="3">OTRO</ion-select-option>
+              <ion-select-option value="4">NO SABE</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 1.11 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>1.11 - ¿Sabe usted, quién es el candidato (a) del PAN a gobernador del Estado de México?</p>
+          <ion-input class="myCustomSelect" interface="popover"
+            [(ngModel)]="nombreCandidatoPanEstadoMexico"></ion-input>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoNombreCandidatoPanEstadoMexico">
+        <ion-segment-button class="segment-si" value="acerto">
+          <ion-label class="marca-si">Acertó</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="parcialmente">
+          <ion-label class="marca-parcialmente">Parcialmente</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="nada">
+          <ion-label class="marca-no">Nada</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 1.12 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>1.12 - ¿Sabe usted, quién es el candidato (a) del PRI a gobernador del Estado de México?</p>
+          <ion-input class="myCustomSelect" interface="popover"
+            [(ngModel)]="nombreCandidatoPriEstadoMexico"></ion-input>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" value="conoceNo" [(ngModel)]="resultadoNombreCandidatoPriEstadoMexico">
+        <ion-segment-button class="segment-si" value="acerto">
+          <ion-label class="marca-si">Acertó</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="parcialmente">
+          <ion-label class="marca-parcialmente">Parcialmente</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="nada">
+          <ion-label class="marca-no">Nada</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 1.13 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>1.13 - ¿Sabe usted, quién es el candidato (a) del PRD a gobernador del Estado de México?</p>
+          <ion-input class="myCustomSelect" interface="popover"
+            [(ngModel)]="nombreCandidatoPrdEstadoMexico"></ion-input>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" value="conoceNo" [(ngModel)]="resultadoNombreCandidatoPrdEstadoMexico">
+        <ion-segment-button class="segment-si" value="acerto">
+          <ion-label class="marca-si">Acertó</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="parcialmente">
+          <ion-label class="marca-parcialmente">Parcialmente</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="nada">
+          <ion-label class="marca-no">Nada</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 1.14 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>1.14 - ¿Sabe usted, quién es el candidato (a) de MORENA a gobernador del Estado de México?</p>
+          <ion-input class="myCustomSelect" interface="popover"
+            [(ngModel)]="nombreCandidatoMorenaEstadoMexico"></ion-input>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" value="conoceNo" [(ngModel)]="resultadoNombreCandidatoMorenaEstadoMexico">
+        <ion-segment-button class="segment-si" value="acerto">
+          <ion-label class="marca-si">Acertó</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="parcialmente">
+          <ion-label class="marca-parcialmente">Parcialmente</ion-label>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="nada">
+          <ion-label class="marca-no">Nada</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+    </ion-card-content>
+  </ion-card>
+</div>
+
+
+<ion-grid>
+  <ion-row>
+    <ion-col size=12 class="ion-text-center">
+      <ion-button *ngIf="activaCard" style="margin-bottom: 10px;" fill="outline" color="primary" expand="block"
+        (click)="completeCard()">Terminar nivel conocimiento
+      </ion-button>
+      <ion-button *ngIf="!activaCard" style="margin-bottom: 10px;" fill="outline" color="primary" expand="block"
+        (click)="showCard()">Mostrar nivel conocimiento
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>

@@ -1,0 +1,260 @@
+<div *ngIf="activaCard">
+  <ion-card color="medium">
+    <ion-card-content>
+
+      <div style="text-align: center; margin:15 0px 0 20;">
+        <ion-chip color="success">Aprobación de autoridades</ion-chip>
+      </div>
+
+      <!-- 2.1 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.1 - ¿Aprueba usted el trabajo de su presidente (a) municipal? </p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoAprobacionPresidenteMunicipal">
+        <ion-segment-button class="segment-si" value="aprueba">
+          <ion-text class="marca-si">Aprueba</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="Ni apr / Ni des">
+          <ion-text class="marca-parcialmente">Ni apr / Ni des</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="desaprueba">
+          <ion-text class="marca-no">Desaprueba</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.2 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.2 - ¿Aprueba usted el trabajo del gobernador (a) de su estado?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoAprobacionGobernadorEstado">
+        <ion-segment-button class="segment-si" value="aprueba">
+          <ion-text class="marca-si">Aprueba</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="Ni apr / Ni des">
+          <ion-text class="marca-parcialmente">Ni apr / Ni des</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="desaprueba">
+          <ion-text class="marca-no">Desaprueba</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.3 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.3 - ¿Aprueba usted el trabajo del presidente (a) de México?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoAprobacionPresidenteMexico">
+        <ion-segment-button class="segment-si" value="aprueba">
+          <ion-text class="marca-si">Aprueba</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="Ni apr / Ni des">
+          <ion-text class="marca-parcialmente">Ni apr / Ni des</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="desaprueba">
+          <ion-text class="marca-no">Desaprueba</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.4 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.4 - ¿Siente que la situación económica ha mejorado con este presidente (a) municipal?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoEconomicoPresidenteMunicipal">
+        <ion-segment-button class="segment-si" value="esta mejor">
+          <ion-text class="marca-si">Está mejor</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="esta igual">
+          <ion-text class="marca-parcialmente">Está igual</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="esta peor">
+          <ion-text class="marca-no">Está peor</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.5 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.5 - ¿Siente que la situación económica ha mejorado con este gobernador (a)?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoEconomicoGobernadorEstado">
+        <ion-segment-button class="segment-si" value="esta mejor">
+          <ion-text class="marca-si">Está mejor</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="esta igual">
+          <ion-text class="marca-parcialmente">Está igual</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="esta peor">
+          <ion-text class="marca-no">Está peor</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.6 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.6 - ¿Siente que la situación económica ha mejorado con este presidente (a) de México?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoEconomicoPresidenteMexico">
+        <ion-segment-button class="segment-si" value="esta mejor">
+          <ion-text class="marca-si">Está mejor</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="esta igual">
+          <ion-text class="marca-parcialmente">Está igual</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="esta peor">
+          <ion-text class="marca-no">Está peor</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.7 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.7 - ¿Siente que la situación de inseguridad ha mejorado con este presidente (a) municipal?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoInseguridadPresidenteMunicipal">
+        <ion-segment-button class="segment-si" value="esta mejor">
+          <ion-text class="marca-si">Está mejor</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="esta igual">
+          <ion-text class="marca-parcialmente">Está igual</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="esta peor">
+          <ion-text class="marca-no">Está peor</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.8 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.8 - ¿Siente que la situación de inseguridad ha mejorado con este gobernador (a)?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoInseguridadGobernadorEstado">
+        <ion-segment-button class="segment-si" value="esta mejor">
+          <ion-text class="marca-si">Está mejor</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="esta igual">
+          <ion-text class="marca-parcialmente">Está igual</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="esta peor">
+          <ion-text class="marca-no">Está peor</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.9 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.9 - ¿Siente que la situación de inseguridad ha mejorado con este presidente (a) de México?</p>
+        </ion-text>
+      </ion-item>
+      <hr>
+      <ion-segment mode="ios" color="danger" [(ngModel)]="resultadoInseguridadPresidenteMexico">
+        <ion-segment-button class="segment-si" value="esta mejor">
+          <ion-text class="marca-si">Está mejor</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-si" value="esta igual">
+          <ion-text class="marca-parcialmente">Está igual</ion-text>
+        </ion-segment-button>
+        <ion-segment-button class="segment-no" value="esta peor">
+          <ion-text class="marca-no">Está peor</ion-text>
+        </ion-segment-button>
+      </ion-segment>
+      <hr>
+
+      <!-- 2.10 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.10 - ¿Cuál considera que es el principal problema del municipio?</p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idPrincipalProblemaMunicipio">
+              <ion-select-option value="1">Inseguridad</ion-select-option>
+              <ion-select-option value="2">Desempleo</ion-select-option>
+              <ion-select-option value="3">Economía</ion-select-option>
+              <ion-select-option value="4">Educación</ion-select-option>
+              <ion-select-option value="5">Corrupción</ion-select-option>
+              <ion-select-option value="6">Otro</ion-select-option>
+              <ion-select-option value="7">No sabe</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+
+      <!-- 2.11 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.11 - ¿Cuál considera que es el principal problema del estado?</p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idPrincipalProblemaEstado">
+              <ion-select-option value="1">Inseguridad</ion-select-option>
+              <ion-select-option value="2">Desempleo</ion-select-option>
+              <ion-select-option value="3">Economía</ion-select-option>
+              <ion-select-option value="4">Educación</ion-select-option>
+              <ion-select-option value="5">Corrupción</ion-select-option>
+              <ion-select-option value="6">Otro</ion-select-option>
+              <ion-select-option value="7">No sabe</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-text>
+          <p>2.12 - ¿Cuál considera que es el principal problema del país?</p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idPrincipalProblemaPais">
+              <ion-select-option value="1">Inseguridad</ion-select-option>
+              <ion-select-option value="2">Desempleo</ion-select-option>
+              <ion-select-option value="3">Economía</ion-select-option>
+              <ion-select-option value="4">Educación</ion-select-option>
+              <ion-select-option value="5">Corrupción</ion-select-option>
+              <ion-select-option value="6">Otro</ion-select-option>
+              <ion-select-option value="7">No sabe</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+</div>
+
+<ion-grid>
+  <ion-row>
+    <ion-col size=12 class="ion-text-center">
+      <ion-button *ngIf="activaCard" style="margin-bottom: 10px;" fill="outline" color="primary" expand="block"
+        (click)="completeCard()">Terminar aprobación autoridades
+      </ion-button>
+      <ion-button *ngIf="!activaCard" style="margin-bottom: 10px;" fill="outline" color="primary" expand="block"
+        (click)="showCard()">Mostrar aprobación autoridades
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>

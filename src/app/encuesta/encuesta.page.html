@@ -1,97 +1,10 @@
 <ion-content color="medium">
 
-  <ion-item color="medium" style="text-align: center;">
-    <p>
-      Conoce usted a su presidente municipal.
-    </p>
-  </ion-item>
+  <app-card-nivel-conocimiento (sendData)=" dataNivelConocimiento = $event "></app-card-nivel-conocimiento>
+  <app-card-aprobacion-autoridades (sendDataAprobacion)="dataAprobacionAutoridades = $event"></app-card-aprobacion-autoridades>
+  <app-card-preferencia-electoral (sendDataPreferenciaElectoral)="dataPreferenciaElectoral = $event"></app-card-preferencia-electoral>
 
-  <ion-item color="medium">
-
-    <ion-segment mode="ios" color="danger" (ionChange)="resultConocePresidente( $event )" value="conoceNo">
-      <ion-segment-button class="segment-si" value="conoceSi">
-        <ion-label class="marca-si">Si</ion-label>
-      </ion-segment-button>
-      <ion-segment-button class="segment-no" value="conoceNo">
-        <ion-label class="marca-no">No</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-  </ion-item>
-
-  <ion-item color="medium" style="text-align: center;">
-    <p>
-      Recuerda alguna de las promesas de campañá del presidente municipal.
-    </p>
-  </ion-item>
-
-  <ion-item color="medium">
-
-    <ion-segment mode="ios" color="danger" (ionChange)="resultPromesa( $event )" value="promesaNo">
-      <ion-segment-button class="segment-si" value="promesaSi">
-        <ion-label class="marca-si">Si</ion-label>
-      </ion-segment-button>
-      <ion-segment-button class="segment-no" value="promesaNo">
-        <ion-label class="marca-no">No</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-  </ion-item>
-
-  <div *ngIf="activaPromesa">
-    <ion-item color="medium">
-      <ion-label>
-        <p>Cual: </p>
-      </ion-label>
-      <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="cualPromesa"></ion-input>
-    </ion-item>
-  </div>
-
-
-
-
-
-  <ion-item color="medium" style="text-align: center;">
-    <p>
-      Esta usted conforme con la gestión del presidente municipal.
-    </p>
-  </ion-item>
-
-  <ion-item color="medium">
-
-    <ion-segment mode="ios" color="danger" (ionChange)="resultGestion( $event )" value="conformeGestionNo">
-      <ion-segment-button class="segment-si" value="conformeGestionSi">
-        <ion-label class="marca-si">Si</ion-label>
-      </ion-segment-button>
-      <ion-segment-button class="segment-no" value="conformeGestionNo">
-        <ion-label class="marca-no">No</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-  </ion-item>
-
-
-
-  <ion-item color="medium">
-    <ion-label>
-      <p>
-        En que servicios públicos le gustaria que fueran aplicados sus impuestos
-      </p>
-      <p>
-        <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
-          [(ngModel)]="idServicioImpuesto">
-          <ion-select-option value="1">Seguridad</ion-select-option>
-          <ion-select-option value="2">Alambrado público</ion-select-option>
-          <ion-select-option value="3">Bacheo o pavimentación</ion-select-option>
-          <ion-select-option value="4">Recolección de basura</ion-select-option>
-          <ion-select-option value="5">Reparación de fugas de agua y desazolve de drenaje</ion-select-option>
-        </ion-select>
-      </p>
-    </ion-label>
-  </ion-item>
-
-
-  <ion-grid>
+  <ion-grid *ngIf="dataNivelConocimiento !== null && dataAprobacionAutoridades !== null && dataPreferenciaElectoral !== null" >
     <ion-row>
       <ion-col size=12 class="ion-text-center">
         <ion-button shape="round" color="success" expand="block" (click)="verify()">Terminar</ion-button>

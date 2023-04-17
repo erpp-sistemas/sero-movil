@@ -1,0 +1,230 @@
+<div *ngIf="activaCard">
+  <ion-card color="medium">
+    <ion-card-content>
+
+      <div style="text-align: center; margin:15 0px 0 20;">
+        <ion-chip color="success">Preferencia Electoral</ion-chip>
+      </div>
+
+      <!-- 3.1 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            3.1 - ¿Si el día de hoy fueran elecciones en el ESTADO DE MÉXICO, ¿por qué partido votaría?
+          </p>
+          <app-select-partidos (sendIdPartido)="idVotoPartidoPoliticoEstadoMexico = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.2 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            3.2 - Si el día de hoy hubiera elecciones en el ESTADO DE MÉXICO, y hubiera una alianza entre partidos,
+            resultando en sólo dos opciones:
+          </p>
+          <p>1. PRI, PAN, PRD Y MC</p>
+          <p>2. MORENA, PARTIDO VERDE Y PT</p>
+          <p>
+            ¿Por cuál votaría?
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idAlianzaVotoEstadoMexico">
+              <ion-select-option value="1">PRI, PAN, PRD Y MC</ion-select-option>
+              <ion-select-option value="2">MORENA, PV Y PT</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.3 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            3.3 - Si el día de hoy fueran elecciones en el PAÍS, ¿por qué partido votaría?
+          </p>
+          <app-select-partidos (sendIdPartido)="idVotoPartidoPoliticoPais = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.4 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            3.4 - Si el día de hoy hubiera elecciones en el PAÍS, y hubiera una alianza entre partidos, resultando en
+            sólo
+            dos opciones:
+          </p>
+          <p>1. PRI, PAN, PRD Y MC</p>
+          <p>2. MORENA, PARTIDO VERDE Y PT</p>
+          <p>
+            ¿Por cuál votaría?
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idAlianzaVotoPais">
+              <ion-select-option value="1">PRI, PAN, PRD Y MC</ion-select-option>
+              <ion-select-option value="2">MORENA, PV Y PT</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.5 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            3.5 - Si el día de hoy fueran elecciones en el MUNICIPIO, ¿por qué partido votaría?
+          </p>
+          <app-select-partidos (sendIdPartido)="idVotoPartidoPoliticoMunicipio = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.6 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            3.6 - Si el día de hoy hubiera elecciones en el MUNICIPIO, y hubiera una alianza entre partidos, resultando
+            en
+            sólo dos opciones:
+          </p>
+          <p>1. PRI, PAN, PRD Y MC</p>
+          <p>2. MORENA, PARTIDO VERDE Y PT</p>
+          <p>
+            ¿Por cuál votaría?
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idAlianzaVotoMunicipio">
+              <ion-select-option value="1">PRI, PAN, PRD Y MC</ion-select-option>
+              <ion-select-option value="2">MORENA, PV Y PT</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.7 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            3.7 - Si el día de hoy fueran elecciones en el ESTADO DE MÉXICO, ¿qué partido piensa que ganaría la
+            elección?
+          </p>
+          <app-select-partidos (sendIdPartido)="idPartidoPiensaGanariaEstadoMexico = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.8 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            Si el día de hoy hubiera elecciones en el ESTADO DE MÉXICO, y hubiera una alianza entre partidos, resultando
+            en sólo dos opciones:
+          </p>
+          <p>1. PRI, PAN, PRD Y MC</p>
+          <p>2. MORENA, PARTIDO VERDE Y PT</p>
+          <p>
+            ¿Qué partido piensa que ganaría?
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idAlianzaPiensaGanariaEstadoMexico">
+              <ion-select-option value="1">PRI, PAN, PRD Y MC</ion-select-option>
+              <ion-select-option value="2">MORENA, PV Y PT</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.9 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            3.9 - Si el día de hoy fueran elecciones en el PAÍS, ¿qué partido piensa que ganaría la elección?
+          </p>
+          <app-select-partidos (sendIdPartido)="idPartidoPiensaGanariaPais = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.10 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            Si el día de hoy hubiera elecciones en el PAÍS, y hubiera una alianza entre partidos, resultando en sólo dos
+            opciones:
+          </p>
+          <p>1. PRI, PAN, PRD Y MC</p>
+          <p>2. MORENA, PARTIDO VERDE Y PT</p>
+          <p>
+            ¿Qué partido piensa que ganaría?
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idAlianzaPiensaGanariaPais">
+              <ion-select-option value="1">PRI, PAN, PRD Y MC</ion-select-option>
+              <ion-select-option value="2">MORENA, PV Y PT</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.11 -->
+      <ion-item color="medium" style="text-align: center;">
+        <ion-text>
+          <p>
+            3.11 - Si el día de hoy fueran elecciones en el MUNICIPIO, ¿qué partido piensa que ganaría la elección?
+          </p>
+          <app-select-partidos (sendIdPartido)="idPartidoPiensaGanariaMunicipio = $event"></app-select-partidos>
+        </ion-text>
+      </ion-item>
+      <hr>
+
+      <!-- 3.12 -->
+      <ion-item color="medium">
+        <ion-text>
+          <p>
+            Si el día de hoy hubiera elecciones en el MUNICIPIO, y hubiera una alianza entre partidos, resultando en
+            sólo dos opciones:
+          </p>
+          <p>1. PRI, PAN, PRD Y MC</p>
+          <p>2. MORENA, PARTIDO VERDE Y PT</p>
+          <p>
+            ¿Qué partido piensa que ganaría?
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="idAlianzaPiensaGanariaMunicipio">
+              <ion-select-option value="1">PRI, PAN, PRD Y MC</ion-select-option>
+              <ion-select-option value="2">MORENA, PV Y PT</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+</div>
+
+<ion-grid>
+  <ion-row>
+    <ion-col size=12 class="ion-text-center">
+      <ion-button *ngIf="activaCard" style="margin-bottom: 10px;" fill="outline" color="primary" expand="block"
+        (click)="completeCard()">Terminar preferencia electoral
+      </ion-button>
+      <ion-button *ngIf="!activaCard" style="margin-bottom: 10px;" fill="outline" color="primary" expand="block"
+        (click)="showCard()">Mostrar preferencia electoral
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>

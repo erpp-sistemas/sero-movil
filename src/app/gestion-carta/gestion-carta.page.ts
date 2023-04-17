@@ -394,7 +394,7 @@ export class GestionCartaPage implements OnInit {
       this.fechaCapturaFoto = ionicDate.toISOString();
     }
 
-    console.log(this.fechaCapturaFoto);
+    //console.log(this.fechaCapturaFoto);
 
     let options: CameraOptions = {
       quality: 40,
@@ -522,8 +522,14 @@ export class GestionCartaPage implements OnInit {
       id: this.idAccountSqlite
     }
 
+    // guarda local
     await this.gestionCarta(data);
+    // envia al servidor
     await this.sendGestionServer();
+    // envia la encuesta si se realizao
+    if (this.encuestaRealizada) {
+      await this.sendEncuestaServer();
+    }
 
     this.loading.dismiss();
     this.exit();
@@ -634,7 +640,7 @@ export class GestionCartaPage implements OnInit {
 
 
   async gestionCarta(data) {
-    console.log(data);
+    //console.log(data);
     //console.log(this.id_proceso);
     if (this.id_proceso === 7) {
       await this.rest.gestionCortes(data)
@@ -649,6 +655,15 @@ export class GestionCartaPage implements OnInit {
     // sincronizar la gestion
     try {
       await this.rest.sendCartaByIdServicioAccount(this.idServicioPlaza, this.account)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async sendEncuestaServer() {
+    console.log("Se realizo la encuesta procedo a enviarla");
+    try {
+      await this.rest.sendEncuestaByCuenta(this.idServicioPlaza, this.account);
     } catch (error) {
       console.log(error);
     }
@@ -897,6 +912,7 @@ export class GestionCartaPage implements OnInit {
     let resultadoEncuesta = data.data.estatus;
 
     if (resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
+    console.log(this.encuestaRealizada);
 
   }
 

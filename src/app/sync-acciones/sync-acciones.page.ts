@@ -113,24 +113,17 @@ export class SyncAccionesPage implements OnInit {
     await this.loading.present();
 
     if (rol == 'Inspección') {
-      const resultado = await this.rest.sendInspeccionByIdServicioAccount(this.id_servicio_plaza, cuenta);
-      console.log(resultado);
+      await this.rest.sendInspeccionByIdServicioAccount(this.id_servicio_plaza, cuenta);
     } else if (rol === 'Carta invitación') {
-      const resultado = await this.rest.sendCartaByIdServicioAccount(this.id_servicio_plaza, cuenta);
-      const resultadoEncuesta = await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
-      console.log(resultado);
-      console.log(resultadoEncuesta);
+      await this.rest.sendCartaByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
     } else if (rol === 'Legal') {
-      const resultado = await this.rest.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
-      console.log(resultado);
+      await this.rest.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
     } else if (rol === 'Inspección Antenas') {
-      const resultado = await this.rest.sendInspeccionAntenasByIdServicioAccount(this.id_servicio_plaza, cuenta)
-      console.log(resultado);
+      await this.rest.sendInspeccionAntenasByIdServicioAccount(this.id_servicio_plaza, cuenta)
     } else if (rol === 'Cortes') {
-      const resultado = await this.rest.sendCortesByIdServicioAccount(this.id_servicio_plaza, cuenta);
-      const resultadoEncuesta = await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
-      console.log(resultado);
-      console.log(resultadoEncuesta);
+      await this.rest.sendCortesByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
     }
 
     this.loading.dismiss();
