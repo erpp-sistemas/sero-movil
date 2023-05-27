@@ -41,6 +41,8 @@ export class RestService {
   apiObtenerProcesosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_procesos_plaza";
   apiRegistroBotonPanico = "https://ser0.mx/seroMovil.aspx?query=sp_boton_panico";
   apiObtenerAccionesHistoricas = "https://ser0.mx/seroMovil.aspx?query=sp_get_actions_history";
+  apiObtenerPartidosPoliticos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_partidos_politicos";
+  apiObtenerAlianzasPoliticas = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_alianzas_politicas";
 
 
 
@@ -369,6 +371,46 @@ export class RestService {
       plazas,
       idPlazas
     }
+  }
+
+
+  guardarInfoPartidosPoliticos(data: any) {
+    let sql = `INSERT INTO cat_partidos_politicos (id_partido_politico, nombre_partido_politico) VALUES (?,?)`
+    return this.db.executeSql(sql, [
+      data.id_partido_politico,
+      data.nombre_partido_politico
+    ])
+  }
+
+  guardarInfoAlianzasPoliticas(data: any) {
+    let sql = `INSERT INTO cat_alianzas_politicas (id_alianza_politica, nombre_alianza_politica) VALUES (?,?)`
+    return this.db.executeSql(sql, [
+      data.id_alianza_politica,
+      data.nombre_alianza_politica
+    ])
+  }
+
+  async obtenerPartidosPoliticosLocal() {
+    let sql = 'SELECT * FROM cat_partidos_politicos'
+    return this.db.executeSql(sql, []).then(response => {
+      let arrayCuentas = [];
+      for (let index = 0; index < response.rows.length; index++) {
+        arrayCuentas.push(response.rows.item(index));
+      }
+      return Promise.resolve(arrayCuentas);
+    }).catch(error => Promise.reject(error));
+  }
+
+
+  async obtenerAlianzasPoliticasLocal() {
+    let sql = 'SELECT * FROM cat_alianzas_politicas'
+    return this.db.executeSql(sql, []).then(response => {
+      let arrayCuentas = [];
+      for (let index = 0; index < response.rows.length; index++) {
+        arrayCuentas.push(response.rows.item(index));
+      }
+      return Promise.resolve(arrayCuentas);
+    }).catch(error => Promise.reject(error));
   }
 
 
@@ -877,56 +919,16 @@ export class RestService {
    * @returns Promise (insert into encuesta)
    */
   gestionEncuesta(data) {
-    let sql = 'INSERT INTO encuesta (idPlaza, account, idAlianzaPiensaGanariaEstadoMexico, idAlianzaPiensaGanariaMunicipio, idAlianzaPiensaGanariaPais, idAlianzaVotoEstadoMexico, idAlianzaVotoMunicipio, idAlianzaVotoPais, idEleccionesEstado, idPartidoPiensaGanariaEstadoMexico, idPartidoPiensaGanariaMunicipio, idPartidoPiensaGanariaPais, idPartidoPoliticoGobernadorEstado, idPartidoPoliticoPresidenteMexico, idPartidoPoliticoPresidenteMunicipal, idPrincipalProblemaEstado, idPrincipalProblemaMunicipio, idPrincipalProblemaPais, idVotoPartidoPoliticoEstadoMexico, idVotoPartidoPoliticoMunicipio, idVotoPartidoPoliticoPais, conocePresidenteMunicipal, conoceGobernadorEstado, conocePresidenteMexico, nombreCandidatoMorenaEstadoMexico, nombreCandidatoPanEstadoMexico, nombreCandidatoPrdEstadoMexico, nombreCandidatoPriEstadoMexico, nombreGobernadorEstado, nombrePresidenteMexico, nombrePresidenteMunicipal, resultadoAprobacionGobernadorEstado, resultadoAprobacionPresidenteMexico, resultadoAprobacionPresidenteMunicipal, resultadoEconomicoGobernadorEstado, resultadoEconomicoPresidenteMexico, resultadoEconomicoPresidenteMunicipal, resultadoGobernadorEstado, resultadoInseguridadGobernadorEstado, resultadoInseguridadPresidenteMexico, resultadoInseguridadPresidenteMunicipal, resultadoNombreCandidatoMorenaEstadoMexico, resultadoNombreCandidatoPanEstadoMexico, resultadoNombreCandidatoPrdEstadoMexico, resultadoNombreCandidatoPriEstadoMexico, resultadoNombrePresidenteMexico, resultadoNombrePresidenteMunicipal, idServicioPlaza, fechaCaptura) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    let sql = 'INSERT INTO encuesta (idPlaza, account, idAlianzaVotoEstadoMexico, idAlianzaVotoMunicipio, idVotoPartidoPoliticoEstadoMexico, idVotoPartidoPoliticoMunicipio, idVotoPartidoPoliticoPais, idServicioPlaza, fechaCaptura) VALUES (?,?,?,?,?,?,?,?,?)';
 
     return this.db.executeSql(sql, [
       data.idPlaza,
       data.account,
-      data.idAlianzaPiensaGanariaEstadoMexico ? data.idAlianzaPiensaGanariaEstadoMexico : '0',
-      data.idAlianzaPiensaGanariaMunicipio ? data.idAlianzaPiensaGanariaMunicipio : '0',
-      data.idAlianzaPiensaGanariaPais ? data.idAlianzaPiensaGanariaPais : '0',
       data.idAlianzaVotoEstadoMexico ? data.idAlianzaVotoEstadoMexico : '0',
       data.idAlianzaVotoMunicipio ? data.idAlianzaVotoMunicipio : '0',
-      data.idAlianzaVotoPais ? data.idAlianzaVotoPais : '0',
-      data.idEleccionesEstado ? data.idEleccionesEstado : '0',
-      data.idPartidoPiensaGanariaEstadoMexico ? data.idPartidoPiensaGanariaEstadoMexico : '0',
-      data.idPartidoPiensaGanariaMunicipio ? data.idPartidoPiensaGanariaMunicipio : '0',
-      data.idPartidoPiensaGanariaPais ? data.idPartidoPiensaGanariaPais : '0',
-      data.idPartidoPoliticoGobernadorEstado ? data.idPartidoPoliticoGobernadorEstado : '0',
-      data.idPartidoPoliticoPresidenteMexico ? data.idPartidoPoliticoPresidenteMexico : '0',
-      data.idPartidoPoliticoPresidenteMunicipal ? data.idPartidoPoliticoPresidenteMunicipal : '0',
-      data.idPrincipalProblemaEstado ? data.idPrincipalProblemaEstado : '0',
-      data.idPrincipalProblemaMunicipio ? data.idPrincipalProblemaMunicipio : '0',
-      data.idPrincipalProblemaPais ? data.idPrincipalProblemaPais : '0',
       data.idVotoPartidoPoliticoEstadoMexico ? data.idVotoPartidoPoliticoEstadoMexico : '0',
       data.idVotoPartidoPoliticoMunicipio ? data.idVotoPartidoPoliticoMunicipio : '0',
       data.idVotoPartidoPoliticoPais ? data.idVotoPartidoPoliticoPais : '0',
-      data.conocePresidenteMunicipal ? data.conocePresidenteMunicipal : '',
-      data.conoceGobernadorEstado ? data.conoceGobernadorEstado : '',
-      data.conocePresidenteMexico ? data.conocePresidenteMexico : '',
-      data.nombreCandidatoMorenaEstadoMexico ? data.nombreCandidatoMorenaEstadoMexico : '',
-      data.nombreCandidatoPanEstadoMexico ? data.nombreCandidatoPanEstadoMexico : '',
-      data.nombreCandidatoPrdEstadoMexico ? data.nombreCandidatoPrdEstadoMexico : '',
-      data.nombreCandidatoPriEstadoMexico ? data.nombreCandidatoPriEstadoMexico : '',
-      data.nombreGobernadorEstado ? data.nombreGobernadorEstado : '',
-      data.nombrePresidenteMexico ? data.nombrePresidenteMexico : '',
-      data.nombrePresidenteMunicipal ? data.nombrePresidenteMunicipal : '',
-      data.resultadoAprobacionGobernadorEstado ? data.resultadoAprobacionGobernadorEstado : '',
-      data.resultadoAprobacionPresidenteMexico ? data.resultadoAprobacionPresidenteMexico : '',
-      data.resultadoAprobacionPresidenteMunicipal ? data.resultadoAprobacionPresidenteMunicipal : '',
-      data.resultadoEconomicoGobernadorEstado ? data.resultadoEconomicoGobernadorEstado : '',
-      data.resultadoEconomicoPresidenteMexico ? data.resultadoEconomicoPresidenteMexico : '',
-      data.resultadoEconomicoPresidenteMunicipal ? data.resultadoEconomicoPresidenteMunicipal : '',
-      data.resultadoGobernadorEstado ? data.resultadoGobernadorEstado : '',
-      data.resultadoInseguridadGobernadorEstado ? data.resultadoInseguridadGobernadorEstado : '',
-      data.resultadoInseguridadPresidenteMexico ? data.resultadoInseguridadPresidenteMexico : '',
-      data.resultadoInseguridadPresidenteMunicipal ? data.resultadoInseguridadPresidenteMunicipal : '',
-      data.resultadoNombreCandidatoMorenaEstadoMexico ? data.resultadoNombreCandidatoMorenaEstadoMexico : '',
-      data.resultadoNombreCandidatoPanEstadoMexico ? data.resultadoNombreCandidatoPanEstadoMexico : '',
-      data.resultadoNombreCandidatoPrdEstadoMexico ? data.resultadoNombreCandidatoPrdEstadoMexico : '',
-      data.resultadoNombreCandidatoPriEstadoMexico ? data.resultadoNombreCandidatoPriEstadoMexico : '',
-      data.resultadoNombrePresidenteMexico ? data.resultadoNombrePresidenteMexico : '',
-      data.resultadoNombrePresidenteMunicipal ? data.resultadoNombrePresidenteMunicipal : '',
       data.idServicioPlaza,
       data.fechaCaptura
     ]);
@@ -1294,7 +1296,7 @@ export class RestService {
  * Metodo que envia la informacion capturada de la encuesta por cuenta
  * este metodo se llama cuando se envie una gestion solamente de carta invitacion
  */
-  async sendEncuestaByCuenta(id_servicio_plaza, account) {
+  async sendEncuestaByCuenta(id_servicio_plaza: any, account: any) {
     console.log(id_servicio_plaza);
     console.log(account);
     try {
@@ -1314,56 +1316,16 @@ export class RestService {
 
         let idPlaza = arrayEncuesta[0].idPlaza;
         let account = arrayEncuesta[0].account;
-        let idAlianzaPiensaGanariaEstadoMexico = arrayEncuesta[0].idAlianzaPiensaGanariaEstadoMexico;
-        let idAlianzaPiensaGanariaMunicipio = arrayEncuesta[0].idAlianzaPiensaGanariaMunicipio;
-        let idAlianzaPiensaGanariaPais = arrayEncuesta[0].idAlianzaPiensaGanariaPais;
         let idAlianzaVotoEstadoMexico = arrayEncuesta[0].idAlianzaVotoEstadoMexico;
         let idAlianzaVotoMunicipio = arrayEncuesta[0].idAlianzaVotoMunicipio;
-        let idAlianzaVotoPais = arrayEncuesta[0].idAlianzaVotoPais;
-        let idEleccionesEstado = arrayEncuesta[0].idEleccionesEstado;
-        let idPartidoPiensaGanariaEstadoMexico = arrayEncuesta[0].idPartidoPiensaGanariaEstadoMexico;
-        let idPartidoPiensaGanariaMunicipio = arrayEncuesta[0].idPartidoPiensaGanariaMunicipio;
-        let idPartidoPiensaGanariaPais = arrayEncuesta[0].idPartidoPiensaGanariaPais;
-        let idPartidoPoliticoGobernadorEstado = arrayEncuesta[0].idPartidoPoliticoGobernadorEstado;
-        let idPartidoPoliticoPresidenteMexico = arrayEncuesta[0].idPartidoPoliticoPresidenteMexico;
-        let idPartidoPoliticoPresidenteMunicipal = arrayEncuesta[0].idPartidoPoliticoPresidenteMunicipal;
-        let idPrincipalProblemaEstado = arrayEncuesta[0].idPrincipalProblemaEstado;
-        let idPrincipalProblemaMunicipio = arrayEncuesta[0].idPrincipalProblemaMunicipio;
-        let idPrincipalProblemaPais = arrayEncuesta[0].idPrincipalProblemaPais;
         let idVotoPartidoPoliticoEstadoMexico = arrayEncuesta[0].idVotoPartidoPoliticoEstadoMexico;
         let idVotoPartidoPoliticoMunicipio = arrayEncuesta[0].idVotoPartidoPoliticoMunicipio;
         let idVotoPartidoPoliticoPais = arrayEncuesta[0].idVotoPartidoPoliticoPais;
-        let conocePresidenteMunicipal = arrayEncuesta[0].conocePresidenteMunicipal;
-        let conoceGobernadorEstado = arrayEncuesta[0].conoceGobernadorEstado;
-        let conocePresidenteMexico = arrayEncuesta[0].conocePresidenteMexico;
-        let nombreCandidatoMorenaEstadoMexico = arrayEncuesta[0].nombreCandidatoMorenaEstadoMexico;
-        let nombreCandidatoPanEstadoMexico = arrayEncuesta[0].nombreCandidatoPanEstadoMexico;
-        let nombreCandidatoPrdEstadoMexico = arrayEncuesta[0].nombreCandidatoPrdEstadoMexico;
-        let nombreCandidatoPriEstadoMexico = arrayEncuesta[0].nombreCandidatoPriEstadoMexico;
-        let nombreGobernadorEstado = arrayEncuesta[0].nombreGobernadorEstado;
-        let nombrePresidenteMexico = arrayEncuesta[0].nombrePresidenteMexico;
-        let nombrePresidenteMunicipal = arrayEncuesta[0].nombrePresidenteMunicipal;
-        let resultadoAprobacionGobernadorEstado = arrayEncuesta[0].resultadoAprobacionGobernadorEstado;
-        let resultadoAprobacionPresidenteMexico = arrayEncuesta[0].resultadoAprobacionPresidenteMexico;
-        let resultadoAprobacionPresidenteMunicipal = arrayEncuesta[0].resultadoAprobacionPresidenteMunicipal;
-        let resultadoEconomicoGobernadorEstado = arrayEncuesta[0].resultadoEconomicoGobernadorEstado;
-        let resultadoEconomicoPresidenteMexico = arrayEncuesta[0].resultadoEconomicoPresidenteMexico;
-        let resultadoEconomicoPresidenteMunicipal = arrayEncuesta[0].resultadoEconomicoPresidenteMunicipal;
-        let resultadoGobernadorEstado = arrayEncuesta[0].resultadoGobernadorEstado;
-        let resultadoInseguridadGobernadorEstado = arrayEncuesta[0].resultadoInseguridadGobernadorEstado;
-        let resultadoInseguridadPresidenteMexico = arrayEncuesta[0].resultadoInseguridadPresidenteMexico;
-        let resultadoInseguridadPresidenteMunicipal = arrayEncuesta[0].resultadoInseguridadPresidenteMunicipal;
-        let resultadoNombreCandidatoMorenaEstadoMexico = arrayEncuesta[0].resultadoNombreCandidatoMorenaEstadoMexico;
-        let resultadoNombreCandidatoPanEstadoMexico = arrayEncuesta[0].resultadoNombreCandidatoPanEstadoMexico;
-        let resultadoNombreCandidatoPrdEstadoMexico = arrayEncuesta[0].resultadoNombreCandidatoPrdEstadoMexico;
-        let resultadoNombreCandidatoPriEstadoMexico = arrayEncuesta[0].resultadoNombreCandidatoPriEstadoMexico;
-        let resultadoNombrePresidenteMexico = arrayEncuesta[0].resultadoNombrePresidenteMexico;
-        let resultadoNombrePresidenteMunicipal = arrayEncuesta[0].resultadoNombrePresidenteMunicipal;
         let idServicioPlaza = arrayEncuesta[0].idServicioPlaza;
         let fechaCaptura = arrayEncuesta[0].fechaCaptura;
         let id = arrayEncuesta[0].id;
 
-        let sql = `${idPlaza},'${account}', ${idAlianzaPiensaGanariaEstadoMexico}, ${idAlianzaPiensaGanariaMunicipio}, ${idAlianzaPiensaGanariaPais}, ${idAlianzaVotoEstadoMexico}, ${idAlianzaVotoMunicipio}, ${idAlianzaVotoPais}, ${idEleccionesEstado}, ${idPartidoPiensaGanariaEstadoMexico}, ${idPartidoPiensaGanariaMunicipio}, ${idPartidoPiensaGanariaPais}, ${idPartidoPoliticoGobernadorEstado}, ${idPartidoPoliticoPresidenteMexico}, ${idPartidoPoliticoPresidenteMunicipal}, ${idPrincipalProblemaEstado}, ${idPrincipalProblemaMunicipio}, ${idPrincipalProblemaPais}, ${idVotoPartidoPoliticoEstadoMexico}, ${idVotoPartidoPoliticoMunicipio}, ${idVotoPartidoPoliticoPais}, '${conocePresidenteMunicipal}', '${conoceGobernadorEstado}', '${conocePresidenteMexico}', '${nombreCandidatoMorenaEstadoMexico}', '${nombreCandidatoPanEstadoMexico}', '${nombreCandidatoPrdEstadoMexico}', '${nombreCandidatoPriEstadoMexico}', '${nombreGobernadorEstado}', '${nombrePresidenteMexico}', '${nombrePresidenteMunicipal}', '${resultadoAprobacionGobernadorEstado}', '${resultadoAprobacionPresidenteMexico}', '${resultadoAprobacionPresidenteMunicipal}', '${resultadoEconomicoGobernadorEstado}', '${resultadoEconomicoPresidenteMexico}', '${resultadoEconomicoPresidenteMunicipal}', '${resultadoGobernadorEstado}', '${resultadoInseguridadGobernadorEstado}', '${resultadoInseguridadPresidenteMexico}', '${resultadoInseguridadPresidenteMunicipal}', '${resultadoNombreCandidatoMorenaEstadoMexico}', '${resultadoNombreCandidatoPanEstadoMexico}', '${resultadoNombreCandidatoPrdEstadoMexico}', '${resultadoNombreCandidatoPriEstadoMexico}', '${resultadoNombrePresidenteMexico}', '${resultadoNombrePresidenteMunicipal}', ${idServicioPlaza}, '${fechaCaptura}' `
+        let sql = `${idPlaza},'${account}',${idAlianzaVotoEstadoMexico}, ${idAlianzaVotoMunicipio}, ${idVotoPartidoPoliticoEstadoMexico}, ${idVotoPartidoPoliticoMunicipio}, ${idVotoPartidoPoliticoPais}, ${idServicioPlaza}, '${fechaCaptura}' `
 
         console.log(sql);
 
@@ -2110,56 +2072,16 @@ export class RestService {
 
           let idPlaza = arrayEncuesta[i].idPlaza;
           let account = arrayEncuesta[i].account;
-          let idAlianzaPiensaGanariaEstadoMexico = arrayEncuesta[i].idAlianzaPiensaGanariaEstadoMexico;
-          let idAlianzaPiensaGanariaMunicipio = arrayEncuesta[i].idAlianzaPiensaGanariaMunicipio;
-          let idAlianzaPiensaGanariaPais = arrayEncuesta[i].idAlianzaPiensaGanariaPais;
           let idAlianzaVotoEstadoMexico = arrayEncuesta[i].idAlianzaVotoEstadoMexico;
           let idAlianzaVotoMunicipio = arrayEncuesta[i].idAlianzaVotoMunicipio;
-          let idAlianzaVotoPais = arrayEncuesta[i].idAlianzaVotoPais;
-          let idEleccionesEstado = arrayEncuesta[i].idEleccionesEstado;
-          let idPartidoPiensaGanariaEstadoMexico = arrayEncuesta[i].idPartidoPiensaGanariaEstadoMexico;
-          let idPartidoPiensaGanariaMunicipio = arrayEncuesta[i].idPartidoPiensaGanariaMunicipio;
-          let idPartidoPiensaGanariaPais = arrayEncuesta[i].idPartidoPiensaGanariaPais;
-          let idPartidoPoliticoGobernadorEstado = arrayEncuesta[i].idPartidoPoliticoGobernadorEstado;
-          let idPartidoPoliticoPresidenteMexico = arrayEncuesta[i].idPartidoPoliticoPresidenteMexico;
-          let idPartidoPoliticoPresidenteMunicipal = arrayEncuesta[i].idPartidoPoliticoPresidenteMunicipal;
-          let idPrincipalProblemaEstado = arrayEncuesta[i].idPrincipalProblemaEstado;
-          let idPrincipalProblemaMunicipio = arrayEncuesta[i].idPrincipalProblemaMunicipio;
-          let idPrincipalProblemaPais = arrayEncuesta[i].idPrincipalProblemaPais;
           let idVotoPartidoPoliticoEstadoMexico = arrayEncuesta[i].idVotoPartidoPoliticoEstadoMexico;
           let idVotoPartidoPoliticoMunicipio = arrayEncuesta[i].idVotoPartidoPoliticoMunicipio;
           let idVotoPartidoPoliticoPais = arrayEncuesta[i].idVotoPartidoPoliticoPais;
-          let conocePresidenteMunicipal = arrayEncuesta[i].conocePresidenteMunicipal;
-          let conoceGobernadorEstado = arrayEncuesta[i].conoceGobernadorEstado;
-          let conocePresidenteMexico = arrayEncuesta[i].conocePresidenteMexico;
-          let nombreCandidatoMorenaEstadoMexico = arrayEncuesta[i].nombreCandidatoMorenaEstadoMexico;
-          let nombreCandidatoPanEstadoMexico = arrayEncuesta[i].nombreCandidatoPanEstadoMexico;
-          let nombreCandidatoPrdEstadoMexico = arrayEncuesta[i].nombreCandidatoPrdEstadoMexico;
-          let nombreCandidatoPriEstadoMexico = arrayEncuesta[i].nombreCandidatoPriEstadoMexico;
-          let nombreGobernadorEstado = arrayEncuesta[i].nombreGobernadorEstado;
-          let nombrePresidenteMexico = arrayEncuesta[i].nombrePresidenteMexico;
-          let nombrePresidenteMunicipal = arrayEncuesta[i].nombrePresidenteMunicipal;
-          let resultadoAprobacionGobernadorEstado = arrayEncuesta[i].resultadoAprobacionGobernadorEstado;
-          let resultadoAprobacionPresidenteMexico = arrayEncuesta[i].resultadoAprobacionPresidenteMexico;
-          let resultadoAprobacionPresidenteMunicipal = arrayEncuesta[i].resultadoAprobacionPresidenteMunicipal;
-          let resultadoEconomicoGobernadorEstado = arrayEncuesta[i].resultadoEconomicoGobernadorEstado;
-          let resultadoEconomicoPresidenteMexico = arrayEncuesta[i].resultadoEconomicoPresidenteMexico;
-          let resultadoEconomicoPresidenteMunicipal = arrayEncuesta[i].resultadoEconomicoPresidenteMunicipal;
-          let resultadoGobernadorEstado = arrayEncuesta[i].resultadoGobernadorEstado;
-          let resultadoInseguridadGobernadorEstado = arrayEncuesta[i].resultadoInseguridadGobernadorEstado;
-          let resultadoInseguridadPresidenteMexico = arrayEncuesta[i].resultadoInseguridadPresidenteMexico;
-          let resultadoInseguridadPresidenteMunicipal = arrayEncuesta[i].resultadoInseguridadPresidenteMunicipal;
-          let resultadoNombreCandidatoMorenaEstadoMexico = arrayEncuesta[i].resultadoNombreCandidatoMorenaEstadoMexico;
-          let resultadoNombreCandidatoPanEstadoMexico = arrayEncuesta[i].resultadoNombreCandidatoPanEstadoMexico;
-          let resultadoNombreCandidatoPrdEstadoMexico = arrayEncuesta[i].resultadoNombreCandidatoPrdEstadoMexico;
-          let resultadoNombreCandidatoPriEstadoMexico = arrayEncuesta[i].resultadoNombreCandidatoPriEstadoMexico;
-          let resultadoNombrePresidenteMexico = arrayEncuesta[i].resultadoNombrePresidenteMexico;
-          let resultadoNombrePresidenteMunicipal = arrayEncuesta[i].resultadoNombrePresidenteMunicipal;
           let idServicioPlaza = arrayEncuesta[i].idServicioPlaza;
           let fechaCaptura = arrayEncuesta[i].fechaCaptura;
           let id = arrayEncuesta[i].id;
 
-          let sql = `${idPlaza},'${account}', ${idAlianzaPiensaGanariaEstadoMexico}, ${idAlianzaPiensaGanariaMunicipio}, ${idAlianzaPiensaGanariaPais}, ${idAlianzaVotoEstadoMexico}, ${idAlianzaVotoMunicipio}, ${idAlianzaVotoPais}, ${idEleccionesEstado}, ${idPartidoPiensaGanariaEstadoMexico}, ${idPartidoPiensaGanariaMunicipio}, ${idPartidoPiensaGanariaPais}, ${idPartidoPoliticoGobernadorEstado}, ${idPartidoPoliticoPresidenteMexico}, ${idPartidoPoliticoPresidenteMunicipal}, ${idPrincipalProblemaEstado}, ${idPrincipalProblemaMunicipio}, ${idPrincipalProblemaPais}, ${idVotoPartidoPoliticoEstadoMexico}, ${idVotoPartidoPoliticoMunicipio}, ${idVotoPartidoPoliticoPais}, '${conocePresidenteMunicipal}, '${conoceGobernadorEstado}', '${conocePresidenteMexico}', '${nombreCandidatoMorenaEstadoMexico}', '${nombreCandidatoPanEstadoMexico}', '${nombreCandidatoPrdEstadoMexico}', '${nombreCandidatoPriEstadoMexico}', '${nombreGobernadorEstado}', '${nombrePresidenteMexico}', '${nombrePresidenteMunicipal}', '${resultadoAprobacionGobernadorEstado}', '${resultadoAprobacionPresidenteMexico}', '${resultadoAprobacionPresidenteMunicipal}', '${resultadoEconomicoGobernadorEstado}', '${resultadoEconomicoPresidenteMexico}', '${resultadoEconomicoPresidenteMunicipal}', '${resultadoGobernadorEstado}', '${resultadoInseguridadGobernadorEstado}', '${resultadoInseguridadPresidenteMexico}', '${resultadoInseguridadPresidenteMunicipal}', '${resultadoNombreCandidatoMorenaEstadoMexico}', '${resultadoNombreCandidatoPanEstadoMexico}', '${resultadoNombreCandidatoPrdEstadoMexico}', '${resultadoNombreCandidatoPriEstadoMexico}', '${resultadoNombrePresidenteMexico}', '${resultadoNombrePresidenteMunicipal}', ${idServicioPlaza}, '${fechaCaptura}'`
+          let sql = `${idPlaza},'${account}',${idAlianzaVotoEstadoMexico}, ${idAlianzaVotoMunicipio}, ${idVotoPartidoPoliticoEstadoMexico}, ${idVotoPartidoPoliticoMunicipio}, ${idVotoPartidoPoliticoPais}, ${idServicioPlaza}, '${fechaCaptura}' `
 
           console.log(sql);
 
@@ -2195,16 +2117,16 @@ export class RestService {
         for (let i = 0; i < arrayEncuesta.length; i++) {
           let idPlaza = arrayEncuesta[i].idPlaza;
           let account = arrayEncuesta[i].account;
-          let conocePresidente = arrayEncuesta[i].conocePresidente;
-          let promesaCamp = arrayEncuesta[i].promesaCamp;
-          let cualPromesa = arrayEncuesta[i].cualPromesa;
-          let gestionPresidente = arrayEncuesta[i].gestionPresidente;
-          let idServicioImpuesto = arrayEncuesta[i].idServicioImpuesto;
+          let idAlianzaVotoEstadoMexico = arrayEncuesta[i].idAlianzaVotoEstadoMexico;
+          let idAlianzaVotoMunicipio = arrayEncuesta[i].idAlianzaVotoMunicipio;
+          let idVotoPartidoPoliticoEstadoMexico = arrayEncuesta[i].idVotoPartidoPoliticoEstadoMexico;
+          let idVotoPartidoPoliticoMunicipio = arrayEncuesta[i].idVotoPartidoPoliticoMunicipio;
+          let idVotoPartidoPoliticoPais = arrayEncuesta[i].idVotoPartidoPoliticoPais;
           let idServicioPlaza = arrayEncuesta[i].idServicioPlaza;
           let fechaCaptura = arrayEncuesta[i].fechaCaptura;
           let id = arrayEncuesta[i].id;
 
-          let sql = `${idPlaza},'${account}',${conocePresidente},${promesaCamp},'${cualPromesa}',${gestionPresidente},${idServicioImpuesto},${idServicioPlaza},'${fechaCaptura}'`
+          let sql = `${idPlaza},'${account}',${idAlianzaVotoEstadoMexico}, ${idAlianzaVotoMunicipio}, ${idVotoPartidoPoliticoEstadoMexico}, ${idVotoPartidoPoliticoMunicipio}, ${idVotoPartidoPoliticoPais}, ${idServicioPlaza}, '${fechaCaptura}' `
           console.log(sql);
 
           await this.enviarSQLEncuesta(sql, id)
@@ -3318,6 +3240,27 @@ export class RestService {
     })
   }
 
+  obtenerCatalogoPartidosPoliticos() {
+    return new Promise<any>(resolve => {
+      this.http.get(this.apiObtenerPartidosPoliticos).subscribe(data => {
+        resolve(data)
+      }, err => {
+        this.message.showToast("No se pudo descargar el catalogo de partidos politicos")
+      })
+    })
+  }
+
+  obtenerCatalogoAlianzasPoliticas() {
+    return new Promise<any>(resolve => {
+      this.http.get(this.apiObtenerAlianzasPoliticas).subscribe(data => {
+        resolve(data)
+      }, err => {
+        this.message.showToast("No se pudo descargar el catalogo de partidos politicos")
+      })
+    })
+  }
+
+
   /**
    * Inserta los procesos en la tabla interna
    * @param proceso 
@@ -3369,6 +3312,26 @@ export class RestService {
       console.log("Se borraron los procesos de la plaza");
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async deleteCatPartidosPoliticos() {
+    let sql = 'DELETE FROM cat_partidos_politicos'
+    try {
+      await this.db.executeSql(sql, [])
+      console.log("Se borro el catalogo de partidos politicos");
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async deleteCatAlianzasPoliticas() {
+    let sql = 'DELETE FROM cat_alianzas_politicas'
+    try {
+      await this.db.executeSql(sql, [])
+      console.log("Se borro el catalogo de alianzas politicas");
+    } catch (error) {
+      console.log(error)
     }
   }
 

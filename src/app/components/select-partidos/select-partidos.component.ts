@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { RestService } from 'src/app/services/rest.service';
 
 @Component({
   selector: 'app-select-partidos',
@@ -7,12 +8,23 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class SelectPartidosComponent implements OnInit {
 
-  //@Input() idPartidoPolitico: string = '';
+  @Input() idPartidoPolitico: string = '';
   @Output() sendIdPartido = new EventEmitter<string>();
 
-  constructor() { }
+  partidosSQL: any[] = []
 
-  ngOnInit() { }
+  constructor(
+    private rest: RestService
+  ) { }
+
+  ngOnInit() { 
+    this.obtenerInfoPartidosLocalesSQL()
+  }
+
+  async obtenerInfoPartidosLocalesSQL() {
+    const data = await this.rest.obtenerPartidosPoliticosLocal();
+    this.partidosSQL = data;
+  }
 
   resultIdPartido(event: any) {
     let result = event.target.value

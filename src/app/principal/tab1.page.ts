@@ -236,6 +236,12 @@ export class Tab1Page implements OnInit {
       //peticion al sql por los procesos de gestion de la plaza
       this.getProcessByIdPlaza(this.id_plaza);
 
+      // peticion al sql del catalogo de los partidos politicos
+      this.getCatPartidosPoliticos();
+
+      // peticion al sql del catalogo de las alianzas politicas
+      this.getCatAlianzasPoliticas();
+
       this.message.showAlert("Se han descargado tus cuentas!!!!");
     } catch (error) {
       console.log(error);
@@ -270,6 +276,29 @@ export class Tab1Page implements OnInit {
    */
   async deleteInfo(id_plaza, id_servicio_plaza) {
     await this.rest.deleteTable(id_plaza, id_servicio_plaza);
+  }
+
+
+  async getCatPartidosPoliticos() {
+    // traemos la informacion de los partidos politicos
+    let dataPartidosPoliticos = await this.rest.obtenerCatalogoPartidosPoliticos()
+    console.log(dataPartidosPoliticos);
+    // borramos la informacion del catalogo de partidos politicos
+    await this.rest.deleteCatPartidosPoliticos();
+    dataPartidosPoliticos.forEach( async (partido: any) => {
+      await this.rest.guardarInfoPartidosPoliticos(partido);
+    })
+  }
+
+  async getCatAlianzasPoliticas() {
+    // traemos la informacion de las alianzas politicas
+    let dataAlianzasPoliticas = await this.rest.obtenerCatalogoAlianzasPoliticas()
+    console.log(dataAlianzasPoliticas);
+    // borramos la informacion del catalogo de alianzas politicas
+    await this.rest.deleteCatAlianzasPoliticas();
+    dataAlianzasPoliticas.forEach( async (alianza: any) => {
+      await this.rest.guardarInfoAlianzasPoliticas(alianza)
+    })
   }
 
   async getProcessByIdPlaza(id_plaza: number) {

@@ -4,7 +4,7 @@ import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 import { DataNivelConocmiento } from '../interfaces/NivelConocimiento'
 import { DataAprobacionAutoridades } from '../interfaces/AprobacionAutoridades';
-import { DataPreferenciaElectoral } from '../interfaces/PreferenciaElectoral';
+import { DataPreferenciaElectoralDos } from '../interfaces/PreferenciaElectoral';
 
 @Component({
   selector: 'app-encuesta',
@@ -15,15 +15,9 @@ export class EncuestaPage implements OnInit {
 
   dataNivelConocimiento: DataNivelConocmiento = null; //18
   dataAprobacionAutoridades: DataAprobacionAutoridades = null; // 12
-  dataPreferenciaElectoral: DataPreferenciaElectoral = null; // 12
+  dataPreferenciaElectoral: DataPreferenciaElectoralDos = null; // 12
 
-  conocePresidente: number = 0;
-  promesaCamp: number = 0;
-  cualPromesa: string = '';
-  gestionPresidente: number = 0;
-  idServicioImpuesto: number = 0;
   fechaCaptura: string = '';
-  activaPromesa: boolean = false;
   realizado: boolean = false;
 
   constructor(
@@ -43,6 +37,11 @@ export class EncuestaPage implements OnInit {
 
   async verify() {
 
+    if ([this.dataPreferenciaElectoral.idAlianzaVotoEstadoMexico, this.dataPreferenciaElectoral.idAlianzaVotoMunicipio, this.dataPreferenciaElectoral.idVotoPartidoPoliticoEstadoMexico, this.dataPreferenciaElectoral.idVotoPartidoPoliticoMunicipio, this.dataPreferenciaElectoral.idVotoPartidoPoliticoPais].includes('')) {
+      this.message.showAlert("Encuesta incompleta, llena todos los campos")
+      return;
+    }
+
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(
@@ -58,17 +57,19 @@ export class EncuestaPage implements OnInit {
 
     this.fechaCaptura = ionicDate.toISOString();
 
+    console.log(this.dataPreferenciaElectoral);
+
     let data = {
       idPlaza: this.idPlaza,
       idServicioPlaza: this.idServicioPlaza,
       account: this.account,
       fechaCaptura: this.fechaCaptura,
-      ...this.dataNivelConocimiento,
-      ...this.dataAprobacionAutoridades,
       ...this.dataPreferenciaElectoral
     }
+    //console.log(data);
     await this.gestionEncuesta(data);
   }
+
 
   async gestionEncuesta(data: any) {
     console.log(data);

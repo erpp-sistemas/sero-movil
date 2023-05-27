@@ -1,5 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { DataPreferenciaElectoral } from 'src/app/interfaces/PreferenciaElectoral';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DataPreferenciaElectoralDos } from 'src/app/interfaces/PreferenciaElectoral';
+import { RestService } from 'src/app/services/rest.service';
 
 @Component({
   selector: 'app-card-preferencia-electoral',
@@ -7,29 +8,34 @@ import { DataPreferenciaElectoral } from 'src/app/interfaces/PreferenciaElectora
   styleUrls: ['./card-preferencia-electoral.component.scss'],
 })
 export class CardPreferenciaElectoralComponent implements OnInit {
+ 
+  @Output() sendDataPreferenciaElectoral = new EventEmitter<DataPreferenciaElectoralDos>();
 
-  @Output() sendDataPreferenciaElectoral = new EventEmitter<DataPreferenciaElectoral>();
+  alianzasPoliticas: any[] = [];
 
-  activaCard: boolean = false
+  activaCard: boolean = true
 
   idVotoPartidoPoliticoEstadoMexico: string = '';
   idAlianzaVotoEstadoMexico: string = '';
   idVotoPartidoPoliticoPais: string = '';
-  idAlianzaVotoPais: string = ''
   idVotoPartidoPoliticoMunicipio: string = '';
   idAlianzaVotoMunicipio: string = '';
 
-  idPartidoPiensaGanariaEstadoMexico: string = '';
-  idAlianzaPiensaGanariaEstadoMexico: string = '';
-  idPartidoPiensaGanariaPais: string = '';
-  idAlianzaPiensaGanariaPais: string = '';
-  idPartidoPiensaGanariaMunicipio: string = '';
-  idAlianzaPiensaGanariaMunicipio: string = '';
 
+  constructor(private rest: RestService) { }
 
-  constructor() { }
+  ngOnInit() {
+    this.getAlianzasPoliticas()
+  }
 
-  ngOnInit() {}
+  async getAlianzasPoliticas() {
+    let data = await this.rest.obtenerAlianzasPoliticasLocal();
+    this.alianzasPoliticas = data
+  }
+
+  showCard() {
+    this.activaCard = true
+  }
 
   completeCard() {
     this.activaCard = false;
@@ -38,21 +44,10 @@ export class CardPreferenciaElectoralComponent implements OnInit {
         idVotoPartidoPoliticoEstadoMexico: this.idVotoPartidoPoliticoEstadoMexico,
         idAlianzaVotoEstadoMexico: this.idAlianzaVotoEstadoMexico,
         idVotoPartidoPoliticoPais: this.idVotoPartidoPoliticoPais,
-        idAlianzaVotoPais: this.idAlianzaVotoPais,
         idVotoPartidoPoliticoMunicipio: this.idVotoPartidoPoliticoMunicipio,
         idAlianzaVotoMunicipio: this.idAlianzaVotoMunicipio,
-        idPartidoPiensaGanariaEstadoMexico: this.idPartidoPiensaGanariaEstadoMexico,
-        idAlianzaPiensaGanariaEstadoMexico: this.idAlianzaPiensaGanariaEstadoMexico,
-        idPartidoPiensaGanariaPais: this.idPartidoPiensaGanariaPais,
-        idAlianzaPiensaGanariaPais: this.idAlianzaPiensaGanariaPais,
-        idPartidoPiensaGanariaMunicipio: this.idPartidoPiensaGanariaMunicipio,
-        idAlianzaPiensaGanariaMunicipio: this.idAlianzaPiensaGanariaMunicipio
       }
     )
-  }
-
-  showCard() {
-    this.activaCard = true;
   }
 
 }

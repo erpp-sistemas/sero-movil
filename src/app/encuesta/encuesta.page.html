@@ -1,13 +1,14 @@
 <ion-content color="medium">
 
-  <app-card-nivel-conocimiento (sendData)=" dataNivelConocimiento = $event "></app-card-nivel-conocimiento>
-  <app-card-aprobacion-autoridades (sendDataAprobacion)="dataAprobacionAutoridades = $event"></app-card-aprobacion-autoridades>
-  <app-card-preferencia-electoral (sendDataPreferenciaElectoral)="dataPreferenciaElectoral = $event"></app-card-preferencia-electoral>
+  <!-- <app-card-nivel-conocimiento (sendData)=" dataNivelConocimiento = $event "></app-card-nivel-conocimiento> -->
+  <!-- <app-card-aprobacion-autoridades (sendDataAprobacion)="dataAprobacionAutoridades = $event"></app-card-aprobacion-autoridades> -->
+  <app-card-preferencia-electoral
+    (sendDataPreferenciaElectoral)="dataPreferenciaElectoral = $event"></app-card-preferencia-electoral>
 
-  <ion-grid *ngIf="dataNivelConocimiento !== null && dataAprobacionAutoridades !== null && dataPreferenciaElectoral !== null" >
+  <ion-grid *ngIf="dataPreferenciaElectoral !== null">
     <ion-row>
       <ion-col size=12 class="ion-text-center">
-        <ion-button shape="round" color="success" expand="block" (click)="verify()">Terminar</ion-button>
+        <ion-button shape="round" color="success" expand="block" (click)="verify()">Terminar encuesta</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

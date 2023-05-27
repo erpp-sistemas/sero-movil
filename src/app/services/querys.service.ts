@@ -37,12 +37,16 @@ export class QuerysService {
 
     let tableRecorrido =  `CREATE TABLE IF NOT EXISTS recorrido (id INTEGER PRIMARY KEY AUTOINCREMENT, latitud TEXT, longitud TEXT, idAspUser TEXT, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
 
-    let tableEncuesta =  `CREATE TABLE IF NOT EXISTS encuesta (id INTEGER PRIMARY KEY AUTOINCREMENT, idPlaza INTEGER, account TEXT, idAlianzaPiensaGanariaEstadoMexico INTEGER, idAlianzaPiensaGanariaMunicipio TEXT, idAlianzaPiensaGanariaPais TEXT, idAlianzaVotoEstadoMexico TEXT, idAlianzaVotoMunicipio TEXT, idAlianzaVotoPais TEXT, idEleccionesEstado TEXT, idPartidoPiensaGanariaEstadoMexico TEXT, idPartidoPiensaGanariaMunicipio TEXT, idPartidoPiensaGanariaPais TEXT, idPartidoPoliticoGobernadorEstado TEXT, idPartidoPoliticoPresidenteMexico TEXT, idPartidoPoliticoPresidenteMunicipal TEXT, idPrincipalProblemaEstado TEXT, idPrincipalProblemaMunicipio TEXT, idPrincipalProblemaPais TEXT, idVotoPartidoPoliticoEstadoMexico TEXT, idVotoPartidoPoliticoMunicipio TEXT, idVotoPartidoPoliticoPais TEXT, conocePresidenteMunicipal TEXT, conoceGobernadorEstado TEXT, conocePresidenteMexico TEXT, nombreCandidatoMorenaEstadoMexico TEXT, nombreCandidatoPanEstadoMexico TEXT, nombreCandidatoPrdEstadoMexico TEXT, nombreCandidatoPriEstadoMexico TEXT, nombreGobernadorEstado TEXT, nombrePresidenteMexico TEXT, nombrePresidenteMunicipal TEXT, resultadoAprobacionGobernadorEstado TEXT, resultadoAprobacionPresidenteMexico TEXT, resultadoAprobacionPresidenteMunicipal TEXT, resultadoEconomicoGobernadorEstado TEXT, resultadoEconomicoPresidenteMexico TEXT, resultadoEconomicoPresidenteMunicipal TEXT, resultadoGobernadorEstado TEXT, resultadoInseguridadGobernadorEstado TEXT, resultadoInseguridadPresidenteMexico TEXT, resultadoInseguridadPresidenteMunicipal TEXT, resultadoNombreCandidatoMorenaEstadoMexico TEXT, resultadoNombreCandidatoPanEstadoMexico TEXT, resultadoNombreCandidatoPrdEstadoMexico TEXT, resultadoNombreCandidatoPriEstadoMexico TEXT, resultadoNombrePresidenteMexico TEXT, resultadoNombrePresidenteMunicipal TEXT, idServicioPlaza INTEGER, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
+    let tableEncuesta =  `CREATE TABLE IF NOT EXISTS encuesta (id INTEGER PRIMARY KEY AUTOINCREMENT, idPlaza INTEGER, account TEXT, idAlianzaVotoEstadoMexico TEXT, idAlianzaVotoMunicipio TEXT, idVotoPartidoPoliticoEstadoMexico TEXT, idVotoPartidoPoliticoMunicipio TEXT, idVotoPartidoPoliticoPais TEXT, idServicioPlaza INTEGER, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
 
     /**
      * Esta tabla es para guardar los procesos de gestion ejemplo carta invitacion, ejecucion fiscal y demas
      */
     let tableProcesoGestion = `CREATE TABLE IF NOT EXISTS proceso (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, id_proceso INTEGER, nombre_proceso TEXT, activo INTEGER, imagen TEXT, url_aplicacion_movil TEXT )`
+
+    let tableCatalogoPartidos = `CREATE TABLE IF NOT EXISTS cat_partidos_politicos (id INTEGER PRIMARY KEY AUTOINCREMENT, id_partido_politico INTEGER, nombre_partido_politico TEXT)`
+
+    let tableCatalogoAlianzas = `CREATE TABLE IF NOT EXISTS cat_alianzas_politicas (id INTEGER PRIMARY KEY AUTOINCREMENT, id_alianza_politica INTEGER, nombre_alianza_politica TEXT)`
 
     let tables = {
       tableSero,
@@ -60,7 +64,9 @@ export class QuerysService {
       tableRecorrido,
       tableEncuesta,
       tableProcesoGestion,
-      tableCortes
+      tableCortes,
+      tableCatalogoPartidos,
+      tableCatalogoAlianzas
     }
 
     return tables;

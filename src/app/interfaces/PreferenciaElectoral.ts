@@ -12,3 +12,11 @@ export interface DataPreferenciaElectoral {
     idPartidoPiensaGanariaMunicipio: string;
     idAlianzaPiensaGanariaMunicipio: string;
 }
+
+export interface DataPreferenciaElectoralDos {
+    idVotoPartidoPoliticoEstadoMexico: string;
+    idAlianzaVotoEstadoMexico: string;
+    idVotoPartidoPoliticoPais: string;
+    idVotoPartidoPoliticoMunicipio: string;
+    idAlianzaVotoMunicipio: string;  
+}
