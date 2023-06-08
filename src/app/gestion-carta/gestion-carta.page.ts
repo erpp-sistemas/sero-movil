@@ -291,7 +291,6 @@ export class GestionCartaPage implements OnInit {
 
     let options: CameraOptions = {
       quality: 40,
-      //saveToPhotoAlbum: true,
       correctOrientation: true,
       destinationType: this.camera.DestinationType.FILE_URI,
       sourceType: this.camera.PictureSourceType.CAMERA,

@@ -51,7 +51,7 @@ export class ChecadorPage implements OnInit {
     private rest: RestService,
     private faceSdk: FaceSDK,
     private userService: UsersService,
-    private message: MessagesService
+    private message: MessagesService,
   ) { }
 
   async ngOnInit() {
@@ -67,6 +67,8 @@ export class ChecadorPage implements OnInit {
       }
     })
     this.idAspUser = await this.storage.get('IdAspUser');
+    this.nombre = await this.storage.get('Nombre');
+    this.email = await this.storage.get('Email');
   }
 
 
@@ -157,7 +159,6 @@ export class ChecadorPage implements OnInit {
         this.getUrlUser().then(message => {
 
           this.matchFaces().then((data: any) => {
-            console.log(data)
             if (data.estatus === 'passed') {
               this.checar(tipo)
             } else {
@@ -184,16 +185,30 @@ export class ChecadorPage implements OnInit {
   }
 
   checar(tipo: any) {
-    this.message.showAlert("Success")
-    //     var dateDay = new Date().toISOString();
-    //     let date: Date = new Date(dateDay);
-    //     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+    let fecha = ionicDate.toISOString();
 
-    //     let fecha = ionicDate.toISOString();
+    this.userService.uploadPhotoUser(imageSelfie.bitmap, this.email, fecha).then((response: any) => {
+      //console.log(response)
+      if (response.estatus) {
+        let url_photo = response.urlPhoto
+        // https://fotos-sero-movil.s3.amazonaws.com/antonio.ticante%40ser0.mx-2023-06-08T14%3A31%3A10?AWSAccessKeyId=AKIA5NSDPBH32ZG3HSMX&Expires=1986256271&Signature=FQxQaqyjRkP0myJoX%2Br2NoFJq9c%3D
+        let a = url_photo.split("&");
+        let b = a[0];
+        let b1 = b.split(":");
+        let b2 = b1[0];
+        let b3 = b1[1];
+        let c = a[1];
+        let d = a[2];
+        
+        //let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + 
+        let parametros = `${tipo}, ${this.idAspUser}, '${fecha}', ${this.latitud}, ${this.longitud}, '${b2}', '${b3}', '${c}', '${d}' `
+        this.registerBD(parametros)
+      }
+    })
 
-    //     let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
-
-    //     this.registerBD(parametros)
   }
 
   registerBD(parameters: string) {
@@ -235,7 +250,6 @@ export class ChecadorPage implements OnInit {
   liveness() {
     this.faceSdk.startLiveness().then(livenessResponse => {
       const response = LivenessResponse.fromJson(JSON.parse(livenessResponse));
-      console.log(response);
       imageSelfie.bitmap = response.bitmap;
       imageSelfie.imageType = Enum.ImageType.LIVE
     })
@@ -293,7 +307,11 @@ export class ChecadorPage implements OnInit {
 
       await this.loading.present()
 
-      this.userService.getUrlFoto(this.idAspUser).subscribe((response: Blob) => {
+      let img = await this.rest.obtenerFotoUserSQL();
+      let url = img[0].foto;
+      url = 'https://scontent.fmex28-1.fna.fbcdn.net/v/t1.18169-9/21743117_1812963972077655_9068768826820206722_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=174925&_nc_ohc=WAOqPX7YOIgAX8zrNz8&_nc_ht=scontent.fmex28-1.fna&oh=00_AfDlppjmgxjawwl_CMxIAVQwlZq5ErZW-qHjUFW1egLAIg&oe=64A999D0'
+
+      this.userService.getUrlFoto(url).subscribe((response: Blob) => {
         const reader = new FileReader()
         reader.onload = () => {
           const imageBase64 = reader.result
@@ -368,3 +386,9 @@ export class ChecadorPage implements OnInit {
   }
 
 }
+
+
+
+
+
+
