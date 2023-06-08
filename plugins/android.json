@@ -106,6 +106,12 @@
     },
     "cordova-plugin-network-information": {
       "PACKAGE_NAME": "io.ser0.mx"
+    },
+    "cordova-plugin-face-api": {
+      "PACKAGE_NAME": "io.ser0.mx"
+    },
+    "cordova-plugin-face-core": {
+      "PACKAGE_NAME": "io.ser0.mx"
     }
   },
   "dependent_plugins": {

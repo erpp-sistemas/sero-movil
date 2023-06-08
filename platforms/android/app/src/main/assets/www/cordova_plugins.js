@@ -656,12 +656,11 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
       ]
     },
     {
-      "id": "cordova-plugin-background-mode.BackgroundMode",
-      "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
-      "pluginId": "cordova-plugin-background-mode",
+      "id": "cordova-plugin-face-api.FaceApi",
+      "file": "plugins/cordova-plugin-face-api/www/FaceApi.js",
+      "pluginId": "cordova-plugin-face-api",
       "clobbers": [
-        "cordova.plugins.backgroundMode",
-        "plugin.backgroundMode"
+        "FaceSDK"
       ]
     }
   ];
@@ -696,6 +695,7 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
     "onesignal-cordova-plugin": "2.9.1",
     "phonegap-plugin-barcodescanner": "8.1.0",
     "cordova-plugin-network-information": "3.0.0",
-    "cordova-plugin-background-mode": "0.7.3"
+    "cordova-plugin-face-api": "5.1.7",
+    "cordova-plugin-face-core": "5.1.1"
   };
 });

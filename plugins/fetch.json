@@ -240,5 +240,21 @@
     },
     "is_top_level": true,
     "variables": {}
+  },
+  "cordova-plugin-face-api": {
+    "source": {
+      "type": "registry",
+      "id": "@regulaforensics/cordova-plugin-face-api"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-face-core": {
+    "source": {
+      "type": "registry",
+      "id": "@regulaforensics/cordova-plugin-face-core"
+    },
+    "is_top_level": true,
+    "variables": {}
   }
 }

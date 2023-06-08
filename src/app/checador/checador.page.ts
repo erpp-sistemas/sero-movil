@@ -8,7 +8,17 @@ import { AlertController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
 import { MarkerIcon } from '@ionic-native/google-maps/ngx';
 
+import { Enum, FaceCaptureResponse, FaceSDK, LivenessResponse, MatchFacesImage, MatchFacesRequest, MatchFacesResponse, MatchFacesSimilarityThresholdSplit } from '@regulaforensics/ionic-native-face-api/ngx'
+
+import { UsersService } from '../services/users.service'
+import { MessagesService } from '../services/messages.service';
+
+
 declare var google;
+
+// faceapi
+var imageSelfie = new MatchFacesImage();
+var imageSero = new MatchFacesImage();
 
 @Component({
   selector: 'app-checador',
@@ -39,11 +49,23 @@ export class ChecadorPage implements OnInit {
     private platform: Platform,
     private storage: Storage,
     private rest: RestService,
+    private faceSdk: FaceSDK,
+    private userService: UsersService,
+    private message: MessagesService
   ) { }
 
   async ngOnInit() {
     await this.platform.ready();
     await this.loadMap();
+    this.faceSdk.init().then(json => {
+      var response = JSON.stringify(json)
+      if (response["success"] == false) {
+        console.log("Init false")
+        console.log(json)
+      } else {
+        console.log("Init complete")
+      }
+    })
     this.idAspUser = await this.storage.get('IdAspUser');
   }
 
@@ -122,73 +144,67 @@ export class ChecadorPage implements OnInit {
     toast.present();
   }
 
-  async checarEntrada() {
+  async validar(tipo: any) {
 
     if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
       alert("La ubicación no esta disponible")
     } else {
 
-      this.loading = await this.loadingCtrl.create({
-        message: 'Registrando entrada',
-        spinner: 'dots'
-      });
+      this.presentFace().then(async message => {
 
-      await this.loading.present();
+        this.message.showToast(message)
 
-      let tipo = 1
-      //console.log(this.latitud, this.longitud)
-      var dateDay = new Date().toISOString();
-      let date: Date = new Date(dateDay);
-      let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+        this.getUrlUser().then(message => {
+
+          this.matchFaces().then((data: any) => {
+            console.log(data)
+            if (data.estatus === 'passed') {
+              this.checar(tipo)
+            } else {
+              this.message.showAlert("Error!!!! -- No coinciden los biométricos")
+            }
+          }).catch(error => {
+            console.log(error)
+            this.message.showToast("Error al analizar los biométricos")
+          })
+
+        }).catch(error => {
+          console.log(error)
+          this.message.showToast("Error al obtener la imagen Ser0")
+        })
 
 
-      let fecha = ionicDate.toISOString();
-
-      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
-
-      this.rest.registroChecador(parametros).then(res => {
-        this.loading.dismiss();
-        alert(res[0].mensaje)
-        //console.log(res)
+      }).catch(error => {
+        console.log(error)
+        this.message.showToast("Error al capturar los biométricos, intentalo de nuevo ")
       })
+
     }
 
   }
 
-  async checarSalida() {
+  checar(tipo: any) {
+    this.message.showAlert("Success")
+    //     var dateDay = new Date().toISOString();
+    //     let date: Date = new Date(dateDay);
+    //     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
 
-    if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
-      alert("La ubicación no esta disponible")
-    } else {
+    //     let fecha = ionicDate.toISOString();
 
-      this.loading = await this.loadingCtrl.create({
-        message: 'Registrando salida',
-        spinner: 'dots'
-      });
+    //     let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
 
-      await this.loading.present();
-
-      let tipo = 2
-      //console.log(this.latitud, this.longitud)
-      var dateDay = new Date().toISOString();
-      let date: Date = new Date(dateDay);
-      let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
-
-
-      let fecha = ionicDate.toISOString();
-
-      let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud
-
-      this.rest.registroChecador(parametros).then(res => {
-        this.loading.dismiss();
-        alert(res[0].mensaje)
-        //console.log(res)
-      })
-    }
-
+    //     this.registerBD(parametros)
   }
 
-  async confirmarRegistroEntrada() {
+  registerBD(parameters: string) {
+    this.rest.registroChecador(parameters).then(res => {
+      this.loading.dismiss();
+      alert(res[0].mensaje)
+    })
+  }
+
+  async confirmar(tipo: any) {
+    let tipoRegister = tipo == 1 ? 'entrada' : 'salida'
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
@@ -196,17 +212,17 @@ export class ChecadorPage implements OnInit {
     let fecha = ionicDate.toISOString();
     const alert = await this.alertController.create({
       header: 'Confirmar!',
-      message: 'Registrar <strong>entrada:</strong><br><strong>' + fecha + '</strong>',
+      message: 'Registrar <strong>' + tipoRegister + ':</strong><br><strong>' + fecha + '</strong>',
       buttons: [
         {
           text: 'Cancelar',
           role: 'cancel',
           cssClass: 'secondary',
-          handler: (blah) => {}
+          handler: (blah) => { }
         }, {
           text: 'Aceptar',
           handler: () => {
-            this.checarEntrada();
+            this.validar(tipo)
           }
         }
       ]
@@ -215,32 +231,104 @@ export class ChecadorPage implements OnInit {
     await alert.present();
   }
 
-  async confirmarRegistroSalida() {
-    var dateDay = new Date().toISOString();
-    let date: Date = new Date(dateDay);
-    let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
 
-    let fecha = ionicDate.toISOString();
-    const alert = await this.alertController.create({
-      header: 'Confirmar!',
-      message: 'Registrar <strong>salida:</strong><br><strong>' + fecha + '</strong>',
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: (blah) => {}
-        }, {
-          text: 'Aceptar',
-          handler: () => {
-            this.checarSalida();
-          
+  liveness() {
+    this.faceSdk.startLiveness().then(livenessResponse => {
+      const response = LivenessResponse.fromJson(JSON.parse(livenessResponse));
+      console.log(response);
+      imageSelfie.bitmap = response.bitmap;
+      imageSelfie.imageType = Enum.ImageType.LIVE
+    })
+  }
+
+  presentFace() {
+    return new Promise<string>((resolve, reject) => {
+      this.faceSdk.presentFaceCaptureActivity().then(result => {
+        this.setImage(FaceCaptureResponse.fromJson(JSON.parse(result)).image.bitmap, Enum.ImageType.LIVE)
+        resolve("Biometricos capturados")
+      }).catch(error => {
+        console.log(error)
+        reject(error)
+      })
+    })
+  }
+
+  matchFaces() {
+    return new Promise(async (resolve, reject) => {
+      this.loading = await this.loadingCtrl.create({
+        message: 'Analizando biométricos',
+        spinner: 'dots'
+      })
+      await this.loading.present();
+
+      const request = new MatchFacesRequest();
+      request.images = [imageSelfie, imageSero];
+      this.faceSdk.matchFaces(JSON.stringify(request)).then(matchFacesResponse => {
+        const response = MatchFacesResponse.fromJson(JSON.parse(matchFacesResponse));
+        this.faceSdk.matchFacesSimilarityThresholdSplit(JSON.stringify(response.results), 0.75).then(splitResponse => {
+          const split = MatchFacesSimilarityThresholdSplit.fromJson(JSON.parse(splitResponse))
+          if (split.matchedFaces.length > 0) {
+            this.loading.dismiss()
+            resolve({ "estatus": "passed", "similarity": (split.matchedFaces[0].similarity * 100) })
+          } else {
+            this.loading.dismiss()
+            resolve({ "estatus": "not_passed", "similarity": 0 })
           }
-        }
-      ]
-    });
+        }, e => {
+          this.loading.dismiss()
+          console.log(e)
+          reject(e)
+        });
+      })
+    })
+  }
 
-    await alert.present();
+  getUrlUser() {
+    return new Promise(async (resolve, reject) => {
+
+      this.loading = await this.loadingCtrl.create({
+        message: 'Obteniendo foto Ser0',
+        spinner: 'dots'
+      })
+
+      await this.loading.present()
+
+      this.userService.getUrlFoto(this.idAspUser).subscribe((response: Blob) => {
+        const reader = new FileReader()
+        reader.onload = () => {
+          const imageBase64 = reader.result
+          this.setImageSero(imageBase64.toString(), Enum.ImageType.PRINTED)
+        }
+        if (response) {
+          reader.readAsDataURL(response)
+          this.loading.dismiss()
+          resolve("Imagen ser0 cargada")
+        }
+      }, err => {
+        console.log(err)
+        reject(err)
+      })
+    })
+  }
+
+  setImage(base64: string, type: number) {
+    if (base64 === null) {
+      console.log("No se pudieron tomar las facciones")
+    } else {
+      imageSelfie.bitmap = base64
+      imageSelfie.imageType = type
+    }
+  }
+
+  setImageSero(base64: string, type: number) {
+    let imgBase64 = base64.substring(23)
+    //console.log(imgBase64)
+    if (base64 === null) {
+      console.log("No se pudieron tomar las facciones")
+    } else {
+      imageSero.bitmap = imgBase64
+      imageSero.imageType = type
+    }
   }
 
 
@@ -259,6 +347,7 @@ export class ChecadorPage implements OnInit {
     }, 1000);
 
   }
+
 
   navegar(tipo) {
     if (tipo == 1) {

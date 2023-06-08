@@ -148,6 +148,8 @@ apply from: "../cordova-plugin-googlemaps/mx-tbxml-android.gradle"
 apply from: "../cordova-plugin-googlemaps/mx-pgm-custom.gradle"
 apply from: "../onesignal-cordova-plugin/mx-build-extras-onesignal.gradle"
 apply from: "../phonegap-plugin-barcodescanner/mx-barcodescanner.gradle"
+apply from: "../cordova-plugin-face-api/mx-build.gradle"
+apply from: "../cordova-plugin-face-core/mx-build.gradle"
 // PLUGIN GRADLE EXTENSIONS END
 
 def hasBuildExtras1 = file('build-extras.gradle').exists()

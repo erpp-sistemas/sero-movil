@@ -84,6 +84,8 @@ import { OneSignal } from '@awesome-cordova-plugins/onesignal/ngx';
 // Network
 import { Network } from '@awesome-cordova-plugins/network/ngx';
 
+// face api
+import { FaceSDK } from '@regulaforensics/ionic-native-face-api/ngx'
 
 
 @NgModule({
@@ -125,6 +127,7 @@ import { Network } from '@awesome-cordova-plugins/network/ngx';
     AppVersion,
     OneSignal,
     Network,
+    FaceSDK,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

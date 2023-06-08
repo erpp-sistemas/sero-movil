@@ -189,6 +189,10 @@
             {
               "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
               "count": 1
+            },
+            {
+              "xml": "<feature name=\"FaceApi\"><param name=\"android-package\" value=\"cordova.plugin.faceapi.FaceApi\" /></feature>",
+              "count": 1
             }
           ]
         }
@@ -471,7 +475,7 @@
               "count": 1
             },
             {
-              "xml": "<preference name=\"android-minSdkVersion\" value=\"19\" />",
+              "xml": "<preference name=\"android-minSdkVersion\" value=\"21\" />",
               "count": 1
             },
             {
@@ -605,6 +609,12 @@
       "PACKAGE_NAME": "io.ser0.mx"
     },
     "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "io.ser0.mx"
+    },
+    "cordova-plugin-face-api": {
+      "PACKAGE_NAME": "io.ser0.mx"
+    },
+    "cordova-plugin-face-core": {
       "PACKAGE_NAME": "io.ser0.mx"
     }
   },
@@ -1264,6 +1274,14 @@
       "clobbers": [
         "Connection"
       ]
+    },
+    {
+      "id": "cordova-plugin-face-api.FaceApi",
+      "file": "plugins/cordova-plugin-face-api/www/FaceApi.js",
+      "pluginId": "cordova-plugin-face-api",
+      "clobbers": [
+        "FaceSDK"
+      ]
     }
   ],
   "plugin_metadata": {
@@ -1296,6 +1314,8 @@
     "mx.ferreyra.callnumber": "0.0.2",
     "onesignal-cordova-plugin": "2.9.1",
     "phonegap-plugin-barcodescanner": "8.1.0",
-    "cordova-plugin-network-information": "3.0.0"
+    "cordova-plugin-network-information": "3.0.0",
+    "cordova-plugin-face-api": "5.1.7",
+    "cordova-plugin-face-core": "5.1.1"
   }
 }
