@@ -309,7 +309,7 @@ export class ChecadorPage implements OnInit {
 
       let img = await this.rest.obtenerFotoUserSQL();
       let url = img[0].foto;
-      url = 'https://scontent.fmex28-1.fna.fbcdn.net/v/t1.18169-9/21743117_1812963972077655_9068768826820206722_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=174925&_nc_ohc=WAOqPX7YOIgAX8zrNz8&_nc_ht=scontent.fmex28-1.fna&oh=00_AfDlppjmgxjawwl_CMxIAVQwlZq5ErZW-qHjUFW1egLAIg&oe=64A999D0'
+      //url = 'https://scontent.fmex28-1.fna.fbcdn.net/v/t1.18169-9/21743117_1812963972077655_9068768826820206722_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=174925&_nc_ohc=WAOqPX7YOIgAX8zrNz8&_nc_ht=scontent.fmex28-1.fna&oh=00_AfDlppjmgxjawwl_CMxIAVQwlZq5ErZW-qHjUFW1egLAIg&oe=64A999D0'
 
       this.userService.getUrlFoto(url).subscribe((response: Blob) => {
         const reader = new FileReader()
