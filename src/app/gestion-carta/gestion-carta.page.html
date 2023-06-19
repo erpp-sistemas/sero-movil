@@ -101,7 +101,7 @@
               <h4> --- Error: Motivo de no pago requerido --- </h4>
             </ion-text>
             <p>
-              <ion-select class="myCustomSelect" interface="popover" placeholder="Selecciona uno"
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
                 [(ngModel)]="idMotivoNoPago" (ionChange)="resultMotivoNoPago( $event )">
                 <ion-select-option value="1">No quiero pagar</ion-select-option>
                 <ion-select-option value="2">No tengo dinero</ion-select-option>
