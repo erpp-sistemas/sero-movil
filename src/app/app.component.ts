@@ -9,6 +9,9 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import { PushService } from './services/push.service';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
 import { Storage } from '@ionic/storage';
+//import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
+import { Geolocation } from "@ionic-native/geolocation/ngx";
+import { BatteryStatus } from '@awesome-cordova-plugins/battery-status/ngx';
 
 
 @Component({
@@ -23,6 +26,10 @@ export class AppComponent {
   router: any;
   intervalTracking: any;
 
+  geoPosicion: any = {};
+  battery: any = null
+  porcentaje: number = 0
+
   constructor(
     private query: QuerysService,
     private platform: Platform,
@@ -34,6 +41,7 @@ export class AppComponent {
     private push: PushService,
     private backgroundGeolocation: BackgroundGeolocation,
     private storage: Storage,
+    private batteryStatus: BatteryStatus
   ) {
     this.initializeApp();
   }
@@ -47,6 +55,13 @@ export class AppComponent {
       this.getPermission();
       this.backGroundGeolocation();
       this.push.configuracionInicial();
+      this.battery = this.batteryStatus.onChange().subscribe(status => {
+        this.porcentaje = status.level
+        this.sendPorcentajePila()
+      });
+      // this.backGroundMode.enable();
+      // this.backGroundMode.disableBatteryOptimizations()
+      // this.backGroundMode.disableWebViewOptimizations()
     })
   }
 
@@ -96,10 +111,10 @@ export class AppComponent {
   backGroundGeolocation() {
 
     const config: BackgroundGeolocationConfig = {
-      desiredAccuracy: 10,
-      stationaryRadius: 10,
+      desiredAccuracy: 3,
+      stationaryRadius: 3,
       distanceFilter: 1,
-      interval: 20000, //300000
+      interval: 10000, //300000
       fastestInterval: 5000,
       notificationTitle: 'Ser0 Móvil',
       notificationText: 'Activado',
@@ -121,20 +136,20 @@ export class AppComponent {
     this.backgroundGeolocation.start();
     // If you wish to turn OFF background-tracking, call the #stop method.
     this.backgroundGeolocation.stop();
+
   }
 
-  async saveLocation(location) {
-    console.log("Enviando posiciones");
+
+  async saveLocation(location: any) {
     let lat = location.latitude;
     let lng = location.longitude
+    // console.log(lat)
+    // console.log(lng)
     let idAspuser = await this.storage.get('IdAspUser')
     //let idPlaza = await this.storage.get('IdPlaza')
     if (idAspuser == null || idAspuser == undefined) {
     } else {
       //console.log(idAspuser, 'el idaspuser del recorrido')
-
-      //console.log('Sesion activa')
-
       var dateDay = new Date().toISOString();
       let date: Date = new Date(dateDay);
       let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
@@ -145,6 +160,21 @@ export class AppComponent {
 
     }
 
+  }
+
+  async sendPorcentajePila() {
+    var dateDay = new Date().toISOString();
+    let date: Date = new Date(dateDay);
+    let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+    let fecha = ionicDate.toISOString();
+    let idAspuser = await this.storage.get('IdAspUser')
+    
+    this.rest.registerPorcentajePila(idAspuser, this.porcentaje, fecha).then(message => {
+      console.log(message)
+    }).catch(error => {
+      console.log("No se pudo insertar el porcentaje de la pila")
+    })
+    
   }
 
 

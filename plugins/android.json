@@ -112,6 +112,9 @@
     },
     "cordova-plugin-face-core": {
       "PACKAGE_NAME": "io.ser0.mx"
+    },
+    "cordova-plugin-battery-status": {
+      "PACKAGE_NAME": "io.ser0.mx"
     }
   },
   "dependent_plugins": {

@@ -87,6 +87,11 @@ import { Network } from '@awesome-cordova-plugins/network/ngx';
 // face api
 import { FaceSDK } from '@regulaforensics/ionic-native-face-api/ngx'
 
+//import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
+
+// battery status
+import { BatteryStatus } from '@awesome-cordova-plugins/battery-status/ngx';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -128,6 +133,8 @@ import { FaceSDK } from '@regulaforensics/ionic-native-face-api/ngx'
     OneSignal,
     Network,
     FaceSDK,
+    BatteryStatus,
+    //BackgroundMode,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

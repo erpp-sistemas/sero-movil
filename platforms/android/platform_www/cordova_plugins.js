@@ -662,6 +662,14 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
       "clobbers": [
         "FaceSDK"
       ]
+    },
+    {
+      "id": "cordova-plugin-battery-status.battery",
+      "file": "plugins/cordova-plugin-battery-status/www/battery.js",
+      "pluginId": "cordova-plugin-battery-status",
+      "clobbers": [
+        "navigator.battery"
+      ]
     }
   ];
   module.exports.metadata = {
@@ -696,6 +704,7 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
     "phonegap-plugin-barcodescanner": "8.1.0",
     "cordova-plugin-network-information": "3.0.0",
     "cordova-plugin-face-api": "5.1.7",
-    "cordova-plugin-face-core": "5.1.1"
+    "cordova-plugin-face-core": "5.1.1",
+    "cordova-plugin-battery-status": "2.0.3"
   };
 });

@@ -9,7 +9,7 @@
         "parents": {
           "/manifest/application": [
             {
-              "xml": "<application android:networkSecurityConfig=\"@xml/network_security_config\" />",
+              "xml": "<application android:usesCleartextTraffic=\"true\" />",
               "count": 2,
               "mode": "merge",
               "id": "config.xml",
@@ -23,7 +23,7 @@
               }
             },
             {
-              "xml": "<application android:usesCleartextTraffic=\"true\" />",
+              "xml": "<application android:networkSecurityConfig=\"@xml/network_security_config\" />",
               "count": 1,
               "mode": "merge",
               "id": "config.xml",
@@ -192,6 +192,10 @@
             },
             {
               "xml": "<feature name=\"FaceApi\"><param name=\"android-package\" value=\"cordova.plugin.faceapi.FaceApi\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"Battery\"><param name=\"android-package\" value=\"org.apache.cordova.batterystatus.BatteryListener\" /></feature>",
               "count": 1
             }
           ]
@@ -615,6 +619,9 @@
       "PACKAGE_NAME": "io.ser0.mx"
     },
     "cordova-plugin-face-core": {
+      "PACKAGE_NAME": "io.ser0.mx"
+    },
+    "cordova-plugin-battery-status": {
       "PACKAGE_NAME": "io.ser0.mx"
     }
   },
@@ -1282,6 +1289,14 @@
       "clobbers": [
         "FaceSDK"
       ]
+    },
+    {
+      "id": "cordova-plugin-battery-status.battery",
+      "file": "plugins/cordova-plugin-battery-status/www/battery.js",
+      "pluginId": "cordova-plugin-battery-status",
+      "clobbers": [
+        "navigator.battery"
+      ]
     }
   ],
   "plugin_metadata": {
@@ -1316,6 +1331,7 @@
     "phonegap-plugin-barcodescanner": "8.1.0",
     "cordova-plugin-network-information": "3.0.0",
     "cordova-plugin-face-api": "5.1.7",
-    "cordova-plugin-face-core": "5.1.1"
+    "cordova-plugin-face-core": "5.1.1",
+    "cordova-plugin-battery-status": "2.0.3"
   }
 }

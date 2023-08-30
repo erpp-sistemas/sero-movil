@@ -454,6 +454,31 @@ export class GestionCartaPage implements OnInit {
       });
   }
 
+  async messageTerminarGestion() {
+    const mensaje = await this.alertCtrl.create({
+      header: "Mensaje",
+      subHeader: "Recuerda que las fotos deben de estar correctas, de lo contrario es posible que la gestión no sea válida",
+      buttons: [
+        {
+          text: "Aceptar",
+          cssClass: "secondary",
+          handler: () => {
+            this.terminar()
+          }
+        },
+        {
+          text: "Regresar",
+          cssClass: "secondary",
+          handler: () => {
+            console.log("Regresar")
+          }
+        }
+      ]
+    });
+    await mensaje.present();
+  }
+
+
   async terminar() {
 
     await this.validarCamposObligatorios();

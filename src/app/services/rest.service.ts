@@ -43,6 +43,7 @@ export class RestService {
   apiObtenerAccionesHistoricas = "https://ser0.mx/seroMovil.aspx?query=sp_get_actions_history";
   apiObtenerPartidosPoliticos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_partidos_politicos";
   apiObtenerAlianzasPoliticas = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_alianzas_politicas";
+  apiRegistroPorcentajePila = "https://ser0.mx/seroMovil.aspx?query=sp_registro_porcentaje_pila";
 
 
 
@@ -3408,6 +3409,23 @@ export class RestService {
       }
     })
   }
+
+
+  async registerPorcentajePila(id_usuario: number, porcentaje: number, fecha: any) {
+    return new Promise((resolve, reject) => {
+      try {
+
+        let url = `${this.apiRegistroPorcentajePila} ${id_usuario}, ${porcentaje}, '${fecha}'`
+        this.http.post(url, null).subscribe(message => {
+          console.log(message)
+          resolve("Insertado el porcentaje de la pila")
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    })
+  }
+
 
 }
 
