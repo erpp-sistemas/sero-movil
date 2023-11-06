@@ -11,6 +11,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 import { EncuestaPage } from '../encuesta/encuesta.page';
 import { ActionsHistoryPage } from '../actions-history/actions-history.page';
+import { LecturaMedidorPage } from '../lectura-medidor/lectura-medidor.page';
 
 
 @Component({
@@ -70,6 +71,7 @@ export class GestionCartaPage implements OnInit {
   otroMotivo: string = '';
 
   encuestaRealizada: boolean = false;
+  tomaLecturaRealizada: boolean = false;
   plazaAgua: boolean;
   mostrarGiro: boolean = false;
 
@@ -937,6 +939,29 @@ export class GestionCartaPage implements OnInit {
 
     if (resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
     console.log(this.encuestaRealizada);
+
+  }
+
+  async openLecturaMedidor() {
+
+    let idPlaza = this.id_plaza;
+
+    const modal = await this.modalController.create({
+      component: LecturaMedidorPage,
+      componentProps: {
+        "account": this.account,
+        "idPlaza": idPlaza,
+        "idServicioPlaza": this.idServicioPlaza
+      }
+    })
+    
+    await modal.present()
+
+    const data = await modal.onDidDismiss();
+
+    console.log(data)
+
+    // si trae el estatus como realizado ponemos en true el tomaLecturaRealizada
 
   }
 

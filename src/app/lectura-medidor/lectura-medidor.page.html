@@ -1,0 +1,308 @@
+<ion-content color="medium">
+
+  <div class="contenedor-icono-proceso" style="text-align: center;">
+    <ion-icon class="icono-proceso" name="color-fill-outline"></ion-icon>
+  </div>
+
+  <div class="contenedor-nombre-proceso">
+    <ion-label>
+      <p>Lectura de medidor</p>
+    </ion-label>
+  </div>
+
+  <ion-card color="medium">
+    <div style="text-align: center;">
+      <ion-chip color="secondary">Información de la gestión a realizar</ion-chip>
+    </div>
+    <ion-card-content>
+
+
+      <ion-item color="medium">
+        <ion-label>
+          <!--  este es solo el id falta traer el nombre -->
+          <p> Acción a realizar: <span style="font-weight: bold;"> Lectura medidor </span> </p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Cuenta a tomar lectura: <span style="font-weight: bold;"> {{account}} </span> </p>
+        </ion-label>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-card color="medium">
+    <ion-card-content>
+
+
+
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>
+            * Anomalía encontrada:
+          </p>
+          <ion-text *ngIf="leyendaAnomalia" color="warning">
+            <h4> --- Error: Anomalía requerida --- </h4>
+          </ion-text>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="id_anomalia" (ionChange)="resultAnomalia($event)">
+              <ion-select-option value="1">Sin anomalía</ion-select-option>
+              <ion-select-option value="2">Casa cerrada</ion-select-option>
+              <ion-select-option value="3">Casa deshabitada</ion-select-option>
+              <ion-select-option value="4">Lectura ilegible</ion-select-option>
+              <ion-select-option value="5">Medidor descompuesto</ion-select-option>
+              <ion-select-option value="6">Medidor invertido</ion-select-option>
+              <ion-select-option value="7">Medidor nuevo</ion-select-option>
+              <ion-select-option value="8">Medidor roto</ion-select-option>
+              <ion-select-option value="9">No capta lectura</ion-select-option>
+              <ion-select-option value="10">Promedio</ion-select-option>
+              <ion-select-option value="11">Se negaron a la toma de lectura</ion-select-option>
+              <ion-select-option value="12">Terreno baldío</ion-select-option>
+              <ion-select-option value="13">Toma restringida</ion-select-option>
+              <ion-select-option value="14">Una mascota no permitio la toma de lectura</ion-select-option>
+              <ion-select-option value="15">Usuario sin medidor</ion-select-option>
+              <ion-select-option value="16">No definido</ion-select-option>
+              <ion-select-option value="17">Medidor desconectado</ion-select-option>
+              <ion-select-option value="18">Vuelta de medidor</ion-select-option>
+              <ion-select-option value="19">Inconsistencia en el medidor</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-label>
+      </ion-item>
+
+      <!-- MOSTRAR EL SIGUIENTE SELECT SI SE ESCOGIO LA OPCION DE MEDIDOR DESCOMPUESTO -->
+      <div *ngIf="activaNoFuncionaMedidor">
+        <ion-item color="medium">
+          <ion-label>
+            <p>
+              Selecciona una opción de la lista
+            </p>
+            <p>
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                [(ngModel)]="idFuncionaMedidor">
+                <ion-select-option value=1>Se detuvieron las manecillas</ion-select-option>
+                <ion-select-option value=2>Las manecillas giran al revés</ion-select-option>
+                <ion-select-option value=3>Las manecillas giran muy rapido</ion-select-option>
+                <ion-select-option value=4>Otra</ion-select-option>
+              </ion-select>
+            </p>
+          </ion-label>
+        </ion-item>
+
+        <div *ngIf="idFuncionaMedidor == 4">
+          <ion-item color="medium">
+            <ion-label>
+              <p>
+                Especifique:
+              </p>
+            </ion-label>
+            <ion-textarea rows="5" [(ngModel)]="otraOpcionNoFuncionaMedidor"></ion-textarea>
+          </ion-item>
+        </div>
+
+      </div>
+
+      <!-- MOSTRAR EL SIGUIENTE SELECT SI SE ESCOGE LA OPCION 19 -->
+      <div *ngIf="activaInconsistenciaMedidor">
+        <ion-item color="medium">
+          <ion-label>
+            <p>
+              Selecciona una opción de la lista
+            </p>
+            <p>
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                [(ngModel)]="idInconsistenciaMedidor">
+                <ion-select-option value=1>El medidor no cuenta con los sellos o candados</ion-select-option>
+                <ion-select-option value=2>El medidor ha sido manipulado</ion-select-option>
+                <ion-select-option value=3>Existe diferencia de diametro en la toma</ion-select-option>
+                <ion-select-option value=4>Existe una derivación antes del medidor</ion-select-option>
+              </ion-select>
+            </p>
+          </ion-label>
+        </ion-item>
+
+      </div>
+
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>Número del medidor: </p>
+        </ion-label>
+        <ion-input type="number" class="myCustomSelect" interface="action-sheet"
+          [(ngModel)]="numero_medidor"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>Marca del medidor: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="action-sheet" [(ngModel)]="marca_medidor"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>Diametro de toma del medidor: </p>
+        </ion-label>
+        <ion-input type="number" class="myCustomSelect" interface="action-sheet"
+          [(ngModel)]="diametro_toma_medidor"></ion-input>
+      </ion-item>
+
+
+
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>Lectura medidor: </p>
+        </ion-label>
+        <ion-input type="number" class="myCustomSelect" interface="action-sheet"
+          [(ngModel)]="lectura_medidor"></ion-input>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="medium">
+    <ion-card-content>
+      <ion-text>
+        <h4>Evidencia</h4>
+      </ion-text>
+      <ion-slides [options]="sliderOpts">
+        <ion-slide *ngFor="let img of imgs">
+          <img src={{img.imagen}} class="imagen">
+          <ion-fab-button padding size="small" (click)="deletePhoto(img.imagen, 2)"
+            *ngIf="img.imagen != 'assets/img/imgs.png'" color="danger">
+            <ion-icon class="icon-trash" name="trash"></ion-icon>
+          </ion-fab-button>
+        </ion-slide>
+      </ion-slides>
+
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-card color="medium">
+    <ion-card-content>
+      <ion-text>
+        <h4>Número y lectura medidor</h4>
+      </ion-text>
+
+      <ion-slides [options]="sliderOpts">
+        <ion-slide *ngFor="let img of imgs_medidor">
+          <img src={{img.imagen}} class="imagen">
+          <ion-fab-button padding size="small" (click)="deletePhoto(img.imagen, 1)"
+            *ngIf="img.imagen != 'assets/img/imgs.png'" color="danger">
+            <ion-icon class="icon-trash" name="trash"></ion-icon>
+          </ion-fab-button>
+        </ion-slide>
+      </ion-slides>
+
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-item color="medium" text-center>
+    <ion-label>
+      <p class="fotos-visita">
+        Fotos de la visita
+      </p>
+
+
+      <ion-grid>
+
+        <ion-row>
+          <ion-col text-center>
+            <ion-button expand="block" color="warning" (click)="takePic(1)">
+              <ion-icon color="dark" name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Fachada predio</ion-label>
+          </ion-col>
+
+          <ion-col text-center>
+            <ion-button expand="block" color="warning" (click)="takePic(2)">
+              <ion-icon color="dark" name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Cuadro toma</ion-label>
+          </ion-col>
+
+        </ion-row>
+
+        <ion-row>
+          <ion-col text-center>
+            <ion-button expand="block" color="warning" (click)="takePic(3)">
+              <ion-icon color="dark" name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Número medidor</ion-label>
+          </ion-col>
+
+          <ion-col text-center>
+            <ion-button expand="block" color="warning" (click)="takePic(4)">
+              <ion-icon color="dark" name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Lectura medidor</ion-label>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col text-center>
+            <ion-button expand="block" color="warning" (click)="takePic(5)">
+              <ion-icon color="dark" name="camera"></ion-icon>
+            </ion-button>
+            <ion-label class="fotos-visita">Estado de medidor</ion-label>
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
+
+    </ion-label>
+  </ion-item>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button shape="round" color="primary" expand="block"
+          (click)="messageTerminarGestion()">Terminar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+  <div *ngIf="!showIonContent" class="fab">
+
+    <div class="leyenda-recuadro">
+      <h3>Posicionar el medidor en el recuadro marcado</h3>
+    </div>
+
+    <img class="imagen-foto" src='assets/img/caratula_medidor.png'>
+
+
+    <ion-grid class="grid-buttons">
+      <ion-row>
+        <ion-col size=6 class="ion-text-center">
+          <ion-button shape="round" color="secondary" expand="block" (click)="takePicture()">
+            <ion-icon color="dark" name="camera-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size=6 class="ion-text-center">
+          <ion-button shape="round" color="danger" expand="block" (click)="closeCamera()">
+            <ion-icon color="dark" name="close-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </div>
+
+
+  <ion-row>
+    <ion-col size=12 class="ion-text-center">
+      <ion-button fill="outline" color="warning" expand="block" (click)="regresar()">Regresar</ion-button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

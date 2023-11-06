@@ -50,7 +50,8 @@
         Fotos históricas
       </ion-button>
 
-      <ion-button fill="outline" class="button-acciones-historicas" color="success" expand="block" (click)="goActions()">
+      <ion-button fill="outline" class="button-acciones-historicas" color="success" expand="block"
+        (click)="goActions()">
         <ion-icon slot="start" name="cube-outline"></ion-icon>
         Acciones históricas
       </ion-button>
@@ -120,7 +121,8 @@
                 <h4> --- Error: Especifica el otro motivo de no pago --- </h4>
               </ion-text>
             </ion-label>
-            <ion-input class="myCustomSelect" interface="popover" (ionChange)="resultOtroMotivoNoPago($event)" [(ngModel)]="otroMotivo"></ion-input>
+            <ion-input class="myCustomSelect" interface="popover" (ionChange)="resultOtroMotivoNoPago($event)"
+              [(ngModel)]="otroMotivo"></ion-input>
           </ion-item>
         </div>
 
@@ -534,30 +536,66 @@
   </ion-item>
 
 
-  <ion-grid *ngIf="!encuestaRealizada">
-    <ion-row>
-      <ion-col size=12 class="ion-text-center">
-        <p>Presiona el botón para abrir la sección de preguntas de la encuesta.</p>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size=12 class="ion-text-center">
-        <ion-button [disabled]="desactivaBotonesCamara" shape="round" color="primary" expand="block"
-          (click)="encuesta()">Abrir encuesta</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-card color="medium">
+    <ion-grid *ngIf="!encuestaRealizada">
+      <ion-row>
+        <ion-col size=12 class="ion-text-center">
+          <p>Presiona el botón para abrir la sección de preguntas de la encuesta.</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size=12 class="ion-text-center">
+          <ion-button class="button-abrir-modal" fill="outline" [disabled]="desactivaBotonesCamara" color="primary" expand="block"
+            (click)="encuesta()">
+            <ion-icon style="margin-right: 7px" name="newspaper-outline"></ion-icon>
+            Abrir encuesta
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-  <div *ngIf="encuestaRealizada" style="text-align: center;">
-    <ion-chip color="success">
-      Encuesta terminada
-    </ion-chip>
-  </div>
+    <div *ngIf="encuestaRealizada" style="text-align: center;">
+      <ion-chip color="success">
+        Encuesta terminada
+      </ion-chip>
+    </div>
+  </ion-card>
+
+  <ion-card color="medium">
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size=12 class="ion-text-center">
+          <p>Presiona el botón para abrir la sección de lecturas de medidor.</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size=12 class="ion-text-center">
+          <ion-button class="button-abrir-modal" fill="outline" color="warning" expand="block"
+            (click)="openLecturaMedidor()">
+            <ion-icon style="margin-right: 7px;" name="ellipsis-horizontal-circle-outline"></ion-icon>
+            Lectura medidor
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div *ngIf="encuestaRealizada" style="text-align: center;">
+      <ion-chip color="success">
+        Lectura medidor terminada
+      </ion-chip>
+    </div>
+
+  </ion-card>
+
+  <hr>
+  <hr>
 
   <ion-grid>
     <ion-row>
       <ion-col size=12 class="ion-text-center">
-        <ion-button shape="round" color="success" expand="block" (click)="messageTerminarGestion()">Terminar</ion-button>
+        <ion-button shape="round" color="success" expand="block"
+          (click)="messageTerminarGestion()">Terminar</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

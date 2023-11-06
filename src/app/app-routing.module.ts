@@ -129,6 +129,10 @@ const routes: Routes = [
   {
     path: 'actions-history',
     loadChildren: () => import('./actions-history/actions-history.module').then( m => m.ActionsHistoryPageModule)
+  },
+  {
+    path: 'lectura-medidor',
+    loadChildren: () => import('./lectura-medidor/lectura-medidor.module').then( m => m.LecturaMedidorPageModule)
   }
 
 
