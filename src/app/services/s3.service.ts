@@ -11,7 +11,7 @@ export class S3Service {
   SYSTEM_VARIABLE_USER = new SystemVariableServiceRecognitive().SYSTEM_PARAMS
 
   upload(image, imageName, accessToken) {
-    console.log("Upload metodo");
+    //console.log("Upload metodo");
     return new Promise((resolve, reject) => {
       aws.config.region = this.SYSTEM_VARIABLE.REGION;
       aws.config.credentials = new aws.CognitoIdentityCredentials({
@@ -49,8 +49,8 @@ export class S3Service {
 
   }
   uploadS3(image, imageName) {
-    console.log("UploadS3");
-    console.log(imageName);
+    // console.log("UploadS3");
+    // console.log(imageName);
     return new Promise((resolve) => {
       let s3 = new aws.S3()
       s3.config.update(awsCredentials)
@@ -78,7 +78,7 @@ export class S3Service {
     });
   }
   getURLPresignaded(imageName) {
-    console.log("GetURLPresignaded");
+    // console.log("GetURLPresignaded");
     let s3 = new aws.S3()
 
     s3.config.update(awsCredentials)
