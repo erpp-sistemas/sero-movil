@@ -107,6 +107,16 @@ export class GestionCartaPage implements OnInit {
   leyendaTipoServicioObligatorio: boolean = false;
   leyendaMotivoNoPago: boolean = false;
   leyendaOtroMotivo: boolean = false;
+  leyendaReferenciaObligatorio: boolean = false;
+  leyendaEntreCalle1Obligatorio: boolean = false;
+  leyendaEntreCalle2Obligatorio: boolean = false
+  leyendaGiroObligatorio: boolean = false;
+  leyendaNumeroNivelesObligatorio: boolean = false;
+  leyendaColorFachadaObligatorio: boolean = false;
+  leyendaColorPuertaObligatorio: boolean = false;
+  leyendaObservacionesObligatorio: boolean = false;
+  leyendaTipoPredioObligatorio: boolean = false;
+  leyendaPersonaAtiendeObligatorio: boolean = false;
 
 
   sliderOpts = {
@@ -485,7 +495,10 @@ export class GestionCartaPage implements OnInit {
 
     await this.validarCamposObligatorios();
 
-    if (this.leyendaEstatusPredio || this.leyendaTipoServicioObligatorio || this.leyendaOtroMotivo || this.takePhotoFachada === false || this.takePhotoEvidencia === false) {
+
+    if (this.leyendaEstatusPredio || this.leyendaTipoServicioObligatorio || this.leyendaOtroMotivo || this.takePhotoFachada === false || this.takePhotoEvidencia === false ||
+      this.leyendaReferenciaObligatorio || this.leyendaEntreCalle1Obligatorio || this.leyendaEntreCalle2Obligatorio || this.leyendaGiroObligatorio || this.leyendaNumeroNivelesObligatorio || this.leyendaColorFachadaObligatorio || this.leyendaColorPuertaObligatorio || this.leyendaObservacionesObligatorio || this.leyendaTipoPredioObligatorio || this.leyendaPersonaAtiendeObligatorio
+    ) {
       this.mensaje.showAlert("Ingresa los campos obligatorios * y toma mínimo una foto de fachada y una foto de evidencia");
       return;
     }
@@ -655,6 +668,46 @@ export class GestionCartaPage implements OnInit {
       this.numeroNiveles = 0;
     }
 
+    if (this.giro.length < 4) {
+      this.leyendaGiroObligatorio = true;
+    }
+
+    if (this.colorFachada.length < 4) {
+      this.leyendaColorFachadaObligatorio = true;
+    }
+
+    if (this.colorPuerta.length < 4) {
+      this.leyendaColorPuertaObligatorio = true;
+    }
+
+    if (this.observaciones.length < 4) {
+      this.leyendaObservacionesObligatorio = true;
+    }
+
+    if (this.numeroNiveles === 0) {
+      this.leyendaNumeroNivelesObligatorio = true;
+    }
+
+    if (this.referencia.length < 4) {
+      this.leyendaReferenciaObligatorio = true;
+    }
+
+    if (this.entreCalle1.length < 4) {
+      this.leyendaEntreCalle1Obligatorio = true;
+    }
+
+    if (this.entreCalle2.length < 4) {
+      this.leyendaEntreCalle2Obligatorio = true;
+    }
+
+    if (this.idTipoPredio === 0) {
+      this.leyendaTipoPredioObligatorio = true
+    }
+
+    if (this.personaAtiende === '') {
+      this.leyendaPersonaAtiendeObligatorio = true
+    }
+
   }
 
   hideLeyendas() {
@@ -662,6 +715,16 @@ export class GestionCartaPage implements OnInit {
     this.leyendaEstatusPredio = false;
     this.leyendaOtroMotivo = false;
     this.leyendaMotivoNoPago = false;
+    this.leyendaGiroObligatorio = false;
+    this.leyendaColorFachadaObligatorio = false;
+    this.leyendaColorPuertaObligatorio = false;
+    this.leyendaObservacionesObligatorio = false;
+    this.leyendaNumeroNivelesObligatorio = false;
+    this.leyendaReferenciaObligatorio = false;
+    this.leyendaEntreCalle1Obligatorio = false;
+    this.leyendaEntreCalle2Obligatorio = false;
+    this.leyendaTipoPredioObligatorio = false;
+
   }
 
 
@@ -734,6 +797,78 @@ export class GestionCartaPage implements OnInit {
       this.mostrarGiro = false;
     }
   }
+
+  resultPersonaAtiende(event: any) {
+    this.leyendaPersonaAtiendeObligatorio = false;
+  }
+
+  resultColorFachada(event: any) {
+    let texto = event.detail.value;
+    if (texto.length > 3) {
+      this.leyendaColorFachadaObligatorio = false
+    } else {
+      this.leyendaColorFachadaObligatorio = true;
+    }
+  }
+
+  resultColorPuerta(event: any) {
+    let texto = event.detail.value;
+    if (texto.length > 3) {
+      this.leyendaColorPuertaObligatorio = false
+    } else {
+      this.leyendaColorPuertaObligatorio = true;
+    }
+  }
+
+  resultReferencia(event: any) {
+    let texto = event.detail.value;
+    if (texto.length > 3) {
+      this.leyendaReferenciaObligatorio = false
+    } else {
+      this.leyendaReferenciaObligatorio = true;
+    }
+  }
+
+  resultEntreCalle1(event: any) {
+    let texto = event.detail.value;
+    if (texto.length > 3) {
+      this.leyendaEntreCalle1Obligatorio = false
+    } else {
+      this.leyendaEntreCalle1Obligatorio = true;
+    }
+  }
+
+  resultEntreCalle2(event: any) {
+    let texto = event.detail.value;
+    if (texto.length > 3) {
+      this.leyendaEntreCalle2Obligatorio = false
+    } else {
+      this.leyendaEntreCalle2Obligatorio = true;
+    }
+  }
+
+  resultObservaciones(event: any) {
+    let texto = event.detail.value;
+    if (texto.length > 3) {
+      this.leyendaObservacionesObligatorio = false
+    } else {
+      this.leyendaObservacionesObligatorio = true;
+    }
+  }
+
+  resultGiro(event: any) {
+    let texto = event.detail.value;
+    if (texto.length > 3) {
+      this.leyendaGiroObligatorio = false
+    } else {
+      this.leyendaGiroObligatorio = true;
+    }
+  }
+
+  resultTipoPredio(event: any) {
+    this.leyendaTipoPredioObligatorio = false
+  }
+
 
   resultMotivoNoPago(event) {
     let motivo = event.detail.value;
@@ -954,7 +1089,7 @@ export class GestionCartaPage implements OnInit {
         "idServicioPlaza": this.idServicioPlaza
       }
     })
-    
+
     await modal.present()
 
     const data = await modal.onDidDismiss();
