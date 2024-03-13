@@ -9,6 +9,8 @@ import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotosHistoryPage } from '../photos-history/photos-history.page';
+import { ChangeTaskPage } from '../change-task/change-task.page';
+
 
 @Component({
   selector: 'app-gestion-legal',
@@ -75,10 +77,15 @@ export class GestionLegalPage implements OnInit {
 
 
   nombreProceso: string;
+  idProceso: number = 0
   iconoProceso: string;
 
 
   sello: boolean = false;
+
+  idEstatusPredio: number = 0
+  leyendaEstatusPredio: boolean = false
+
 
   sliderOpts = {
     zoom: true,
@@ -123,6 +130,24 @@ export class GestionLegalPage implements OnInit {
     }
   }
 
+  async changeTaskModal() {
+    const modal = await this.modalController.create({
+      component: ChangeTaskPage,
+      componentProps: {
+        "id_proceso": this.idProceso
+      }
+    })
+
+    await modal.present()
+
+    const { data } = await modal.onDidDismiss()
+    if (data.id_tarea > 0 && data.nombre_tarea !== '') {
+      this.tareaAsignada = data.id_tarea
+      this.nombreTareaAsignada = data.nombre_tarea
+    }
+
+  }
+
   ionViewWillLeave() {
     if (this.detectedChanges) {
       this.mensaje.showAlert(
@@ -143,6 +168,7 @@ export class GestionLegalPage implements OnInit {
     this.iconoProceso = await this.storage.get('icono_proceso');
     this.idAspUser = await this.storage.get("IdAspUser");
     this.infoAccount = await this.rest.getInfoAccount(this.account);
+    this.idProceso = this.infoAccount[0].id_proceso
     this.propietario = this.infoAccount[0].propietario;
     this.idAccountSqlite = this.infoAccount[0].id;
     this.tareaAsignada = this.infoAccount[0].tarea_asignada;
@@ -251,7 +277,8 @@ export class GestionLegalPage implements OnInit {
       destinationType: this.camera.DestinationType.FILE_URI,
       sourceType: this.camera.PictureSourceType.CAMERA,
       encodingType: this.camera.EncodingType.JPEG,
-      mediaType: this.camera.MediaType.PICTURE
+      mediaType: this.camera.MediaType.PICTURE,
+      saveToPhotoAlbum: true
     };
 
     this.camera.getPicture(options)
@@ -387,27 +414,7 @@ export class GestionLegalPage implements OnInit {
 
     this.fechaCaptura = ionicDate.toISOString();
 
-    let loadingGeolocation = await this.loadingController.create({
-      message: 'Obteniendo ubicación...',
-      spinner: 'dots'
-    })
-
-    await loadingGeolocation.present();
-
-    await this.getGeolocation();
-
-    console.log(this.geoPosicion);
-
-    if (this.geoPosicion.coords) {
-      this.latitud = this.geoPosicion.coords.latitude;
-      this.longitud = this.geoPosicion.coords.longitude;
-    } else {
-      console.log("No se pudo obtener la geolocalización")
-      this.latitud = 0;
-      this.longitud = 0;
-    }
-
-    loadingGeolocation.dismiss();
+    await this.obtenerUbicacion();
 
     this.loading = await this.loadingController.create({
       message: 'Guardando la gestión',
@@ -443,6 +450,7 @@ export class GestionLegalPage implements OnInit {
       latitud: this.latitud,
       longitud: this.longitud,
       idServicioPlaza: this.idServicioPlaza,
+      idEstatusPredio: this.idEstatusPredio,
       id: this.idAccountSqlite
     };
 
@@ -456,6 +464,30 @@ export class GestionLegalPage implements OnInit {
   async gestionLegal(data) {
     this.detectedChanges = false;
     await this.rest.gestionLegal(data);
+  }
+
+  async obtenerUbicacion() {
+    let loadingGeolocation = await this.loadingController.create({
+      message: 'Obteniendo ubicación...',
+      spinner: 'dots'
+    });
+
+    await loadingGeolocation.present();
+
+    await this.getGeolocation();
+
+    console.log(this.geoPosicion);
+
+    if (this.geoPosicion.coords) {
+      this.latitud = this.geoPosicion.coords.latitude;
+      this.longitud = this.geoPosicion.coords.longitude;
+    } else {
+      console.log("No se pudo obtener la geolocalización");
+      this.latitud = 0;
+      this.longitud = 0;
+    }
+
+    loadingGeolocation.dismiss();
   }
 
   exit() {

@@ -44,6 +44,7 @@ export class RestService {
   apiObtenerPartidosPoliticos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_partidos_politicos";
   apiObtenerAlianzasPoliticas = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_alianzas_politicas";
   apiRegistroPorcentajePila = "https://ser0.mx/seroMovil.aspx?query=sp_registro_porcentaje_pila";
+  apiObtenerCatalogoTareas = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_cat_tareas";
 
 
 
@@ -1153,7 +1154,7 @@ export class RestService {
 
     this.updateAccountGestionada(data.id);
 
-    let sql = "INSERT INTO gestionLegal (id_plaza, nombre_plaza, account, persona_atiende, id_puesto, otro_puesto, id_motivo_no_pago, otro_motivo, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, id_tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let sql = "INSERT INTO gestionLegal (id_plaza, nombre_plaza, account, persona_atiende, id_puesto, otro_puesto, id_motivo_no_pago, otro_motivo, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, id_tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     console.log("Insertando");
     console.log(data);
@@ -1182,7 +1183,8 @@ export class RestService {
       data.fechaCaptura,
       data.latitud,
       data.longitud,
-      data.idServicioPlaza
+      data.idServicioPlaza,
+      data.idEstatusPredio
     ])
 
   }
@@ -1526,10 +1528,11 @@ export class RestService {
         let latitud = arrayCuentaLegal[0].latitud;
         let longitud = arrayCuentaLegal[0].longitud;
         let idServicioPlaza = arrayCuentaLegal[0].id_servicio_plaza
+        let id_estatus_predio = arrayCuentaLegal[0].id_estatus_predio
         let id = arrayCuentaLegal[0].id;
 
-        let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
-        console.log(sql);
+        let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}, ${id_estatus_predio} `
+        //console.log(sql);
         await this.enviarSQLGestionLegal(sql, id)
 
         this.message.showAlert("Envío de la gestión correctamente");
@@ -2531,7 +2534,7 @@ export class RestService {
    */
   envioGestionesLegal(arrayGestionesLegal) {
     console.log("envioGestionesLegal");
-    console.log(this.avanceGestionesLegal);
+    //console.log(this.avanceGestionesLegal);
 
     if (this.avanceGestionesLegal === arrayGestionesLegal.length) {
       this.message.showToastLarge('Sincronizacion de sus gestiones correctas');
@@ -2581,9 +2584,10 @@ export class RestService {
       let fechaCaptura = arrayGestionesLegal[i].fecha_captura;
       let latitud = arrayGestionesLegal[i].latitud; let longitud = arrayGestionesLegal[i].longitud;
       let idServicioPlaza = arrayGestionesLegal[i].id_servicio_plaza
+      let id_estatus_predio = arrayGestionesLegal[i].id_estatus_predio
       let id = arrayGestionesLegal[i].id;
 
-      let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza} `
+      let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}, ${id_estatus_predio} `
       console.log(sql);
       await this.enviarSQLGestionLegal(sql, id)
       resolve('Execute Query successfully');
@@ -3424,6 +3428,44 @@ export class RestService {
         console.log(error)
       }
     })
+  }
+
+  async getCatTareas() {
+    return new Promise((resolve, reject) => {
+      try {
+        this.http.get(this.apiObtenerCatalogoTareas).subscribe(data => {
+          console.log(data)
+          resolve(data)
+        })
+      } catch (error) {
+        console.log(error)
+        reject(error)
+      }
+    })
+  }
+
+  async insertCatTareaLocal(data: any) {
+    let sql = 'INSERT INTO cat_tarea (id_tarea, nombre_tarea, id_proceso) VALUES (?,?,?)'
+    try {
+      return this.db.executeSql(sql, [data.id_tarea, data.nombre, data.id_proceso])
+    } catch (error) {
+      console.log("No se pudo insertar la tarea en la tabla local")
+    }
+  }
+
+  async getCatTareasLocal(id_proceso: number) {
+    let sql = 'SELECT * FROM cat_tarea WHERE id_proceso = ?'
+    try {
+      let data = []
+      const result = await this.db.executeSql(sql, [id_proceso])
+      for(let i = 0; i < result.rows.length; i++) {
+        data.push(result.rows.item(i))
+      }
+      return Promise.resolve(data)
+    } catch (error) {
+      console.log("No se pudo obtener la informacion del catalogo de tareas ", error)
+      return Promise.reject(error)
+    }
   }
 
 

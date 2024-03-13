@@ -1,0 +1,31 @@
+<ion-header class="header" style="z-index: 1 !important;" no-border>
+  <ion-toolbar style="z-index: 0 !important;" color="medium">
+    <ion-buttons>
+      <ion-button color="medium">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <img style="margin-right: 25px;" src="../../assets/img/sero_sin_letras.png" slot="end" alt="">
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="medium">
+
+
+
+  <p style="font-size: 16px; text-align: center; margin-bottom: 20px; color: white !important;">
+    Selecciona la tarea
+  </p>
+
+  <div style="width: 90%; margin: 10px auto" *ngFor="let tarea of tareas">
+    <ion-button style="font-size: 12px;" size="large" color="danger" (click)="changeTask(tarea)">
+      {{tarea.nombre_tarea}}
+    </ion-button>
+  </div>
+
+
+  <div style="text-align: center;">
+    <ion-button color="success" (click)="back()">Regresar</ion-button>
+  </div>
+
+</ion-content>

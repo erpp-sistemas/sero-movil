@@ -56,6 +56,24 @@
   </ion-card>
 
 
+  <ion-card color="medium">
+    <ion-card-content>
+      <ion-item color="medium">
+        <p>
+          Estatus del predio:
+        </p>
+        <p>
+          <ion-select class="myCustomSelect" interface="alert" placeholder="Selecciona uno"
+            [(ngModel)]="idEstatusPredio">
+            <ion-select-option value="1">Predio localizado</ion-select-option>
+            <ion-select-option value="2">Predio baldío</ion-select-option>
+            <ion-select-option value="3">Predio abandonado</ion-select-option>
+            <ion-select-option value="4">Predio no localizado</ion-select-option>
+          </ion-select>
+        </p>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
 
   <div style="text-align: center; margin:15 0px 0 20;">
     <ion-chip color="success">Información contribuyente</ion-chip>
@@ -72,24 +90,33 @@
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"></ion-input>
       </ion-item>
 
+      <!-- <ion-button fill="outline" class="button-fotos-historicas" color="primary" expand="block" (click)="changeTask()">
+        <ion-icon slot="start" name="code-working-outline"></ion-icon>
+        Cambiar tarea
+      </ion-button> -->
+
       <ion-item color="medium">
-        <ion-label>
-          <p>
-            Seleccione el puesto:
-          </p>
-          <p>
-            <ion-select class="myCustomSelect" interface="alert" placeholder="Selecciona uno"
-              [(ngModel)]="idPuesto" (ionChange)="resultIdPuesto( $event )">
-              <ion-select-option value="1">Representante legal</ion-select-option>
-              <ion-select-option value="2">Gerente</ion-select-option>
-              <ion-select-option value="3">Encargado</ion-select-option>
-              <ion-select-option value="4">Empleado</ion-select-option>
-              <ion-select-option value="5">Vigilante</ion-select-option>
-              <ion-select-option value="6">Otros</ion-select-option>
-            </ion-select>
-          </p>
-        </ion-label>
+
+        <p>
+          Seleccione el puesto:
+        </p>
+        <p>
+          <ion-select class="myCustomSelect" interface="alert" placeholder="Selecciona uno" [(ngModel)]="idPuesto"
+            (ionChange)="resultIdPuesto( $event )">
+            <ion-select-option value="1">Representante legal</ion-select-option>
+            <ion-select-option value="2">Gerente</ion-select-option>
+            <ion-select-option value="3">Encargado</ion-select-option>
+            <ion-select-option value="4">Empleado</ion-select-option>
+            <ion-select-option value="5">Vigilante</ion-select-option>
+            <ion-select-option value="6">Otros</ion-select-option>
+          </ion-select>
+        </p>
       </ion-item>
+
+      <ion-button style="margin: 10px 0;" color="warning" expand="block" (click)="changeTaskModal()">
+        <ion-icon slot="start" name="code-working-outline"></ion-icon>
+        Cambiar tarea
+      </ion-button>
 
       <ion-item *ngIf="mostrarOtroPuesto" color="medium">
         <ion-label>
@@ -104,7 +131,6 @@
   <ion-card color="medium">
     <ion-card-content color="medium">
       <ion-item color="medium">
-        <ion-label>
           <p>
             Motivo de no pago
           </p>
@@ -117,7 +143,6 @@
               <ion-select-option value="5">Otro</ion-select-option>
             </ion-select>
           </p>
-        </ion-label>
       </ion-item>
 
       <div *ngIf="activaOtroMotivo">
@@ -142,7 +167,6 @@
       </ion-item>
 
       <ion-item color="medium">
-        <ion-label>
           <p>
             Cambiar el tipo de servicio
           </p>
@@ -159,7 +183,6 @@
               <ion-select-option value="8">No Aplica</ion-select-option>
             </ion-select>
           </p>
-        </ion-label>
       </ion-item>
 
       <div *ngIf="mostrarGiro">
@@ -262,7 +285,8 @@
         <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
       </ion-item>
 
-      <ion-button [disabled]="sello" fill="outline" color="success" class="button-fotos-historicas" expand="block" (click)="colocacionSello()">
+      <ion-button [disabled]="sello" fill="outline" color="success" class="button-fotos-historicas" expand="block"
+        (click)="colocacionSello()">
         <ion-icon slot="start" name="albums-outline"></ion-icon>
         Colocación de sello
         <ion-icon *ngIf="sello" color="success" slot="end" name="checkmark-done-circle-outline"></ion-icon>

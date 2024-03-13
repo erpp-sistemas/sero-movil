@@ -88,6 +88,7 @@ export class AuthService {
               // guardar la informacion del usuario en el storage
               this.saveUserInfoStorage(this.userInfo);
               this.obtenerServiciosPublicos();
+              await this.obtenerCatTareaAndInsert()
               this.obtenerUsuariosPlaza(this.userInfo);
               this.getServicesPlazaUser(this.userInfo.idaspuser);
               await this.storage.set("idFireBase", id);
@@ -106,6 +107,7 @@ export class AuthService {
                 this.mensaje.showAlert("Bienvenid@ " + nombreUser);
                 this.saveUserInfoStorage(this.userInfo);
                 this.obtenerServiciosPublicos();
+                await this.obtenerCatTareaAndInsert()
                 this.obtenerUsuariosPlaza(this.userInfo);
                 this.getServicesPlazaUser(this.userInfo.idaspuser);
                 this.generaIdentificativo(id);
@@ -115,6 +117,7 @@ export class AuthService {
                 console.log("Correo en el storage diferente al ingresado, puede ser null el correo en el storage");
                 createSubscribe.unsubscribe();
                 this.saveUserInfoStorage(this.userInfo);
+                await this.obtenerCatTareaAndInsert()
                 this.obtenerServiciosPublicos();
                 this.obtenerUsuariosPlaza(this.userInfo);
                 this.getServicesPlazaUser(this.userInfo.idaspuser);
@@ -173,6 +176,7 @@ export class AuthService {
     });
   }
 
+
   /**
    * Metodo que obtiene todos los servicios publicos de todas las plazas del SQL Server para despues insertarlos en la tabla 
    * interna SQlite listaServiciosPublicos
@@ -184,6 +188,19 @@ export class AuthService {
       this.insertarServiciosPublicos(data);
     })
 
+  }
+
+  async obtenerCatTareaAndInsert() {
+    await this.rest.getCatTareas().then( async (data: any) => {
+      //console.log(data)
+      for(let tarea of data) {
+        try {
+          await this.rest.insertCatTareaLocal(tarea)
+        } catch (error) {
+          console.log("No se pudo insertar la tarea ", error) 
+        }
+      }
+    })
   }
 
   /**

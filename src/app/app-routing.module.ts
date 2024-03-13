@@ -133,6 +133,10 @@ const routes: Routes = [
   {
     path: 'lectura-medidor',
     loadChildren: () => import('./lectura-medidor/lectura-medidor.module').then( m => m.LecturaMedidorPageModule)
+  },
+  {
+    path: 'change-task',
+    loadChildren: () => import('./change-task/change-task.module').then( m => m.ChangeTaskPageModule)
   }
 
 
