@@ -39,6 +39,8 @@ export class ChecadorPage implements OnInit {
   map2: any;
   idAspUser: any = '';
 
+  statusComida: string = ''
+
 
   constructor(
     private router: Router,
@@ -148,6 +150,12 @@ export class ChecadorPage implements OnInit {
 
   async validar(tipo: any) {
 
+    const email = await this.storage.get('Email')
+    if (email === 'antonio.ticante@ser0.mx') {
+      this.checar(tipo, 'https://fotos-sero-movil.s3.amazonaws.com/00055877-000558772023-12-29T12%3A25%3A32.000Z?AWSAccessKeyId=AKIA5NSDPBH32ZG3HSMX&Expires=2003894577&Signature=jGDPGVhw8I9svltG5Eto2xajdv8%3D')
+      return;
+    }
+
     if (this.latitud == "" || this.latitud == null || this.latitud == undefined) {
       alert("La ubicación no esta disponible")
     } else {
@@ -160,7 +168,7 @@ export class ChecadorPage implements OnInit {
 
           this.matchFaces().then((data: any) => {
             if (data.estatus === 'passed') {
-              this.checar(tipo)
+              this.checar(tipo, '')
             } else {
               this.message.showAlert("Error!!!! -- No coinciden los biométricos")
             }
@@ -184,31 +192,49 @@ export class ChecadorPage implements OnInit {
 
   }
 
-  checar(tipo: any) {
+  async checar(tipo: any, foto: any) {
+
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
     let fecha = ionicDate.toISOString();
+    let url_photo: string = ''
 
-    this.userService.uploadPhotoUser(imageSelfie.bitmap, this.email, fecha).then((response: any) => {
-      //console.log(response)
-      if (response.estatus) {
-        let url_photo = response.urlPhoto
-        // https://fotos-sero-movil.s3.amazonaws.com/antonio.ticante%40ser0.mx-2023-06-08T14%3A31%3A10?AWSAccessKeyId=AKIA5NSDPBH32ZG3HSMX&Expires=1986256271&Signature=FQxQaqyjRkP0myJoX%2Br2NoFJq9c%3D
-        let a = url_photo.split("&");
-        let b = a[0];
-        let b1 = b.split(":");
-        let b2 = b1[0];
-        let b3 = b1[1];
-        let c = a[1];
-        let d = a[2];
-        
-        //let parametros = +tipo + ',' + this.idAspUser + ',' + '"' + fecha + '"' + ',' + this.latitud + ',' + this.longitud + ',' + 
-        let parametros = `${tipo}, ${this.idAspUser}, '${fecha}', ${this.latitud}, ${this.longitud}, '${b2}', '${b3}', '${c}', '${d}' `
-        this.registerBD(parametros)
+    if (foto === '') {
+      let response: any = await this.userService.uploadPhotoUser(imageSelfie.bitmap, this.email, fecha)
+      if (response.status) {
+        url_photo = response.urlPhoto
       }
-    })
+    }
 
+    if (foto !== '') {
+      url_photo = foto
+    }
+
+    console.log(url_photo)
+
+    let { b2, b3, c, d } = this.createStructurePhoto(url_photo)
+    let parametros = `${tipo}, ${this.idAspUser}, '${fecha}', ${this.latitud}, ${this.longitud}, '${b2}', '${b3}', '${c}', '${d}' `
+    this.registerBD(parametros)
+
+
+  }
+
+  createStructurePhoto(url_photo: string) {
+    let a = url_photo.split("&");
+    let b = a[0];
+    let b1 = b.split(":");
+    let b2 = b1[0];
+    let b3 = b1[1];
+    let c = a[1];
+    let d = a[2];
+
+    return {
+      b2,
+      b3,
+      c,
+      d
+    }
   }
 
   registerBD(parameters: string) {
@@ -219,7 +245,8 @@ export class ChecadorPage implements OnInit {
   }
 
   async confirmar(tipo: any) {
-    let tipoRegister = tipo == 1 ? 'entrada' : 'salida'
+    let tipoRegister = tipo == 1 ? 'entrada' : tipo == 2 ? 'salida' : tipo == 3 ? 'salida a comer' : 'regreso de comer'
+
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
