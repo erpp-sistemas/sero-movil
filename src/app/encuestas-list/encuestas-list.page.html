@@ -1,0 +1,44 @@
+<hr>
+<hr>
+<hr>
+<hr>
+
+<ion-content [fullscreen]="true" color="medium">
+
+    <ion-card color="medium">
+        <ion-card-subtitle color="dark" style="text-align: center;">
+            <p style="color: white; font-size: 16px;">¿Selecciona la encuesta?</p>
+        </ion-card-subtitle>
+    </ion-card>
+
+    <hr>
+
+    <div class="texto-centrado">
+        <p class="datos">
+            <ion-select style="color: #000000;" class="myCustomSelect text-center" interface="action-sheet"
+                placeholder="Seleccionar plaza" (ionChange)="resultPlaza($event)" [(ngModel)]="id_plaza">
+                <ion-select-option *ngFor="let plaza of plazasServicios; index as i"
+                    [value]="plaza.id_plaza">{{plaza.plaza |
+                    titlecase}}
+                </ion-select-option>
+            </ion-select>
+        </p>
+    </div>
+
+    <hr>
+
+    
+    <div *ngIf="id_plaza != 0">
+        <ion-card color="medium" (click)="goEncuesta(encuesta.id_encuesta)" *ngFor="let encuesta of encuestas_plaza" >
+            <ion-card-header>
+                <ion-icon color="light" [name]="encuesta.icono_app_movil"></ion-icon>                
+            </ion-card-header>
+            <ion-card-content>
+                <h2> {{encuesta.name_encuesta}} </h2>
+            </ion-card-content>
+        </ion-card>
+    </div>
+
+
+
+</ion-content>

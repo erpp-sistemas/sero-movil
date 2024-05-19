@@ -5,6 +5,8 @@ import { Storage } from '@ionic/storage';
 import { Proceso } from '../interfaces/Procesos';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
+import { EncuestaGeneral } from '../interfaces';
+import { DblocalService } from '../services/dblocal.service';
 
 @Component({
   selector: 'app-tab1',
@@ -35,6 +37,7 @@ export class Tab1Page implements OnInit {
   constructor(
     private storage: Storage,
     private rest: RestService,
+    private dblocal: DblocalService,
     private loadinCtrl: LoadingController,
     private message: MessagesService,
     private platform: Platform,
@@ -78,7 +81,7 @@ export class Tab1Page implements OnInit {
    */
   async obtenerPlazasUsuario() {
 
-    this.plazasServicios = await this.rest.obtenerPlazasSQL();
+    this.plazasServicios = await this.dblocal.obtenerPlazasSQL();
 
     // tomamos el primer registro para ponerlo como plaza default en el select
     if (this.plazasServicios.length > 0) {
@@ -86,6 +89,8 @@ export class Tab1Page implements OnInit {
     }
 
     this.asignarServicios();
+
+    // * Obtener el catalogo de encuestas de las plazas
 
   }
 
@@ -185,7 +190,7 @@ export class Tab1Page implements OnInit {
    */
   async descargarInformacion(id_plaza, idServicioPlaza) {
     this.progress = true;
-    
+
     this.deleteInfo(id_plaza, idServicioPlaza);
 
     this.loading = await this.loadinCtrl.create({
@@ -246,7 +251,7 @@ export class Tab1Page implements OnInit {
     } catch (error) {
       console.log(error);
       await this.loading.dismiss();
-      if(error.name === 'HttpErrorResponse') {
+      if (error.name === 'HttpErrorResponse') {
         this.message.showAlert("Error al descargar las cuentas, verificar conexión a internet");
       }
     }
@@ -285,7 +290,7 @@ export class Tab1Page implements OnInit {
     console.log(dataPartidosPoliticos);
     // borramos la informacion del catalogo de partidos politicos
     await this.rest.deleteCatPartidosPoliticos();
-    dataPartidosPoliticos.forEach( async (partido: any) => {
+    dataPartidosPoliticos.forEach(async (partido: any) => {
       await this.rest.guardarInfoPartidosPoliticos(partido);
     })
   }
@@ -296,30 +301,28 @@ export class Tab1Page implements OnInit {
     console.log(dataAlianzasPoliticas);
     // borramos la informacion del catalogo de alianzas politicas
     await this.rest.deleteCatAlianzasPoliticas();
-    dataAlianzasPoliticas.forEach( async (alianza: any) => {
+    dataAlianzasPoliticas.forEach(async (alianza: any) => {
       await this.rest.guardarInfoAlianzasPoliticas(alianza)
     })
   }
 
   async getProcessByIdPlaza(id_plaza: number) {
     this.dataProcess = await this.rest.obtenerProcesosByIdPlaza(id_plaza);
-    console.log(this.dataProcess);
     // si obtenemos dataProcess lo guardamos en su tabla interna
-    if(this.dataProcess.length === 0) {
+    if (this.dataProcess.length === 0) {
       this.message.showToast("Esta plaza no tiene procesos de gestión, verificar en ser0 web!!!!");
       return;
     }
 
     // validamos si tenemos descargados procesos de la plaza asignada
     const validacion = await this.rest.processPlazaExists(id_plaza);
-    console.log(validacion);
-    if(validacion) {
+    if (validacion) {
       await this.rest.deleteProcessByIdPlaza(id_plaza);
     }
 
-    this.dataProcess.forEach( async process => {
+    this.dataProcess.forEach(async process => {
       let statusProcess = await this.rest.insertProcessTable(process);
-      if(statusProcess) {
+      if (statusProcess) {
         this.message.showToast(`${process.nombre_proceso} listo...`);
       } else {
         this.message.showToast(`${process.nombre_proceso} no se guardo`);
@@ -327,28 +330,17 @@ export class Tab1Page implements OnInit {
     })
   }
 
-
   /**
    * Metodo que envia al listado de cuentas
    * @param idServicioPlaza 
    */
   async goCuentasTab(idServicioPlaza) {
 
-    //console.log("IdServicioPlaza", idServicioPlaza);
-
     const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
-    console.log(plaza_servicio);
-
 
     await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
     await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
     await this.storage.set('IdServicioActivo', idServicioPlaza);
-
-    console.log("IdServicioActivo " + idServicioPlaza);
-    console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
-    console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
-
-
 
     this.router.navigate(['/listado-cuentas', idServicioPlaza, this.id_plaza]);
   }
@@ -359,16 +351,10 @@ export class Tab1Page implements OnInit {
    */
   async goMapTab(idServicioPlaza) {
     const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
-    console.log(plaza_servicio);
-
 
     await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
     await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
     await this.storage.set('IdServicioActivo', idServicioPlaza);
-
-    console.log("IdServicioActivo " + idServicioPlaza);
-    console.log("IdPlazaActiva " + plaza_servicio[0].id_plaza);
-    console.log("NombrePlazaActiva " + plaza_servicio[0].plaza);
 
     //this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
     this.router.navigate(['mapa-prueba', idServicioPlaza, this.id_plaza]);

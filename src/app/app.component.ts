@@ -12,6 +12,7 @@ import { Storage } from '@ionic/storage';
 //import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { BatteryStatus } from '@awesome-cordova-plugins/battery-status/ngx';
+import { DblocalService } from './services/dblocal.service';
 
 
 @Component({
@@ -37,6 +38,7 @@ export class AppComponent {
     private statusBar: StatusBar,
     private sqlite: SQLite,
     private rest: RestService,
+    private dblocal: DblocalService,
     private androidPermissions: AndroidPermissions,
     private push: PushService,
     private backgroundGeolocation: BackgroundGeolocation,
@@ -84,6 +86,7 @@ export class AppComponent {
     }).then(async (db: SQLiteObject) => {
       // Pasando el db al servicio
       this.rest.setDatabase(db);
+      this.dblocal.setDatabase(db)
 
       await db.executeSql(table.tableSero, []);
       await db.executeSql(table.tableInspeccion, []);
@@ -102,8 +105,10 @@ export class AppComponent {
       await db.executeSql(table.tableProcesoGestion, []);
       await db.executeSql(table.tableCortes, []);
       await db.executeSql(table.tableCatalogoPartidos, []);
-      await db.executeSql(table.tableCatalogoAlianzas, [])
-      await db.executeSql(table.tableCatalogoTareas, [])
+      await db.executeSql(table.tableCatalogoAlianzas, []);
+      await db.executeSql(table.tableCatalogoTareas, []);
+      await db.executeSql(table.tableEncuestaGeneral, [])
+      await db.executeSql(table.tableRegisterEncuestaGeneral, [])
 
     }).catch(error => console.log("Error en bd", error));
   }

@@ -1,0 +1,62 @@
+<hr>
+<hr>
+<hr>
+<hr>
+
+<ion-content [fullscreen]="true" color="medium">
+
+  <div class="contenedor-icono-proceso" style="text-align: center;">
+    <ion-icon class="icono-proceso" [name]="icon_encuesta"></ion-icon>
+  </div>
+
+  <div class="contenedor-nombre-proceso">
+    <ion-label>
+      <p>{{title_encuesta}}</p>
+    </ion-label>
+  </div>
+
+  <ion-card color="medium">
+    <ion-card-content>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p style="color: white;">Colonia: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colonia"></ion-input>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card color="medium">
+    <ion-card-content>
+
+      <ion-item style="padding: 10px 0 !important;" color="medium" *ngFor="let pregunta of preguntas">
+        <ion-text>
+          <p>
+            {{pregunta.name_pregunta}}
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+              [(ngModel)]="results[pregunta.id_pregunta]">
+              <ion-select-option *ngFor="let respuesta of pregunta.posibles_respuestas" [value]="respuesta">
+                {{respuesta}} </ion-select-option>
+            </ion-select>
+          </p>
+        </ion-text>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button shape="round" color="primary" expand="block"
+          (click)="messageTerminarGestion()">Terminar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

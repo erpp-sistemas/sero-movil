@@ -7,6 +7,7 @@ import { MessagesService } from '../services/messages.service';
 import { ModalController, Platform, LoadingController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { Router } from '@angular/router';
+import { DblocalService } from '../services/dblocal.service';
 
 
 @Component({
@@ -62,6 +63,7 @@ export class ServiciosPublicosPage implements OnInit {
   constructor(
     private storage: Storage,
     private rest: RestService,
+    private dblocal: DblocalService,
     private camera: Camera,
     private webview: WebView,
     private mensaje: MessagesService,
@@ -93,7 +95,7 @@ export class ServiciosPublicosPage implements OnInit {
 
 
   async obtenerPlazasUsuario() {
-    this.plazasServicios = await this.rest.obtenerPlazasSQL();
+    this.plazasServicios = await this.dblocal.obtenerPlazasSQL();
     console.log(this.plazasServicios);
 
     // tomamos el primer registro para ponerlo como defauult en el select

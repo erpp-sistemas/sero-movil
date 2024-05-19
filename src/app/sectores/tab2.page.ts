@@ -4,6 +4,7 @@ import { MenuController, Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { AuthService } from '../services/auth.service';
 import { RestService } from '../services/rest.service';
+import { DblocalService } from '../services/dblocal.service';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class Tab2Page implements OnInit {
     private router: Router,
     private storage: Storage,
     private rest: RestService,
+    private dblocal: DblocalService,
     private auth: AuthService,
     private platform: Platform
   ) { }
@@ -55,7 +57,7 @@ export class Tab2Page implements OnInit {
    */
    async obtenerPlazasUsuario() {
 
-    this.plazasServicios = await this.rest.obtenerPlazasSQL();
+    this.plazasServicios = await this.dblocal.obtenerPlazasSQL();
     
 
     // tomamos el primer registro para ponerlo como defauult en el select

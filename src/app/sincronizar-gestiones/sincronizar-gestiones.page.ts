@@ -56,12 +56,15 @@ export class SincronizarGestionesPage implements OnInit {
   }
 
   sync(id_servicio) {
-    console.log(id_servicio);
     this.router.navigate(['sync-acciones', id_servicio]);
   }
 
   syncServicios() {
     this.router.navigateByUrl('/sincronizar-servicios');
+  }
+
+  syncEncuestas() {
+    this.router.navigateByUrl('/sync-encuestas');
   }
 
   navegar(tipo) {

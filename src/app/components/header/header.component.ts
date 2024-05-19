@@ -44,7 +44,6 @@ export class HeaderComponent implements OnInit {
   }
 
   gestionesRealizadas() {
-    console.log("Ir a a gestiones realizadas");
     this.menuCtrl.close();
     this.router.navigateByUrl('/sincronizar-gestiones')
   }
@@ -65,6 +64,11 @@ export class HeaderComponent implements OnInit {
     this.menuCtrl.close();
   }
 
+  encuestasList() {
+    this.router.navigateByUrl('/encuestas-list');
+    this.menuCtrl.close();
+  }
+
   servicios() {
     this.router.navigateByUrl('/home/tab4');
     this.menuCtrl.close();
@@ -76,13 +80,11 @@ export class HeaderComponent implements OnInit {
   }
 
   botonPanico() {
-    console.log("Ir a boton de panico");
     this.router.navigateByUrl('/boton-panico');
     this.menuCtrl.close();
   }
 
   notificaciones() {
-    console.log("Ir a las notificaciones");
     this.router.navigateByUrl('/push-notifications');
     this.menuCtrl.close();
   }

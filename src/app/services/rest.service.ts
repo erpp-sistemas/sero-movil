@@ -45,6 +45,8 @@ export class RestService {
   apiObtenerAlianzasPoliticas = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_alianzas_politicas";
   apiRegistroPorcentajePila = "https://ser0.mx/seroMovil.aspx?query=sp_registro_porcentaje_pila";
   apiObtenerCatalogoTareas = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_cat_tareas";
+  apiRegisterEncuesta = "https://ser0.mx/seroMovil.aspx?query=sp_registro_encuesta_general";
+
 
 
 
@@ -67,14 +69,6 @@ export class RestService {
     }
   }
 
-  /**
-   * Metodo que borra los datos de la tabla de serviciosPlazaUser
-   * @returns db execute
-   */
-  deleteServicios() {
-    let sql = 'DELETE FROM serviciosPlazaUser';
-    return this.db.executeSql(sql, []);
-  }
 
   /**
    * Metodo que borra los registros de la tabla listaServiciosPublicos que son todos los servicios publicos con su respectiva plaza
@@ -94,26 +88,6 @@ export class RestService {
     return this.db.executeSql(sql, []);
   }
 
-  /**
-   * Metodo que inserta los datos obtenidos del sql en la tabla serviciosPlazaUser
-   * @param data 
-   * @returns db execute
-   */
-  insertarServiciosSQL(data) {
-    console.log("Tratando de insertar los servicios obtenidos");
-    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, foto, plaza, servicio, id_plaza, id_servicio, icono_app_movil) VALUES (?,?,?,?,?,?,?,?,?)'
-    return this.db.executeSql(sql, [
-      data.nombre,
-      data.apellido_paterno,
-      data.apellido_materno,
-      data.foto,
-      data.plaza,
-      data.servicio,
-      data.id_plaza,
-      data.id_servicio,
-      data.icono_app_movil
-    ]);
-  }
 
   /**
    * Metodo que inserta los servicios publicos obtenidos de la api
@@ -304,24 +278,6 @@ export class RestService {
   }
 
 
-  /**
-   * Obtiene el id_plaza y la plaza unicos
-   * @returns Promise
-   */
-  async obtenerPlazasSQL() {
-    let plazas = [];
-    try {
-      let sql = "SELECT DISTINCT id_plaza, plaza FROM serviciosPlazaUser"
-      const response = await this.db.executeSql(sql, []);
-      for (let i = 0; i < response.rows.length; i++) {
-        plazas.push(response.rows.item(i));
-      }
-
-      return Promise.resolve(plazas);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
 
   /**
    * Metodo que obtiene la foto del usuario de la base interna SQlite
@@ -3434,7 +3390,6 @@ export class RestService {
     return new Promise((resolve, reject) => {
       try {
         this.http.get(this.apiObtenerCatalogoTareas).subscribe(data => {
-          console.log(data)
           resolve(data)
         })
       } catch (error) {
@@ -3458,7 +3413,7 @@ export class RestService {
     try {
       let data = []
       const result = await this.db.executeSql(sql, [id_proceso])
-      for(let i = 0; i < result.rows.length; i++) {
+      for (let i = 0; i < result.rows.length; i++) {
         data.push(result.rows.item(i))
       }
       return Promise.resolve(data)
@@ -3466,6 +3421,31 @@ export class RestService {
       console.log("No se pudo obtener la informacion del catalogo de tareas ", error)
       return Promise.reject(error)
     }
+  }
+
+  async getDataSQL(api: string) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.http.get(api).subscribe(data => {
+          resolve(data)
+        })
+      } catch (error) {
+        console.error(error)
+        reject(error)
+      }
+    })
+  }
+
+  sendOneRegisterEncuesta(data: any) {
+    return new Promise<string>((resolve) => {
+      const url = `${this.apiRegisterEncuesta} '${JSON.stringify(data)}'`
+      this.http.post(url, null).subscribe(() => {
+        resolve("Registro enviado con éxito")
+      }, error => {
+        console.log(error)
+        resolve("No se pudo enviar")
+      })
+    })
   }
 
 

@@ -3,6 +3,7 @@ import { ModalController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { RestService } from '../services/rest.service';
 import { Storage } from '@ionic/storage';
+import { DblocalService } from '../services/dblocal.service';
 
 
 
@@ -35,6 +36,7 @@ export class Tab3Page implements OnInit {
   constructor(
     private router: Router,
     private rest: RestService,
+    private dblocal: DblocalService,
     private platform: Platform,
     private storage: Storage
   ) { }
@@ -55,7 +57,7 @@ export class Tab3Page implements OnInit {
    */
    async obtenerPlazasUsuario() {
 
-    this.plazasServicios = await this.rest.obtenerPlazasSQL();
+    this.plazasServicios = await this.dblocal.obtenerPlazasSQL();
     console.log(this.plazasServicios);
 
     // tomamos el primer registro para ponerlo como defauult en el select

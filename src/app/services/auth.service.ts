@@ -9,6 +9,9 @@ import { HttpClient } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { LoginPage } from '../login/login.page';
 import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
+import { DblocalService } from './dblocal.service';
+import { EncuestaGeneral, UserPlacesServices } from '../interfaces';
+import { wihoutDuplicated } from '../../helpers'
 
 //import { BehaviorSubject } from 'rxjs';
 
@@ -36,6 +39,7 @@ export class AuthService {
     private router: Router,
     private storage: Storage,
     private rest: RestService,
+    private dblocal: DblocalService,
     private http: HttpClient,
     private modalCtrl: ModalController,
     private appVersion: AppVersion
@@ -73,17 +77,15 @@ export class AuthService {
         const id = user.user.uid;
         let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
           // this.userInfo tiene la informacion del usuario del firebase
-          if(!userInfoFirebase) {
+          if (!userInfoFirebase) {
             this.mensaje.showAlert("Usuario no creado en la app móvil");
             return;
           }
           this.userInfo = userInfoFirebase
-          console.log("Usuario firebase: ", this.userInfo);
           // corroborar si el usuario esta activo
           if (this.userInfo.isActive) {
             if (this.userInfo.IMEI = '') {
               // usuario nuevo
-              console.log("IMEI vacio");
               createSubscribe.unsubscribe();
               // guardar la informacion del usuario en el storage
               this.saveUserInfoStorage(this.userInfo);
@@ -99,10 +101,7 @@ export class AuthService {
               // el usuario no es nuevo 
               let emailLocal = await this.storage.get("Email");
               let nombreUser = await this.storage.get("Nombre")
-              console.log("El email del usuario con la sesion anterior es ", emailLocal);
-              console.log("El usuario con la sesion anterior es ", nombreUser);
               if (this.userInfo.email == emailLocal) {
-                console.log("Misma sesion del usuario en turno, correo en el storage mismo al correo ingresado");
                 createSubscribe.unsubscribe();
                 this.mensaje.showAlert("Bienvenid@ " + nombreUser);
                 this.saveUserInfoStorage(this.userInfo);
@@ -114,7 +113,6 @@ export class AuthService {
                 resolve(nombreUser)
               }
               else {
-                console.log("Correo en el storage diferente al ingresado, puede ser null el correo en el storage");
                 createSubscribe.unsubscribe();
                 this.saveUserInfoStorage(this.userInfo);
                 await this.obtenerCatTareaAndInsert()
@@ -155,12 +153,9 @@ export class AuthService {
    * Metodo que manda a traer la informacion del usuario sus plazas y sus servicios de las plazas
    * @param idUser 
    */
-  async getServicesPlazaUser(idUser) {
-    console.log("GetServicesPlazaUser");
-    console.log("idaspuser: " + idUser);
-    await this.rest.deleteServicios();
-    this.http.get(this.apiObtenerServiciosUser + " " + idUser).subscribe(data => {
-      console.log("Servicios", data);
+  async getServicesPlazaUser(idUser: number) {
+    await this.dblocal.deleteServicios();
+    this.http.get(this.apiObtenerServiciosUser + " " + idUser).subscribe((data: UserPlacesServices[]) => {
       this.insertarServicios(data);
     })
 
@@ -170,10 +165,54 @@ export class AuthService {
    * Metodo que inserta la informacion del usuario de sus plazas y servicios(agua, predio, antenas ...) de las plazas a las que pertenece
    * @param data 
    */
-  insertarServicios(data) {
-    data.forEach(servicio => {
-      this.rest.insertarServiciosSQL(servicio);
-    });
+  async insertarServicios(data: UserPlacesServices[]) {
+
+    for (let servicio of data) {
+      this.dblocal.insertarServiciosSQL(servicio);
+    }
+
+    await this.getDataEncuestas(data)
+
+  }
+
+  /**
+   * ? Metodo que obtiene las encuestas y sus preguntas de la base de datos
+   * @param data 
+   */ 
+  async getDataEncuestas(data: UserPlacesServices[]) {
+
+    const places = data.map(upls => upls.id_plaza)
+    const places_unique = wihoutDuplicated(places) // ? [2, 3]
+    const api = `https://ser0.mx/seroMovil.aspx?query=sp_obtener_preguntas_encuesta`
+
+    try {
+      await this.dblocal.deleteDataEncuestas()
+    } catch (error) {
+      console.error("No se pudo borrar la informacion de la tabla local encuesta_general ", error)
+    }
+
+    for (let place of places_unique) {
+      await this.rest.getDataSQL(`${api} ${place}`)
+        .then(async (data: EncuestaGeneral[]) => {
+          await this.insertDataEncuestas(data)
+        })
+        .catch(error => console.error(error))
+    }
+
+  }
+
+  /**
+   * ? Metodo que inserta la informacion obtenida de las encuestas en la tabla local
+   * @param data 
+   */
+  async insertDataEncuestas(data: EncuestaGeneral[]) {
+    for( let encuesta of data ) {
+      try {
+        await this.dblocal.insertDataEncuestas(encuesta)
+      } catch (error) {
+        console.error("No se pudo insertar la data de las encuestas")
+      }
+    }
   }
 
 
@@ -182,7 +221,6 @@ export class AuthService {
    * interna SQlite listaServiciosPublicos
    */
   async obtenerServiciosPublicos() {
-    console.log("obteniendo los servicios publicos");
     await this.rest.deleteServiciosPublicos();
     this.http.get(this.apiObtenerServiciosPublicos).subscribe(data => {
       this.insertarServiciosPublicos(data);
@@ -191,13 +229,13 @@ export class AuthService {
   }
 
   async obtenerCatTareaAndInsert() {
-    await this.rest.getCatTareas().then( async (data: any) => {
+    await this.rest.getCatTareas().then(async (data: any) => {
       //console.log(data)
-      for(let tarea of data) {
+      for (let tarea of data) {
         try {
           await this.rest.insertCatTareaLocal(tarea)
         } catch (error) {
-          console.log("No se pudo insertar la tarea ", error) 
+          console.log("No se pudo insertar la tarea ", error)
         }
       }
     })
@@ -209,13 +247,10 @@ export class AuthService {
    * @param userInfo 
    */
   async obtenerUsuariosPlaza(userInfo) {
-    console.log("Obteniendo los empleados de la plaza");
     await this.rest.deleteEmpleadosPlaza();
     // obtener el id del usuario para mandarlo a la api
     let idAspUser = userInfo.idaspuser;
-    console.log(idAspUser);
     this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe(data => {
-      console.log(data);
       this.insertaEmpleadosPlaza(data);
     })
   }
@@ -253,7 +288,7 @@ export class AuthService {
     this.storage.set('Email', userInfo.email);
     this.storage.set('IdAspUser', userInfo.idaspuser)
     this.storage.set('Password', userInfo.password)
-    
+
   }
 
   /**
@@ -269,7 +304,6 @@ export class AuthService {
    * @param id 
    */
   async saveDataCell(id) {
-    console.log("Generando identificativo");
     let name = await this.storage.get("Nombre");
     await this.updateAppVersion();
     this.storage.set("IMEI", id);
@@ -297,7 +331,6 @@ export class AuthService {
     let sql = `${this.apiUpdateAppVersion} ${idUsuario}, '${appVersion}'`
     try {
       this.http.post(sql, null).subscribe((data) => {
-        console.log(data);
       })
     } catch (error) {
       console.log("No se pudo actualizar la version de la app en el SQL ", error);

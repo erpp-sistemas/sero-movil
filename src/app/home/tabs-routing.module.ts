@@ -22,7 +22,7 @@ const routes: Routes = [
       },
       {
         path: 'tab4',
-        loadChildren: () => import('../servicios-publicos/servicios-publicos.module').then(m => m.ServiciosPublicosPageModule)
+        loadChildren: () => import('../encuestas-list/encuestas-list.module').then(m => m.EncuestasListPageModule)
       },
       {
         path: '',

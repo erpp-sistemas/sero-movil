@@ -114,7 +114,8 @@ const routes: Routes = [
   {
     path: 'encuesta',
     loadChildren: () => import('./encuesta/encuesta.module').then( m => m.EncuestaPageModule)
-  },  {
+  },
+  {
     path: 'boton-panico',
     loadChildren: () => import('./boton-panico/boton-panico.module').then( m => m.BotonPanicoPageModule)
   },
@@ -137,7 +138,19 @@ const routes: Routes = [
   {
     path: 'change-task',
     loadChildren: () => import('./change-task/change-task.module').then( m => m.ChangeTaskPageModule)
+  },
+  {
+    path: 'encuestas-list',
+    loadChildren: () => import('./encuestas-list/encuestas-list.module').then( m => m.EncuestasListPageModule)
+  },
+  {
+    path: 'encuesta-general/:id_plaza/:id_encuesta',
+    loadChildren: () => import('./encuesta-general/encuesta-general.module').then( m => m.EncuestaGeneralPageModule)
+  },  {
+    path: 'sync-encuestas',
+    loadChildren: () => import('./sync-encuestas/sync-encuestas.module').then( m => m.SyncEncuestasPageModule)
   }
+
 
 
 
