@@ -149,6 +149,10 @@ const routes: Routes = [
   },  {
     path: 'sync-encuestas',
     loadChildren: () => import('./sync-encuestas/sync-encuestas.module').then( m => m.SyncEncuestasPageModule)
+  },
+  {
+    path: 'history-checking',
+    loadChildren: () => import('./history-checking/history-checking.module').then( m => m.HistoryCheckingPageModule)
   }
 
 

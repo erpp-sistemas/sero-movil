@@ -12,6 +12,7 @@ import { Enum, FaceCaptureResponse, FaceSDK, LivenessResponse, MatchFacesImage, 
 
 import { UsersService } from '../services/users.service'
 import { MessagesService } from '../services/messages.service';
+import { HistoryCheckingPage } from '../history-checking/history-checking.page';
 
 
 declare var google;
@@ -54,6 +55,7 @@ export class ChecadorPage implements OnInit {
     private faceSdk: FaceSDK,
     private userService: UsersService,
     private message: MessagesService,
+    private modalController: ModalController,
   ) { }
 
   async ngOnInit() {
@@ -391,6 +393,20 @@ export class ChecadorPage implements OnInit {
       this.router.navigateByUrl('/home');
     }, 1000);
 
+  }
+
+  async getAsistencias() {
+    let id_usuario = await this.storage.get('IdAspUser')
+    const historial_asistencias = await this.rest.getAsistencias(Number(id_usuario))
+
+    const modal = await this.modalController.create({
+      component: HistoryCheckingPage,
+      componentProps: {
+        data: historial_asistencias
+      }
+  
+    });
+    await modal.present();
   }
 
 

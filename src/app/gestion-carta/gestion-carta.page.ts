@@ -100,6 +100,7 @@ export class GestionCartaPage implements OnInit {
   iconoProceso: string;
 
   sello: boolean = false;
+  verificacionDomicilio: boolean = false;
   idMotivoNoPago: number = 0;
 
   // campos obligatorios
@@ -545,6 +546,7 @@ export class GestionCartaPage implements OnInit {
       colocoSello: colocoSello,
       idMotivoNoPago: this.idMotivoNoPago,
       otroMotivoNoPago: this.otroMotivo,
+      domicilio_verificado: this.verificacionDomicilio ? 1 : 0,
       id: this.idAccountSqlite
     }
 
@@ -954,7 +956,7 @@ export class GestionCartaPage implements OnInit {
         "idServicioPlaza": this.idServicioPlaza
       }
     })
-    
+
     await modal.present()
 
     const data = await modal.onDidDismiss();
@@ -999,6 +1001,31 @@ export class GestionCartaPage implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  async verificarDomicilio() {
+    const alert = await this.alertCtrl.create({
+      header: 'Verificación de domicilio',
+      subHeader: '¿Deseas verificar la localización del domicilio?',
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            this.verificacionDomicilio = true;
+          }
+        }
+      ]
+    })
+    await alert.present()
   }
 
 }

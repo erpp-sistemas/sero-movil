@@ -15,10 +15,10 @@
   <hr>
 
   <div style="text-align: center;">
-    <ion-chip color="success">Acciones históricas</ion-chip>
+    <ion-chip color="success">Historial de asistencias</ion-chip>
   </div>
 
-  <ion-card color="medium" *ngFor="let accion of acciones; let i = index">
+  <ion-card color="medium" *ngFor="let accion of data; let i = index">
     <ion-card-content color="medium">
       <ion-item color="medium">
         <ion-label color="light">
@@ -27,28 +27,28 @@
       </ion-item>
       <ion-item color="medium">
         <ion-label color="light">
-          <p>Cuenta: <span>{{accion.cuenta}}</span> </p>
+          <p>Fecha: <span>{{accion.fecha}}</span> </p>
         </ion-label>
       </ion-item>
       <ion-item color="medium">
         <ion-label color="light">
-          <p>Fecha de gestión: <span>{{accion.fecha_captura}}</span> </p>
+          <p>Hora entrada: <span>{{accion.hora_entrada.substring(0,8)}}</span> </p>
         </ion-label>
       </ion-item>
       <ion-item color="medium">
         <ion-label color="light">
-          <p>Tarea realizada: <span>{{accion.tarea}}</span> </p>
+          <p>Entrada comida: <span>{{accion.hora_entrada_comida.substring(0,8)}}</span> </p>
         </ion-label>
       </ion-item>
       <ion-item color="medium">
         <ion-label color="light">
-          <p>Gestor: <span>{{accion.gestor}}</span> </p>
+          <p>Salida comida: <span>{{accion.hora_salida_comida.substring(0,8)}}</span> </p>
         </ion-label>
       </ion-item>
       <ion-item color="medium">
-        <ion-text>
-          <p>Observaciones: <span>{{accion.observaciones}}</span> </p>
-        </ion-text>
+        <ion-label color="light">
+          <p>Hora salida: <span>{{accion.hora_salida.substring(0,8)}}</span> </p>
+        </ion-label>
       </ion-item>
     </ion-card-content>
   </ion-card>
@@ -56,7 +56,7 @@
   <hr>
 
   <div style="text-align: center;">
-    <ion-button color="success" (click)="back()">Regresar</ion-button>
+    <ion-button color="primary" (click)="back()">Regresar</ion-button>
   </div>
 
 

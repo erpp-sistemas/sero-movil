@@ -6,20 +6,35 @@
 <div id="map_canvas"></div>
 
 <ion-content color="medium">
-  
-  <ion-card color="medium">
-    <ion-card-content text-center>
-      <ion-button color="tertiary" expand="block" (click)="confirmar(1)">Checar Entrada</ion-button>
-      <hr>
-      <ion-button color="warning" expand="block" (click)="confirmar(3)">Checar Salida a Comer</ion-button>
-      <hr>
-      <ion-button color="warning" expand="block" (click)="confirmar(4)">Checar Regreso de Comer</ion-button>
-      <hr>
-      <ion-button color="tertiary" expand="block" (click)="confirmar(2)">Checar Salida</ion-button>
-      <hr>
-      <ion-button color="tertiary" expand="block" (click)="regresarPrincipal()">Regresar</ion-button>
-    </ion-card-content>
-  </ion-card>
+
+  <div class="buttons-checador">
+    <div (click)="confirmar(1)"  style="background-color: rgba(14, 155, 237, 0.9);">
+      <ion-icon name="alarm-outline"></ion-icon>
+      Entrada
+    </div>
+    <div (click)="confirmar(3)" style="background-color: rgba(14, 155, 237, 0.9);">
+      <ion-icon name="pizza-outline"></ion-icon>
+      Salida comer
+    </div>
+    <div (click)="confirmar(4)"  style="background-color: rgba(14, 155, 237, 0.9);">
+      <ion-icon name="pause-outline"></ion-icon>
+      Regreso comer
+    </div>
+    <div (click)="confirmar(2)" style="background-color: rgba(14, 155, 237, 0.9);">
+      <ion-icon name="walk-outline"></ion-icon>
+      Salida
+    </div>
+    <div (click)="getAsistencias()" style="background-color: rgba(14, 155, 237, 0.9);">
+      <ion-icon name="copy-outline"></ion-icon>
+      Historial
+    </div>
+    <div (click)="regresarPrincipal()" style="background-color: rgba(14, 155, 237, 0.9);">
+      <ion-icon name="caret-back-outline"></ion-icon>
+      Regresar
+    </div>
+  </div>
+
+
 
 
 </ion-content>

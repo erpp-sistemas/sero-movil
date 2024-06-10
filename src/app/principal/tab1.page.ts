@@ -188,7 +188,8 @@ export class Tab1Page implements OnInit {
    * @param idServicioPlaza 
    * @returns 
    */
-  async descargarInformacion(id_plaza, idServicioPlaza) {
+  async descargarInformacion(id_plaza: number, idServicioPlaza: number) {
+
     this.progress = true;
 
     this.deleteInfo(id_plaza, idServicioPlaza);
@@ -264,7 +265,7 @@ export class Tab1Page implements OnInit {
    * @param idServicioPlaza 
    */
   async guardarDatosSQL(data, id_plaza, idServicioPlaza) {
-    console.log("Guardando la informacion de " + idServicioPlaza);
+    console.log(id_plaza, idServicioPlaza)
     console.log(data);
     let cont = 0;
     for (let i = 0; i < data.length; i++) {

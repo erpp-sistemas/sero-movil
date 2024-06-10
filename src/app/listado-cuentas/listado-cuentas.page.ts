@@ -78,9 +78,7 @@ export class ListadoCuentasPage implements OnInit {
    */
   async getInfo(id_plaza, idServicioPlaza) {
     this.total = await this.rest.getTotalAccounts(id_plaza, idServicioPlaza);
-    console.log("Total del servicio" + idServicioPlaza + " " + this.total);
     this.gestionadas = await this.rest.getGestionadas(id_plaza, idServicioPlaza);
-    console.log("Gestionadas del servicio " + idServicioPlaza + " " + this.gestionadas);
   }
 
   /**
@@ -121,14 +119,11 @@ export class ListadoCuentasPage implements OnInit {
       lat: parseFloat(item.latitud),
       lng: parseFloat(item.longitud)
     };
-    console.log("Entra a ver la position");
-    console.log(position);
     let navigationExtras: NavigationExtras = {
       state: {
         position: position
       }
     };
-
     this.router.navigate(["streetview"], navigationExtras);
   }
 

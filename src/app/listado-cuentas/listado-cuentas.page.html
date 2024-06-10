@@ -14,7 +14,8 @@
     <ion-chip color="warning">Faltantes: {{total - gestionadas}}</ion-chip>
   </div>
 
-  <ion-searchbar color="light" placeholder="Cuenta, propietario o dirección" animated (ionChange)="find($event)"></ion-searchbar>
+  <ion-searchbar color="light" placeholder="Cuenta, propietario o dirección" animated
+    (ionChange)="find($event)"></ion-searchbar>
 
   <div class="contenedor">
 
@@ -50,6 +51,10 @@
             <p color="light" class='border direccion'>Dirección: {{item.direccion}}</p>
             <p color="light" class='border'>Deuda:{{item.total | currency:'USD':'symbol' }}</p>
             <p color="light" class='border'>Proceso: {{item.proceso_gestion}} </p>
+            <div *ngIf="item.domicilio_verificado === 1" class='verificado'>
+              <ion-icon style="margin-right: 5px; font-size: 20px; color: white;" name="shield-checkmark-outline"></ion-icon>
+              <p>Domicilio verificado</p>
+            </div>
             <p *ngIf="item.gestionada == 1" class="realizada">Realizada</p>
           </ion-label>
         </ion-item>

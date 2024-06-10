@@ -1,0 +1,18 @@
+ion-toolbar {
+    height: 70px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border: none !important;
+}
+
+ion-toolbar img {
+    width: 160px;
+    height: 40px;
+}
+
+
+span {
+    font-style: italic;
+    color: #54d534;
+}

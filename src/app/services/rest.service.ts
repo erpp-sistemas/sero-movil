@@ -47,6 +47,7 @@ export class RestService {
   apiRegistroPorcentajePila = "https://ser0.mx/seroMovil.aspx?query=sp_registro_porcentaje_pila";
   apiObtenerCatalogoTareas = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_cat_tareas";
   apiRegisterEncuesta = "https://ser0.mx/seroMovil.aspx?query=sp_registro_encuesta_general";
+  apiObtenerAsistencia = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_asistencias";
 
 
 
@@ -226,9 +227,9 @@ export class RestService {
    * @param idServicioPlaza  // servicio (agua, predio)
    * @returns 
    */
-  guardarInfoSQL(data, id_plaza, idServicioPlaza) {
+  guardarInfoSQL(data: any, id_plaza: number, idServicioPlaza: number) {
 
-    let sql = `INSERT INTO sero_principal (id_plaza, id_servicio_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud, nombre_tarea_asignada, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    let sql = `INSERT INTO sero_principal (id_plaza, id_servicio_plaza, cuenta, clave_catastral, propietario, calle, num_int, num_ext, colonia, poblacion, codigo_postal, total, fecha_ultimo_pago, serie_medidor, tipo_servicio,  telefono_casa, telefono_celular, correo_electronico, superficie_terreno_h, superficie_construccion_h, valor_terreno_h, valor_construccion_h, valor_catastral_h, tarea_asignada, latitud, longitud, nombre_tarea_asignada, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso, domicilio_verificado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
     return this.db.executeSql(sql, [
       id_plaza,
@@ -261,7 +262,8 @@ export class RestService {
       data.id_proceso,
       data.proceso_gestion,
       data.url_aplicacion_movil,
-      data.icono_proceso
+      data.icono_proceso,
+      data.domicilio_verificado
     ])
 
 
@@ -479,9 +481,8 @@ export class RestService {
    * @returns Promise 
    */
   cargarListadoCuentas(id_plaza, idServicioPlaza) {
-    console.log("Cargando el listado de cuentas de la plaza " + id_plaza + " del servicio " + idServicioPlaza);
     // let sql = `SELECT cuenta, propietario, calle || ' numero_ext: ' || num_ext || ' numero_int: ' || num_int || ' ' || colonia as direccion, total, latitud, longitud, gestionada FROM sero_principal WHERE id_plaza = ? and id_servicio_plaza = ? and propietario NOT NULL`;
-    let sql = `SELECT cuenta, propietario, calle || ' ' || colonia as direccion, total, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso, latitud, longitud, gestionada FROM sero_principal WHERE id_plaza = ? AND id_servicio_plaza = ? AND propietario NOT NULL`;
+    let sql = `SELECT cuenta, propietario, calle || ' ' || colonia as direccion, total, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso, latitud, longitud, domicilio_verificado, gestionada FROM sero_principal WHERE id_plaza = ? AND id_servicio_plaza = ? AND propietario NOT NULL`;
 
     return this.db.executeSql(sql, [id_plaza, idServicioPlaza]).then(response => {
       let arrayCuentas = [];
@@ -902,7 +903,7 @@ export class RestService {
   gestionCartaInvitacion(data) {
     return new Promise(async (resolve, reject) => {
       try {
-        let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo, coloco_sello, id_motivo_no_pago, otro_motivo_no_pago) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        let sql = "INSERT INTO gestionCartaInvitacion(id_plaza, nombre_plaza, account, persona_atiende, id_tipo_servicio, numero_niveles, color_fachada, color_puerta, referencia, tipo_predio, entre_calle1, entre_calle2, observaciones, lectura_medidor, giro, idAspUser, id_tarea, fecha_captura, latitud, longitud, id_servicio_plaza, id_estatus_predio, id_tipo_gestion, id_tiempo_suministro_agua, lunes, martes, miercoles, jueves, viernes, sabado, domingo, coloco_sello, id_motivo_no_pago, otro_motivo_no_pago, domicilio_verificado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 
         await this.db.executeSql(sql, [
           data.id_plaza,
@@ -938,7 +939,8 @@ export class RestService {
           data.domingo,
           data.colocoSello,
           data.idMotivoNoPago,
-          data.otroMotivoNoPago
+          data.otroMotivoNoPago,
+          data.domicilio_verificado
         ])
 
         this.updateAccountGestionada(data.id);
@@ -1258,8 +1260,6 @@ export class RestService {
  * este metodo se llama cuando se envie una gestion solamente de carta invitacion
  */
   async sendEncuestaByCuenta(id_servicio_plaza: any, account: any) {
-    console.log(id_servicio_plaza);
-    console.log(account);
     try {
       let arrayEncuesta = [];
       let sql = 'SELECT * FROM encuesta where cargado = 0 AND idServicioPlaza = ? AND account = ?';
@@ -1268,8 +1268,6 @@ export class RestService {
       for (let i = 0; i < result.rows.length; i++) {
         arrayEncuesta.push(result.rows.item(i));
       }
-
-      console.log(arrayEncuesta);
 
       if (arrayEncuesta.length == 0) {
         return;
@@ -1355,10 +1353,11 @@ export class RestService {
         let colocoSello = arrayCuentaCarta[0].coloco_sello;
         let idMotivoNoPago = arrayCuentaCarta[0].id_motivo_no_pago;
         let otroMotivoNoPago = arrayCuentaCarta[0].otro_motivo_no_pago;
+        let domicilio_verificado = arrayCuentaCarta[0].domicilio_verificado;
 
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}, ${idMotivoNoPago}, '${otroMotivoNoPago}'`
+        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}, ${idMotivoNoPago}, '${otroMotivoNoPago}', ${domicilio_verificado}`
         //console.log(sql);
         await this.enviarSQLCartaInvitacion(sql, id)
 
@@ -2378,10 +2377,12 @@ export class RestService {
       let sabado = arrayGestionesCarta[i].sabado;
       let domingo = arrayGestionesCarta[i].domingo;
       let colocoSello = arrayGestionesCarta[i].coloco_sello;
+      let idMotivoNoPago = arrayGestionesCarta[i].id_motivo_no_pago;
+      let otroMotivoNoPago = arrayGestionesCarta[i].otro_motivo_no_pago;
+      let domicilio_verificado = arrayGestionesCarta[i].domicilio_verificado;
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}`
-      console.log(sql);
+      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello} ${idMotivoNoPago}, '${otroMotivoNoPago}', ${domicilio_verificado}`
       await this.enviarSQLCartaInvitacion(sql, id)
       resolve('Execute Query successfully');
 
@@ -3472,6 +3473,18 @@ export class RestService {
       }, error => {
         console.log(error)
         resolve("No se pudo enviar")
+      })
+    })
+  }
+
+
+  async getAsistencias(id_usuario: number) {
+    return new Promise((resolve, reject) => {
+      let url = `${this.apiObtenerAsistencia} ${id_usuario}`
+      this.http.get(url).subscribe( data => {
+        resolve(data)
+      }, error => {
+        reject(error)
       })
     })
   }
