@@ -21,7 +21,7 @@ export class DblocalService {
 
 
   async insertDataEncuestas(data: EncuestaGeneral) {
-    const query = 'INSERT INTO encuesta_general (id_encuesta, id_pregunta, name_encuesta, name_pregunta, posibles_respuestas, id_plaza, icono_app_movil) VALUES (?,?,?,?,?,?,?)'
+    const query = 'INSERT INTO encuesta_general (id_encuesta, id_pregunta, name_encuesta, name_pregunta, posibles_respuestas, id_plaza, icono_app_movil, id_sub_pregunta, name_sub_pregunta, sub_pregunta_posibles_respuestas) VALUES (?,?,?,?,?,?,?,?,?,?)'
     return this.db.executeSql(query, [
       data.id_encuesta,
       data.id_pregunta,
@@ -29,7 +29,10 @@ export class DblocalService {
       data.name_pregunta,
       data.posibles_respuestas,
       data.id_plaza,
-      data.icono_app_movil
+      data.icono_app_movil,
+      data.id_sub_pregunta,
+      data.name_sub_pregunta,
+      data.sub_pregunta_posibles_respuestas
     ])
   }
 
@@ -146,6 +149,37 @@ export class DblocalService {
         let query = 'DELETE FROM register_encuesta_general WHERE id = ?'
         await this.db.executeSql(query, [id])
         resolve("Se elimino correctamente la encuesta")
+      } catch (error) {
+        console.error(error)
+        reject(error)
+      }
+    })
+  }
+
+
+  async insertContadorRegisterEncuesta(fecha: string) {
+    return new Promise( async (resolve, reject) => {
+      try {
+        let query = 'INSERT INTO contador_register_encuesta_general (subida, fecha) VALUES(?,?)'
+        await this.db.executeSql(query, ['subida', fecha])
+        resolve("Contador actualizado")
+      } catch (error) {
+        console.error(error)
+        reject(error)
+      }
+    })
+  }
+
+  async getContadorRegisterEncuesta(fecha: string) {
+    return new Promise( async (resolve, reject) => {
+      try {
+        let query = 'SELECT COUNT(*) AS total FROM contador_register_encuesta_general WHERE fecha = ?'
+        let encuestas_enviadas = []
+        const response = await this.db.executeSql(query, [fecha])
+        for (let i = 0; i < response.rows.length; i++) {
+          encuestas_enviadas.push(response.rows.item(i))
+        }
+        resolve(encuestas_enviadas)
       } catch (error) {
         console.error(error)
         reject(error)

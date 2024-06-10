@@ -18,11 +18,50 @@
   <ion-card color="medium">
     <ion-card-content>
 
+      <h2 style="color: rgb(0,200,0); font-size: 20px; text-align: center;"> Total de encuestas hechas:
+        {{contador_encuestas}} </h2>
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button shape="round" color="warning" expand="block"
+          (click)="noContest()">No quiso contestar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card color="medium">
+    <ion-card-content>
+
       <ion-item color="medium">
         <ion-label>
           <p style="color: white;">Colonia: </p>
         </ion-label>
         <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colonia"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p style="color: white;">Edad: </p>
+        </ion-label>
+        <ion-input type="number" class="myCustomSelect" interface="popover" [(ngModel)]="edad"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>
+            Sexo:
+          </p>
+          <p>
+            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno" [(ngModel)]="sexo">
+              <ion-select-option value="Masculino">Masculino</ion-select-option>
+              <ion-select-option value="Femenino">Femenino</ion-select-option>
+            </ion-select>
+          </p>
+        </ion-label>
       </ion-item>
 
     </ion-card-content>
@@ -31,20 +70,41 @@
   <ion-card color="medium">
     <ion-card-content>
 
-      <ion-item style="padding: 10px 0 !important;" color="medium" *ngFor="let pregunta of preguntas">
-        <ion-text>
-          <p>
-            {{pregunta.name_pregunta}}
-          </p>
-          <p>
-            <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
-              [(ngModel)]="results[pregunta.id_pregunta]">
-              <ion-select-option *ngFor="let respuesta of pregunta.posibles_respuestas" [value]="respuesta">
-                {{respuesta}} </ion-select-option>
-            </ion-select>
-          </p>
-        </ion-text>
-      </ion-item>
+      <div *ngFor="let pregunta of preguntas">
+        <ion-item style="padding: 10px 0 !important;" color="medium">
+          <ion-text>
+            <p>
+              {{pregunta.name_pregunta}}
+            </p>
+            <p>
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                [(ngModel)]="results[pregunta.id_pregunta]"
+                (ionChange)="results[pregunta.id_pregunta] !== 'INDECISO' && results_sub[pregunta.id_sub_pregunta] = ''">
+                <ion-select-option *ngFor="let respuesta of pregunta.posibles_respuestas" [value]="respuesta">
+                  {{respuesta}} </ion-select-option>
+              </ion-select>
+            </p>
+          </ion-text>
+        </ion-item>
+
+        <ion-item style="padding: 10px 0 !important;" color="medium"
+          *ngIf="results[pregunta.id_pregunta] === 'INDECISO' && pregunta.name_sub_pregunta !== ''">
+          <ion-text>
+            <p>
+              {{pregunta.name_sub_pregunta}}
+            </p>
+            <p>
+              <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
+                [(ngModel)]="results_sub[pregunta.id_sub_pregunta]" multiple="true">
+                <ion-select-option *ngFor="let respuesta of pregunta.sub_pregunta_posibles_respuestas"
+                  [value]="respuesta">
+                  {{respuesta}} </ion-select-option>
+              </ion-select>
+            </p>
+          </ion-text>
+        </ion-item>
+      </div>
+
 
     </ion-card-content>
   </ion-card>

@@ -6,6 +6,9 @@ export interface EncuestaGeneral {
     name_pregunta: string;
     posibles_respuestas: string;
     icono_app_movil: string;
+    id_sub_pregunta: number;
+    name_sub_pregunta: string;
+    sub_pregunta_posibles_respuestas: string;
 }
 
 export interface UserPlacesServices {

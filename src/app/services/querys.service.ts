@@ -50,9 +50,11 @@ export class QuerysService {
 
     let tableCatalogoTareas = `CREATE TABLE IF NOT EXISTS cat_tarea (id INTEGER PRIMARY KEY AUTOINCREMENT, id_tarea INTEGER, nombre_tarea TEXT, id_proceso INTEGER)`
 
-    let tableEncuestaGeneral = `CREATE TABLE IF NOT EXISTS encuesta_general (id INTEGER PRIMARY KEY AUTOINCREMENT, id_encuesta INTEGER, name_encuesta TEXT, id_pregunta INTEGER, name_pregunta TEXT, posibles_respuestas TEXT, id_plaza INTEGER, icono_app_movil TEXT)`
+    let tableEncuestaGeneral = `CREATE TABLE IF NOT EXISTS encuesta_general (id INTEGER PRIMARY KEY AUTOINCREMENT, id_encuesta INTEGER, name_encuesta TEXT, id_pregunta INTEGER, name_pregunta TEXT, posibles_respuestas TEXT, id_plaza INTEGER, icono_app_movil TEXT, id_sub_pregunta INTEGER, name_sub_pregunta TEXT, sub_pregunta_posibles_respuestas TEXT)`
 
     let tableRegisterEncuestaGeneral = `CREATE TABLE IF NOT EXISTS register_encuesta_general (id INTEGER PRIMARY KEY AUTOINCREMENT, data_json TEXT, fecha TEXT, cargado INTEGER NOT NULL DEFAULT 0)`
+
+    let tableContadorRegisterEncuesta = `CREATE TABLE IF NOT EXISTS contador_register_encuesta_general (id INTEGER PRIMARY KEY AUTOINCREMENT, subida TEXT, fecha TEXT)`
 
     let tables = {
       tableSero,
@@ -75,7 +77,8 @@ export class QuerysService {
       tableCatalogoAlianzas,
       tableCatalogoTareas,
       tableEncuestaGeneral,
-      tableRegisterEncuestaGeneral
+      tableRegisterEncuestaGeneral,
+      tableContadorRegisterEncuesta
     }
 
     return tables;

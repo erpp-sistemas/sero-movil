@@ -9,6 +9,7 @@ import { Base64 } from "@ionic-native/base64/ngx";
 import { S3Service } from './s3.service';
 import { Proceso } from '../interfaces/Procesos';
 import { UsuarioAyuda } from '../interfaces/UsuarioAyuda';
+import { DblocalService } from './dblocal.service';
 
 
 @Injectable({
@@ -58,7 +59,8 @@ export class RestService {
     private storage: Storage,
     private loadingCtrl: LoadingController,
     private base64: Base64,
-    private s3Service: S3Service
+    private s3Service: S3Service,
+    private dblocal: DblocalService
   ) { }
 
   setDatabase(db: SQLiteObject) {
@@ -3439,7 +3441,9 @@ export class RestService {
   sendOneRegisterEncuesta(data: any) {
     return new Promise<string>((resolve) => {
       const url = `${this.apiRegisterEncuesta} '${JSON.stringify(data)}'`
-      this.http.post(url, null).subscribe(() => {
+      this.http.post(url, null).subscribe(async () => {
+        const fecha = this.getCurrentDate()
+        await this.dblocal.insertContadorRegisterEncuesta(fecha)
         resolve("Registro enviado con éxito")
       }, error => {
         console.log(error)
@@ -3448,6 +3452,29 @@ export class RestService {
     })
   }
 
+  getCurrentDate() {
+    const today = new Date();
+    let currentDate: any
+    // Formatear la fecha como una cadena (puedes ajustar el formato según tus necesidades)
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    currentDate = today.toLocaleDateString('es-ES', options);
+    return currentDate
+  }
+
+
+  sendRenuenteEncuesta() {
+    return new Promise<string>((resolve) => {
+      const url = `${this.apiRegisterEncuesta} ''`
+      this.http.post(url, null).subscribe(async () => {
+        const fecha = this.getCurrentDate()
+        await this.dblocal.insertContadorRegisterEncuesta(fecha)
+        resolve("Registro enviado con éxito")
+      }, error => {
+        console.log(error)
+        resolve("No se pudo enviar")
+      })
+    })
+  }
 
 }
 

@@ -109,6 +109,7 @@ export class AppComponent {
       await db.executeSql(table.tableCatalogoTareas, []);
       await db.executeSql(table.tableEncuestaGeneral, [])
       await db.executeSql(table.tableRegisterEncuestaGeneral, [])
+      await db.executeSql(table.tableContadorRegisterEncuesta, [])
 
     }).catch(error => console.log("Error en bd", error));
   }
