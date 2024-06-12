@@ -7,7 +7,6 @@ import { Proceso } from '../interfaces/Procesos';
 import { UsuarioAyuda } from '../interfaces/UsuarioAyuda';
 import { DblocalService } from './dblocal.service';
 import { DataGeneral } from '../interfaces';
-
 import {
   apiObtenerDatos, apiRegistroRecorrido, apiObtenerCuentasDistancia,
   apiObtenerEmpleados, apiObtenerFotosHistoricas, apiObtenerPagosHistoricos, apiRegistroEncuestaPresidente,
@@ -26,20 +25,14 @@ export class RestService {
   loading: any;
 
 
-
-
-
   constructor(
     private http: HttpClient,
     private message: MessagesService,
     private loadingCtrl: LoadingController,
-
-
     private dblocal: DblocalService
   ) { }
 
   setDatabase(db: SQLiteObject) {
-    console.log(db);
     if (this.db === null) {
       console.log("Base interna igual a null");
       this.db = db;
@@ -111,7 +104,7 @@ export class RestService {
           .subscribe(data => resolve(data), err => console.log(err));
       })
     } catch {
-      console.log("No se pudo obtener la informaciòn");
+      console.error("No se pudo obtener la informaciòn");
     }
   }
 
@@ -251,10 +244,8 @@ export class RestService {
   async registerPorcentajePila(id_usuario: number, porcentaje: number, fecha: any) {
     return new Promise((resolve, reject) => {
       try {
-
         let url = `${apiRegistroPorcentajePila} ${id_usuario}, ${porcentaje}, '${fecha}'`
         this.http.post(url, null).subscribe(message => {
-          console.log(message)
           resolve("Insertado el porcentaje de la pila")
         })
       } catch (error) {

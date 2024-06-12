@@ -7,14 +7,12 @@ import { Storage } from '@ionic/storage';
 import { AlertController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
 import { MarkerIcon } from '@ionic-native/google-maps/ngx';
-
 import { Enum, FaceCaptureResponse, FaceSDK, LivenessResponse, MatchFacesImage, MatchFacesRequest, MatchFacesResponse, MatchFacesSimilarityThresholdSplit } from '@regulaforensics/ionic-native-face-api/ngx'
-
 import { UsersService } from '../services/users.service'
 import { MessagesService } from '../services/messages.service';
 import { HistoryCheckingPage } from '../history-checking/history-checking.page';
 import { DblocalService } from '../services/dblocal.service';
-
+import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse, BackgroundGeolocationEvents } from '@ionic-native/background-geolocation/ngx';
 
 declare var google;
 
@@ -46,7 +44,6 @@ export class ChecadorPage implements OnInit {
 
   constructor(
     private router: Router,
-    private callNumber: CallNumber,
     public alertController: AlertController,
     public loadingCtrl: LoadingController,
     public toastCtrl: ToastController,
@@ -57,7 +54,8 @@ export class ChecadorPage implements OnInit {
     private userService: UsersService,
     private message: MessagesService,
     private modalController: ModalController,
-    private dbLocalService: DblocalService
+    private dbLocalService: DblocalService,
+    private backgroundGeolocation: BackgroundGeolocation,
   ) { }
 
   async ngOnInit() {
@@ -197,7 +195,7 @@ export class ChecadorPage implements OnInit {
   }
 
   async checar(tipo: any, foto: any) {
-
+    this.backGroundGeolocation()
     var dateDay = new Date().toISOString();
     let date: Date = new Date(dateDay);
     let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
@@ -214,8 +212,6 @@ export class ChecadorPage implements OnInit {
     if (foto !== '') {
       url_photo = foto
     }
-
-    console.log(url_photo)
 
     let { b2, b3, c, d } = this.createStructurePhoto(url_photo)
     let parametros = `${tipo}, ${this.idAspUser}, '${fecha}', ${this.latitud}, ${this.longitud}, '${b2}', '${b3}', '${c}', '${d}' `
@@ -412,23 +408,49 @@ export class ChecadorPage implements OnInit {
   }
 
 
-  navegar(tipo) {
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
+  backGroundGeolocation() {
+    const config: BackgroundGeolocationConfig = {
+      desiredAccuracy: 3,
+      stationaryRadius: 3,
+      distanceFilter: 1,
+      interval: 10000, //300000
+      fastestInterval: 5000,
+      notificationTitle: 'Ser0 Móvil',
+      notificationText: 'Activado',
+      debug: false, //  enable this hear sounds for background-geolocation life-cycle.
+      stopOnTerminate: true, // enable this to clear background location settings when the app terminates
+    };
+    this.backgroundGeolocation.configure(config)
+      .then(() => {
+        this.backgroundGeolocation
+          .on(BackgroundGeolocationEvents.location)
+          .subscribe((location: BackgroundGeolocationResponse) => {
+            this.saveLocation(location)
+          });
 
-      this.callNumber.callNumber('911', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
+      });
+    // start recording location
+    this.backgroundGeolocation.start();
+    // If you wish to turn OFF background-tracking, call the #stop method.
+    this.backgroundGeolocation.stop();
+  }
 
+
+  async saveLocation(location: any) {
+    let lat = location.latitude;
+    let lng = location.longitude
+    let idAspuser = await this.storage.get('IdAspUser')
+    if (idAspuser == null || idAspuser == undefined) {
+    } else {
+      var dateDay = new Date().toISOString();
+      let date: Date = new Date(dateDay);
+      let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+      let fecha = ionicDate.toISOString();
+      this.dbLocalService.saveLocation(lat, lng, idAspuser, fecha)//guarda localmente
+      this.rest.guardarSQl(lat, lng, idAspuser, fecha);
     }
   }
+
 
 }
 

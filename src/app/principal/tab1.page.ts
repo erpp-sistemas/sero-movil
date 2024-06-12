@@ -112,7 +112,7 @@ export class Tab1Page implements OnInit {
    * Metodo que se ejecuta cuando cambian el select option de la plaza este metodo tambien se ejecuta al inicio 
    * @param event 
    */
-  async resultPlaza(event) {
+  async resultPlaza(event: any) {
     this.progressTotal = 0;
     // si el idPlaza es diferente de 0 entonces verificar la descarga
     if (this.id_plaza != 0) {
@@ -125,7 +125,7 @@ export class Tab1Page implements OnInit {
    * @param id_plaza 
    * @param servicio 
    */
-  async actualizarEstatusDescarga(id_plaza, servicio) {
+  async actualizarEstatusDescarga(id_plaza: number, servicio: number) {
     await this.dbLocalService.actualizaServicioEstatus(id_plaza, servicio);
     this.asignarServicios();
   }
@@ -137,8 +137,7 @@ export class Tab1Page implements OnInit {
   async obtenerDatosUsuario() {
     this.nombre = await this.storage.get('Nombre');
     this.email = await this.storage.get('Email');
-    let img = await this.dbLocalService.obtenerFotoUserSQL();
-    this.imgUser = img[0].foto;
+    this.imgUser = await this.storage.get('Foto');
   }
 
 

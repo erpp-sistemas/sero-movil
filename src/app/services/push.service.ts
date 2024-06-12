@@ -55,7 +55,7 @@ export class PushService {
     let sql = `${this.apiUpdateUserIdPushSQL} ${idUsuario}, '${this.userId}'`;
     try {
       this.http.post(sql, null).subscribe((data) => {
-        console.log(data);
+        //console.log(data);
       })
     } catch (error) {
       console.log("Error en al actualizar el idUsuario push notifications ", error);

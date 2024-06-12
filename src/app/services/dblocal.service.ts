@@ -452,7 +452,6 @@ export class DblocalService {
    * @returns Promise
    */
   async getGestionadas(id_plaza: number, id_servicio_plaza: number) {
-    console.log("Obteniendo el total de gestionadas");
     let sql = 'SELECT COUNT(*) as total_gestionadas FROM sero_principal where id_plaza = ? and id_servicio_plaza = ? and gestionada = 1';
     try {
       const response = await this.db.executeSql(sql, [id_plaza, id_servicio_plaza]);

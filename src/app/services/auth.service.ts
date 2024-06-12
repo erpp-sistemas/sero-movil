@@ -30,6 +30,7 @@ export class AuthService {
   //$getObjectSource = this.objectSource.asObservable();
   userInfo: UserFirebase;
   modal: any;
+  photo_user: string = ''
 
 
   constructor(
@@ -87,14 +88,11 @@ export class AuthService {
             if (this.userInfo.IMEI = '') {
               // usuario nuevo
               createSubscribe.unsubscribe();
-              // guardar la informacion del usuario en el storage
+              await this.getServicesPlazaUser(this.userInfo.idaspuser);
               this.saveUserInfoStorage(this.userInfo);
               this.obtenerServiciosPublicos();
               await this.obtenerCatTareaAndInsert()
               this.obtenerUsuariosPlaza(this.userInfo);
-              this.getServicesPlazaUser(this.userInfo.idaspuser);
-              await this.storage.set("idFireBase", id);
-              await this.storage.set("ActivateApp", 1);
               this.generaIdentificativo(id);
               resolve(userInfoFirebase);
             } else {
@@ -103,25 +101,23 @@ export class AuthService {
               let nombreUser = await this.storage.get("Nombre")
               if (this.userInfo.email == emailLocal) {
                 createSubscribe.unsubscribe();
-                this.mensaje.showAlert("Bienvenid@ " + nombreUser);
+                await this.getServicesPlazaUser(this.userInfo.idaspuser);
                 this.saveUserInfoStorage(this.userInfo);
                 this.obtenerServiciosPublicos();
                 await this.obtenerCatTareaAndInsert()
                 this.obtenerUsuariosPlaza(this.userInfo);
-                this.getServicesPlazaUser(this.userInfo.idaspuser);
                 this.generaIdentificativo(id);
+                this.mensaje.showAlert("Bienvenid@ " + nombreUser);
                 resolve(nombreUser)
               }
               else {
                 createSubscribe.unsubscribe();
+                await this.getServicesPlazaUser(this.userInfo.idaspuser);
                 this.saveUserInfoStorage(this.userInfo);
                 await this.obtenerCatTareaAndInsert()
                 this.obtenerServiciosPublicos();
                 this.obtenerUsuariosPlaza(this.userInfo);
-                this.getServicesPlazaUser(this.userInfo.idaspuser);
                 let nombreUsuario = await this.storage.get("Nombre")
-                await this.storage.set("idFireBase", id)
-                await this.storage.set("ActivateApp", "1");
                 await this.storage.set("total", null);
                 await this.storage.set("FechaSync", null);
                 this.generaIdentificativo(id);
@@ -150,7 +146,7 @@ export class AuthService {
   }
 
   /**
-   * Metodo que manda a traer la informacion del usuario sus plazas y sus servicios de las plazas
+   ** Metodo que manda a traer la informacion del usuario sus plazas y sus servicios de las plazas
    * @param idUser 
    */
   async getServicesPlazaUser(idUser: number) {
@@ -158,39 +154,33 @@ export class AuthService {
     this.http.get(this.apiObtenerServiciosUser + " " + idUser).subscribe((data: UserPlacesServices[]) => {
       this.insertarServicios(data);
     })
-
   }
 
   /**
-   * Metodo que inserta la informacion del usuario de sus plazas y servicios(agua, predio, antenas ...) de las plazas a las que pertenece
+   ** Metodo que inserta la informacion del usuario de sus plazas y servicios(agua, predio, antenas ...) de las plazas a las que pertenece
    * @param data 
    */
   async insertarServicios(data: UserPlacesServices[]) {
-
+    await this.getPhotoUser(data[0].foto)
     for (let servicio of data) {
       this.dbLocalService.insertarServiciosSQL(servicio);
     }
-
     await this.getDataEncuestas(data)
-
   }
 
   /**
-   * ? Metodo que obtiene las encuestas y sus preguntas de la base de datos
+   ** Metodo que obtiene las encuestas y sus preguntas de la base de datos
    * @param data 
    */
   async getDataEncuestas(data: UserPlacesServices[]) {
-
     const places = data.map(upls => upls.id_plaza)
     const places_unique = wihoutDuplicated(places) // ? [2, 3]
     const api = `https://ser0.mx/seroMovil.aspx?query=sp_obtener_preguntas_encuesta`
-
     try {
       await this.dbLocalService.deleteDataEncuestas()
     } catch (error) {
       console.error("No se pudo borrar la informacion de la tabla local encuesta_general ", error)
     }
-
     for (let place of places_unique) {
       await this.rest.getDataSQL(`${api} ${place}`)
         .then(async (data: EncuestaGeneral[]) => {
@@ -198,11 +188,10 @@ export class AuthService {
         })
         .catch(error => console.error(error))
     }
-
   }
 
   /**
-   * ? Metodo que inserta la informacion obtenida de las encuestas en la tabla local
+   ** Metodo que inserta la informacion obtenida de las encuestas en la tabla local
    * @param data 
    */
   async insertDataEncuestas(data: EncuestaGeneral[]) {
@@ -217,7 +206,7 @@ export class AuthService {
 
 
   /**
-   * Metodo que obtiene todos los servicios publicos de todas las plazas del SQL Server para despues insertarlos en la tabla 
+   ** Metodo que obtiene todos los servicios publicos de todas las plazas del SQL Server para despues insertarlos en la tabla 
    * interna SQlite listaServiciosPublicos
    */
   async obtenerServiciosPublicos() {
@@ -226,6 +215,7 @@ export class AuthService {
       this.insertarServiciosPublicos(data);
     })
   }
+
 
   async obtenerCatTareaAndInsert() {
     await this.rest.getCatTareas().then(async (data: any) => {
@@ -240,8 +230,9 @@ export class AuthService {
     })
   }
 
+
   /**
-   * Metodo que pide al SQL Server los usuarios de las plazas a la que pertenece el usuario a loguearse, para despues insertarlos en la 
+   ** Metodo que pide al SQL Server los usuarios de las plazas a la que pertenece el usuario a loguearse, para despues insertarlos en la 
    * tabla interna SQlite empleadosPlaza
    * @param userInfo 
    */
@@ -253,8 +244,9 @@ export class AuthService {
     })
   }
 
+
   /**
-   * Inserta en la tabla interna SQlite listaServiciosPublicos la informacion de los servicios publicos de todas las plazas 
+   ** Inserta en la tabla interna SQlite listaServiciosPublicos la informacion de los servicios publicos de todas las plazas 
    * que se recibieron del SQL Server 
    * @param data 
    */
@@ -265,7 +257,7 @@ export class AuthService {
   }
 
   /**
-   * Inserta en la tabla interna SQlite empleadosPlaza los usuarios de las plazas a la que pertenece el usuario a loguearse
+   ** Inserta en la tabla interna SQlite empleadosPlaza los usuarios de las plazas a la que pertenece el usuario a loguearse
    * que se recibieron del SQL Server
    * @param empleados 
    */
@@ -277,16 +269,42 @@ export class AuthService {
 
 
   /**
-   * Metodo que guarda en el storage los campos del usuario con la informacion obtenida de firebase
-   * estos campos ya necesitan estar en firebase al momento de crear el usuario
-   * @param userInfo (Infotmacion de firebase del usuario que se intenta loguear)
+   ** Metodo que guarda en el storage los campos del usuario con la informacion obtenida de firebase
+   * @param userInfo (Informacion de firebase del usuario que se intenta loguear)
    */
   saveUserInfoStorage(userInfo: any) {
     this.storage.set('Nombre', userInfo.name);
     this.storage.set('Email', userInfo.email);
     this.storage.set('IdAspUser', userInfo.idaspuser)
     this.storage.set('Password', userInfo.password)
+  }
 
+
+  async getPhotoUser(url_foto: string) {
+    return new Promise((resolve, reject) => {
+      this.getUrlFoto(url_foto).subscribe((response: Blob) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const imageBase64 = reader.result;
+          this.photo_user = imageBase64.toString()
+          await this.storage.set('Foto', this.photo_user)
+        };
+        if (response) {
+          reader.readAsDataURL(response);
+          resolve('Photo get');
+        }
+      }, (error => {
+        console.log(error)
+        reject(error)
+      }))
+    })
+
+  }
+
+
+  getUrlFoto(url_foto: any) {
+    console.log(url_foto)
+    return this.http.get(url_foto, { responseType: 'blob' })
   }
 
   /**
@@ -298,7 +316,7 @@ export class AuthService {
   }
 
   /**
-   * Metodo que actualiza el documento del usuario en firebase de los campos IMEI y lastSession vez que inicio sesion
+   ** Metodo que actualiza el documento del usuario en firebase de los campos IMEI y lastSession vez que inicio sesion
    * @param id 
    */
   async saveDataCell(id) {
@@ -335,56 +353,9 @@ export class AuthService {
     }
   }
 
-  /**
-   * Metodo para registrar un usuario, ahorita no se ocupa ya que el usuario se creara desde la web
-   * @param email 
-   * @param password 
-   * @param name 
-   * @param idplaza 
-   * @param idrol 
-   * @param idaspuser 
-   * @param rol 
-   * @param plaza 
-   * @param idUserChecador 
-   * @param imgAvatar 
-   * @returns Promise
-   */
-  register(email: string, password: string, name: string, idplaza: string, idrol: number, idaspuser: string, rol: string, plaza: string, idUserChecador: number, imgAvatar: string) {
-
-    return new Promise((resolve, reject) => {
-
-      this.firebaseAuth.createUserWithEmailAndPassword(email, password).then(res => {
-        const uid = res.user.uid;
-
-        this.firestore.collection('usersErpp').doc(uid).set({
-          name: name,
-          email: email,
-          password: password,
-          idplaza: idplaza,
-          idrol: idrol,
-          idaspuser: idaspuser,
-          uid: uid,
-          rol: rol,
-          plaza: plaza,
-          idUserChecador: idUserChecador,
-          IMEI: "",
-          lastSession: "",
-          managedAccounts: 0,
-          totalAccounts: 0,
-          isActive: true,
-          isHide: false,
-          lastSync: '',
-          urlImage: "",
-          imgAvatar: imgAvatar
-        })
-        resolve(res)
-      }).catch(err => console.error(err));
-    })
-
-  }
 
   /**
-   * Metodo para cerrar sesion
+   ** Metodo para cerrar sesion
    */
   logout() {
     this.firebaseAuth.signOut().then(async () => {
