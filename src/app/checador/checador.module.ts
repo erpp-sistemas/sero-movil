@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ChecadorPageRoutingModule } from './checador-routing.module';
 
 import { ChecadorPage } from './checador.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ChecadorPageRoutingModule
+    ChecadorPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [ChecadorPage]
 })

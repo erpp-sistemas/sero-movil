@@ -40,6 +40,9 @@ Apache-2.0
 @firebase/util
 Apache-2.0
 
+@ionic-native/background-geolocation
+MIT
+
 @ionic-native/base64
 MIT
 
