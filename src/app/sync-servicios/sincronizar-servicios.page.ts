@@ -4,6 +4,7 @@ import { LoadingController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { MessagesService } from '../services/messages.service';
+import { RegisterService } from '../services/register.service';
 
 
 
@@ -23,7 +24,8 @@ export class SincronizarServiciosPage implements OnInit {
     private loadingCtrl: LoadingController,
     private router: Router,
     private message: MessagesService,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private registerService: RegisterService,
   ) { }
 
   ngOnInit() {
@@ -47,7 +49,7 @@ export class SincronizarServiciosPage implements OnInit {
   }
 
   async getInfoCuentas() {
-    this.accounts = await this.rest.getAccountsGestionesServicios();
+    this.accounts = await this.registerService.getAccountsGestionesServicios();
     console.log("Servicios publicos: ", this.accounts);
     if(this.accounts.length == 0) {
       this.message.showAlert("No tienes gestiones realizadas de servicios públicos!!!!");
@@ -56,7 +58,7 @@ export class SincronizarServiciosPage implements OnInit {
   }
 
   async getTotal() {
-    this.totalAccounts = await this.rest.getTotalGestionesServicios();
+    this.totalAccounts = await this.registerService.getTotalGestionesServicios();
     console.log("Total de gestiones " + this.totalAccounts);
   }
 
@@ -68,7 +70,7 @@ export class SincronizarServiciosPage implements OnInit {
     this.loading.present();
 
     // enviar toas las gestiones de todos los roles
-    await this.rest.sendServiciosPublicos();
+    await this.registerService.sendServiciosPublicos();
     
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');

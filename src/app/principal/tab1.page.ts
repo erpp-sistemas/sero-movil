@@ -5,7 +5,7 @@ import { Storage } from '@ionic/storage';
 import { Proceso } from '../interfaces/Procesos';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
-import { EncuestaGeneral } from '../interfaces';
+import { DataGeneral, EncuestaGeneral } from '../interfaces';
 import { DblocalService } from '../services/dblocal.service';
 
 @Component({
@@ -37,12 +37,12 @@ export class Tab1Page implements OnInit {
   constructor(
     private storage: Storage,
     private rest: RestService,
-    private dblocal: DblocalService,
     private loadinCtrl: LoadingController,
     private message: MessagesService,
     private platform: Platform,
     private router: Router,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private dbLocalService: DblocalService
   ) { }
 
 
@@ -80,18 +80,12 @@ export class Tab1Page implements OnInit {
    * Metodo que obtiene las plazas y los ids guardadas en el storage por auth.service
    */
   async obtenerPlazasUsuario() {
-
-    this.plazasServicios = await this.dblocal.obtenerPlazasSQL();
-
+    this.plazasServicios = await this.dbLocalService.obtenerPlazasSQL();
     // tomamos el primer registro para ponerlo como plaza default en el select
     if (this.plazasServicios.length > 0) {
       this.id_plaza = this.plazasServicios[0].id_plaza;
     }
-
     this.asignarServicios();
-
-    // * Obtener el catalogo de encuestas de las plazas
-
   }
 
   /**
@@ -99,7 +93,7 @@ export class Tab1Page implements OnInit {
    */
   async asignarServicios() {
     // En este punto ya se tiene el primer id_plaza obtenido de la base
-    this.servicios = await this.rest.mostrarServicios(this.id_plaza);
+    this.servicios = await this.dbLocalService.mostrarServicios(this.id_plaza);
     this.validaDescarga();
   }
 
@@ -132,7 +126,7 @@ export class Tab1Page implements OnInit {
    * @param servicio 
    */
   async actualizarEstatusDescarga(id_plaza, servicio) {
-    await this.rest.actualizaServicioEstatus(id_plaza, servicio);
+    await this.dbLocalService.actualizaServicioEstatus(id_plaza, servicio);
     this.asignarServicios();
   }
 
@@ -143,7 +137,7 @@ export class Tab1Page implements OnInit {
   async obtenerDatosUsuario() {
     this.nombre = await this.storage.get('Nombre');
     this.email = await this.storage.get('Email');
-    let img = await this.rest.obtenerFotoUserSQL();
+    let img = await this.dbLocalService.obtenerFotoUserSQL();
     this.imgUser = img[0].foto;
   }
 
@@ -242,11 +236,6 @@ export class Tab1Page implements OnInit {
       //peticion al sql por los procesos de gestion de la plaza
       this.getProcessByIdPlaza(this.id_plaza);
 
-      // peticion al sql del catalogo de los partidos politicos
-      this.getCatPartidosPoliticos();
-
-      // peticion al sql del catalogo de las alianzas politicas
-      this.getCatAlianzasPoliticas();
 
       this.message.showAlert("Se han descargado tus cuentas!!!!");
     } catch (error) {
@@ -264,12 +253,10 @@ export class Tab1Page implements OnInit {
    * @param id_plaza 
    * @param idServicioPlaza 
    */
-  async guardarDatosSQL(data, id_plaza, idServicioPlaza) {
-    console.log(id_plaza, idServicioPlaza)
-    console.log(data);
+  async guardarDatosSQL(data: DataGeneral[], id_plaza: number, id_servicio_plaza: number) {
     let cont = 0;
     for (let i = 0; i < data.length; i++) {
-      await this.rest.guardarInfoSQL(data[i], id_plaza, idServicioPlaza);
+      await this.dbLocalService.guardarInfoSQL(data[i], id_plaza, id_servicio_plaza);
       cont = cont + 1;
       this.progressTotal = cont / this.total;
     }
@@ -281,31 +268,9 @@ export class Tab1Page implements OnInit {
    * @param id_servicio_plaza 
    */
   async deleteInfo(id_plaza, id_servicio_plaza) {
-    await this.rest.deleteTable(id_plaza, id_servicio_plaza);
+    await this.dbLocalService.deleteTable(id_plaza, id_servicio_plaza);
   }
 
-
-  async getCatPartidosPoliticos() {
-    // traemos la informacion de los partidos politicos
-    let dataPartidosPoliticos = await this.rest.obtenerCatalogoPartidosPoliticos()
-    console.log(dataPartidosPoliticos);
-    // borramos la informacion del catalogo de partidos politicos
-    await this.rest.deleteCatPartidosPoliticos();
-    dataPartidosPoliticos.forEach(async (partido: any) => {
-      await this.rest.guardarInfoPartidosPoliticos(partido);
-    })
-  }
-
-  async getCatAlianzasPoliticas() {
-    // traemos la informacion de las alianzas politicas
-    let dataAlianzasPoliticas = await this.rest.obtenerCatalogoAlianzasPoliticas()
-    console.log(dataAlianzasPoliticas);
-    // borramos la informacion del catalogo de alianzas politicas
-    await this.rest.deleteCatAlianzasPoliticas();
-    dataAlianzasPoliticas.forEach(async (alianza: any) => {
-      await this.rest.guardarInfoAlianzasPoliticas(alianza)
-    })
-  }
 
   async getProcessByIdPlaza(id_plaza: number) {
     this.dataProcess = await this.rest.obtenerProcesosByIdPlaza(id_plaza);
@@ -316,13 +281,13 @@ export class Tab1Page implements OnInit {
     }
 
     // validamos si tenemos descargados procesos de la plaza asignada
-    const validacion = await this.rest.processPlazaExists(id_plaza);
+    const validacion = await this.dbLocalService.processPlazaExists(id_plaza);
     if (validacion) {
-      await this.rest.deleteProcessByIdPlaza(id_plaza);
+      await this.dbLocalService.deleteProcessByIdPlaza(id_plaza);
     }
 
     this.dataProcess.forEach(async process => {
-      let statusProcess = await this.rest.insertProcessTable(process);
+      let statusProcess = await this.dbLocalService.insertProcessTable(process);
       if (statusProcess) {
         this.message.showToast(`${process.nombre_proceso} listo...`);
       } else {
@@ -337,7 +302,7 @@ export class Tab1Page implements OnInit {
    */
   async goCuentasTab(idServicioPlaza) {
 
-    const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+    const plaza_servicio = await this.dbLocalService.mostrarServicios(this.id_plaza);
 
     await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
     await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);
@@ -351,7 +316,7 @@ export class Tab1Page implements OnInit {
    * @param idServicioPlaza 
    */
   async goMapTab(idServicioPlaza) {
-    const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+    const plaza_servicio = await this.dbLocalService.mostrarServicios(this.id_plaza);
 
     await this.storage.set('NombrePlazaActiva', plaza_servicio[0].plaza);
     await this.storage.set('IdPlazaActiva', plaza_servicio[0].id_plaza);

@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { SyncAccionesPageRoutingModule } from './sync-acciones-routing.module';
 
 import { SyncAccionesPage } from './sync-acciones.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SyncAccionesPageRoutingModule
+    SyncAccionesPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [SyncAccionesPage]
 })

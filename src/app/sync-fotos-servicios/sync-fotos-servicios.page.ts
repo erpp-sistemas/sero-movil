@@ -5,6 +5,7 @@ import { ImagePreviewPage } from '../image-preview/image-preview.page';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { PhotoService } from '../services/photo.service';
 
 @Component({
   selector: 'app-sync-fotos-servicios',
@@ -27,7 +28,8 @@ export class SyncFotosServiciosPage implements OnInit {
     private mensaje: MessagesService,
     private modalCtrl: ModalController,
     private router: Router,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private photoService: PhotoService
   ) { }
 
   async ngOnInit() {
@@ -43,7 +45,7 @@ export class SyncFotosServiciosPage implements OnInit {
 
     this.loading.present();
 
-    this.infoImages = await this.rest.getImagesLocalServicios();
+    this.infoImages = await this.photoService.getImagesLocalServicios();
 
     if (this.infoImages.length == 0) {
       this.mensaje.showAlert("No tienes fotos a sincronizar");
@@ -54,13 +56,13 @@ export class SyncFotosServiciosPage implements OnInit {
   }
 
   async getTotalFotos() {
-    this.totalFotos = await this.rest.getTotalFotosServicios();
+    this.totalFotos = await this.photoService.getTotalFotosServicios();
     console.log("Total fotos servicios" + this.totalFotos);
   }
 
 
   syncFotos() {
-    this.rest.uploadPhotosServicios().then(() => {
+    this.photoService.uploadPhotosServicios().then(() => {
       console.log("Se mandaron las fotos");
       this.router.navigateByUrl('/sincronizar-fotos');
     })

@@ -29,7 +29,8 @@ export class CardPreferenciaElectoralComponent implements OnInit {
   }
 
   async getAlianzasPoliticas() {
-    let data = await this.rest.obtenerAlianzasPoliticasLocal();
+    //let data = await this.rest.obtenerAlianzasPoliticasLocal();
+    let data = []
     this.alianzasPoliticas = data
   }
 

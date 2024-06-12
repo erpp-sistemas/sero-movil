@@ -9,6 +9,9 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotosHistoryPage } from '../photos-history/photos-history.page';
+import { DblocalService } from '../services/dblocal.service';
+import { PhotoService } from '../services/photo.service';
+import { RegisterService } from '../services/register.service';
 
 @Component({
   selector: 'app-gestion-inspeccion-agua',
@@ -121,7 +124,10 @@ export class GestionInspeccionAguaPage implements OnInit {
     private navCtrl: NavController,
     private router: Router,
     private callNumber: CallNumber,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private dbLocalService: DblocalService,
+    private photoService: PhotoService,
+    private registerService: RegisterService
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -280,7 +286,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.inspectores = true;
     this.nombreInspectorLogueado = await this.storage.get('Nombre');
     try {
-      this.nombreInspectores = await this.rest.mostrarEmpleadosPlaza(this.id_plaza);
+      this.nombreInspectores = await this.dbLocalService.mostrarEmpleadosPlaza(this.id_plaza);
       console.log(this.nombreInspectores);
     } catch (error) {
       console.log("Error al traer los datos de los inspectores")
@@ -298,7 +304,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     //console.log("Cuenta guardada en el storage: " , this.account);
     this.idAspuser = await this.storage.get("IdAspUser");
     //console.log("Idaspuser guardado en el storage: ", this.idAspuser);
-    this.infoAccount = await this.rest.getInfoAccount(this.account);
+    this.infoAccount = await this.dbLocalService.getInfoAccount(this.account);
     //console.log("InfoAccount: " , this.infoAccount);
     this.propietario = this.infoAccount[0].propietario;
     console.log("Propietario ", this.propietario);
@@ -348,7 +354,7 @@ export class GestionInspeccionAguaPage implements OnInit {
       }
     }
     //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
-    this.infoImage = await this.rest.getImageLocal(img);
+    this.infoImage = await this.photoService.getImageLocal(img);
     //console.log(this.infoImage[0]);
   }
 
@@ -512,7 +518,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   }
 
   saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
-    this.rest
+    this.photoService
       .saveImage(
         id_plaza,
         nombrePlaza,
@@ -634,7 +640,7 @@ export class GestionInspeccionAguaPage implements OnInit {
   async gestionInspeccion(data) {
     this.detectedChanges = false;
     //console.log(data);
-    await this.rest.gestionInspeccion(data);
+    await this.registerService.gestionInspeccion(data);
   }
 
 

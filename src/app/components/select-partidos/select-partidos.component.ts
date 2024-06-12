@@ -22,7 +22,7 @@ export class SelectPartidosComponent implements OnInit {
   }
 
   async obtenerInfoPartidosLocalesSQL() {
-    const data = await this.rest.obtenerPartidosPoliticosLocal();
+    const data = []
     this.partidosSQL = data;
   }
 

@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { SincronizarGestionesPageRoutingModule } from './sincronizar-gestiones-routing.module';
 
 import { SincronizarGestionesPage } from './sincronizar-gestiones.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SincronizarGestionesPageRoutingModule
+    SincronizarGestionesPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [SincronizarGestionesPage]
 })

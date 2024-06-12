@@ -9,13 +9,15 @@ import { ListadoCuentasPageRoutingModule } from './listado-cuentas-routing.modul
 import { ListadoCuentasPage } from './listado-cuentas.page';
 
 import { FiltroPipe } from '../pipes/filtro.pipe';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ListadoCuentasPageRoutingModule
+    ListadoCuentasPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [ListadoCuentasPage, FiltroPipe]
 })

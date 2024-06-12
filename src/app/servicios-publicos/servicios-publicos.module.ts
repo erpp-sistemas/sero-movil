@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ServiciosPublicosPageRoutingModule } from './servicios-publicos-routing.module';
 
 import { ServiciosPublicosPage } from './servicios-publicos.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ServiciosPublicosPageRoutingModule
+    ServiciosPublicosPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [ServiciosPublicosPage]
 })

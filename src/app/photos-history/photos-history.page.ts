@@ -37,11 +37,6 @@ export class PhotosHistoryPage implements OnInit {
   }
 
   async getPhotosInfo() {
-    // this.rest.getPhotosHistory(this.idPlaza, this.account).then( data => {
-    //   console.log(data);
-    //   this.imgs = data;
-    // })
-
     const loading = await this.loadingCtrl.create({
       message: 'Cargando las fotos...',
       spinner: 'dots'

@@ -13,6 +13,8 @@ import { Storage } from '@ionic/storage';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { BatteryStatus } from '@awesome-cordova-plugins/battery-status/ngx';
 import { DblocalService } from './services/dblocal.service';
+import { PhotoService } from './services/photo.service';
+import { RegisterService } from './services/register.service';
 
 
 @Component({
@@ -38,7 +40,9 @@ export class AppComponent {
     private statusBar: StatusBar,
     private sqlite: SQLite,
     private rest: RestService,
-    private dblocal: DblocalService,
+    private dblocalService: DblocalService,
+    private photoService: PhotoService,
+    private registerService: RegisterService,
     private androidPermissions: AndroidPermissions,
     private push: PushService,
     private backgroundGeolocation: BackgroundGeolocation,
@@ -86,13 +90,14 @@ export class AppComponent {
     }).then(async (db: SQLiteObject) => {
       // Pasando el db al servicio
       this.rest.setDatabase(db);
-      this.dblocal.setDatabase(db)
+      this.dblocalService.setDatabase(db)
+      this.photoService.setDatabase(db)
+      this.registerService.setDatabase(db)
 
       await db.executeSql(table.tableSero, []);
       await db.executeSql(table.tableInspeccion, []);
       await db.executeSql(table.tableCartaInvitacion, []);
       await db.executeSql(table.tableLegal, []);
-      await db.executeSql(table.tableInspeccionAntenas, []);
       await db.executeSql(table.tableServiciosPublicos, []);
       await db.executeSql(table.tableFotos, []);
       await db.executeSql(table.tableFotosServicios, []);
@@ -104,8 +109,6 @@ export class AppComponent {
       await db.executeSql(table.tableEncuesta, []);
       await db.executeSql(table.tableProcesoGestion, []);
       await db.executeSql(table.tableCortes, []);
-      await db.executeSql(table.tableCatalogoPartidos, []);
-      await db.executeSql(table.tableCatalogoAlianzas, []);
       await db.executeSql(table.tableCatalogoTareas, []);
       await db.executeSql(table.tableEncuestaGeneral, [])
       await db.executeSql(table.tableRegisterEncuestaGeneral, [])
@@ -162,7 +165,7 @@ export class AppComponent {
       let ionicDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
       let fecha = ionicDate.toISOString();
 
-      this.rest.saveLocation(lat, lng, idAspuser, fecha)//guarda localmente
+      this.dblocalService.saveLocation(lat, lng, idAspuser, fecha)//guarda localmente
       this.rest.guardarSQl(lat, lng, idAspuser, fecha);
 
     }

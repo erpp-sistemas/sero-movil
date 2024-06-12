@@ -4,10 +4,12 @@ import { Storage } from '@ionic/storage';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { MessagesService } from '../services/messages.service';
-import { ModalController, Platform, LoadingController } from '@ionic/angular';
+import { Platform, LoadingController } from '@ionic/angular';
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { Router } from '@angular/router';
 import { DblocalService } from '../services/dblocal.service';
+import { PhotoService } from '../services/photo.service';
+import { RegisterService } from '../services/register.service';
 
 
 @Component({
@@ -63,14 +65,16 @@ export class ServiciosPublicosPage implements OnInit {
   constructor(
     private storage: Storage,
     private rest: RestService,
-    private dblocal: DblocalService,
     private camera: Camera,
     private webview: WebView,
     private mensaje: MessagesService,
     private geolocation: Geolocation,
     private platform: Platform,
     private loadingController: LoadingController,
-    private router: Router
+    private router: Router,
+    private dbLocalService: DblocalService,
+    private photoService: PhotoService,
+    private registerService: RegisterService
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
     //this.imgs2 = [{ imagen: "assets/img/imgs.png" }];
@@ -95,7 +99,7 @@ export class ServiciosPublicosPage implements OnInit {
 
 
   async obtenerPlazasUsuario() {
-    this.plazasServicios = await this.dblocal.obtenerPlazasSQL();
+    this.plazasServicios = await this.dbLocalService.obtenerPlazasSQL();
     console.log(this.plazasServicios);
 
     // tomamos el primer registro para ponerlo como defauult en el select
@@ -134,13 +138,13 @@ export class ServiciosPublicosPage implements OnInit {
     //   }
     // }
     //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
-    this.infoImage = await this.rest.getImageLocalServicios(img);
+    this.infoImage = await this.photoService.getImageLocalServicios(img);
     console.log(this.infoImage[0]);
   }
 
   async resultPlaza(event) {
     let idPlaza = event.detail.value;
-    let servicios = await this.rest.mostrarServicios(idPlaza);
+    let servicios = await this.dbLocalService.mostrarServicios(idPlaza);
     this.nombrePlaza = servicios[0].plaza;
     console.log(this.id_plaza);
     this.mostrarServiciosPublicos(this.id_plaza);
@@ -288,7 +292,7 @@ export class ServiciosPublicosPage implements OnInit {
   // }
 
   saveImage(id_plaza, idAspUser, image, fecha, rutaBase64, tipo, idServicioMandar, nombrePlaza) {
-    this.rest
+    this.photoService
       .saveImageServicios(
         id_plaza,
         idAspUser,
@@ -425,7 +429,7 @@ export class ServiciosPublicosPage implements OnInit {
 
 
   async gestionServiciosPublicos(data) {
-    await this.rest.gestionServiciosPublicos(data);
+    await this.registerService.gestionServiciosPublicos(data);
     console.log(data);
     this.borrarCampos();
     this.router.navigateByUrl('/home');
@@ -444,7 +448,7 @@ export class ServiciosPublicosPage implements OnInit {
   }
 
   async mostrarServiciosPublicos(id_plaza) {
-    this.listaServiciosPublicos = await this.rest.mostrarServiciosPublicos(id_plaza);
+    this.listaServiciosPublicos = await this.dbLocalService.mostrarServiciosPublicos(id_plaza);
     console.log(this.listaServiciosPublicos);
   }
 

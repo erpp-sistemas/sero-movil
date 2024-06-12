@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { LoadingController } from '@ionic/angular';
 import { RestService } from '../services/rest.service';
+import { DblocalService } from '../services/dblocal.service';
+import { RegisterService } from '../services/register.service';
 
 @Component({
   selector: 'app-sincronizar-gestiones',
@@ -18,7 +20,9 @@ export class SincronizarGestionesPage implements OnInit {
     private router: Router,
     private callNumber: CallNumber,
     private rest: RestService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private dbLocalService: DblocalService,
+    private registerService: RegisterService
   ) { }
 
   async ngOnInit() {
@@ -31,7 +35,7 @@ export class SincronizarGestionesPage implements OnInit {
   // }
 
   async obtenerServicios() {
-    this.servicios = await this.rest.mostrarServiciosAll();
+    this.servicios = await this.dbLocalService.mostrarServiciosAll();
     console.log(this.servicios);
   }
 
@@ -43,14 +47,12 @@ export class SincronizarGestionesPage implements OnInit {
 
     await this.loading.present();
 
-    await this.rest.sendInspeccion();
-    await this.rest.sendCartaInvitacion();
-    await this.rest.sendCortes();
-    await this.rest.sendLegal();
-    await this.rest.sendInspeccionAntenas();
-    await this.rest.sendEncuesta();
+    await this.registerService.sendInspeccion();
+    await this.registerService.sendCartaInvitacion();
+    await this.registerService.sendCortes();
+    await this.registerService.sendLegal();
 
-    await this.rest.sendServiciosPublicos();
+    await this.registerService.sendServiciosPublicos();
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
   }

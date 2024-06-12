@@ -53,7 +53,6 @@ export class PushService {
   async updateUserIdPushSQL() {
     let idUsuario = await this.storage.get('IdAspUser');
     let sql = `${this.apiUpdateUserIdPushSQL} ${idUsuario}, '${this.userId}'`;
-    console.log(sql);
     try {
       this.http.post(sql, null).subscribe((data) => {
         console.log(data);

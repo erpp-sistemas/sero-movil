@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { SyncFotosAccionesPageRoutingModule } from './sync-fotos-acciones-routing.module';
 
 import { SyncFotosAccionesPage } from './sync-fotos-acciones.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SyncFotosAccionesPageRoutingModule
+    SyncFotosAccionesPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [SyncFotosAccionesPage]
 })

@@ -7,6 +7,7 @@ import { RestService } from '../services/rest.service';
 import { MessagesService } from '../services/messages.service';
 import { Storage } from '@ionic/storage';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { DblocalService } from '../services/dblocal.service';
 
 @Component({
   selector: 'app-listado-cuentas',
@@ -36,7 +37,8 @@ export class ListadoCuentasPage implements OnInit {
     private message: MessagesService,
     private activeRoute: ActivatedRoute,
     private storage: Storage,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private dbLocalService: DblocalService
   ) { }
 
   /**
@@ -77,8 +79,8 @@ export class ListadoCuentasPage implements OnInit {
    * @param idServicioPlaza 
    */
   async getInfo(id_plaza, idServicioPlaza) {
-    this.total = await this.rest.getTotalAccounts(id_plaza, idServicioPlaza);
-    this.gestionadas = await this.rest.getGestionadas(id_plaza, idServicioPlaza);
+    this.total = await this.dbLocalService.getTotalAccounts(id_plaza, idServicioPlaza);
+    this.gestionadas = await this.dbLocalService.getGestionadas(id_plaza, idServicioPlaza);
   }
 
   /**
@@ -88,10 +90,10 @@ export class ListadoCuentasPage implements OnInit {
    */
   async getInfoCuentas(id_plaza, idServicioPlaza) {
     this.account = null;
-    this.account = await this.rest.cargarListadoCuentas(id_plaza, idServicioPlaza);
+    this.account = await this.dbLocalService.cargarListadoCuentas(id_plaza, idServicioPlaza);
 
     this.accountBusqueda = null;
-    this.accountBusqueda = await this.rest.cargarListadoCuentas(id_plaza, idServicioPlaza);
+    this.accountBusqueda = await this.dbLocalService.cargarListadoCuentas(id_plaza, idServicioPlaza);
 
 
     if (this.account.length == 0) {

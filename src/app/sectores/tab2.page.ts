@@ -39,7 +39,8 @@ export class Tab2Page implements OnInit {
     private rest: RestService,
     private dblocal: DblocalService,
     private auth: AuthService,
-    private platform: Platform
+    private platform: Platform,
+    private dbLocalService: DblocalService
   ) { }
 
   ngOnInit() {  
@@ -63,7 +64,7 @@ export class Tab2Page implements OnInit {
     // tomamos el primer registro para ponerlo como defauult en el select
     this.id_plaza = this.plazasServicios[0].id_plaza;
 
-    const servicios = await this.rest.mostrarServicios(this.id_plaza);
+    const servicios = await this.dbLocalService.mostrarServicios(this.id_plaza);
     
     // En este punto ya se tiene el primer id_plaza obtenido de la base
     this.mostrarServicios(servicios);
@@ -95,7 +96,7 @@ export class Tab2Page implements OnInit {
       this.selecciona = false;
     }
 
-    this.servicios = await this.rest.mostrarServicios(idPlaza);
+    this.servicios = await this.dbLocalService.mostrarServicios(idPlaza);
     this.mostrarServicios(this.servicios);
 
   }
@@ -103,13 +104,13 @@ export class Tab2Page implements OnInit {
   // viene del obtenerPlazasUsuario
   async mostrarServicios(servicios) {
     
-    this.servicios = await this.rest.mostrarServicios(this.id_plaza)
+    this.servicios = await this.dbLocalService.mostrarServicios(this.id_plaza)
 
   }
 
 
   async irListado(idServicioPlaza) {
-    const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+    const plaza_servicio = await this.dbLocalService.mostrarServicios(this.id_plaza);
     console.log(plaza_servicio);
 
 

@@ -6,6 +6,7 @@ import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { Network } from '@awesome-cordova-plugins/network/ngx';
+import { PhotoService } from '../services/photo.service';
 
 
 @Component({
@@ -23,7 +24,6 @@ export class SyncFotosAccionesPage implements OnInit {
   isHide: boolean = false
 
 
-
   constructor(
     private rest: RestService,
     private loadingCtrl: LoadingController,
@@ -31,7 +31,8 @@ export class SyncFotosAccionesPage implements OnInit {
     private modalCtrl: ModalController,
     private router: Router,
     private callNumber: CallNumber,
-    private network: Network
+    private network: Network,
+    private photoService: PhotoService,
   ) { }
 
   async ngOnInit() {
@@ -49,7 +50,7 @@ export class SyncFotosAccionesPage implements OnInit {
 
     this.loading.present();
 
-    this.infoImages = await this.rest.getImagesLocal();
+    this.infoImages = await this.photoService.getImagesLocal();
 
     if (this.infoImages.length == 0) {
       this.mensaje.showAlert("No tienes fotos a sincronizar");
@@ -60,7 +61,7 @@ export class SyncFotosAccionesPage implements OnInit {
   }
 
   async getTotalFotos() {
-    this.totalFotos = await this.rest.getTotalFotosAcciones();
+    this.totalFotos = await this.photoService.getTotalFotosAcciones();
     console.log("Fotos acciones ", this.totalFotos);
   }
 
@@ -85,7 +86,7 @@ export class SyncFotosAccionesPage implements OnInit {
 
     await loading.present();
 
-    await this.rest.uploadPhoto(id);
+    await this.photoService.uploadPhoto(id);
     this.getInfo();
     await this.getTotalFotos();
 
@@ -102,7 +103,7 @@ export class SyncFotosAccionesPage implements OnInit {
 
     loading.present();
 
-    this.rest.deletePhoto(id, rutaBase64);
+    this.photoService.deletePhoto(id, rutaBase64);
     this.getInfo();
     await this.getTotalFotos();
 
@@ -116,8 +117,7 @@ export class SyncFotosAccionesPage implements OnInit {
     if (typeNetwork !== 'wifi') {
       this.mensaje.showToastLarge("No estas conectado a una red wifi, recuerda que se recomienda enviar tus fotos con wifi")
     }
-    this.rest.uploadPhotos().then(() => {
-      //console.log("Se mandaron las fotos");
+    this.photoService.uploadPhotos().then(() => {
       this.router.navigateByUrl('/sincronizar-fotos');
     })
   }

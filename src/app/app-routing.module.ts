@@ -96,20 +96,12 @@ const routes: Routes = [
     loadChildren: () => import('./inicio-temp/inicio-temp.module').then( m => m.InicioTempPageModule)
   },
   {
-    path: 'mapa-google/:id/:id_plaza',
-    loadChildren: () => import('./mapa-google/mapa-google.module').then( m => m.MapaGooglePageModule)
-  },
-  {
     path: 'mapa-prueba/:id/:id_plaza',
-    loadChildren: () => import('./mapa-prueba/mapa-prueba.module').then( m => m.MapaPruebaPageModule)
+    loadChildren: () => import('./mapa-google/mapa-google.module').then( m => m.MapaPruebaPageModule)
   },
   {
     path: 'photos-history',
     loadChildren: () => import('./photos-history/photos-history.module').then( m => m.PhotosHistoryPageModule)
-  },
-  {
-    path: 'gestion-inspeccion-antena',
-    loadChildren: () => import('./gestion-inspeccion-antena/gestion-inspeccion-antena.module').then( m => m.GestionInspeccionAntenaPageModule)
   },
   {
     path: 'encuesta',
@@ -118,10 +110,6 @@ const routes: Routes = [
   {
     path: 'boton-panico',
     loadChildren: () => import('./boton-panico/boton-panico.module').then( m => m.BotonPanicoPageModule)
-  },
-  {
-    path: 'mapa-leaflet',
-    loadChildren: () => import('./mapa-leaflet/mapa-leaflet.module').then( m => m.MapaLeafletPageModule)
   },
   {
     path: 'push-notifications',
@@ -146,7 +134,8 @@ const routes: Routes = [
   {
     path: 'encuesta-general/:id_plaza/:id_encuesta',
     loadChildren: () => import('./encuesta-general/encuesta-general.module').then( m => m.EncuestaGeneralPageModule)
-  },  {
+  },
+  {
     path: 'sync-encuestas',
     loadChildren: () => import('./sync-encuestas/sync-encuestas.module').then( m => m.SyncEncuestasPageModule)
   },

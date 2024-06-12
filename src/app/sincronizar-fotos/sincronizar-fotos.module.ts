@@ -8,13 +8,15 @@ import { SincronizarFotosPageRoutingModule } from './sincronizar-fotos-routing.m
 
 import { SincronizarFotosPage } from './sincronizar-fotos.page';
 import { ImagePreviewPage } from '../image-preview/image-preview.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SincronizarFotosPageRoutingModule
+    SincronizarFotosPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [SincronizarFotosPage, ImagePreviewPage]
 })

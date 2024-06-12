@@ -1,44 +1,56 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GoogleMaps, GoogleMap, Marker, GoogleMapsAnimation, MyLocation, GoogleMapOptions, GoogleMapsMapTypeId, LatLng, MarkerIcon, HtmlInfoWindow, GoogleMapsEvent, Polyline } from '@ionic-native/google-maps';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LoadingController, Platform } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { Storage } from '@ionic/storage';
+import { DblocalService } from '../services/dblocal.service';
 
+interface WayPoint {
+  location: {
+    lat: number,
+    lng: number,
+  };
+  stopover: boolean;
+}
+
+declare var google;
 @Component({
-  selector: 'app-mapa-google',
+  selector: 'app-mapa-prueba',
   templateUrl: './mapa-google.page.html',
   styleUrls: ['./mapa-google.page.scss'],
 })
-export class MapaGooglePage implements OnInit {
+export class MapaPruebaPage implements OnInit {
 
-  map: GoogleMap;
-  loading: any;
-  latitud: string;
-  longitud: string;
+  latitud = 19.261870;
+  longitud = -98.895795;
+  map: any;
   markersArrayInfo: any;
+  loading: any;
   idServicioPlaza: any;
   id_plaza: any;
-  cuentasDistancia: any
-
-  frame: HTMLElement;
-  htmlInfoWindow: any;
-
-  accountString: string = "";
+  infoWindows: any = [];
+  cuentasDistancia: any;
+  positionActual: any;
+  accountString: string = '';
   result: any[];
+
+  wayPoints: WayPoint[] = [];
 
 
   constructor(
-    private platform: Platform,
-    private loadingCtrl: LoadingController,
+    private geolocation: Geolocation,
     private rest: RestService,
     private mensaje: MessagesService,
     private router: Router,
+    private loadingCtrl: LoadingController,
+    private platform: Platform,
     private activeRoute: ActivatedRoute,
     private callNumber: CallNumber,
-    private storage: Storage
+    private storage: Storage,
+    private dbLocalService: DblocalService
   ) { }
 
   mapStyle =
@@ -123,8 +135,6 @@ export class MapaGooglePage implements OnInit {
       },
     ]
 
-
-
   async ngOnInit() {
     await this.platform.ready();
     console.log(this.activeRoute.snapshot.paramMap.get('id'));
@@ -134,7 +144,6 @@ export class MapaGooglePage implements OnInit {
     await this.getAccountInfo(this.id_plaza, this.idServicioPlaza);
   }
 
-
   isNight() {
     //Returns true if the time is between
     //7pm to 5am
@@ -143,14 +152,15 @@ export class MapaGooglePage implements OnInit {
   }
 
 
+
   async getAccountInfo(id_plaza, idServicioPlaza) {//realiza la carga de informacion que existe en la base interna sqlite
 
     console.log("GetAccountInfo");
-    this.markersArrayInfo = await this.rest.getDataVisitPosition(id_plaza, idServicioPlaza);
-
+    this.markersArrayInfo = await this.dbLocalService.getDataVisitPosition(id_plaza, idServicioPlaza);
+    console.log(this.markersArrayInfo);
     if (this.markersArrayInfo.length <= 0) {
       // await this.setMarkers(this.markersArrayInfo);  
-      this.mensaje.showAlert('Tienes que descargar información para visualizar las cuentas en el mapa!!!!')
+      this.mensaje.showAlert('Tienes que descargar información para visualizar las cuentas en el mapa, o tus cuentas aún no tienen posición')
       this.router.navigateByUrl('/home');
       // this.toggleMenu();
     } else {
@@ -158,63 +168,45 @@ export class MapaGooglePage implements OnInit {
         message: 'Cargando cuentas en el mapa...'
       });
       await this.loading.present();
+
       await this.setMarkers(this.markersArrayInfo);
     }
 
   }
 
-  setMarkers(data) {//realiza un ciclo para la carga de los markers 
-    console.log("Set markers");
-    let array = []
+  async setMarkers(data) {
+    let array = [];
     for (let markers of data) {
-      let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
+      let latlng = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
       let marker = {
         position: latlng,
         cuenta: markers.cuenta,
         propietario: markers.propietario,
-        deuda: markers.total
+        deuda: markers.total,
+        id_proceso: markers.id_proceso,
+        proceso_gestion: markers.proceso_gestion,
+        url_aplicacion_movil: markers.url_aplicacion_movil,
+        icono_proceso: markers.icono_proceso
       }
-      array.push(marker)
+
+      array.push(marker);
+
+      // Se llenaba el waypoints cuando se hizo la primera vez que solo habia 25 cuentas
+      // this.wayPoints.push({
+      //   location: {
+      //     lat: parseFloat(markers.latitud),
+      //     lng: parseFloat(markers.longitud)
+      //   },
+      //   stopover: true
+      // })
 
     }
-    console.log("array", array)
-    this.loadMap(array)
+    // console.log("array", array);
+    // console.log("wayPoints", this.wayPoints);
+    this.initMap(array);
   }
 
-  detalleCuenta(data) {
-    // ventana
-    console.log(data);
-    this.htmlInfoWindow = new HtmlInfoWindow();
-
-    this.frame = document.createElement('div');
-    this.frame.innerHTML = [
-      '<div style="text-align:center"> <img style="width:30px; height:30px" src="assets/icon/sero.png"> </div>',
-      '<h3 style="font-size:16px; text-align:center">Información de la cuenta</h3>',
-      '<p style="font-size:14px"> <strong> Cuenta: </strong> ' + data.cuenta + '</p>',
-      '<p style="font-size:14px"> <strong> Propietario: </strong> ' + data.propietario + '</p>',
-      '<p style="font-size:14px"> <strong> Deuda: </strong>$ ' + data.deuda + '</p>',
-      '<button style="background-color: rgb(0,200,0); width: 95%; padding: 10px 0; color:white; border-radius:10px" ' +
-      '>Gestionar</button>'
-    ].join("");
-    this.frame.getElementsByTagName("button")[0].addEventListener("click", () => {
-      //this.htmlInfoWindow.setBackgroundColor('red');
-      this.gestionar(data.cuenta);
-    });
-
-
-    this.htmlInfoWindow.setContent(this.frame, {
-      width: "280px",
-      height: "230px",
-    });
-  }
-
-  gestionar(cuenta) {
-    console.log("Cuenta ", cuenta);
-    this.storage.set('account', cuenta);
-    this.router.navigateByUrl("/gestion-page");
-  }
-
-  async loadMap(array) {
+  async initMap(array) {
 
     let style = [];
 
@@ -223,23 +215,19 @@ export class MapaGooglePage implements OnInit {
       style = this.mapStyle
     }
 
-    let options: GoogleMapOptions = {
-      mapType: GoogleMapsMapTypeId.HYBRID,
-      controls: {
-        compass: true,
-        myLocationButton: true,
-        myLocation: true,
-        mapToolbar: true,
-      },
-      gestures: {
-        scroll: true,
-        tilt: true,
-        zoom: true,
-        rotate: true
-      },
+    const position = await this.geolocation.getCurrentPosition();
+
+    let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    console.log("latlng", latLng);
+
+    let options = {
+      center: latLng,
+      zoom: 12,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
       styles: style
     }
-    this.map = GoogleMaps.create('map_canvas', options);
+
+    this.map = new google.maps.Map(document.getElementById('map_canvas'), options);
 
     this.loading.dismiss();
 
@@ -250,209 +238,413 @@ export class MapaGooglePage implements OnInit {
 
     this.loading.present();
 
-    // obtener la ubicacion
-    this.map.getMyLocation().then((location: MyLocation) => {
 
-      this.loading.dismiss();
-      console.log(JSON.stringify(location, null, 2));
-      this.latitud = location.latLng.lat.toString();
-      this.longitud = location.latLng.lng.toString();
+    this.latitud = position.coords.latitude;
+    this.longitud = position.coords.longitude;
 
-      // mover la camara del mapa a la ubicacion con una animacion
-      this.map.animateCamera({
-        target: location.latLng,
-        zoom: 12,
-        tilt: 30
-      });
+    // icono de la ubicacion actual
+    let iconUbicacion = {
+      url: './assets/icon/sero.png',
+      scaledSize: new google.maps.Size(30, 30)
+    }
+
+    // marcador de la ubicacion actual
+    let marker = new google.maps.Marker({
+      map: this.map,
+      animation: google.maps.Animation.DROP,
+      position: this.map.getCenter(),
+      icon: iconUbicacion
+    });
+
+    this.loading.dismiss();
+
+    this.addInfoWindowUbicacion(marker);
+
+    // icono de los marcadores
+    let urlIcon = '';
+    let iconSize;
+
+    if (this.idServicioPlaza == 1) {
+      urlIcon = './assets/icon/gota.png'
+      iconSize = new google.maps.Size(30, 30)
+    } else if (this.idServicioPlaza == 2) {
+      urlIcon = './assets/icon/icono-predio.png'
+      iconSize = new google.maps.Size(30, 30)
+    } else if (this.idServicioPlaza == 3) {
+      urlIcon = './assets/icon/antena.png'
+      iconSize = new google.maps.Size(30, 30)
+    } else if (this.idServicioPlaza == 4) {
+      urlIcon = './assets/icon/comercio.png'
+      iconSize = new google.maps.Size(60, 30)
+    }
+
+    // marcadores de los puntos
+    let icon = {
+      url: urlIcon,
+      scaledSize: iconSize
+    };
 
 
-      // icono de la ubicacion
-      let iconUbicacion: MarkerIcon = {
-        url: './assets/icon/sero.png',
-        size: {
-          width: 30,
-          height: 30
-        }
-      }
+    for (let m of array) {
+      let marker = new google.maps.Marker({
+        map: this.map,
+        position: m.position,
+        icon: icon
+      })
 
-      let marker: Marker = this.map.addMarkerSync({
-        title: 'Mi ubicación actual',
-        position: location.latLng,
-        animation: GoogleMapsAnimation.BOUNCE,
-        icon: iconUbicacion
-      });
+      this.addInfoWindow(marker, m);
 
-      // show the infoWindow
-      marker.showInfoWindow();
+    }
 
-      // icon de los puntos
-      let urlIcon = './assets/icon/icono-predio.png';
+  }
 
-      if (this.idServicioPlaza == 1) {
-        urlIcon = './assets/icon/gota.png'
-      } else if (this.idServicioPlaza == 2) {
-        urlIcon = './assets/icon/icono-predio.png'
-      }
 
-      // marcadores de los puntos
-      let icon: MarkerIcon = {
-        url: urlIcon,
-        size: {
-          width: 35,
-          height: 35
-        }
-      };
+  addInfoWindowUbicacion(marker) {
+    let infoWindow = new google.maps.InfoWindow({
+      content: `
+        <div style="text-align:center;">
+          <p>Ubicación actual</p>
+        </div>
+      `
+    });
 
-      for (let m of array) {
-        let marker: Marker = this.map.addMarkerSync({
-          position: m.position,
-          icon: icon
-        })
-
-        marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-          console.log(m.cuenta);
-          console.log(m.deuda);
-          this.detalleCuenta(m);
-          this.htmlInfoWindow.open(marker);
-        })
-
-      }
-
-    }).catch(error => {
-      console.log(error);
-      this.loading.dismiss();
+    marker.addListener('click', () => {
+      this.closeAllInfoWindow();
+      infoWindow.open(this.map, marker);
     })
 
   }
 
-  async trazarRuta() {
 
-    let array = []
-    for (let markers of this.markersArrayInfo) {
-      let latlng = new LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud))
-      let marker = {
-        position: latlng,
-        cuenta: markers.cuenta,
-        propietario: markers.propietario,
-        deuda: markers.total
-      }
-      array.push(marker)
+  addInfoWindow(marker, m) {
 
-    }
 
-    setTimeout(() => {
-      this.loading.dismiss();
-
-      this.addPolylines(array);
-    }, 2000);
-
-    this.loading = await this.loadingCtrl.create({
-      message: 'Trazando ruta...',
-      spinner: 'dots'
+    let infoWindow = new google.maps.InfoWindow({
+      content: `
+        <div style="text-align:center;">
+          <img style="width:40px;" src="assets/icon/sero.png" alt="">
+          <h6 style="color:black">Información de la cuenta</h6>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Cuenta: </span> ${m.cuenta} </p>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Propietario: </span> ${m.propietario} </p>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Deuda: </span>$${m.deuda} </p>
+          <p style="color:black"> <span style="font-weight: bold; paddin: 0; margin:1px">Proceso: </span>${m.proceso_gestion} </p>
+          <ion-button color="success" id="btnGestionar"  >Gestionar</ion-button>
+        </div>
+      `
     });
 
-    this.loading.present();
+    marker.addListener('click', () => {
+      this.closeAllInfoWindow();
+      infoWindow.open(this.map, marker);
+
+      google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
+        document.getElementById('btnGestionar').addEventListener('click', () => {
+          // metodo para ir a la gestion
+          console.log(m);
+          this.gestionar(m);
+        })
+      })
+
+    });
+    this.infoWindows.push(infoWindow)
+  }
+
+  closeAllInfoWindow() {
+    for (let window of this.infoWindows) {
+      window.close();
+    }
+  }
+
+  async gestionar(item) {
+    let { cuenta, id_proceso, proceso_gestion, url_aplicacion_movil, icono_proceso } = item;
+    console.log("Cuenta ", cuenta);
+    await this.storage.set('account', cuenta);
+    await this.storage.set('id_proceso', id_proceso);
+    await this.storage.set('proceso_gestion', proceso_gestion);
+    await this.storage.set('icono_proceso', icono_proceso);
+
+    /**
+    * Ya no se muestra la pantalla de gestion-page al ya traer el icono, el nombre, el id y la ruta del proceso
+    */
+    // this.router.navigateByUrl("/gestion-page");
+
+    this.router.navigateByUrl(url_aplicacion_movil);
   }
 
 
-  addPolylines(array) {
-
-    console.log(array);
-
-    let latlngPosition = new LatLng(parseFloat(this.latitud), parseFloat(this.longitud))
-    console.log(latlngPosition)
-    
-
-    let arrayPolyline = [];
-
-    arrayPolyline.push(latlngPosition);
-
-    for (let p of array) {
-      arrayPolyline.push(p.position);
-    }
-
-    console.log(arrayPolyline);
-
-    let polyline: Polyline = this.map.addPolylineSync({
-      points: arrayPolyline,
-      color: '#0995F2',
-      width: 10,
-      geodesic: true,
-      clickable: true  // clickable = false in default
-    })
-
-    polyline.on(GoogleMapsEvent.POLYLINE_CLICK).subscribe((params: any) => {
-      let position: LatLng = <LatLng>params[0];
-      this.map.addMarker({
-        position: position,
-        title: position.toUrlValue(),
-        disableAutoPan: true
-      }).then((marker: Marker) => {
-        marker.showInfoWindow();
-      });
-    });
-  }
 
 
-  async obtenerDistancias() {
+  // Metodo que traza solo una ruta para cuando solo se tengan menos de 25 cuentas en la asignacion
+  // No se usa en este momento
+  // async trazarRuta() {
+
+  //   var directionsService = new google.maps.DirectionsService();
+  //   var directionsDisplay = new google.maps.DirectionsRenderer();
+
+
+  //   this.loading = await this.loadingCtrl.create({
+  //     message: 'Trazando la ruta...',
+  //     spinner: 'dots'
+  //   });
+
+  //   await this.loading.present();
+
+
+  //   //let idAspUser = await this.storage.get("IdAspUser");
+
+  //   const currentPosition = await this.geolocation.getCurrentPosition();
+
+  //   // posicion actual
+  //   this.positionActual = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
+
+  //   setTimeout(() => {
+  //     //let targetPosition = new google.maps.LatLng(this.cuentasDistancia[0].latitud, this.cuentasDistancia[0].longitud)
+
+  //     let request = {
+  //       origin: this.positionActual,
+  //       destination: this.positionActual,
+  //       waypoints: this.wayPoints,
+  //       optimizeWaypoints: true,
+  //       travelMode: google.maps.TravelMode.WALKING,
+  //     }
+
+  //     directionsService.route(request, (result, status) => {
+  //       if (status == 'OK') {
+  //         directionsDisplay.setDirections(result);
+  //       }
+  //     });
+
+  //     this.loading.dismiss();
+
+  //     directionsDisplay.setMap(this.map)
+  //   }, 1500)
+
+
+  // }
+
+  // Metodo que manda calcula rutas de 23 en 23
+  // No se esta ocupando en este momento 
+  // async obtenerDistanciasCuentas() {
+
+  //   let idAspUser = await this.storage.get("IdAspUser");
+
+  //   this.cuentasDistancia =
+  //     await this.rest.obtenerCuentasDistancias(idAspUser, this.id_plaza, this.idServicioPlaza, this.latitud, this.longitud)
+
+  //   console.log("Cuentas distancia");
+  //   console.log(this.cuentasDistancia);
+
+  //   this.loading = await this.loadingCtrl.create({
+  //     message: 'Calculando ruta...',
+  //     spinner: 'dots'
+  //   })
+
+  //   this.loading.present();
+
+
+  //   setTimeout(async () => {
+
+  //     const currentPosition = await this.geolocation.getCurrentPosition();
+
+  //     // posicion actual
+  //     this.positionActual = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
+
+  //     let contador = 1;
+
+  //     let wayPointsContador = [];
+  //     var posicionInicial;
+  //     var posicionFinal;
+
+  //     for (let markers of this.cuentasDistancia) {
+  //       if (contador <= 23) {
+
+  //         wayPointsContador.push({
+  //           location: {
+  //             lat: parseFloat(markers.latitud),
+  //             lng: parseFloat(markers.longitud)
+  //           },
+  //           stopover: false
+  //         });
+
+  //         console.log("Se metio al wayPointsContador");
+
+  //         // Este metodo solo se ejecutara una que es en el primer bloque de los 23
+  //         if (markers.id == 23) {
+  //           console.log("Es el ultimo punto del primer bloque");
+  //           posicionFinal = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           console.log(posicionFinal);
+  //           this.calcularRuta(this.positionActual, posicionFinal, wayPointsContador);
+
+  //           // Resetamos los valores
+  //           wayPointsContador = [];
+  //           posicionInicial = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           contador = 1;
+  //           continue;
+  //         }
+
+
+  //         if (contador == 23 || this.cuentasDistancia.length == markers.id) {
+  //           // Ultimo punto
+  //           console.log("Es el ultimo punto del bloque dos en adelante");
+  //           posicionFinal = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           console.log(posicionFinal);
+  //           this.calcularRuta(posicionInicial, posicionFinal, wayPointsContador);
+
+  //           // Resetamos los valores
+  //           posicionInicial = new google.maps.LatLng(parseFloat(markers.latitud), parseFloat(markers.longitud));
+  //           wayPointsContador = [];
+  //           contador = 1;
+  //           continue;
+  //         }
+
+  //         contador++;
+  //       }
+  //     }
+  //     this.loading.dismiss();
+  //   }, 2000);
+
+
+  // }
+
+  // Metodo que traza la ruta de 25 cuentas cada que se utiliza
+  async trazarRutaParcial() {
 
     let idAspUser = await this.storage.get("IdAspUser");
 
+    let wayPointsParcial = [];
+    let positionFinal;
+
+    // Obtenemos las cuentas del sql server
     this.cuentasDistancia =
       await this.rest.obtenerCuentasDistancias(idAspUser, this.id_plaza, this.idServicioPlaza, this.latitud, this.longitud)
 
+    console.log(this.cuentasDistancia);
 
-    let array = []
+    // Esta van las cuentas que no estan gestionadas ya con una distancia
+    let cuentasDistanciaMostrar = [];
 
+    this.dbLocalService.getDataVisitPositionDistance(this.id_plaza, this.idServicioPlaza, this.cuentasDistancia).then((data: any[]) => {
+      cuentasDistanciaMostrar = data
+    })
 
-    for (let markers of this.cuentasDistancia) {
-      let latlng = new LatLng( markers.latitud , markers.longitud )
-      let marker = {
-        position: latlng
-        // cuenta: markers.cuenta,
-        // propietario: markers.propietario,
-        // total: markers.propietario
-      }
-      array.push(marker)
-
-    }
-
-
-    setTimeout(() => {
-      this.loading.dismiss();
-
-      this.addPolylines(array);
-    }, 2000);
 
     this.loading = await this.loadingCtrl.create({
-      message: 'Trazando ruta...',
+      message: 'Calculando la ruta de máximo 25 cuentas',
       spinner: 'dots'
     });
 
-    this.loading.present();
+    await this.loading.present();
 
+    setTimeout(async () => {
+
+      const currentPosition = await this.geolocation.getCurrentPosition();
+
+      // posicion actual
+      this.positionActual = new google.maps.LatLng(currentPosition.coords.latitude, currentPosition.coords.longitude);
+
+      console.log(cuentasDistanciaMostrar);
+
+      let total = cuentasDistanciaMostrar.length;
+
+
+      if (total >= 25) {
+        console.log("Tiene 25 o mas cuentas");
+        for (let i = 0; i <= 23; i++) {
+          wayPointsParcial.push({
+            location: {
+              lat: parseFloat(this.cuentasDistancia[i].latitud),
+              lng: parseFloat(this.cuentasDistancia[i].longitud)
+            },
+            stopover: false
+          })
+          if (i == 23) {
+            positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
+          }
+        }
+      } else {
+        console.log("Tienes menos de 25 cuentas");
+        for (let i = 0; i < total; i++) {
+          wayPointsParcial.push({
+            location: {
+              lat: parseFloat(this.cuentasDistancia[i].latitud),
+              lng: parseFloat(this.cuentasDistancia[i].longitud)
+            },
+            // vamos a meter false por que si tiene true pone los markers pero no deja seleccionar el 
+            // icono de la cuenta
+            stopover: false
+
+          })
+          if (i == (total - 1)) {
+            positionFinal = new google.maps.LatLng(parseFloat(this.cuentasDistancia[i].latitud), parseFloat(this.cuentasDistancia[i].longitud));
+          }
+        }
+      }
+
+      this.calcularRuta(this.positionActual, positionFinal, wayPointsParcial);
+
+      this.loading.dismiss();
+
+    }, 2000);
 
   }
+
+  // Metodo para calcular la ruta
+  calcularRuta(posicionInicial, posicionFinal, wayPoints) {
+
+    console.log("Calculando ruta");
+    console.log(wayPoints);
+
+    var directionsService = new google.maps.DirectionsService();
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+
+    let request = {
+      origin: posicionInicial,
+      destination: posicionFinal,
+      waypoints: wayPoints,
+      optimizeWaypoints: true,
+      travelMode: google.maps.TravelMode.WALKING,
+    }
+
+    directionsService.route(request, (result, status) => {
+      if (status == 'OK') {
+        directionsDisplay.setDirections(result);
+      }
+    });
+
+    directionsDisplay.setMap(this.map)
+
+  }
+
+
 
 
   async find() {
     if (this.accountString == "") {
       alert("Ingresa una cuenta")
     } else {
-
-      this.result = await this.rest.getDataVisitPositionByAccount(this.accountString);
+      this.result = await this.dbLocalService.getDataVisitPositionByAccount(this.accountString);
       console.log(this.result)
       if (this.result.length == 0) {
         alert("No hay resultados")
       } else {
-        let latLng = new LatLng(this.result[0].latitud, this.result[0].longitud)
-        console.log(latLng)
-        this.map.setCameraTarget(latLng)
-        this.map.setCameraZoom(20)
+
+        let latitud = parseFloat(this.result[0].latitud);
+        let longitud = parseFloat(this.result[0].longitud);
+
+        const cameraOptions = {
+          tilt: 0,
+          heading: 0,
+          zoom: 18,
+          center: { lat: latitud, lng: longitud },
+        };
+
+        this.map.moveCamera(cameraOptions);
+
+        // this.map.setCameraTarget(latLng)
+        // this.map.setCameraZoom(20)
       }
     }
   }
-
 
 
   navegar(tipo) {
@@ -472,7 +664,6 @@ export class MapaGooglePage implements OnInit {
 
     }
   }
-
 
 
 }

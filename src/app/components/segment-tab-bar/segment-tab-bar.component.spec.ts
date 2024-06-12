@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { GestionInspeccionAntenaPage } from './gestion-inspeccion-antena.page';
+import { SegmentTabBarComponent } from './segment-tab-bar.component';
 
-describe('GestionInspeccionAntenaPage', () => {
-  let component: GestionInspeccionAntenaPage;
-  let fixture: ComponentFixture<GestionInspeccionAntenaPage>;
+describe('SegmentTabBarComponent', () => {
+  let component: SegmentTabBarComponent;
+  let fixture: ComponentFixture<SegmentTabBarComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GestionInspeccionAntenaPage ],
+      declarations: [ SegmentTabBarComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GestionInspeccionAntenaPage);
+    fixture = TestBed.createComponent(SegmentTabBarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

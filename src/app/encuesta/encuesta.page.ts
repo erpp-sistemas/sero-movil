@@ -75,7 +75,7 @@ export class EncuestaPage implements OnInit {
     console.log(data);
     let estatus: string = ''
     try {
-      await this.rest.gestionEncuesta(data);
+      //await this.rest.gestionEncuesta(data);
       estatus = 'Realizado'
     } catch (error) {
       console.log(error);

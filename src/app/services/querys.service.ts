@@ -19,8 +19,6 @@ export class QuerysService {
 
     let tableLegal = `CREATE TABLE IF NOT EXISTS gestionLegal (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, account TEXT, persona_atiende TEXT, id_puesto INTEGER, otro_puesto TEXT, id_motivo_no_pago INTEGER, otro_motivo TEXT, id_tipo_servicio INTEGER, numero_niveles TEXT, color_fachada TEXT, color_puerta TEXT, referencia TEXT, id_tipo_predio INTEGER, entre_calle1 TEXT, entre_calle2 TEXT, observaciones TEXT, lectura_medidor TEXT, giro TEXT, idAspUser TEXT, id_tarea INTEGER, fecha_captura TEXT, latitud TEXT, longitud TEXT, id_servicio_plaza INTEGER, coloco_sello INTEGER, id_estatus_predio TEXT, cargado INTEGER NOT NULL DEFAULT 0)`
 
-    let tableInspeccionAntenas = `CREATE TABLE IF NOT EXISTS gestionInspeccionAntenas (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, account TEXT, propietario TEXT, personaAtiende TEXT, idPuesto INTEGER, otroPuesto TEXT, usoSuelo TEXT, idTipoAntena INTEGER, otroTipoAntena TEXT, idDetalleAntena INTEGER, otroDetalleAntena TEXT, idTipoComunicacion INTEGER, otroTipoComunicacion TEXT, numeroNiveles TEXT, colorFachada TEXT, colorPuerta TEXT, referencia TEXT, idTipoPredio INTEGER, entreCalle1 TEXT, entreCalle2 TEXT, hallazgoNinguna INTEGER, hallazgoNegaronAcceso INTEGER, hallazgoCambioUsoSuelo INTEGER, hallazgoRefrendoUsoSuelo INTEGER, hallazgoRezago INTEGER, idAspUser TEXT, idTarea INTEGER,  fechaCaptura TEXT, latitud TEXT, longitud TEXT, id_servicio_plaza INTEGER, cargado INTEGER NOT NULL DEFAULT 0)`
-
     let tableFotos = `CREATE TABLE IF NOT EXISTS capturaFotos (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, imagenLocal TEXT, cuenta TEXT,fecha TEXT,rutaBase64 TEXT,idAspUser TEXT,idTarea INTEGER,tipo TEXT,urlImagen TEXT,isSelected INTEGER NOT NULL DEFAULT 0,  id_servicio_plaza INTEGER, cargado INTEGER NOT NULL DEFAULT 0)`;
 
     let tableFotosServicios = `CREATE TABLE IF NOT EXISTS capturaFotosServicios (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza text, idAspUser TEXT, idServicio INTEGER, imagenLocal TEXT, fecha TEXT, rutaBase64 TEXT, tipo TEXT, urlImagen TEXT, isSelected INTEGER NOT NULL DEFAULT 0, cargado INTEGER NOT NULL DEFAULT 0)`;
@@ -39,14 +37,7 @@ export class QuerysService {
 
     let tableEncuesta =  `CREATE TABLE IF NOT EXISTS encuesta (id INTEGER PRIMARY KEY AUTOINCREMENT, idPlaza INTEGER, account TEXT, idAlianzaVotoEstadoMexico TEXT, idAlianzaVotoMunicipio TEXT, idVotoPartidoPoliticoEstadoMexico TEXT, idVotoPartidoPoliticoMunicipio TEXT, idVotoPartidoPoliticoPais TEXT, idServicioPlaza INTEGER, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
 
-    /**
-     * Esta tabla es para guardar los procesos de gestion ejemplo carta invitacion, ejecucion fiscal y demas
-     */
     let tableProcesoGestion = `CREATE TABLE IF NOT EXISTS proceso (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, id_proceso INTEGER, nombre_proceso TEXT, activo INTEGER, imagen TEXT, url_aplicacion_movil TEXT )`
-
-    let tableCatalogoPartidos = `CREATE TABLE IF NOT EXISTS cat_partidos_politicos (id INTEGER PRIMARY KEY AUTOINCREMENT, id_partido_politico INTEGER, nombre_partido_politico TEXT)`
-
-    let tableCatalogoAlianzas = `CREATE TABLE IF NOT EXISTS cat_alianzas_politicas (id INTEGER PRIMARY KEY AUTOINCREMENT, id_alianza_politica INTEGER, nombre_alianza_politica TEXT)`
 
     let tableCatalogoTareas = `CREATE TABLE IF NOT EXISTS cat_tarea (id INTEGER PRIMARY KEY AUTOINCREMENT, id_tarea INTEGER, nombre_tarea TEXT, id_proceso INTEGER)`
 
@@ -66,15 +57,12 @@ export class QuerysService {
       tableInspeccion,
       tableCartaInvitacion,
       tableLegal,
-      tableInspeccionAntenas,
       tableListaServiciosPublicos,
       tableEmpleadosPlaza,
       tableRecorrido,
       tableEncuesta,
       tableProcesoGestion,
       tableCortes,
-      tableCatalogoPartidos,
-      tableCatalogoAlianzas,
       tableCatalogoTareas,
       tableEncuestaGeneral,
       tableRegisterEncuestaGeneral,

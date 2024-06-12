@@ -3,12 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { LoadingController } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
-import { RestService } from '../services/rest.service';
 import { Storage } from '@ionic/storage';
 import { File } from '@ionic-native/file/ngx';
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
 import * as XLSX from 'xlsx';
 import { Proceso } from '../interfaces/Procesos';
+import { DblocalService } from '../services/dblocal.service';
+import { RegisterService } from '../services/register.service';
 
 
 @Component({
@@ -35,7 +36,6 @@ export class SyncAccionesPage implements OnInit {
   }
 
   constructor(
-    private rest: RestService,
     private router: Router,
     private loadingCtrl: LoadingController,
     private message: MessagesService,
@@ -43,7 +43,9 @@ export class SyncAccionesPage implements OnInit {
     private callNumber: CallNumber,
     private storage: Storage,
     private file: File,
-    private email: EmailComposer
+    private email: EmailComposer,
+    private dbLocalService: DblocalService,
+    private registerService: RegisterService
   ) { }
 
   ngOnInit() {
@@ -75,7 +77,7 @@ export class SyncAccionesPage implements OnInit {
 
 
   async getInfoCuentas(idServicioPlaza) {
-    this.gestiones = await this.rest.getAccountsGestiones(idServicioPlaza);
+    this.gestiones = await this.registerService.getAccountsGestiones(idServicioPlaza);
     console.log(this.gestiones);
     if (this.gestiones.length == 0) {
       this.message.showAlert("No tienes gestiones realizadas en este servicio!!!!");
@@ -91,12 +93,10 @@ export class SyncAccionesPage implements OnInit {
 
     await this.loading.present();
 
-    await this.rest.sendInspeccionByIdServicio(this.id_servicio_plaza);
-    await this.rest.sendCartaInvitacionByIdServicio(this.id_servicio_plaza);
-    await this.rest.sendLegalByIdServicio(this.id_servicio_plaza);
-    await this.rest.sendInspeccionAntenasByIdServicio(this.id_servicio_plaza);
-    await this.rest.sendEncuestaByIdServicio(this.id_servicio_plaza);
-    await this.rest.sendCortesByIdServicio(this.id_servicio_plaza);
+    await this.registerService.sendInspeccionByIdServicio(this.id_servicio_plaza);
+    await this.registerService.sendCartaInvitacionByIdServicio(this.id_servicio_plaza);
+    await this.registerService.sendLegalByIdServicio(this.id_servicio_plaza);
+    await this.registerService.sendCortesByIdServicio(this.id_servicio_plaza);
     this.loading.dismiss();
     this.router.navigateByUrl('home/tab1');
   }
@@ -113,17 +113,13 @@ export class SyncAccionesPage implements OnInit {
     await this.loading.present();
 
     if (rol == 'Inspección') {
-      await this.rest.sendInspeccionByIdServicioAccount(this.id_servicio_plaza, cuenta);
+      await this.registerService.sendInspeccionByIdServicioAccount(this.id_servicio_plaza, cuenta);
     } else if (rol === 'Carta invitación') {
-      await this.rest.sendCartaByIdServicioAccount(this.id_servicio_plaza, cuenta);
-      await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
+      await this.registerService.sendCartaByIdServicioAccount(this.id_servicio_plaza, cuenta);
     } else if (rol === 'Legal') {
-      await this.rest.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
-    } else if (rol === 'Inspección Antenas') {
-      await this.rest.sendInspeccionAntenasByIdServicioAccount(this.id_servicio_plaza, cuenta)
+      await this.registerService.sendLegalByIdServicioAccount(this.id_servicio_plaza, cuenta);
     } else if (rol === 'Cortes') {
-      await this.rest.sendCortesByIdServicioAccount(this.id_servicio_plaza, cuenta);
-      await this.rest.sendEncuestaByCuenta(this.id_servicio_plaza, cuenta);
+      await this.registerService.sendCortesByIdServicioAccount(this.id_servicio_plaza, cuenta);
     }
 
     this.loading.dismiss();
@@ -150,7 +146,7 @@ export class SyncAccionesPage implements OnInit {
 
     console.log(table);
 
-    const result = await this.rest.deleteAccountGestionGeneral(table, cuenta);
+    const result = await this.registerService.deleteAccountGestionGeneral(table, cuenta);
     console.log(result);
 
     this.listadoGestiones(this.id_servicio_plaza);
@@ -162,7 +158,7 @@ export class SyncAccionesPage implements OnInit {
   async selectType() {
     let id_plaza = await this.storage.get('IdPlazaActiva');
     console.log(id_plaza);
-    this.procesos = await this.rest.getProcessLocalByIdPlaza(Number(id_plaza));
+    this.procesos = await this.dbLocalService.getProcessLocalByIdPlaza(Number(id_plaza));
     console.log(this.procesos);
     this.openSelectType = true;
   }
@@ -184,7 +180,7 @@ export class SyncAccionesPage implements OnInit {
     console.log("enviando ", this.procesoSeleccionado);
     let tipo = this.procesosObj[this.procesoSeleccionado];
     console.log(tipo);
-    this.gestionesLocales = await this.rest.getGestionesLocalByIdServicio(this.id_servicio_plaza, tipo);
+    this.gestionesLocales = await this.dbLocalService.getGestionesLocalByIdServicio(this.id_servicio_plaza, tipo);
     console.log(this.gestionesLocales);
     this.createExcel();
   }

@@ -13,6 +13,7 @@ import { Enum, FaceCaptureResponse, FaceSDK, LivenessResponse, MatchFacesImage, 
 import { UsersService } from '../services/users.service'
 import { MessagesService } from '../services/messages.service';
 import { HistoryCheckingPage } from '../history-checking/history-checking.page';
+import { DblocalService } from '../services/dblocal.service';
 
 
 declare var google;
@@ -56,6 +57,7 @@ export class ChecadorPage implements OnInit {
     private userService: UsersService,
     private message: MessagesService,
     private modalController: ModalController,
+    private dbLocalService: DblocalService
   ) { }
 
   async ngOnInit() {
@@ -336,7 +338,7 @@ export class ChecadorPage implements OnInit {
 
       await this.loading.present()
 
-      let img = await this.rest.obtenerFotoUserSQL();
+      let img = await this.dbLocalService.obtenerFotoUserSQL();
       let url = img[0].foto;
       //url = 'https://scontent.fmex28-1.fna.fbcdn.net/v/t1.18169-9/21743117_1812963972077655_9068768826820206722_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=174925&_nc_ohc=WAOqPX7YOIgAX8zrNz8&_nc_ht=scontent.fmex28-1.fna&oh=00_AfDlppjmgxjawwl_CMxIAVQwlZq5ErZW-qHjUFW1egLAIg&oe=64A999D0'
 

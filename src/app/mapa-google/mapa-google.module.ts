@@ -4,17 +4,19 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { MapaGooglePageRoutingModule } from './mapa-google-routing.module';
+import { MapaPruebaPageRoutingModule } from './mapa-google-routing.module';
 
-import { MapaGooglePage } from './mapa-google.page';
+import { MapaPruebaPage } from './mapa-google.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MapaGooglePageRoutingModule
+    MapaPruebaPageRoutingModule,
+    ComponentsModule
   ],
-  declarations: [MapaGooglePage]
+  declarations: [MapaPruebaPage]
 })
-export class MapaGooglePageModule {}
+export class MapaPruebaPageModule {}

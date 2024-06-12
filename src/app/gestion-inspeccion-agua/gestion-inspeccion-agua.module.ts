@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { GestionInspeccionAguaPageRoutingModule } from './gestion-inspeccion-agua-routing.module';
 
 import { GestionInspeccionAguaPage } from './gestion-inspeccion-agua.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    GestionInspeccionAguaPageRoutingModule
+    GestionInspeccionAguaPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [GestionInspeccionAguaPage]
 })

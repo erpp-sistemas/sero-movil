@@ -10,6 +10,9 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 import { ChangeTaskPage } from '../change-task/change-task.page';
+import { DblocalService } from '../services/dblocal.service';
+import { PhotoService } from '../services/photo.service';
+import { RegisterService } from '../services/register.service';
 
 
 @Component({
@@ -107,7 +110,10 @@ export class GestionLegalPage implements OnInit {
     private webview: WebView,
     private navCtrl: NavController,
     private callNumber: CallNumber,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private dbLocalService: DblocalService,
+    private photoService: PhotoService,
+    private registerService: RegisterService
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -167,7 +173,7 @@ export class GestionLegalPage implements OnInit {
     this.nombreProceso = await this.storage.get('proceso_gestion');
     this.iconoProceso = await this.storage.get('icono_proceso');
     this.idAspUser = await this.storage.get("IdAspUser");
-    this.infoAccount = await this.rest.getInfoAccount(this.account);
+    this.infoAccount = await this.dbLocalService.getInfoAccount(this.account);
     this.idProceso = this.infoAccount[0].id_proceso
     this.propietario = this.infoAccount[0].propietario;
     this.idAccountSqlite = this.infoAccount[0].id;
@@ -372,7 +378,7 @@ export class GestionLegalPage implements OnInit {
   }
 
   saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspUser, idTarea, tipo, idServicioPlaza) {
-    this.rest.saveImage(
+    this.photoService.saveImage(
       id_plaza,
       nombrePlaza,
       image,
@@ -455,15 +461,28 @@ export class GestionLegalPage implements OnInit {
     };
 
     await this.gestionLegal(data);
+
+    await this.sendGestionServer();
+
     this.loading.dismiss();
     this.exit();
 
 
   }
 
-  async gestionLegal(data) {
+  async gestionLegal(data: any) {
     this.detectedChanges = false;
-    await this.rest.gestionLegal(data);
+    this.registerService.gestionLegal(data)
+    .then((respuesta: string) => this.mensaje.showToast(respuesta))
+    .catch((error: string) => this.mensaje.showToast(error))
+  }
+
+  async sendGestionServer() {
+    try {
+      await this.registerService.sendLegalByIdServicioAccount(this.idServicioPlaza, this.account)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   async obtenerUbicacion() {
@@ -509,43 +528,13 @@ export class GestionLegalPage implements OnInit {
   }
 
   async deletePhoto(img) {
-    // console.log(img);
-    // console.log(this.imgs);
     for (let i = 0; i < this.imgs.length; i++) {
-      // console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
       }
     }
-    //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
-    this.infoImage = await this.rest.getImageLocal(img);
-    //console.log(this.infoImage[0]);
+    this.infoImage = await this.photoService.getImageLocal(img);
   }
-
-
-  async salida(tipo) {
-    const alert = await this.alertCtrl.create({
-      header: "Salir",
-      subHeader: "Confirme para salir de la gestión, se perderan los cambios ",
-      buttons: [
-        {
-          text: "Cancelar",
-          role: "cancel",
-          cssClass: "secondary",
-          handler: blah => { }
-        },
-        {
-          text: "Confirmar",
-          cssClass: "secondary",
-          handler: () => {
-            this.navegar(tipo)
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
 
 
   async goPhotos() {
@@ -587,26 +576,6 @@ export class GestionLegalPage implements OnInit {
       ]
     });
     await alert.present();
-  }
-
-
-  navegar(tipo) {
-
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
-
-      this.callNumber.callNumber('911', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
-
-    }
   }
 
 

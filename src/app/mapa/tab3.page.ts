@@ -38,7 +38,8 @@ export class Tab3Page implements OnInit {
     private rest: RestService,
     private dblocal: DblocalService,
     private platform: Platform,
-    private storage: Storage
+    private storage: Storage,
+    private dbLocalService: DblocalService
   ) { }
 
   async ngOnInit() {
@@ -63,7 +64,7 @@ export class Tab3Page implements OnInit {
     // tomamos el primer registro para ponerlo como defauult en el select
     this.id_plaza = this.plazasServicios[0].id_plaza;
 
-    const servicios = await this.rest.mostrarServicios(this.id_plaza);
+    const servicios = await this.dbLocalService.mostrarServicios(this.id_plaza);
     
     // En este punto ya se tiene el primer id_plaza obtenido de la base
     this.mostrarServicios(servicios);
@@ -95,7 +96,7 @@ export class Tab3Page implements OnInit {
       this.selecciona = false;
     }
 
-    this.servicios = await this.rest.mostrarServicios(idPlaza);
+    this.servicios = await this.dbLocalService.mostrarServicios(idPlaza);
     this.mostrarServicios(this.servicios);
 
   }
@@ -103,12 +104,12 @@ export class Tab3Page implements OnInit {
   // viene del obtenerPlazasUsuario
   async mostrarServicios(servicios) {
     console.log(servicios);
-    this.servicios = await this.rest.mostrarServicios(this.id_plaza)
+    this.servicios = await this.dbLocalService.mostrarServicios(this.id_plaza)
 
   }
 
   async irMapa(idServicioPlaza) {
-    const plaza_servicio = await this.rest.mostrarServicios(this.id_plaza);
+    const plaza_servicio = await this.dbLocalService.mostrarServicios(this.id_plaza);
     console.log(plaza_servicio);
 
 

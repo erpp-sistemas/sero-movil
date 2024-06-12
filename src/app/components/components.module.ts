@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { CardNivelConocimientoComponent } from './card-nivel-conocimiento/card-nivel-conocimiento.component';
 import { CardAprobacionAutoridadesComponent } from './card-aprobacion-autoridades/card-aprobacion-autoridades.component';
 import { CardPreferenciaElectoralComponent } from './card-preferencia-electoral/card-preferencia-electoral.component';
+import { SegmentTabBarComponent } from './segment-tab-bar/segment-tab-bar.component';
 
 
 
@@ -21,7 +22,8 @@ import { CardPreferenciaElectoralComponent } from './card-preferencia-electoral/
     SelectPartidosComponent,
     CardNivelConocimientoComponent,
     CardAprobacionAutoridadesComponent,
-    CardPreferenciaElectoralComponent
+    CardPreferenciaElectoralComponent,
+    SegmentTabBarComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +35,8 @@ import { CardPreferenciaElectoralComponent } from './card-preferencia-electoral/
     SelectPartidosComponent,
     CardNivelConocimientoComponent,
     CardAprobacionAutoridadesComponent,
-    CardPreferenciaElectoralComponent
+    CardPreferenciaElectoralComponent,
+    SegmentTabBarComponent
   ],
   providers: [
     CallNumber

@@ -10,7 +10,7 @@ import { ModalController } from '@ionic/angular';
 import { LoginPage } from '../login/login.page';
 import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 import { DblocalService } from './dblocal.service';
-import { EncuestaGeneral, UserPlacesServices } from '../interfaces';
+import { EncuestaGeneral, ServicioPublico, UserPlacesServices, UserFirebase } from '../interfaces';
 import { wihoutDuplicated } from '../../helpers'
 
 //import { BehaviorSubject } from 'rxjs';
@@ -28,7 +28,7 @@ export class AuthService {
   apiUpdateAppVersion = "https://ser0.mx/seroMovil.aspx?query=sp_user_app_version";
   //private objectSource = new BehaviorSubject<[]>([]);
   //$getObjectSource = this.objectSource.asObservable();
-  userInfo: any;
+  userInfo: UserFirebase;
   modal: any;
 
 
@@ -39,10 +39,10 @@ export class AuthService {
     private router: Router,
     private storage: Storage,
     private rest: RestService,
-    private dblocal: DblocalService,
     private http: HttpClient,
     private modalCtrl: ModalController,
-    private appVersion: AppVersion
+    private appVersion: AppVersion,
+    private dbLocalService: DblocalService
   ) { }
 
   /** 
@@ -75,7 +75,7 @@ export class AuthService {
       this.firebaseAuth.signInWithEmailAndPassword(email, password).then(user => {
         // creamos una variable que tendra el uid del usuario de firebase
         const id = user.user.uid;
-        let createSubscribe = this.getUserInfo(id).subscribe(async userInfoFirebase => {
+        let createSubscribe = this.getUserInfo(id).subscribe(async (userInfoFirebase: UserFirebase) => {
           // this.userInfo tiene la informacion del usuario del firebase
           if (!userInfoFirebase) {
             this.mensaje.showAlert("Usuario no creado en la app móvil");
@@ -125,7 +125,7 @@ export class AuthService {
                 await this.storage.set("total", null);
                 await this.storage.set("FechaSync", null);
                 this.generaIdentificativo(id);
-                this.rest.deleteInfo();
+                this.dbLocalService.deleteInfo();
                 resolve(nombreUsuario)
               }
               createSubscribe.unsubscribe();
@@ -154,7 +154,7 @@ export class AuthService {
    * @param idUser 
    */
   async getServicesPlazaUser(idUser: number) {
-    await this.dblocal.deleteServicios();
+    await this.dbLocalService.deleteServicios();
     this.http.get(this.apiObtenerServiciosUser + " " + idUser).subscribe((data: UserPlacesServices[]) => {
       this.insertarServicios(data);
     })
@@ -168,7 +168,7 @@ export class AuthService {
   async insertarServicios(data: UserPlacesServices[]) {
 
     for (let servicio of data) {
-      this.dblocal.insertarServiciosSQL(servicio);
+      this.dbLocalService.insertarServiciosSQL(servicio);
     }
 
     await this.getDataEncuestas(data)
@@ -178,7 +178,7 @@ export class AuthService {
   /**
    * ? Metodo que obtiene las encuestas y sus preguntas de la base de datos
    * @param data 
-   */ 
+   */
   async getDataEncuestas(data: UserPlacesServices[]) {
 
     const places = data.map(upls => upls.id_plaza)
@@ -186,7 +186,7 @@ export class AuthService {
     const api = `https://ser0.mx/seroMovil.aspx?query=sp_obtener_preguntas_encuesta`
 
     try {
-      await this.dblocal.deleteDataEncuestas()
+      await this.dbLocalService.deleteDataEncuestas()
     } catch (error) {
       console.error("No se pudo borrar la informacion de la tabla local encuesta_general ", error)
     }
@@ -206,9 +206,9 @@ export class AuthService {
    * @param data 
    */
   async insertDataEncuestas(data: EncuestaGeneral[]) {
-    for( let encuesta of data ) {
+    for (let encuesta of data) {
       try {
-        await this.dblocal.insertDataEncuestas(encuesta)
+        await this.dbLocalService.insertDataEncuestas(encuesta)
       } catch (error) {
         console.error("No se pudo insertar la data de las encuestas")
       }
@@ -221,11 +221,10 @@ export class AuthService {
    * interna SQlite listaServiciosPublicos
    */
   async obtenerServiciosPublicos() {
-    await this.rest.deleteServiciosPublicos();
-    this.http.get(this.apiObtenerServiciosPublicos).subscribe(data => {
+    await this.dbLocalService.deleteServiciosPublicos();
+    this.http.get(this.apiObtenerServiciosPublicos).subscribe((data: ServicioPublico[]) => {
       this.insertarServiciosPublicos(data);
     })
-
   }
 
   async obtenerCatTareaAndInsert() {
@@ -233,7 +232,7 @@ export class AuthService {
       //console.log(data)
       for (let tarea of data) {
         try {
-          await this.rest.insertCatTareaLocal(tarea)
+          await this.dbLocalService.insertCatTareaLocal(tarea)
         } catch (error) {
           console.log("No se pudo insertar la tarea ", error)
         }
@@ -247,8 +246,7 @@ export class AuthService {
    * @param userInfo 
    */
   async obtenerUsuariosPlaza(userInfo) {
-    await this.rest.deleteEmpleadosPlaza();
-    // obtener el id del usuario para mandarlo a la api
+    await this.dbLocalService.deleteEmpleadosPlaza()
     let idAspUser = userInfo.idaspuser;
     this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe(data => {
       this.insertaEmpleadosPlaza(data);
@@ -260,9 +258,9 @@ export class AuthService {
    * que se recibieron del SQL Server 
    * @param data 
    */
-  insertarServiciosPublicos(data) {
+  insertarServiciosPublicos(data: ServicioPublico[]) {
     data.forEach(servicio => {
-      this.rest.insertarServicioPublicoSQL(servicio);
+      this.dbLocalService.insertarServicioPublicoSQL(servicio)
     });
   }
 
@@ -273,7 +271,7 @@ export class AuthService {
    */
   insertaEmpleadosPlaza(empleados) {
     empleados.forEach(empleado => {
-      this.rest.insertaEmpleadosPlaza(empleado);
+      this.dbLocalService.insertaEmpleadosPlaza(empleado);
     });
   }
 

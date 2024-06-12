@@ -1,14 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { LoadingController, ModalController, AlertController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 //import { CameraPreview, CameraPreviewOptions } from '@awesome-cordova-plugins/camera-preview/ngx';
 //import { OCR, OCRResult, OCRSourceType } from '@awesome-cordova-plugins/ocr/ngx';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { Router } from '@angular/router';
-import { CallNumber } from '@ionic-native/call-number/ngx';
-import { Storage } from "@ionic/storage";
+import { PhotoService } from '../services/photo.service';
 
 @Component({
   selector: 'app-lectura-medidor',
@@ -111,11 +109,10 @@ export class LecturaMedidorPage implements OnInit {
 
   constructor(
     private modalCtrl: ModalController,
-    private storage: Storage,
     private mensaje: MessagesService,
-    private rest: RestService,
     private camera: Camera,
     private webview: WebView,
+    private photoService: PhotoService
     // private router: Router,
     // private callNumber: CallNumber,
     // private alertCtrl: AlertController,
@@ -368,7 +365,7 @@ export class LecturaMedidorPage implements OnInit {
   }
 
   saveImage(id_plaza: number, nombrePlaza: string, image: any, accountNumber: string, fecha: string, rutaBase64: any, idAspuser: any, idTarea: any, tipo: any, idServicioPlaza: any) {
-    this.rest
+    this.photoService
       .saveImage(
         id_plaza,
         nombrePlaza,
@@ -428,7 +425,7 @@ export class LecturaMedidorPage implements OnInit {
       }
     }
 
-    this.infoImage = await this.rest.getImageLocal(img);
+    this.infoImage = await this.photoService.getImageLocal(img);
 
   }
 

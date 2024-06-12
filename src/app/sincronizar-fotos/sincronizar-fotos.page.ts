@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 
@@ -25,9 +25,6 @@ export class SincronizarFotosPage implements OnInit {
   ngOnInit() {
     
   }
-
-
-  
   
   syncFotos() {
     this.router.navigateByUrl('sync-fotos-acciones');

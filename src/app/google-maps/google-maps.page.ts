@@ -18,6 +18,7 @@ import { Platform, LoadingController } from '@ionic/angular';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { MessagesService } from '../services/messages.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { DblocalService } from '../services/dblocal.service';
 
 
 
@@ -118,7 +119,8 @@ export class GoogleMapsPage implements OnInit {
     private loadingCtrl: LoadingController,
     private mensaje: MessagesService,
     private activeRoute: ActivatedRoute,
-    private callNumber: CallNumber
+    private callNumber: CallNumber,
+    private dbLocalService: DblocalService
   ) { }
 
   async ngOnInit() {
@@ -136,7 +138,7 @@ export class GoogleMapsPage implements OnInit {
 
   async getAccountInfo(id_plaza, idServicioPlaza) {//realiza la carga de informacion que existe en la base interna sqlite
 
-    this.markersArrayInfo = await this.service.getDataVisitPosition(id_plaza, idServicioPlaza);
+    this.markersArrayInfo = await this.dbLocalService.getDataVisitPosition(id_plaza, idServicioPlaza);
 
     if (this.markersArrayInfo.length <= 0) {
       // await this.setMarkers(this.markersArrayInfo);  
@@ -305,7 +307,7 @@ export class GoogleMapsPage implements OnInit {
       alert("Ingresa una cuenta")
     } else {
 
-      this.result = await this.service.getDataVisitPositionByAccount(this.accountString);
+      this.result = await this.dbLocalService.getDataVisitPositionByAccount(this.accountString);
       if (this.result.length == 0) {
         alert("No hay resultados")
       } else {

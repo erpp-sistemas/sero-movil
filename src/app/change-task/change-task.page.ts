@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
-import { RestService } from '../services/rest.service';
+import { DblocalService } from '../services/dblocal.service';
 
 
 @Component({
@@ -17,7 +17,7 @@ export class ChangeTaskPage implements OnInit {
   nombre_tarea_seleccionada: string = ''
 
   constructor(
-    private rest: RestService,
+    private dbLocalService: DblocalService,
     private modalController: ModalController,
     private alertCtrl: AlertController
   ) { }
@@ -28,7 +28,7 @@ export class ChangeTaskPage implements OnInit {
   }
 
   async getCatTareaLocal() {
-    this.tareas = await this.rest.getCatTareasLocal(this.id_proceso)
+    this.tareas = await this.dbLocalService.getCatTareasLocal(this.id_proceso)
   }
 
   async changeTask(tarea: any) {

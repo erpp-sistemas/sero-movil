@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
-// import { GestionCartaPage } from '../gestion-carta/gestion-carta.page';
-// import { GestionInspeccionAguaPage } from '../gestion-inspeccion-agua/gestion-inspeccion-agua.page';
-// import { GestionLegalPage } from '../gestion-legal/gestion-legal.page';
 import { CallNumber } from '@ionic-native/call-number/ngx';
-import { RestService } from '../services/rest.service';
+
 import { Proceso } from '../interfaces/Procesos';
+import { DblocalService } from '../services/dblocal.service';
 
 @Component({
   selector: 'app-gestion-page',
@@ -22,7 +20,7 @@ export class GestionPagePage implements OnInit {
     //private modalCtrl: ModalController,
     private router:Router,
     private callNumber: CallNumber,
-    private rest: RestService,
+    private dbLocalService: DblocalService,
     private storage: Storage
   ) { }
 
@@ -33,7 +31,7 @@ export class GestionPagePage implements OnInit {
   async getProcesosByIdPlaza() {
     const id_plaza = await this.storage.get('IdPlazaActiva');
     // this.procesos = await this.rest.obtenerProcesosByIdPlaza(id_plaza);
-    this.procesos = await this.rest.getProcessLocalByIdPlaza(id_plaza);
+    this.procesos = await this.dbLocalService.getProcessLocalByIdPlaza(id_plaza);
     console.log(this.procesos);
   }
 
