@@ -12,10 +12,7 @@ import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 import { DblocalService } from './dblocal.service';
 import { EncuestaGeneral, ServicioPublico, UserPlacesServices, UserFirebase } from '../interfaces';
 import { wihoutDuplicated } from '../../helpers'
-
-//import { BehaviorSubject } from 'rxjs';
-
-//http://201.163.165.20/sero/image/usuario/
+import { UsersService } from './users.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +23,6 @@ export class AuthService {
   apiObtenerServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios_publicos";
   apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   apiUpdateAppVersion = "https://ser0.mx/seroMovil.aspx?query=sp_user_app_version";
-  //private objectSource = new BehaviorSubject<[]>([]);
-  //$getObjectSource = this.objectSource.asObservable();
   userInfo: UserFirebase;
   modal: any;
   photo_user: string = ''
@@ -43,124 +38,93 @@ export class AuthService {
     private http: HttpClient,
     private modalCtrl: ModalController,
     private appVersion: AppVersion,
-    private dbLocalService: DblocalService
+    private dbLocalService: DblocalService,
+    private userService: UsersService
   ) { }
-
-  /** 
-   * Especificaciones del servicio
-   * Peticion a Firebase al metodo de autenticacion con el email y el password que nos paso el componente login
-   * Obtener el uid de firebase del usuario
-   * Obtener el documento de firebase de la coleccion usersErpp con el uid que se obtuvo anteriormente 
-   * Verificar si esta activo el usuario
-   * Verificar si IMEI = ''
-    * Guardar en el storage la informacion obtenida del firebase
-    * Obtener los servicios publicos para guardarlos en la base interna SQlite
-    * Obtener los usuarios de la plazas a la que pertenece el usuario a loguearse para guardarlos en la base interna SQlite
-    * Obtener la informacion de las plazas y los servicios de las plazas a las que pertenece el usuario a loguearse para despues insertarlas en la base interna SQlite
-   * Si si tiene IMEI
-    * Se valida el correo y el nombre en el storage con los ingresados para ver si es la misma persona que tenia la sesion anterior
-    * Y se vuelven a generar los 4 metodos anteriores
-    * Si no es el mismo usuario que el de la sesion anterior se borrara la informacion con el metodo deleteInfo
-  */
 
 
   /**
-   * Metodo que hace la peticion a firebase para la autenticacion
+   ** Metodo que hace la peticion a firebase para la autenticacion
    * @param email 
    * @param password 
    * @returns Promise
    */
   loginFirebase(email: string, password: string) {
-
     return new Promise((resolve, reject) => {
       this.firebaseAuth.signInWithEmailAndPassword(email, password).then(user => {
-        // creamos una variable que tendra el uid del usuario de firebase
-        const id = user.user.uid;
-        let createSubscribe = this.getUserInfo(id).subscribe(async (userInfoFirebase: UserFirebase) => {
-          // this.userInfo tiene la informacion del usuario del firebase
-          if (!userInfoFirebase) {
-            this.mensaje.showAlert("Usuario no creado en la app móvil");
+        const uid = user.user.uid;
+        let subscribe = this.getUserInfo(uid).subscribe(async (userInfoFirebase: UserFirebase) => {
+
+          if (!userInfoFirebase) return this.mensaje.showAlert("Usuario no creado en la app móvil");
+
+          if (!userInfoFirebase.isActive) {
+            this.mensaje.showAlert("Usuario desactivado");
+            this.logout();
+            return
+          }
+
+          this.userInfo = userInfoFirebase
+
+          if (this.userInfo.IMEI === '') { //* USUARIO NUEVO
+            subscribe.unsubscribe();
+            await this.getAndInsertData(uid)
+            resolve(userInfoFirebase);
             return;
           }
-          this.userInfo = userInfoFirebase
-          // corroborar si el usuario esta activo
-          if (this.userInfo.isActive) {
-            if (this.userInfo.IMEI = '') {
-              // usuario nuevo
-              createSubscribe.unsubscribe();
-              await this.getServicesPlazaUser(this.userInfo.idaspuser);
-              this.saveUserInfoStorage(this.userInfo);
-              this.obtenerServiciosPublicos();
-              await this.obtenerCatTareaAndInsert()
-              this.obtenerUsuariosPlaza(this.userInfo);
-              this.generaIdentificativo(id);
-              resolve(userInfoFirebase);
-            } else {
-              // el usuario no es nuevo 
-              let emailLocal = await this.storage.get("Email");
-              let nombreUser = await this.storage.get("Nombre")
-              if (this.userInfo.email == emailLocal) {
-                createSubscribe.unsubscribe();
-                await this.getServicesPlazaUser(this.userInfo.idaspuser);
-                this.saveUserInfoStorage(this.userInfo);
-                this.obtenerServiciosPublicos();
-                await this.obtenerCatTareaAndInsert()
-                this.obtenerUsuariosPlaza(this.userInfo);
-                this.generaIdentificativo(id);
-                this.mensaje.showAlert("Bienvenid@ " + nombreUser);
-                resolve(nombreUser)
-              }
-              else {
-                createSubscribe.unsubscribe();
-                await this.getServicesPlazaUser(this.userInfo.idaspuser);
-                this.saveUserInfoStorage(this.userInfo);
-                await this.obtenerCatTareaAndInsert()
-                this.obtenerServiciosPublicos();
-                this.obtenerUsuariosPlaza(this.userInfo);
-                let nombreUsuario = await this.storage.get("Nombre")
-                await this.storage.set("total", null);
-                await this.storage.set("FechaSync", null);
-                this.generaIdentificativo(id);
-                this.dbLocalService.deleteInfo();
-                resolve(nombreUsuario)
-              }
-              createSubscribe.unsubscribe();
+
+          if (this.userInfo.IMEI !== '') {  //* EL USUARIO NO ES NUEVO
+            let emailLocal = await this.storage.get("Email");
+            let nombreUser = await this.storage.get("Nombre")
+            if (this.userInfo.email == emailLocal) {
+              subscribe.unsubscribe();
+              await this.getAndInsertData(uid)
+              this.mensaje.showAlert("Bienvenid@ " + nombreUser);
+              resolve(nombreUser)
             }
-          } else {
-            this.mensaje.showAlert('Tu usario está desactivado');
-            this.logout();
+            else {
+              subscribe.unsubscribe();
+              await this.getAndInsertData(uid)
+              await this.storage.set("total", null);
+              await this.storage.set("FechaSync", null);
+              this.dbLocalService.deleteInfo();
+              let nombreUsuario = await this.storage.get("Nombre")
+              resolve(nombreUsuario)
+            }
           }
+
+          subscribe.unsubscribe();
+
         }) // getUserInfo
       }) // signInWithEmailAndPassword
         .catch(error => reject(error));
     })
   }
 
-  /**
-   * Metodo que trae la informacion del documento de la coleccion usersErpp por uid 
-   * @param uid 
-   * @returns documento de collection usersErpp
-   */
+
   getUserInfo(uid: string) {
     return this.firestore.collection('usersErpp').doc(uid).valueChanges()
   }
 
-  /**
-   ** Metodo que manda a traer la informacion del usuario sus plazas y sus servicios de las plazas
-   * @param idUser 
-   */
-  async getServicesPlazaUser(idUser: number) {
+
+  async getAndInsertData(id: string) {
+    await this.getPlacesAndServicesUser(this.userInfo.idaspuser);
+    await this.saveUserInfoStorage(this.userInfo);
+    await this.getServicesPublic();
+    await this.obtenerCatTareaAndInsert()
+    await this.getUsersPlaces(this.userInfo);
+    await this.saveDataCell(id);
+  }
+
+
+  async getPlacesAndServicesUser(idUser: number) {
     await this.dbLocalService.deleteServicios();
     this.http.get(this.apiObtenerServiciosUser + " " + idUser).subscribe((data: UserPlacesServices[]) => {
-      this.insertarServicios(data);
+      this.insertServices(data);
     })
   }
 
-  /**
-   ** Metodo que inserta la informacion del usuario de sus plazas y servicios(agua, predio, antenas ...) de las plazas a las que pertenece
-   * @param data 
-   */
-  async insertarServicios(data: UserPlacesServices[]) {
+
+  async insertServices(data: UserPlacesServices[]) {
     await this.getPhotoUser(data[0].foto)
     for (let servicio of data) {
       this.dbLocalService.insertarServiciosSQL(servicio);
@@ -168,10 +132,7 @@ export class AuthService {
     await this.getDataEncuestas(data)
   }
 
-  /**
-   ** Metodo que obtiene las encuestas y sus preguntas de la base de datos
-   * @param data 
-   */
+
   async getDataEncuestas(data: UserPlacesServices[]) {
     const places = data.map(upls => upls.id_plaza)
     const places_unique = wihoutDuplicated(places) // ? [2, 3]
@@ -190,10 +151,7 @@ export class AuthService {
     }
   }
 
-  /**
-   ** Metodo que inserta la informacion obtenida de las encuestas en la tabla local
-   * @param data 
-   */
+
   async insertDataEncuestas(data: EncuestaGeneral[]) {
     for (let encuesta of data) {
       try {
@@ -205,21 +163,23 @@ export class AuthService {
   }
 
 
-  /**
-   ** Metodo que obtiene todos los servicios publicos de todas las plazas del SQL Server para despues insertarlos en la tabla 
-   * interna SQlite listaServiciosPublicos
-   */
-  async obtenerServiciosPublicos() {
+  async getServicesPublic() {
     await this.dbLocalService.deleteServiciosPublicos();
     this.http.get(this.apiObtenerServiciosPublicos).subscribe((data: ServicioPublico[]) => {
-      this.insertarServiciosPublicos(data);
+      this.insertServicePublic(data);
     })
+  }
+
+
+  async insertServicePublic(data: ServicioPublico[]) {
+    data.forEach(async servicio => {
+      await this.dbLocalService.insertarServicioPublicoSQL(servicio)
+    });
   }
 
 
   async obtenerCatTareaAndInsert() {
     await this.rest.getCatTareas().then(async (data: any) => {
-      //console.log(data)
       for (let tarea of data) {
         try {
           await this.dbLocalService.insertCatTareaLocal(tarea)
@@ -231,58 +191,33 @@ export class AuthService {
   }
 
 
-  /**
-   ** Metodo que pide al SQL Server los usuarios de las plazas a la que pertenece el usuario a loguearse, para despues insertarlos en la 
-   * tabla interna SQlite empleadosPlaza
-   * @param userInfo 
-   */
-  async obtenerUsuariosPlaza(userInfo) {
+
+  async getUsersPlaces(userInfo: UserFirebase) {
     await this.dbLocalService.deleteEmpleadosPlaza()
     let idAspUser = userInfo.idaspuser;
     this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe(data => {
-      this.insertaEmpleadosPlaza(data);
+      this.insertEmployes(data);
     })
   }
 
-
-  /**
-   ** Inserta en la tabla interna SQlite listaServiciosPublicos la informacion de los servicios publicos de todas las plazas 
-   * que se recibieron del SQL Server 
-   * @param data 
-   */
-  insertarServiciosPublicos(data: ServicioPublico[]) {
-    data.forEach(servicio => {
-      this.dbLocalService.insertarServicioPublicoSQL(servicio)
-    });
-  }
-
-  /**
-   ** Inserta en la tabla interna SQlite empleadosPlaza los usuarios de las plazas a la que pertenece el usuario a loguearse
-   * que se recibieron del SQL Server
-   * @param empleados 
-   */
-  insertaEmpleadosPlaza(empleados) {
-    empleados.forEach(empleado => {
+  insertEmployes(empleados: any) {
+    empleados.forEach((empleado: any) => {
       this.dbLocalService.insertaEmpleadosPlaza(empleado);
     });
   }
 
 
-  /**
-   ** Metodo que guarda en el storage los campos del usuario con la informacion obtenida de firebase
-   * @param userInfo (Informacion de firebase del usuario que se intenta loguear)
-   */
-  saveUserInfoStorage(userInfo: any) {
-    this.storage.set('Nombre', userInfo.name);
-    this.storage.set('Email', userInfo.email);
-    this.storage.set('IdAspUser', userInfo.idaspuser)
-    this.storage.set('Password', userInfo.password)
+  async saveUserInfoStorage(userInfo: any) {
+    await this.storage.set('Nombre', userInfo.name);
+    await this.storage.set('Email', userInfo.email);
+    await this.storage.set('IdAspUser', userInfo.idaspuser)
+    await this.storage.set('Password', userInfo.password)
   }
 
 
   async getPhotoUser(url_foto: string) {
     return new Promise((resolve, reject) => {
-      this.getUrlFoto(url_foto).subscribe((response: Blob) => {
+      this.userService.getUrlFoto(url_foto).subscribe((response: Blob) => {
         const reader = new FileReader();
         reader.onload = async () => {
           const imageBase64 = reader.result;
@@ -298,29 +233,10 @@ export class AuthService {
         reject(error)
       }))
     })
-
   }
 
 
-  getUrlFoto(url_foto: any) {
-    console.log(url_foto)
-    return this.http.get(url_foto, { responseType: 'blob' })
-  }
-
-  /**
-   * Metodo que genera el identificatvo tomando el idFirebase(uid)
-   * @param id 
-   */
-  generaIdentificativo(id) {
-    this.saveDataCell(id);
-  }
-
-  /**
-   ** Metodo que actualiza el documento del usuario en firebase de los campos IMEI y lastSession vez que inicio sesion
-   * @param id 
-   */
-  async saveDataCell(id) {
-    let name = await this.storage.get("Nombre");
+  async saveDataCell(id: string) {
     await this.updateAppVersion();
     this.storage.set("IMEI", id);
     let dateDay = new Date().toISOString();
@@ -353,20 +269,12 @@ export class AuthService {
     }
   }
 
-
-  /**
-   ** Metodo para cerrar sesion
-   */
   logout() {
     this.firebaseAuth.signOut().then(async () => {
-      // this.router.navigate(['/login']);
-
       this.modal = await this.modalCtrl.create({
         component: LoginPage
       });
-
       this.modal.present()
-
       this.modal.onDidDismiss().then(data => {
         this.router.navigate(['home/tab1']);
       })

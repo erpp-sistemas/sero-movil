@@ -327,32 +327,22 @@ export class ChecadorPage implements OnInit {
   getUrlUser() {
     return new Promise(async (resolve, reject) => {
 
-      this.loading = await this.loadingCtrl.create({
-        message: 'Obteniendo foto Ser0',
-        spinner: 'dots'
-      })
+      try {
+        this.loading = await this.loadingCtrl.create({
+          message: 'Obteniendo foto Ser0',
+          spinner: 'dots'
+        })
 
-      await this.loading.present()
+        await this.loading.present()
+        const photo = await this.storage.get('Foto')
+        this.setImageSero(photo, Enum.ImageType.PRINTED);
+        this.loading.dismiss();
+        resolve("Imagen cargo tracker cargada")
+      } catch (error) {
+        console.error(error)
+        reject(error)
+      }
 
-      let img = await this.dbLocalService.obtenerFotoUserSQL();
-      let url = img[0].foto;
-      //url = 'https://scontent.fmex28-1.fna.fbcdn.net/v/t1.18169-9/21743117_1812963972077655_9068768826820206722_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=174925&_nc_ohc=WAOqPX7YOIgAX8zrNz8&_nc_ht=scontent.fmex28-1.fna&oh=00_AfDlppjmgxjawwl_CMxIAVQwlZq5ErZW-qHjUFW1egLAIg&oe=64A999D0'
-
-      this.userService.getUrlFoto(url).subscribe((response: Blob) => {
-        const reader = new FileReader()
-        reader.onload = () => {
-          const imageBase64 = reader.result
-          this.setImageSero(imageBase64.toString(), Enum.ImageType.PRINTED)
-        }
-        if (response) {
-          reader.readAsDataURL(response)
-          this.loading.dismiss()
-          resolve("Imagen ser0 cargada")
-        }
-      }, err => {
-        console.log(err)
-        reject(err)
-      })
     })
   }
 
@@ -402,7 +392,7 @@ export class ChecadorPage implements OnInit {
       componentProps: {
         data: historial_asistencias
       }
-  
+
     });
     await modal.present();
   }
