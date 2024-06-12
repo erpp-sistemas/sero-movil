@@ -161,14 +161,11 @@ export class PhotoService {
 
   async getImagesLocal() {
     let sql = "SELECT * FROM capturaFotos where cargado = 0 order by fecha desc";
-
     return this.db.executeSql(sql, []).then(response => {
       let arrayFotos = [];
-
       for (let i = 0; i < response.rows.length; i++) {
         arrayFotos.push(response.rows.item(i));
       }
-      console.log(arrayFotos);
       return Promise.resolve(arrayFotos);
     }).catch(error => Promise.reject(error))
   }
@@ -361,9 +358,7 @@ export class PhotoService {
   }
 
 
-
   async saveSqlServer(cuenta: string, id_usuario: number, imageName: string, id_tarea: number, fecha: string, tipo: string, id: any, url: any, ruta: string, cont: any, id_plaza: number, id_plaza_servicio: number) {
-    console.log("id_plaza " + id_plaza);
     let a = url.split("&");
     let b = a[0];
     let b1 = b.split(":");
@@ -371,8 +366,6 @@ export class PhotoService {
     let b3 = b1[1];
     let c = a[1];
     let d = a[2];
-    console.log('La url partida')
-    console.log(b2, b3, c, d)
     let idPlaza = id_plaza
     let strinSql0 = `'${cuenta}','${id_usuario}','${imageName}',${id_tarea},'${fecha}','${tipo}',${id_plaza_servicio},${idPlaza},'${b2}','${b3}','${c}','${d}'`;
 
@@ -381,9 +374,7 @@ export class PhotoService {
         async data => {
           this.message.showToast(data[0].mensaje + ' ' + cont)
           await this.updateLoadedItem(id);
-          console.log('registroCargado al sql')
           //   await this.deletePhotoFile(ruta);
-          //  console.log('se borro la foto')
           resolve(data);
         },
         err => {

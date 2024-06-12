@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { Router } from '@angular/router';
-import { MenuController } from '@ionic/angular';
-import { AuthService } from 'src/app/services/auth.service';
 import { EmailComposer } from '@ionic-native/email-composer/ngx';
 import { RestService } from '../services/rest.service';
 
@@ -24,7 +21,6 @@ export class DirectorioPage implements OnInit {
   constructor(
     private callNumber: CallNumber,
     private iab: InAppBrowser,
-    private router: Router,
     private emailComposer: EmailComposer,
     private rest: RestService
   ) { }
@@ -64,25 +60,6 @@ export class DirectorioPage implements OnInit {
     });
 
   }
-
-  navegar(tipo) {
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
-
-      this.callNumber.callNumber('911', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
-
-    }
-  } 
-
 
 
 }

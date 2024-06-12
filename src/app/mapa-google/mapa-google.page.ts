@@ -4,7 +4,6 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LoadingController, Platform } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
-import { CallNumber } from '@ionic-native/call-number/ngx';
 import { Storage } from '@ionic/storage';
 import { DblocalService } from '../services/dblocal.service';
 
@@ -48,7 +47,6 @@ export class MapaPruebaPage implements OnInit {
     private loadingCtrl: LoadingController,
     private platform: Platform,
     private activeRoute: ActivatedRoute,
-    private callNumber: CallNumber,
     private storage: Storage,
     private dbLocalService: DblocalService
   ) { }
@@ -645,25 +643,5 @@ export class MapaPruebaPage implements OnInit {
       }
     }
   }
-
-
-  navegar(tipo) {
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
-
-      this.callNumber.callNumber('911', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
-
-    }
-  }
-
 
 }

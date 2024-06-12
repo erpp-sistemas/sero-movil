@@ -65,13 +65,13 @@ export class S3Service {
       };
 
       s3.putObject(data, (err, res) => {
-        console.log(data);
+        //console.log(data);
         if (err) {
           console.log(err);
           resolve(false);
           // return err
         } else {
-          console.log(res);
+          //console.log(res);
           resolve(true);
         }
       });

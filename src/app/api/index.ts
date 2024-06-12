@@ -6,7 +6,7 @@ export const apiObtenerDatos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_
 
 // gestiones
 export const apiRegistroInspeccion = "https://ser0.mx/seroMovil.aspx?query=sp_registro_inspeccion";
-export const apiRegistroCartaInvitacion = "https://ser0.mx/seroMovil.aspx?query=sp_registro_carta_invitacion";
+export const apiRegistroCartaInvitacion = "https://ser0.mx/seroMovil.aspx?query=sp_registro_carta_invitacion_temp";
 export const apiRegistroCortes = "https://ser0.mx/seroMovil.aspx?query=sp_registro_cortes";
 export const apiRegistroLegal = "https://ser0.mx/seroMovil.aspx?query=sp_registro_legal";
 export const apiRegistroServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_registro_servicios_publicos";

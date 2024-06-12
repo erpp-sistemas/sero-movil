@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
-import { CallNumber } from '@ionic-native/call-number/ngx';
-
 import { Proceso } from '../interfaces/Procesos';
 import { DblocalService } from '../services/dblocal.service';
 
@@ -17,9 +15,7 @@ export class GestionPagePage implements OnInit {
   procesos: Proceso[];
 
   constructor(
-    //private modalCtrl: ModalController,
     private router:Router,
-    private callNumber: CallNumber,
     private dbLocalService: DblocalService,
     private storage: Storage
   ) { }
@@ -42,25 +38,6 @@ export class GestionPagePage implements OnInit {
     let url = procesoUrl[0].url_aplicacion_movil;
     this.router.navigateByUrl(url);
   }
-
-
-  navegar(tipo) {
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
-
-      this.callNumber.callNumber('911', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
-
-    }
-  } 
 
 
 }

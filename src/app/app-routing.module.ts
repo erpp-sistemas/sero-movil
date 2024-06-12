@@ -96,7 +96,7 @@ const routes: Routes = [
     loadChildren: () => import('./inicio-temp/inicio-temp.module').then( m => m.InicioTempPageModule)
   },
   {
-    path: 'mapa-prueba/:id/:id_plaza',
+    path: 'mapa-google/:id/:id_plaza',
     loadChildren: () => import('./mapa-google/mapa-google.module').then( m => m.MapaPruebaPageModule)
   },
   {

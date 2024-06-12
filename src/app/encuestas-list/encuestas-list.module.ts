@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { EncuestasListPageRoutingModule } from './encuestas-list-routing.module';
 
 import { EncuestasListPage } from './encuestas-list.page';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    EncuestasListPageRoutingModule
+    EncuestasListPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [EncuestasListPage]
 })

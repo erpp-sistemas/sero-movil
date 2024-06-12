@@ -3,8 +3,6 @@ import { Router } from '@angular/router';
 import { LoadingController, ModalController } from '@ionic/angular';
 import { ImagePreviewPage } from '../image-preview/image-preview.page';
 import { MessagesService } from '../services/messages.service';
-import { RestService } from '../services/rest.service';
-import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotoService } from '../services/photo.service';
 
 @Component({
@@ -23,12 +21,10 @@ export class SyncFotosServiciosPage implements OnInit {
 
 
   constructor(
-    private rest: RestService,
     private loadingCtrl: LoadingController,
     private mensaje: MessagesService,
     private modalCtrl: ModalController,
     private router: Router,
-    private callNumber: CallNumber,
     private photoService: PhotoService
   ) { }
 
@@ -76,24 +72,6 @@ export class SyncFotosServiciosPage implements OnInit {
 
   }
 
-
-  navegar(tipo) {
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
-
-      this.callNumber.callNumber('911', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
-
-    }
-  } 
 
   openPreview(imagen) {
     this.modalCtrl.create({

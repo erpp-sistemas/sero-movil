@@ -16,7 +16,7 @@
 
   <div class="texto-centrado">
     <p class="datos">
-      <ion-select style="color: #000000;" class="myCustomSelect text-center" interface="popover"
+      <ion-select style="color: #000000;" class="myCustomSelect text-center" interface="action-sheet"
         placeholder="Seleccionar plaza" (ionChange)="resultPlaza($event)" [(ngModel)]="id_plaza">
         <ion-select-option *ngFor="let plaza of plazasServicios; index as i" [value]="plaza.id_plaza">{{plaza.plaza |
           titlecase}}

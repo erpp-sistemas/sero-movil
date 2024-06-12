@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CallNumber } from '@ionic-native/call-number/ngx';
 import { LoadingController } from '@ionic/angular';
 import { MessagesService } from '../services/messages.service';
 import { Storage } from '@ionic/storage';
@@ -40,7 +39,6 @@ export class SyncAccionesPage implements OnInit {
     private loadingCtrl: LoadingController,
     private message: MessagesService,
     private activeRoute: ActivatedRoute,
-    private callNumber: CallNumber,
     private storage: Storage,
     private file: File,
     private email: EmailComposer,
@@ -49,35 +47,26 @@ export class SyncAccionesPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log("id_servicio_plaza: ", this.activeRoute.snapshot.paramMap.get('id_servicio_plaza'));
     this.id_servicio_plaza = this.activeRoute.snapshot.paramMap.get('id_servicio_plaza');
     this.listadoGestiones(this.id_servicio_plaza);
-
   }
 
-  async listadoGestiones(idServicioPlaza) {
-    console.log("Cargando el listado de acciones del servicio " + idServicioPlaza);
+  async  listadoGestiones(id_servicio_plaza: number) {
     this.gestiones = null;
     this.loading = await this.loadingCtrl.create({
       message: 'Cargando el listado de acciones',
       spinner: 'dots'
     });
     await this.loading.present();
-    await this.getInfoCuentas(idServicioPlaza);
+    await this.getInfoCuentas(id_servicio_plaza);
     this.totalGestiones = this.gestiones!.length;
-    console.log(this.totalGestiones);
-    //this.getInfo(idServicioPlaza);
     this.loading.dismiss();
   }
 
-  // async getInfo(idServicioPlaza) {
-  //   this.totalGestiones = await this.rest.getTotalGestionadas(idServicioPlaza);
-  //   console.log("Total de gestiones " + this.totalGestiones);
-  // }
 
 
-  async getInfoCuentas(idServicioPlaza) {
-    this.gestiones = await this.registerService.getAccountsGestiones(idServicioPlaza);
+  async getInfoCuentas(id_servicio_plaza: number) {
+    this.gestiones = await this.registerService.getAccountsGestiones(id_servicio_plaza);
     console.log(this.gestiones);
     if (this.gestiones.length == 0) {
       this.message.showAlert("No tienes gestiones realizadas en este servicio!!!!");
@@ -130,8 +119,6 @@ export class SyncAccionesPage implements OnInit {
 
   async deleteAccount(cuenta: string, rol: string) {
 
-    console.log(rol);
-
     let table = ''
 
     if (rol == 'Inspección') {
@@ -140,14 +127,9 @@ export class SyncAccionesPage implements OnInit {
       table = 'gestionCartaInvitacion';
     } else if (rol == 'Legal') {
       table = 'gestionLegal';
-    } else if (rol = 'Inpeccion Antenas') {
-      table = 'gestionInspeccionAntenas'
-    }
+    } 
 
-    console.log(table);
-
-    const result = await this.registerService.deleteAccountGestionGeneral(table, cuenta);
-    console.log(result);
+   await this.registerService.deleteAccountGestionGeneral(table, cuenta);
 
     this.listadoGestiones(this.id_servicio_plaza);
 
@@ -177,7 +159,6 @@ export class SyncAccionesPage implements OnInit {
   }
 
   async sendFile() {
-    console.log("enviando ", this.procesoSeleccionado);
     let tipo = this.procesosObj[this.procesoSeleccionado];
     console.log(tipo);
     this.gestionesLocales = await this.dbLocalService.getGestionesLocalByIdServicio(this.id_servicio_plaza, tipo);
@@ -241,23 +222,5 @@ export class SyncAccionesPage implements OnInit {
   }
 
 
-  navegar(tipo) {
-    this.openSelectType = false
-    if (tipo == 1) {
-      this.router.navigateByUrl('home/tab1');
-    } else if (tipo == 2) {
-      this.router.navigateByUrl('home/tab2');
-    } else if (tipo == 3) {
-      this.router.navigateByUrl('home/tab3');
-    } else if (tipo == 4) {
-      this.router.navigateByUrl('home/tab4');
-    } else if (tipo == 5) {
-
-      this.callNumber.callNumber('911', true)
-        .then(res => console.log('Launched dialer!', res))
-        .catch(err => console.log('Error launching dialer', err));
-
-    }
-  }
 
 }

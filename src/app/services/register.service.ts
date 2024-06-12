@@ -33,8 +33,8 @@ export class RegisterService {
   async getAccountsGestiones(id_servicio_plaza: number) {
     let sql =
       `SELECT account, fechaCaptura, 'Inspección' as rol, nombre_plaza FROM gestionInspeccion WHERE cargado = 0 AND id_servicio_plaza = ?
-    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Legal' as rol, nombre_plaza FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fechaCaptura, 'Inspección Antenas' as rol, nombre_plaza FROM gestionInspeccionAntenas WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Cortes' as rol, nombre_plaza FROM gestionCortes WHERE cargado = 0 AND id_servicio_plaza = ? `;
-    return this.db.executeSql(sql, [id_servicio_plaza, id_servicio_plaza, id_servicio_plaza, id_servicio_plaza, id_servicio_plaza]).then(response => {
+    UNION ALL SELECT account, fecha_captura, 'Carta invitación' as rol, nombre_plaza FROM gestionCartaInvitacion WHERE cargado = 0 AND id_servicio_plaza = ? UNION ALL SELECT account, fecha_captura, 'Legal' as rol, nombre_plaza FROM gestionLegal WHERE cargado = 0 AND id_servicio_plaza = ?  UNION ALL SELECT account, fecha_captura, 'Cortes' as rol, nombre_plaza FROM gestionCortes WHERE cargado = 0 AND id_servicio_plaza = ? `;
+    return this.db.executeSql(sql, [id_servicio_plaza, id_servicio_plaza, id_servicio_plaza, id_servicio_plaza]).then(response => {
       let accounts = [];
       for (let i = 0; i < response.rows.length; i++) {
         accounts.push(response.rows.item(i));

@@ -43,7 +43,6 @@ export class SyncEncuestasPage implements OnInit {
 
   async getEncuestasLocales() {
     const data = await this.dblocal.getRegistroEncuestasLocal()
-    console.log(data)
     this.encuestas = data.map(enc => {
       return {
         id: enc.id,
@@ -51,7 +50,6 @@ export class SyncEncuestasPage implements OnInit {
         fecha: enc.fecha
       }
     })
-    console.log(this.encuestas)
   }
 
   deleteEncuesta(id_encuesta: any, showMessage: boolean, reload: boolean) {
