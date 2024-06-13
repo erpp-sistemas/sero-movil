@@ -65,12 +65,12 @@ export class HeaderComponent implements OnInit {
   }
 
   encuestasList() {
-    this.router.navigateByUrl('/encuestas-list');
+    this.router.navigateByUrl('/home/tab4');
     this.menuCtrl.close();
   }
 
   servicios() {
-    this.router.navigateByUrl('/home/tab4');
+    this.router.navigateByUrl('/servicios-publicos');
     this.menuCtrl.close();
   }
 

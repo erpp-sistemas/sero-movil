@@ -3,7 +3,7 @@
     <name>Ser0 móvil</name>
     <description>Es un software que consta de una aplicación móvil, administrada desde una plataforma web, que proporciona servicios desde la nube, para ayudar en la gestión de la cobranza y regularización de impuestos, derechos y aprovechamientos, entre otros; de entidades federativas y organismos desconcentrados.</description>
     <author email="antonio.ticante12@gmail.com" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://localhost:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

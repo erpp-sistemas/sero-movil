@@ -313,7 +313,6 @@ export class GestionCartaPage implements OnInit {
         this.indicadorImagen = this.indicadorImagen + 1;
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
-        // console.log(rutaBase64, this.image);
         this.isPhoto = false;
         this.imgs.push({ imagen: this.image });
         if (this.indicadorImagen == 1) {
@@ -339,7 +338,7 @@ export class GestionCartaPage implements OnInit {
 
   }
 
-  takePicGallery(type) {
+  takePicGallery(type: any) {
     let tipo;
     if (type == 1) {
       if (this.id_proceso === 7) {
@@ -401,8 +400,6 @@ export class GestionCartaPage implements OnInit {
       );
       this.fechaCapturaFoto = ionicDate.toISOString();
     }
-
-    //console.log(this.fechaCapturaFoto);
 
     let options: CameraOptions = {
       quality: 40,
@@ -655,7 +652,6 @@ export class GestionCartaPage implements OnInit {
       this.leyendaTipoServicioObligatorio = true;
     }
 
-
     if (this.idEstatusPredio !== '1') {
       this.numeroNiveles = 0;
     }
@@ -850,11 +846,8 @@ export class GestionCartaPage implements OnInit {
   }
 
 
-
   async goPhotos() {
-
     let idPlaza = this.id_plaza;
-
     const modal = await this.modalController.create({
       component: PhotosHistoryPage,
       componentProps: {
@@ -862,9 +855,7 @@ export class GestionCartaPage implements OnInit {
         "idPlaza": idPlaza
       }
     });
-
     await modal.present();
-
   }
 
   async goActions() {
@@ -894,13 +885,9 @@ export class GestionCartaPage implements OnInit {
     });
 
     await modal.present();
-
     const data = await modal.onDidDismiss();
-
     let resultadoEncuesta = data.data.estatus;
-
     if (resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
-    console.log(this.encuestaRealizada);
 
   }
 

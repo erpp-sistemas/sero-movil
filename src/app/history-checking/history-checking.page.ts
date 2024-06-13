@@ -15,7 +15,10 @@ export class HistoryCheckingPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log(this.data)
   }
+
+
 
   back() {
     this.modalController.dismiss();
