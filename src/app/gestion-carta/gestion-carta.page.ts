@@ -111,6 +111,18 @@ export class GestionCartaPage implements OnInit {
   leyendaTipoServicioObligatorio: boolean = false;
   leyendaMotivoNoPago: boolean = false;
   leyendaOtroMotivo: boolean = false;
+  leyendaPersonaAtiende: boolean = false;
+  leyendaGiro: boolean = false;
+  leyendaNumeroNiveles: boolean = false;
+  leyendaFachada: boolean = false;
+  leyendaColorPuerta: boolean = false;
+  leyendaReferencia: boolean = false;
+  leyendaTipoPredio: boolean = false;
+  leyendaEntreCalle1: boolean = false;
+  leyendaEntreCalle2: boolean = false;
+  leyendaObservaciones: boolean = false;
+
+  backButtonSubscription: any
 
 
   sliderOpts = {
@@ -131,7 +143,6 @@ export class GestionCartaPage implements OnInit {
     private camera: Camera,
     private webview: WebView,
     private router: Router,
-    private callNumber: CallNumber,
     private alertCtrl: AlertController,
     private dbLocalService: DblocalService,
     private photoService: PhotoService,
@@ -148,6 +159,55 @@ export class GestionCartaPage implements OnInit {
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
     this.estatusLecturaMedidor();
   }
+
+  ionViewDidEnter() {
+    this.subscribeToBackButton();
+  }
+
+  ionViewWillLeave() {
+    this.unsubscribeFromBackButton();
+  }
+
+  private async subscribeToBackButton() {
+    this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(0, async () => {
+      // Aquí se puede agregar lógica adicional si es necesario
+      // Por ejemplo, puedes mostrar un mensaje o realizar una acción específica
+
+      const mensaje = await this.alertCtrl.create({
+        header: "Mensaje",
+        subHeader: "Si sales perderas los cambios de la gestión",
+        buttons: [
+          {
+            text: "Cancelar",
+            cssClass: "secondary",
+            handler: () => {
+              console.log("Regresar")
+            }
+          },
+          {
+            text: "Aceptar",
+            cssClass: "secondary",
+            handler: () => {
+              this.router.navigateByUrl('home/tab1')
+            }
+          }
+        ]
+      });
+      await mensaje.present();
+
+
+      // Descomenta la siguiente línea para desactivar completamente el botón de retroceso
+      // this.navCtrl.navigateRoot(['/home']);
+    });
+  }
+
+  private unsubscribeFromBackButton() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+    }
+  }
+
+
 
   async estatusLecturaMedidor() {
     if (this.idServicioPlaza === 1) {
@@ -202,36 +262,8 @@ export class GestionCartaPage implements OnInit {
         this.imgs.splice(i, 1);
       }
     }
-    //borrara la foto trayendo la imagen de la tabla y mandando a llamar al metodo delete del restservice
     this.infoImage = await this.photoService.getImageLocal(img);
-    // console.log(this.infoImage[0]);
   }
-
-
-  // async confirmarFoto(tipo: number) {
-  //   const mensaje = await this.alertCtrl.create({
-  //     header: "Tomar foto",
-  //     subHeader: "Selecciona como tomar la foto ",
-  //     buttons: [
-  //       {
-  //         text: "Camara",
-  //         cssClass: "secondary",
-  //         handler: () => {
-  //           this.takePic(tipo);
-  //         }
-  //       },
-  //       {
-  //         text: "Galeria",
-  //         cssClass: "secondary",
-  //         handler: () => {
-  //           this.takePicGallery(tipo)
-  //         }
-  //       }
-  //     ]
-  //   });
-  //   await mensaje.present();
-  // }
-
 
   takePic(type: any) {
     let tipo: any;
@@ -466,17 +498,17 @@ export class GestionCartaPage implements OnInit {
       subHeader: "Recuerda que las fotos deben de estar correctas, de lo contrario es posible que la gestión no sea válida",
       buttons: [
         {
-          text: "Aceptar",
-          cssClass: "secondary",
-          handler: () => {
-            this.terminar()
-          }
-        },
-        {
           text: "Regresar",
           cssClass: "secondary",
           handler: () => {
             console.log("Regresar")
+          }
+        },
+        {
+          text: "Aceptar",
+          cssClass: "secondary",
+          handler: () => {
+            this.terminar()
           }
         }
       ]
@@ -489,15 +521,12 @@ export class GestionCartaPage implements OnInit {
 
     await this.validarCamposObligatorios();
 
-    if (this.leyendaEstatusPredio || this.leyendaTipoServicioObligatorio || this.leyendaOtroMotivo || this.takePhotoFachada === false || this.takePhotoEvidencia === false) {
+    if (this.leyendaEstatusPredio || this.leyendaTipoServicioObligatorio || this.leyendaOtroMotivo || this.leyendaPersonaAtiende || this.leyendaGiro || this.leyendaNumeroNiveles || this.leyendaFachada || this.leyendaFachada || this.leyendaReferencia || this.leyendaTipoPredio || this.leyendaEntreCalle1 || this.leyendaEntreCalle2 || this.leyendaObservaciones || this.takePhotoFachada === false || this.takePhotoEvidencia === false) {
       this.mensaje.showAlert("Ingresa los campos obligatorios * y toma mínimo una foto de fachada y una foto de evidencia");
       return;
     }
-
     this.eliminarCaracteres();
-
     this.obetenerFechaGestion();
-
     await this.obtenerUbicacion();
 
     this.loading = await this.loadingController.create({
@@ -626,36 +655,73 @@ export class GestionCartaPage implements OnInit {
   }
 
   async validarCamposObligatorios() {
-
+    //* cuando el id_estatus_predio no se captura
     if (this.idEstatusPredio === '') {
       this.leyendaEstatusPredio = true;
       return;
     }
 
-    if (this.idEstatusPredio === '4' || this.idEstatusPredio === '3' || this.idEstatusPredio === '2') { // es predio no localizado
-      //this.takePhoto = true; no hacen falta las fotos
+    //* cuando es predio no localizado lo deja pasar solo pidiendole las observaciones
+    if (this.idEstatusPredio === '4' && this.observaciones !== '') {
       this.takePhotoFachada = true;
       this.takePhotoEvidencia = true;
       this.hideLeyendas();
+    }
+
+    //* cuando es predio no lozalizado pero no puso las observaciones no lo deja pasar
+    if (this.idEstatusPredio === '4' && this.observaciones === '') return this.leyendaObservaciones = true;
+
+
+    //* cuando es predio abandonado o predio baldio le pedira el tipo de predio y las referencia y las entre calles
+    if (
+      (this.idEstatusPredio === '2' || this.idEstatusPredio === '3') &&
+      (this.referencia !== '' || this.entreCalle1 !== '' || this.entreCalle2 !== '' || this.idTipoPredio !== 0 || this.observaciones !== '')
+    ) {
+      this.takePhotoFachada = true;
+      this.takePhotoEvidencia = true;
       return;
     }
 
-    if (this.idMotivoNoPago === 0) {
-      this.leyendaMotivoNoPago = true;
+
+    //* cuando es predio abandonado o predio baldio le pedira el tipo de predio y las referencia y las entre calles
+    if (
+      (this.idEstatusPredio === '2' || this.idEstatusPredio === '3') &&
+      (this.referencia === '' || this.entreCalle1 === '' || this.entreCalle2 === '' || this.idTipoPredio === 0 || this.observaciones === '')
+    ) {
+      this.leyendaEntreCalle1 = true;
+      this.leyendaEntreCalle2 = true;
+      this.leyendaTipoPredio = true;
+      this.leyendaReferencia = true;
+      this.leyendaObservaciones = true;
+      return;
     }
 
-    if (this.idMotivoNoPago == 5 && this.otroMotivo === '') {
-      this.leyendaOtroMotivo = true;
+    if (this.idEstatusPredio === '1') {
+      if (this.observaciones === '') this.leyendaObservaciones = true;
+      if (this.idMotivoNoPago === 0) this.leyendaMotivoNoPago = true
+      if (this.idMotivoNoPago == 5 && this.otroMotivo === '') this.leyendaOtroMotivo = true;
+      if (this.idTipoServicio === 0) this.leyendaTipoServicioObligatorio = true;
+      if (this.idEstatusPredio !== '1') this.numeroNiveles = 0;
+      if (this.personaAtiende === '') this.leyendaPersonaAtiende = true;
+      if (this.giro === '') this.leyendaGiro = true;
+      if (this.numeroNiveles === 0) this.leyendaNumeroNiveles = true;
+      if (this.colorFachada === '') this.leyendaFachada = true;
+      if (this.colorFachada === '') this.leyendaColorPuerta = true;
+      if (this.referencia === '') this.leyendaReferencia = true;
+      if (this.idTipoPredio === 0) this.leyendaTipoPredio = true;
+      if (this.entreCalle1 === '') this.leyendaEntreCalle1 = true;
+      if (this.entreCalle2 === '') this.leyendaEntreCalle2 = true;
     }
 
-    if (this.idTipoServicio === 0) {
-      this.leyendaTipoServicioObligatorio = true;
-    }
 
-    if (this.idEstatusPredio !== '1') {
-      this.numeroNiveles = 0;
-    }
 
+  }
+
+  validateField(event: any, variable_name: string) {
+    const valor = event.detail.value;
+    if (valor.length >= 4) {
+      (this as any)[variable_name] = false;
+    }
   }
 
   hideLeyendas() {
@@ -663,6 +729,16 @@ export class GestionCartaPage implements OnInit {
     this.leyendaEstatusPredio = false;
     this.leyendaOtroMotivo = false;
     this.leyendaMotivoNoPago = false;
+    this.leyendaPersonaAtiende = false;
+    this.leyendaGiro = false;
+    this.leyendaNumeroNiveles = false;
+    this.leyendaFachada = false;
+    this.leyendaFachada = false;
+    this.leyendaReferencia = false;
+    this.leyendaTipoPredio = false;
+    this.leyendaEntreCalle1 = false;
+    this.leyendaEntreCalle2 = false;
+    //this.leyendaObservaciones = false;
   }
 
 
@@ -723,6 +799,7 @@ export class GestionCartaPage implements OnInit {
       this.desactivaBotonesCamara = true;
     }
   }
+
 
   resultTipoServicio(event) {
     let tipo = event.detail.value;

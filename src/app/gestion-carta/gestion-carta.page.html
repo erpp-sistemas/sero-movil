@@ -69,7 +69,7 @@
             * Estatus del predio:
           </p>
           <ion-text *ngIf="leyendaEstatusPredio" color="warning">
-            <h4> --- Error: Estatus del predio requerido --- </h4>
+            <h4> ---Estatus del predio requerido--- </h4>
           </ion-text>
           <p>
             <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
@@ -86,21 +86,21 @@
   </ion-card>
 
 
-  <div *ngIf="activaFormulario">
 
-    <div style="text-align: center; margin:15 0px 0 20;">
+    <div style="text-align: center; margin:15 0px 0 20;" *ngIf="idEstatusPredio === '1'">
       <ion-chip color="success">Información contribuyente</ion-chip>
     </div>
 
-    <ion-card color="medium">
+    <ion-card color="medium" *ngIf="idEstatusPredio === '1'">
       <ion-card-content color="medium">
-        <ion-item color="medium">
+        
+        <ion-item color="medium" >
           <ion-label>
             <p>
               * Motivo de no pago
             </p>
             <ion-text *ngIf="leyendaMotivoNoPago" color="warning">
-              <h4> --- Error: Motivo de no pago requerido --- </h4>
+              <h4> ---Motivo de no pago requerido--- </h4>
             </ion-text>
             <p>
               <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
@@ -119,7 +119,7 @@
             <ion-label>
               <p>* Especifique: </p>
               <ion-text *ngIf="leyendaOtroMotivo" color="warning">
-                <h4> --- Error: Especifica el otro motivo de no pago --- </h4>
+                <h4> ---Especifica el otro motivo de no pago--- </h4>
               </ion-text>
             </ion-label>
             <ion-input class="myCustomSelect" interface="popover" (ionChange)="resultOtroMotivoNoPago($event)"
@@ -132,26 +132,31 @@
 
     <ion-card color="medium">
       <ion-card-content color="medium">
-        <ion-item color="medium">
+
+        <ion-item color="medium" *ngIf="idEstatusPredio === '1'">
           <ion-label>
-            <p>Persona que atiende: </p>
+            <p>* Persona que atiende: </p>
+            <ion-text *ngIf="leyendaPersonaAtiende" color="warning">
+              <h4> ---Especifica la persona que atiende--- </h4>
+            </ion-text>
           </ion-label>
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende"> </ion-input>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="personaAtiende" (ionChange)="validateField($event, 'leyendaPersonaAtiende')"> </ion-input>
         </ion-item>
-        <ion-item color="medium">
+
+        <ion-item color="medium" *ngIf="idEstatusPredio === '1'">
           <ion-label>
             <p>Tipo de servicio actual</p>
             <ion-text color="primary"> {{tipoServicioPadron}} </ion-text>
           </ion-label>
         </ion-item>
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio === '1'">
           <ion-label>
             <p>
               * Tipo de servicio detectado
             </p>
             <ion-text color="warning">
-              <h4 *ngIf="leyendaTipoServicioObligatorio"> --- Error: Tipo de servicio detectado requerido --- </h4>
+              <h4 *ngIf="leyendaTipoServicioObligatorio"> ---Tipo de servicio detectado requerido--- </h4>
             </ion-text>
             <p>
               <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
@@ -172,13 +177,16 @@
         <div *ngIf="mostrarGiro">
           <ion-item color="medium">
             <ion-label>
-              <p>Giro: </p>
+              <p>* Giro: </p>
+              <ion-text *ngIf="leyendaGiro" color="warning">
+                <h4> ---Especifica el giro--- </h4>
+              </ion-text>
             </ion-label>
-            <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="giro"></ion-input>
+            <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="giro" (ionChange)="validateField($event, 'leyendaGiro')"></ion-input>
           </ion-item>
         </div>
 
-        <div *ngIf="plazaAgua">
+        <div *ngIf="plazaAgua === true &&  idEstatusPredio === '1'">
 
           <ion-item color="medium">
             <ion-label>
@@ -186,7 +194,6 @@
             </ion-label>
             <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="lectura_medidor"></ion-input>
           </ion-item>
-
 
           <ion-item color="medium">
             <ion-label>
@@ -204,7 +211,6 @@
               </p>
             </ion-label>
           </ion-item>
-
 
           <div *ngIf="activaOtroSuministroAgua">
 
@@ -321,56 +327,70 @@
             </ion-item>
 
           </div>
-
         </div>
 
         <hr>
 
-        <div style="text-align: center;">
+        <div style="text-align: center;" *ngIf="idEstatusPredio === '1'">
           <ion-chip color="success">Características del inmueble</ion-chip>
         </div>
 
         <hr>
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio === '1'">
           <ion-label>
-            <p>Número de niveles: </p>
+            <p>* Número de niveles: </p>
+            <ion-text *ngIf="leyendaNumeroNiveles" color="warning">
+              <h4> ---Especifica el número de niveles--- </h4>
+            </ion-text>
           </ion-label>
           <ion-input type="number" class="myCustomSelect" interface="popover" [(ngModel)]="numeroNiveles"></ion-input>
         </ion-item>
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio === '1'">
           <ion-label>
-            <p>Color fachada: </p>
+            <p>* Color fachada: </p>
+            <ion-text *ngIf="leyendaFachada" color="warning">
+              <h4> ---Especifica color de la fachada--- </h4>
+            </ion-text>
           </ion-label>
           <!-- <input type="color" [(ngModel)]="colorFachada"> -->
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada"></ion-input>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorFachada" (ionChange)="validateField($event, 'leyendaFachada')"></ion-input>
         </ion-item>
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio === '1'">
           <ion-label>
-            <p>Color puerta: </p>
+            <p>* Color puerta: </p>
+            <ion-text *ngIf="leyendaColorPuerta" color="warning">
+              <h4> ---Especifica color de la puerta--- </h4>
+            </ion-text>
           </ion-label>
           <!-- <input type="color" [(ngModel)]="colorPuerta"> -->
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta"></ion-input>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colorPuerta" (ionChange)="validateField($event, 'leyendaColorPuerta')"></ion-input>
         </ion-item>
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
           <ion-label>
-            <p>Referencia: </p>
+            <p>* Referencia: </p>
+            <ion-text *ngIf="leyendaReferencia" color="warning">
+              <h4> ---Especifica la referencia--- </h4>
+            </ion-text>
           </ion-label>
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="referencia"></ion-input>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="referencia" (ionChange)="validateField($event, 'leyendaReferencia')"></ion-input>
         </ion-item>
 
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
           <ion-label>
             <p>
-              Tipo de predio
+              * Tipo de predio
             </p>
+            <ion-text *ngIf="leyendaTipoPredio" color="warning">
+              <h4> ---Especifica el tipo de predio--- </h4>
+            </ion-text>
             <p>
               <ion-select class="myCustomSelect" interface="action-sheet" placeholder="Selecciona uno"
-                [(ngModel)]="idTipoPredio">
+                [(ngModel)]="idTipoPredio" (ionChange)="leyendaTipoPredio = false">
                 <ion-select-option value="1">Esquinero</ion-select-option>
                 <ion-select-option value="2">Intermedio</ion-select-option>
                 <ion-select-option value="3">Manzanero</ion-select-option>
@@ -380,22 +400,28 @@
           </ion-label>
         </ion-item>
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
           <ion-label>
-            <p>Entre calle 1: </p>
+            <p>* Entre calle 1: </p>
+            <ion-text *ngIf="leyendaEntreCalle1" color="warning">
+              <h4> ---Especifica la entre calle 1--- </h4>
+            </ion-text>
           </ion-label>
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle1"></ion-input>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle1" (ionChange)="validateField($event, 'leyendaEntreCalle1')"></ion-input>
         </ion-item>
 
-        <ion-item color="medium">
+        <ion-item color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
           <ion-label>
-            <p>Entre calle 2: </p>
+            <p>* Entre calle 2: </p>
+            <ion-text *ngIf="leyendaEntreCalle2" color="warning">
+              <h4> ---Especifica la entre calle 2--- </h4>
+            </ion-text>
           </ion-label>
-          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle2"></ion-input>
+          <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="entreCalle2" (ionChange)="validateField($event, 'leyendaEntreCalle2')"></ion-input>
         </ion-item>
       </ion-card-content>
     </ion-card>
-  </div>
+
 
 
 
@@ -403,11 +429,12 @@
     <ion-card-content color="medium">
       <ion-item color="medium">
         <ion-label>
-          <p>
-            Observaciones:
-          </p>
+          <p> * Observaciones: </p>
+          <ion-text *ngIf="leyendaObservaciones" color="warning">
+            <h4> --- Especifica las observaciones --- </h4>
+          </ion-text>
         </ion-label>
-        <ion-textarea rows="5" [(ngModel)]="observaciones"></ion-textarea>
+        <ion-textarea rows="5" [(ngModel)]="observaciones" (ionChange)="validateField($event, 'leyendaObservaciones')"></ion-textarea>
       </ion-item>
 
       <div style="margin-top: 20px;">

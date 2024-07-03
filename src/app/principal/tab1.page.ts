@@ -322,7 +322,7 @@ export class Tab1Page implements OnInit {
     await this.storage.set('IdServicioActivo', idServicioPlaza);
 
     //this.router.navigate(['/mapa-google', idServicioPlaza, this.id_plaza]);
-    this.router.navigate(['mapa-prueba', idServicioPlaza, this.id_plaza]);
+    this.router.navigate(['mapa-google', idServicioPlaza, this.id_plaza]);
   }
 
 
