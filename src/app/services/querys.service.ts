@@ -35,6 +35,7 @@ export class QuerysService {
 
     let tableRecorrido =  `CREATE TABLE IF NOT EXISTS recorrido (id INTEGER PRIMARY KEY AUTOINCREMENT, latitud TEXT, longitud TEXT, idAspUser TEXT, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
 
+    //? Esta será la encuesta con asignacion que se podra hacer desde el formulario de carta invitacion
     let tableEncuesta =  `CREATE TABLE IF NOT EXISTS encuesta (id INTEGER PRIMARY KEY AUTOINCREMENT, idPlaza INTEGER, account TEXT, idAlianzaVotoEstadoMexico TEXT, idAlianzaVotoMunicipio TEXT, idVotoPartidoPoliticoEstadoMexico TEXT, idVotoPartidoPoliticoMunicipio TEXT, idVotoPartidoPoliticoPais TEXT, idServicioPlaza INTEGER, fechaCaptura TEXT, cargado INTEGER NOT NULL DEFAULT 0)`;
 
     let tableProcesoGestion = `CREATE TABLE IF NOT EXISTS proceso (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza TEXT, id_proceso INTEGER, nombre_proceso TEXT, activo INTEGER, imagen TEXT, url_aplicacion_movil TEXT )`

@@ -1,0 +1,113 @@
+<ion-header class="header" style="z-index: 1 !important;" no-border>
+  <ion-toolbar style="z-index: 0 !important;" color="medium">
+    <ion-buttons>
+      <ion-button color="medium">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <img style="margin-right: 25px;" src="../../assets/img/sero_sin_letras.png" slot="end" alt="">
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content color="medium">
+
+  <hr>
+  <hr>
+
+
+  <div style="text-align: center;">
+    <h1>Actualización del domicilio</h1>
+  </div>
+
+
+  <div style="text-align: center;">
+    <ion-chip color="success">Datos históricos</ion-chip>
+  </div>
+
+  <ion-card color="medium">
+    <ion-card-content>
+
+      <div>
+        <p>Calle: <span> {{ calle_historico }} </span> </p>
+        <p>Número exterior: <span> {{ numero_exterior_historico }} </span> </p>
+        <p>Número interior: <span> {{ numero_interior_historico }} </span> </p>
+        <p>Manzana: <span> {{ manzana_historico }} </span> </p>
+        <p>Lote: <span>  </span>{{ lote_historico }} </p>
+        <p>Colonia: <span> {{ colonia_historico }} </span> </p>
+        <p>Código postal: <span> {{ codigo_postal_historico }} </span> </p>
+      </div>
+
+    </ion-card-content>
+  </ion-card>
+
+
+  <div style="text-align: center; margin-top: 10px;">
+    <ion-chip color="success">Datos correctos</ion-chip>
+  </div>
+
+  <ion-card color="medium">
+    <ion-card-content>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p>* Calle: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="calle"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Número exterior: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numero_exterior"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Número interior: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="numero_interior"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Manzana: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="manzana"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Lote: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="lote"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Colonia: </p>
+        </ion-label>
+        <ion-input class="myCustomSelect" interface="popover" [(ngModel)]="colonia"></ion-input>
+      </ion-item>
+
+      <ion-item color="medium">
+        <ion-label>
+          <p> Codigo postal: </p>
+        </ion-label>
+        <ion-input type="number" class="myCustomSelect" interface="popover" [(ngModel)]="codigo_postal"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button shape="round" color="secondary" expand="block"
+          (click)="messageValidate()">Guardar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+</ion-content>

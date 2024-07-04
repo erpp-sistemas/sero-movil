@@ -10,6 +10,7 @@ export const apiRegistroCartaInvitacion = "https://ser0.mx/seroMovil.aspx?query=
 export const apiRegistroCortes = "https://ser0.mx/seroMovil.aspx?query=sp_registro_cortes";
 export const apiRegistroLegal = "https://ser0.mx/seroMovil.aspx?query=sp_registro_legal";
 export const apiRegistroServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_registro_servicios_publicos";
+export const apiActualizarDomicilio = "https://ser0.mx/seroMovil.aspx?query=sp_actualizar_domicilio";
 
 // fotos
 export const apiRegistroFotos = "https://ser0.mx/seroMovil.aspx?query=sp_savePhotosSero";

@@ -7,7 +7,6 @@ import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Router } from '@angular/router';
-import { CallNumber } from '@ionic-native/call-number/ngx';
 import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 import { EncuestaPage } from '../encuesta/encuesta.page';
 import { ActionsHistoryPage } from '../actions-history/actions-history.page';
@@ -15,6 +14,8 @@ import { LecturaMedidorPage } from '../lectura-medidor/lectura-medidor.page';
 import { DblocalService } from '../services/dblocal.service';
 import { PhotoService } from '../services/photo.service';
 import { RegisterService } from '../services/register.service';
+import { UpdateAddressPage } from '../update-address/update-address.page';
+import { Address } from '../interfaces/Address';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class GestionCartaPage implements OnInit {
   account: string;
   propietario: string = "";
   infoAccount: any = [];
-  idEstatusPredio: string = ''; // Si es localizado el predio mostrara el formulario
+  idEstatusPredio: string = '';
   personaAtiende: string = '';
   idTipoServicio: number = 0;
   numeroNiveles: number = 1;
@@ -103,6 +104,7 @@ export class GestionCartaPage implements OnInit {
   iconoProceso: string;
 
   sello: boolean = false;
+  domicilio_actualizado: boolean = false;
   verificacionDomicilio: boolean = false;
   idMotivoNoPago: number = 0;
 
@@ -122,7 +124,10 @@ export class GestionCartaPage implements OnInit {
   leyendaEntreCalle2: boolean = false;
   leyendaObservaciones: boolean = false;
 
+  data_domicilio_actualizado: Address;
+
   backButtonSubscription: any
+
 
 
   sliderOpts = {
@@ -170,9 +175,6 @@ export class GestionCartaPage implements OnInit {
 
   private async subscribeToBackButton() {
     this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(0, async () => {
-      // Aquí se puede agregar lógica adicional si es necesario
-      // Por ejemplo, puedes mostrar un mensaje o realizar una acción específica
-
       const mensaje = await this.alertCtrl.create({
         header: "Mensaje",
         subHeader: "Si sales perderas los cambios de la gestión",
@@ -194,10 +196,6 @@ export class GestionCartaPage implements OnInit {
         ]
       });
       await mensaje.present();
-
-
-      // Descomenta la siguiente línea para desactivar completamente el botón de retroceso
-      // this.navCtrl.navigateRoot(['/home']);
     });
   }
 
@@ -206,7 +204,6 @@ export class GestionCartaPage implements OnInit {
       this.backButtonSubscription.unsubscribe();
     }
   }
-
 
 
   async estatusLecturaMedidor() {
@@ -254,10 +251,7 @@ export class GestionCartaPage implements OnInit {
   }
 
   async deletePhoto(img) {
-    // console.log(img);
-    // console.log(this.imgs);
     for (let i = 0; i < this.imgs.length; i++) {
-      //console.log(this.imgs[i].imagen);
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
       }
@@ -350,19 +344,7 @@ export class GestionCartaPage implements OnInit {
         if (this.indicadorImagen == 1) {
           this.imgs.splice(0, 1);
         }
-
-        this.saveImage(
-          this.id_plaza,
-          this.nombrePlaza,
-          this.image,
-          this.account,
-          this.fechaCapturaFoto,
-          rutaBase64,
-          this.idAspUser,
-          this.tareaAsignada,
-          tipo,
-          this.idServicioPlaza
-        );
+        this.saveImage(this.id_plaza, this.nombrePlaza, this.image, this.account, this.fechaCapturaFoto, rutaBase64, this.idAspUser, this.tareaAsignada, tipo, this.idServicioPlaza);
       })
       .catch(error => {
         console.error(error);
@@ -371,7 +353,7 @@ export class GestionCartaPage implements OnInit {
   }
 
   takePicGallery(type: any) {
-    let tipo;
+    let tipo: any;
     if (type == 1) {
       if (this.id_proceso === 7) {
         tipo = 'Cortes fachada predio'
@@ -447,25 +429,10 @@ export class GestionCartaPage implements OnInit {
         this.indicadorImagen = this.indicadorImagen + 1;
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
-        // console.log(rutaBase64, this.image);
         this.isPhoto = false;
         this.imgs.push({ imagen: this.image });
-        if (this.indicadorImagen == 1) {
-          this.imgs.splice(0, 1);
-        }
-
-        this.saveImage(
-          this.id_plaza,
-          this.nombrePlaza,
-          this.image,
-          this.account,
-          this.fechaCapturaFoto,
-          rutaBase64,
-          this.idAspUser,
-          this.tareaAsignada,
-          tipo,
-          this.idServicioPlaza
-        );
+        if (this.indicadorImagen == 1) this.imgs.splice(0, 1);
+        this.saveImage(this.id_plaza, this.nombrePlaza, this.image, this.account, this.fechaCapturaFoto, rutaBase64, this.idAspUser, this.tareaAsignada, tipo, this.idServicioPlaza);
       })
       .catch(error => {
         console.error(error);
@@ -475,21 +442,8 @@ export class GestionCartaPage implements OnInit {
 
   saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
     this.photoService
-      .saveImage(
-        id_plaza,
-        nombrePlaza,
-        image,
-        accountNumber,
-        fecha,
-        rutaBase64,
-        idAspuser,
-        idTarea,
-        tipo,
-        idServicioPlaza
-      )
-      .then(res => {
-        this.mensaje.showToast("Se almacenó la imagen correctamente");
-      });
+      .saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza)
+      .then(res => this.mensaje.showToast("Se almacenó la imagen correctamente"));
   }
 
   async messageTerminarGestion() {
@@ -682,7 +636,6 @@ export class GestionCartaPage implements OnInit {
       return;
     }
 
-
     //* cuando es predio abandonado o predio baldio le pedira el tipo de predio y las referencia y las entre calles
     if (
       (this.idEstatusPredio === '2' || this.idEstatusPredio === '3') &&
@@ -712,8 +665,6 @@ export class GestionCartaPage implements OnInit {
       if (this.entreCalle1 === '') this.leyendaEntreCalle1 = true;
       if (this.entreCalle2 === '') this.leyendaEntreCalle2 = true;
     }
-
-
 
   }
 
@@ -753,20 +704,19 @@ export class GestionCartaPage implements OnInit {
   }
 
   async sendGestionServer() {
-    // sincronizar la gestion
     try {
-      await this.registerService.sendCartaByIdServicioAccount(this.idServicioPlaza, this.account)
+      await this.registerService.sendCartaByIdServicioAccount(this.idServicioPlaza, this.account);
+      if (Object.keys(this.data_domicilio_actualizado).length > 0) await this.registerService.sendAddressUptade(this.data_domicilio_actualizado);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
   async sendEncuestaServer() {
-    console.log("Se realizo la encuesta procedo a enviarla");
     try {
       //await this.rest.sendEncuestaByCuenta(this.idServicioPlaza, this.account);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -969,9 +919,7 @@ export class GestionCartaPage implements OnInit {
   }
 
   async openLecturaMedidor() {
-
     let idPlaza = this.id_plaza;
-
     const modal = await this.modalController.create({
       component: LecturaMedidorPage,
       componentProps: {
@@ -980,15 +928,8 @@ export class GestionCartaPage implements OnInit {
         "idServicioPlaza": this.idServicioPlaza
       }
     })
-
     await modal.present()
-
     const data = await modal.onDidDismiss();
-
-    console.log(data)
-
-    // si trae el estatus como realizado ponemos en true el tomaLecturaRealizada
-
   }
 
   eliminarCaracteres() {
@@ -1011,9 +952,7 @@ export class GestionCartaPage implements OnInit {
           text: "Cancelar",
           role: "cancel",
           cssClass: "secondary",
-          handler: blah => {
-            console.log("Confirm Cancel: blah");
-          }
+          handler: blah => console.log("Confirm Cancel: blah")
         },
         {
           text: "Confirmar",
@@ -1025,6 +964,46 @@ export class GestionCartaPage implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  async goUpdateAddress() {
+    const alert = await this.alertCtrl.create({
+      header: 'Actualizar domicilio',
+      subHeader: '¿Desea actualizar los datos del domicilio?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: "secondary",
+          handler: blah => console.log("Cancel !!!!")
+        },
+        {
+          text: 'Confirmar',
+          cssClass: 'secondary',
+          handler: () => this.showModalUpdateAddress()
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async showModalUpdateAddress() {
+    const modal = await this.modalController.create({
+      component: UpdateAddressPage,
+      componentProps: {
+        "account": this.account,
+        "idPlaza": this.id_plaza,
+        "idUsuario": this.idAspUser,
+        "data": this.infoAccount
+      }
+    });
+    await modal.present();
+    const res = await modal.onDidDismiss();
+    if (res.data) {
+      let { data } = res;
+      this.data_domicilio_actualizado = data.data;
+      this.domicilio_actualizado = true;
+    }
   }
 
   async verificarDomicilio() {

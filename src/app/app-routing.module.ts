@@ -142,7 +142,11 @@ const routes: Routes = [
   {
     path: 'history-checking',
     loadChildren: () => import('./history-checking/history-checking.module').then( m => m.HistoryCheckingPageModule)
+  },  {
+    path: 'update-address',
+    loadChildren: () => import('./update-address/update-address.module').then( m => m.UpdateAddressPageModule)
   }
+
 
 
 

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { MessagesService } from './messages.service';
-import { apiRegistroCartaInvitacion, apiRegistroCortes, apiRegistroInspeccion, apiRegistroLegal, apiRegistroServiciosPublicos } from '../api'
+import { apiRegistroCartaInvitacion, apiRegistroCortes, apiRegistroInspeccion, apiRegistroLegal, apiRegistroServiciosPublicos, apiActualizarDomicilio } from '../api'
 import { LoadingController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
+import { Address } from '../interfaces/Address';
 
 @Injectable({
   providedIn: 'root'
@@ -312,6 +313,26 @@ export class RegisterService {
   }
 
   //* METODOS PARA ENVIAR GESTIONES DE UNA EN UNA
+
+  /**
+   * Metodo que envia el registro del domicilio actualizado
+   * @param data 
+   * @returns 
+   */
+  async sendAddressUptade(data: Address) {
+    return new Promise((resolve, reject) => {
+      let { account, id_plaza, calle, numero_exterior, numero_interior, manzana, lote, colonia, codigo_postal, id_usuario } = data;
+      let query = `'${account}', ${id_plaza}, '${calle}', '${numero_exterior}', '${numero_interior}', '${manzana}', '${lote}', '${colonia}', ${codigo_postal}, ${id_usuario}`
+      this.http.post(apiActualizarDomicilio + " " + query, null).subscribe(
+        async data => {
+          resolve(data);
+        }, err => {
+          console.error(err);
+          reject(err)
+        }
+      );
+    })
+  }
 
 
   /**
@@ -949,7 +970,7 @@ export class RegisterService {
       for (let i = 0; i < result.rows.length; i++) {
         arrayCuentasLegal.push(result.rows.item(i));
       }
-      
+
       if (arrayCuentasLegal.length == 0) {
         this.message.showToast("Sin registros legales para enviar");
       } else {
