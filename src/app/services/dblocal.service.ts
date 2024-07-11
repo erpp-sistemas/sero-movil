@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SQLiteObject } from '@ionic-native/sqlite/ngx';
-import { DataGeneral, Empleado, EncuestaGeneral, ServicioPublico, UserPlacesServices } from '../interfaces';
+import { DataGeneral, EncuestaGeneral, Form, Gestor, ServicioPublico, UserPlacesServices } from '../interfaces';
 import { File } from "@ionic-native/file/ngx";
 import { Proceso } from '../interfaces/Procesos';
 
@@ -203,11 +203,11 @@ export class DblocalService {
 
 
   /**
- * Metodo que borra los registros de la tabla empleadosPlaza que son los empleados por plaza a la que pertenece el usuario logueado
+ * Metodo que borra los registros de la tabla gestores que son los empleados por plaza a la que pertenece el usuario logueado
  * @returns Promise
  */
-  deleteEmpleadosPlaza() {
-    let sql = 'DELETE FROM empleadosPlaza';
+  deleteGestores() {
+    let sql = 'DELETE FROM gestores';
     return this.db.executeSql(sql, []);
   }
 
@@ -216,14 +216,15 @@ export class DblocalService {
   * @param data 
   * @returns Promise
   */
-  insertaEmpleadosPlaza(data: Empleado) {
-    let sql = 'INSERT INTO empleadosPlaza (id_plaza, idAspUser, nombre_empleado, apellido_paterno_empleado, apellido_materno_empleado) VALUES (?,?,?,?,?)';
+  insertaGestor(data: Gestor) {
+    let sql = 'INSERT INTO gestores (id_plaza, id_usuario, nombre, apellido_paterno, apellido_materno, foto) VALUES (?,?,?,?,?,?)';
     return this.db.executeSql(sql, [
       data.id_plaza,
       data.id_usuario,
       data.nombre,
       data.apellido_paterno,
-      data.apellido_materno
+      data.apellido_materno,
+      data.foto
     ]);
   }
 
@@ -282,19 +283,18 @@ export class DblocalService {
   }
 
   /**
-   * Metodo que obtiene los registros de la tabla interna empleadosServicios
+   * Metodo que obtiene los registros de la tabla interna gestores
    * @param id_plaza 
    * @returns Promise
    */
-  async mostrarEmpleadosPlaza(id_plaza: number) {
-    let sql = "SELECT * FROM empleadosPlaza WHERE id_plaza = ?";
-    return this.db.executeSql(sql, [id_plaza]).then(response => {
-      let empleados = [];
+  async getGestores() {
+    let sql = `SELECT * FROM gestores ORDER BY nombre`;
+    return this.db.executeSql(sql, []).then(response => {
+      let gestores = [];
       for (let i = 0; i < response.rows.length; i++) {
-        empleados.push(response.rows.item(i));
+        gestores.push(response.rows.item(i));
       }
-      console.log(empleados);
-      return Promise.resolve(empleados)
+      return Promise.resolve(gestores)
     }).catch(error => Promise.reject(error));
   }
 
@@ -674,7 +674,7 @@ export class DblocalService {
     try {
       return this.db.executeSql(sql, [data.id_tarea, data.nombre, data.id_proceso])
     } catch (error) {
-      console.log("No se pudo insertar la tarea en la tabla local")
+      console.error("No se pudo insertar la tarea en la tabla local")
     }
   }
 
@@ -688,9 +688,53 @@ export class DblocalService {
       }
       return Promise.resolve(data)
     } catch (error) {
-      console.log("No se pudo obtener la informacion del catalogo de tareas ", error)
+      console.error("No se pudo obtener la informacion del catalogo de tareas ", error)
       return Promise.reject(error)
     }
   }
+
+  async createTableLocal(data: Form[]) {
+    let name_table = data[0].nombre_form
+    const verify_table_exists = await this.verifyTableExists(name_table)
+
+    if (!verify_table_exists) {
+      let sql = `CREATE TABLE IF NOT EXISTS ${name_table} (id INTEGER PRIMARY KEY AUTOINCREMENT, cargado INTEGER NOT NULL DEFAULT 0, data_json TEXT)`
+      try {
+        await this.db.executeSql(sql, [])
+        return Promise.resolve("Tables created")
+      } catch (error) {
+        console.error(error)
+        return Promise.reject("Error, tables not created")
+      }
+    }
+  }
+
+  async verifyTableExists(table_name: string) {
+    return new Promise(async (resolve, reject) => {
+      let query = `SELECT name FROM sqlite_master WHERE type='table'`
+      let tables = []
+      try {
+        const data = await this.db.executeSql(query, [])
+        for (let i = 0; i < data.rows.length; i++) {
+          tables.push(data.rows.item(i));
+        }
+        const find_table = tables.find(table => {
+          return table.name === table_name
+        })
+
+        if (find_table) {
+          resolve(true)
+          return
+        } else {
+          resolve(false)
+          return
+        }
+      } catch (error) {
+        console.error("No se pudo mostrar la lista de las tablas ", error)
+        reject(error)
+      }
+    })
+  }
+
 
 }

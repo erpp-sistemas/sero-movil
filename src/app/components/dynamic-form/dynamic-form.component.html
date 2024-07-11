@@ -1,0 +1,74 @@
+
+<div class="container-icono" style="text-align:  center;">
+  <ion-icon class="icono" [name]="icono_form"></ion-icon>
+</div>
+
+<div class="information">
+  <ion-label color="dark">
+    <p>Formulario</p>
+  </ion-label>
+  <ion-label color="dark">
+    <p style="text-transform: capitalize; ">{{name_form.replace('_', ' ')}}</p>
+  </ion-label>
+</div>
+
+
+<form *ngIf="formulario" [formGroup]="formulario" (ngSubmit)="onSubmit()">
+  <ion-item *ngFor="let campo of data_form_structure">
+    <ion-label position="floating"> {{ campo.mandatory === 1 ? '*' : '' }} {{ campo.field.replace('_', ' ') | titlecase }}</ion-label>
+    <ng-container *ngIf="campo.type_field_form !== 'select'; else selectField">
+      <ion-input [type]="campo.type_form" [formControlName]="campo.field"></ion-input>
+    </ng-container>
+    <ng-template #selectField>
+      <ion-select [formControlName]="campo.field">
+        <ion-select-option *ngFor="let option of campo.options_select" [value]="option">
+          {{ option }}
+        </ion-select-option>
+      </ion-select>
+    </ng-template>
+  </ion-item>
+
+
+  <ion-slides [options]="sliderOpts">
+    <ion-slide *ngFor="let img of imgs">
+      <img src={{img.imagen}} class="imagen">
+      <ion-fab-button padding size="small" (click)="deletePhoto(img.imagen)" *ngIf="img.imagen != 'assets/img/imgs.png'"
+        color="danger">
+        <ion-icon class="icon-trash" name="trash"></ion-icon>
+      </ion-fab-button>
+    </ion-slide>
+  </ion-slides>
+
+
+  <ion-item color="medium" text-center>
+    <ion-label color="dark">
+      <p class="fotos-visita">
+        Tomar fotografías
+      </p>
+
+      <ion-grid class="grid">
+        <ion-row>
+          <ion-col text-center *ngFor="let photo of photos">
+            <ion-button color="secondary" size="default" (click)="takePic(photo)">
+              <ion-icon color="dark" slot="start" name="camera-outline"></ion-icon>
+              {{photo}}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+    </ion-label>
+  </ion-item>
+
+  <ion-grid *ngIf="have_signature">
+    <ion-row>
+      <ion-col size=12 class="ion-text-center">
+        <ion-button [disabled]="img_firma_button_disabled" shape="round" size="default" color="tertiary"
+          (click)="openSignature()">Firma
+          de consentimiento</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-button color="primary" class="button-terminar" expand="full" type="submit">Terminar</ion-button>
+</form>

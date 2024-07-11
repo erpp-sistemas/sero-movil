@@ -1,0 +1,26 @@
+<hr>
+<hr>
+<hr>
+<hr>
+
+<div id="map_canvas" *ngIf="!showForm"></div>
+
+<ion-content color="medium">
+
+  <div *ngIf="!showForm">
+    <ion-button expand="block" color="warning" (click)="goForm()" style="margin-top: 10px;">      
+      <ion-icon slot="start" name="contract-outline"></ion-icon>
+      Supervisar gestor
+    </ion-button>
+  </div>
+
+  <div *ngIf="showForm">
+    <app-dynamic-form></app-dynamic-form>
+  </div>
+
+
+
+</ion-content>
+
+
+<app-segment-tab-bar></app-segment-tab-bar>

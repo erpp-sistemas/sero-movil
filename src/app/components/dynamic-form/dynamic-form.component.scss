@@ -1,0 +1,66 @@
+.container-icono {
+    background-image: linear-gradient(to bottom, #3880ff, #2e68db, #2352b9, #143c98, #002878);
+    border: 2px solid rgb(0, 255, 0);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    padding: 10px;
+}
+
+.icono {
+    text-align: center;
+    color: rgb(0, 200, 0);
+    font-size: 40px;
+}
+
+
+.information {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.information p {
+    font-size: 16px;
+    color: white;
+}
+
+
+ion-item::part(native) {
+    border-color: #1E3B56;
+    border-style: dashed;
+    border-width: 1px;
+    border-radius: 10px;
+    width: 90%;
+    margin: 10px auto;
+}
+
+
+.button-terminar {
+    width: 90%;
+    margin: 30px auto;
+}
+
+.grid {
+    text-align: center;
+}
+
+.imagen {
+    width: 35%;
+    height: 35%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+
+.fotos-visita {
+    text-align: center;
+    font-size: 16px;
+    color: white !important;
+}
+
+

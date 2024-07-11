@@ -26,7 +26,7 @@ export const apiObtenerFotosHistoricas = "https://ser0.mx/seroMovil.aspx?query=s
 export const apiObtenerPagosHistoricos = "https://ser0.mx/seroMovil.aspx?query=sp_get_pagos_history";
 export const apiRegistroEncuestaPresidente = "https://ser0.mx/seroMovil.aspx?query=sp_registro_encuesta_v2";
 export const apiRegistroAsistencia = "https://ser0.mx/seroMovil.aspx?query=sp_registro_asistencia"
-export const apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
+export const apiObtenerGestores = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
 export const apiObtenerProcesosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_procesos_plaza";
 export const apiRegistroBotonPanico = "https://ser0.mx/seroMovil.aspx?query=sp_boton_panico";
 export const apiObtenerAccionesHistoricas = "https://ser0.mx/seroMovil.aspx?query=sp_get_actions_history";
@@ -36,7 +36,9 @@ export const apiRegisterEncuesta = "https://ser0.mx/seroMovil.aspx?query=sp_regi
 export const apiObtenerAsistencia = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_asistencias";
 
 
+// Forms
+export const urlGetForms = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_forms";
 
-
-
+// Positions
+export const urlGetLastPositionGestor = 'https://ser0.mx/seroMovil.aspx?query=sp_obtener_ultima_posicion_gestores'
 

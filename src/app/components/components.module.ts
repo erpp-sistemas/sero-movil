@@ -8,11 +8,12 @@ import { HeaderComponent } from './header/header.component';
 // callNumber
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { SelectPartidosComponent } from './select-partidos/select-partidos.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CardNivelConocimientoComponent } from './card-nivel-conocimiento/card-nivel-conocimiento.component';
 import { CardAprobacionAutoridadesComponent } from './card-aprobacion-autoridades/card-aprobacion-autoridades.component';
 import { CardPreferenciaElectoralComponent } from './card-preferencia-electoral/card-preferencia-electoral.component';
 import { SegmentTabBarComponent } from './segment-tab-bar/segment-tab-bar.component';
+import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
 
 
 
@@ -23,12 +24,14 @@ import { SegmentTabBarComponent } from './segment-tab-bar/segment-tab-bar.compon
     CardNivelConocimientoComponent,
     CardAprobacionAutoridadesComponent,
     CardPreferenciaElectoralComponent,
-    SegmentTabBarComponent
+    SegmentTabBarComponent,
+    DynamicFormComponent
   ],
   imports: [
     CommonModule,
     IonicModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   exports: [
     HeaderComponent,
@@ -36,7 +39,8 @@ import { SegmentTabBarComponent } from './segment-tab-bar/segment-tab-bar.compon
     CardNivelConocimientoComponent,
     CardAprobacionAutoridadesComponent,
     CardPreferenciaElectoralComponent,
-    SegmentTabBarComponent
+    SegmentTabBarComponent,
+    DynamicFormComponent
   ],
   providers: [
     CallNumber

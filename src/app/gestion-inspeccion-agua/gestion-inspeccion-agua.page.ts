@@ -284,7 +284,7 @@ export class GestionInspeccionAguaPage implements OnInit {
     this.inspectores = true;
     this.nombreInspectorLogueado = await this.storage.get('Nombre');
     try {
-      this.nombreInspectores = await this.dbLocalService.mostrarEmpleadosPlaza(this.id_plaza);
+      this.nombreInspectores = await this.dbLocalService.getGestores();
       console.log(this.nombreInspectores);
     } catch (error) {
       console.log("Error al traer los datos de los inspectores")

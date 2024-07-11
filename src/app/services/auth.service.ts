@@ -10,7 +10,7 @@ import { ModalController } from '@ionic/angular';
 import { LoginPage } from '../login/login.page';
 import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 import { DblocalService } from './dblocal.service';
-import { EncuestaGeneral, ServicioPublico, UserPlacesServices, UserFirebase } from '../interfaces';
+import { EncuestaGeneral, ServicioPublico, UserPlacesServices, UserFirebase, Gestor } from '../interfaces';
 import { wihoutDuplicated } from '../../helpers'
 import { UsersService } from './users.service';
 
@@ -21,7 +21,7 @@ export class AuthService {
 
   apiObtenerServiciosUser = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios";
   apiObtenerServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios_publicos";
-  apiObtenerEmpleadosPlaza = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
+  apiObtenerGestores = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   apiUpdateAppVersion = "https://ser0.mx/seroMovil.aspx?query=sp_user_app_version";
   userInfo: UserFirebase;
   modal: any;
@@ -111,7 +111,7 @@ export class AuthService {
     await this.saveUserInfoStorage(this.userInfo);
     await this.getServicesPublic();
     await this.obtenerCatTareaAndInsert()
-    await this.getUsersPlaces(this.userInfo);
+    await this.getUsersPlaces();
     await this.saveDataCell(id);
   }
 
@@ -125,7 +125,8 @@ export class AuthService {
 
 
   async insertServices(data: UserPlacesServices[]) {
-    await this.getPhotoUser(data[0].foto)
+    this.photo_user = await this.getPhotoUser(data[0].foto)
+    await this.storage.set('Foto', this.photo_user)
     for (let servicio of data) {
       this.dbLocalService.insertarServiciosSQL(servicio);
     }
@@ -190,20 +191,19 @@ export class AuthService {
     })
   }
 
-
-
-  async getUsersPlaces(userInfo: UserFirebase) {
-    await this.dbLocalService.deleteEmpleadosPlaza()
-    let idAspUser = userInfo.idaspuser;
-    this.http.get(this.apiObtenerEmpleadosPlaza + " '" + idAspUser + "'").subscribe(data => {
-      this.insertEmployes(data);
+  async getUsersPlaces() {
+    await this.dbLocalService.deleteGestores()
+    this.http.get<Gestor[]>(this.apiObtenerGestores).subscribe(data => {
+      this.insertGestores(data);
     })
   }
 
-  insertEmployes(empleados: any) {
-    empleados.forEach((empleado: any) => {
-      this.dbLocalService.insertaEmpleadosPlaza(empleado);
-    });
+  async insertGestores(gestores: Gestor[]) {
+    for (let gestor of gestores) {
+      let { id_usuario, nombre, apellido_paterno, apellido_materno, foto: foto_url, id_plaza } = gestor;
+      const foto = await this.getPhotoUser(foto_url)
+      this.dbLocalService.insertaGestor({id_usuario, nombre, apellido_paterno, apellido_materno, foto, id_plaza});
+    }
   }
 
 
@@ -215,18 +215,17 @@ export class AuthService {
   }
 
 
-  async getPhotoUser(url_foto: string) {
+  async getPhotoUser(url_foto: string): Promise<string> {
+    console.log(url_foto)
     return new Promise((resolve, reject) => {
       this.userService.getUrlFoto(url_foto).subscribe((response: Blob) => {
         const reader = new FileReader();
         reader.onload = async () => {
           const imageBase64 = reader.result;
-          this.photo_user = imageBase64.toString()
-          await this.storage.set('Foto', this.photo_user)
+          resolve(imageBase64.toString());
         };
         if (response) {
           reader.readAsDataURL(response);
-          resolve('Photo get');
         }
       }, (error => {
         console.log(error)

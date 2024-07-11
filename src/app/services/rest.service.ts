@@ -6,13 +6,15 @@ import { LoadingController } from '@ionic/angular';
 import { Proceso } from '../interfaces/Procesos';
 import { UsuarioAyuda } from '../interfaces/UsuarioAyuda';
 import { DblocalService } from './dblocal.service';
-import { DataGeneral } from '../interfaces';
+import { DataGeneral, Form } from '../interfaces';
 import {
   apiObtenerDatos, apiRegistroRecorrido, apiObtenerCuentasDistancia,
   apiObtenerEmpleados, apiObtenerFotosHistoricas, apiObtenerPagosHistoricos, apiRegistroEncuestaPresidente,
-  apiRegistroAsistencia, apiObtenerEmpleadosPlaza, apiObtenerProcesosPlaza, apiRegistroBotonPanico,
+  apiRegistroAsistencia, apiObtenerGestores, apiObtenerProcesosPlaza, apiRegistroBotonPanico,
   apiObtenerAccionesHistoricas, apiRegistroPorcentajePila, apiObtenerCatalogoTareas, apiRegisterEncuesta,
-  apiObtenerAsistencia
+  apiObtenerAsistencia,
+  urlGetForms,
+  urlGetLastPositionGestor
 } from '../api'
 
 
@@ -180,7 +182,7 @@ export class RestService {
 
   obtenerGestoresPlaza(idPlaza: string) {
     return new Promise(resolve => {
-      this.http.get(`${apiObtenerEmpleadosPlaza} ${idPlaza}`).subscribe(data => {
+      this.http.get(`${apiObtenerGestores} ${idPlaza}`).subscribe(data => {
         resolve(data)
       }, err => {
         this.message.showAlert("No se obtuvieron los usuarios");
@@ -328,6 +330,35 @@ export class RestService {
       }, error => {
         reject(error)
       })
+    })
+  }
+
+  getTablesSQL() {
+    let id_app = 1 // la 4 es ser0 siempre sera la misma
+    return new Promise<Form[]>((resolve, reject) => {
+
+      try {
+        this.http.get(urlGetForms + ' ' + id_app).subscribe((data: Form[]) => {
+          resolve(data)
+        })
+      } catch (error) {
+        console.error(error)
+        reject(error)
+      }
+
+    })
+  }
+
+  getLastPositionGestor() {
+    return new Promise<any[]>((resolve, reject) => {
+      try {
+        this.http.get(urlGetLastPositionGestor).subscribe( (positions_gestores: any[]) => {
+          resolve(positions_gestores)
+        })
+      } catch (error) {
+          console.log(error);
+          reject(error)
+      }
     })
   }
 

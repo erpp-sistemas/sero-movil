@@ -9,11 +9,11 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import { PushService } from './services/push.service';
 import { Storage } from '@ionic/storage';
 //import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
-import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { BatteryStatus } from '@awesome-cordova-plugins/battery-status/ngx';
 import { DblocalService } from './services/dblocal.service';
 import { PhotoService } from './services/photo.service';
 import { RegisterService } from './services/register.service';
+import { Form } from './interfaces';
 
 
 @Component({
@@ -57,9 +57,9 @@ export class AppComponent {
       this.createDB();
       this.getPermission();
       this.setStatusBar()
-      //this.backGroundGeolocation();
       this.push.configuracionInicial();
-      this.batteryInit()
+      this.getTablesSQL();
+      this.batteryInit();
     })
   }
 
@@ -108,7 +108,7 @@ export class AppComponent {
       await db.executeSql(table.tableServicios, []);
       await db.executeSql(table.tableDescargaServicios, []);
       await db.executeSql(table.tableListaServiciosPublicos, []);
-      await db.executeSql(table.tableEmpleadosPlaza, []);
+      await db.executeSql(table.gestores, []);
       await db.executeSql(table.tableRecorrido, []);
       await db.executeSql(table.tableEncuesta, []);
       await db.executeSql(table.tableProcesoGestion, []);
@@ -133,6 +133,82 @@ export class AppComponent {
     }).catch(error => {
       console.log("No se pudo insertar el porcentaje de la pila")
     })
+  }
+
+
+  async getTablesSQL() {
+    const forms = await this.rest.getTablesSQL();
+    const id_forms = forms.map(f => f.route_app);
+    const id_forms_check = JSON.stringify(this.wihoutDuplicated(id_forms));
+    await this.storage.set('IdsForms', id_forms_check);
+
+    const agrupadoPorId = forms.reduce((resultado, objeto) => {
+      // Verificar si ya existe un array para el id actual
+      if (!resultado[objeto.id_form]) {
+        // Si no existe, crear un nuevo array
+        resultado[objeto.id_form] = [];
+      }
+
+      // Agregar el objeto al array correspondiente al id
+      resultado[objeto.id_form].push(objeto);
+
+      return resultado;
+    }, {});
+    this.setTablesLocal(agrupadoPorId)
+  }
+
+  wihoutDuplicated(data: any[]) {
+
+    const arraySinDuplicados = data.filter((valor, indice, self) => {
+      return self.indexOf(valor) === indice;
+    });
+
+    return arraySinDuplicados
+  }
+
+  async setTablesLocal(data: any) {
+    console.log(data);
+    let tables_name = [];
+    for (const clave in data) {
+      if(data.hasOwnProperty(clave)) {
+        await this.dblocalService.createTableLocal(data[clave]);
+        await this.saveFieldStorage(data[clave])
+        let arr = data[clave]
+        tables_name.push(arr[0].nombre_form)
+      }
+    }
+    await this.saveNameTablesStorage(tables_name)
+  }
+
+  async saveFieldStorage(data: Form[]) {
+
+    const id_form = data[0].route_app
+    let info_form = []
+
+    for (let d of data) {
+      info_form.push({
+        id_form: d.id_form,
+        field: d.field,
+        type_field_form: d.type_field_form,
+        nombre_form: d.nombre_form,
+        type: d.type,
+        type_form: d.type_form,
+        options_select: d.options_select,
+        route_app: d.route_app,
+        icono: d.icono,
+        name_photo: d.name_photo,
+        have_signature: d.have_signature,
+        send_notification: d.send_notification,
+        mandatory: d.mandatory
+      })
+    }
+
+    await this.storage.set(id_form, JSON.stringify(info_form))
+
+  }
+
+  async saveNameTablesStorage(tables: any[]) {
+    await this.storage.set('TablesNames', JSON.stringify(tables))
   }
 
 

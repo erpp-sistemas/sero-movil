@@ -78,10 +78,31 @@ export interface UserFirebase {
     uid: string;
 }
 
-export interface Empleado {
+export interface Gestor {
     id_plaza: number;
     id_usuario: number;
     nombre: string;
     apellido_paterno: string;
     apellido_materno: string;
+    foto: string;
+}
+
+
+export interface Form {
+    id_form: number; // id del formulario que es el que se guardara en el storage
+    field: string; // nombre del campo
+    type: string; // tipo para la abse de datos 
+    type_field_form: string; // tipo para el elemento html ejemplo input, select
+    type_form: string; // tipo para el elemento html ejemplo text, number
+    nombre_form: string; // nombre del formulario
+    options_select: string; // opciones del select
+    route_app: string; // ruta para el formulario en la app movil
+    icono: string; // icono del formulario
+    name_photo: string; // las fotos que tendra el formulario
+    have_signature: number; // para ver si el formulario tiene boton de firma de consentimiento
+    send_notification: number; // para saber si cuando se manda un registro hay que mandar notificacion o no
+    mandatory: number; // para saber si el campo es obligatorio
+    type_select: string; // para saber si es normal o multiseleccion sel select
+    parent_id_parent: number // para saber si depende de otro campo
+    orden: number; // para sabeer el orden del campo
 }

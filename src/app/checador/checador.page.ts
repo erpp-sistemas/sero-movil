@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CallNumber } from '@ionic-native/call-number/ngx';
 import { Router } from '@angular/router';
 import { GoogleMaps, GoogleMap, Marker, GoogleMapsAnimation, MyLocation, GoogleMapOptions, GoogleMapsMapTypeId } from '@ionic-native/google-maps';
 import { LoadingController, ToastController, Platform, ModalController } from '@ionic/angular';
@@ -122,6 +121,8 @@ export class ChecadorPage implements OnInit {
           height: 30
         }
       }
+
+      console.log(location.latLng)
 
       let marker: Marker = this.map.addMarkerSync({
         title: 'Mi ubicación actual',

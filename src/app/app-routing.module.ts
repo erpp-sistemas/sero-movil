@@ -145,6 +145,14 @@ const routes: Routes = [
   },  {
     path: 'update-address',
     loadChildren: () => import('./update-address/update-address.module').then( m => m.UpdateAddressPageModule)
+  },
+  {
+    path: 'coordinator',
+    loadChildren: () => import('./coordinator/coordinator.module').then( m => m.CoordinatorPageModule)
+  },
+  {
+    path: 'supervice-gestor',
+    loadChildren: () => import('./supervice-gestor/supervice-gestor.module').then( m => m.SuperviceGestorPageModule)
   }
 
 

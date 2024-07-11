@@ -29,7 +29,7 @@ export class QuerysService {
 
     let tableServiciosPublicos = `CREATE TABLE IF NOT EXISTS serviciosPublicos( id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, nombre_plaza, idAspUser TEXT, idServicio INTEGER, idServicio2 INTEGER, observacion TEXT, fechaCaptura TEXT, latitud TEXT, longitud TEXT, cargado INTEGER NOT NULL DEFAULT 0 )`
 
-    let tableEmpleadosPlaza = `CREATE TABLE IF NOT EXISTS empleadosPlaza (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza INTEGER, idAspUser TEXT, nombre_empleado TEXT, apellido_paterno_empleado TEXT, apellido_materno_empleado TEXT)`
+    let gestores = `CREATE TABLE IF NOT EXISTS gestores (id INTEGER PRIMARY KEY AUTOINCREMENT, id_plaza TEXT, id_usuario INTEGER, nombre TEXT, apellido_paterno TEXT, apellido_materno TEXT, foto TEXT)`
     
     let tableListaServiciosPublicos = `CREATE TABLE IF NOT EXISTS listaServiciosPublicos ( id_plaza INTEGER, nombre_plaza TEXT, id_servicio_publico INTEGER, nombre_servicio_publico TEXT)`
 
@@ -59,7 +59,7 @@ export class QuerysService {
       tableCartaInvitacion,
       tableLegal,
       tableListaServiciosPublicos,
-      tableEmpleadosPlaza,
+      gestores,
       tableRecorrido,
       tableEncuesta,
       tableProcesoGestion,
