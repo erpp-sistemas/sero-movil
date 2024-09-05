@@ -49,7 +49,7 @@ export class CoordinatorPage implements OnInit {
 
   async ngOnInit() {
     await this.platform.ready();
-    await this.loadMap();
+    if(!this.showForm) await this.loadMap();
     await this.getGestoresLocal();
   }
 

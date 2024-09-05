@@ -736,5 +736,11 @@ export class DblocalService {
     })
   }
 
+  insertImageRegister( img, fecha_actual, rutaBase64, id_usuario, tipo) {
+    return new Promise((resolve, reject) => {
+
+    })
+  }
+
 
 }

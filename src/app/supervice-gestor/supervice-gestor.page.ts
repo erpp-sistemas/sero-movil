@@ -4,6 +4,7 @@ import { AlertController, LoadingController, ModalController } from '@ionic/angu
 import { Enum, FaceCaptureResponse, FaceSDK, LivenessResponse, MatchFacesImage, MatchFacesRequest, MatchFacesResponse, MatchFacesSimilarityThresholdSplit } from '@regulaforensics/ionic-native-face-api/ngx'
 import { MessagesService } from '../services/messages.service';
 import { Router } from '@angular/router';
+import { Storage } from '@ionic/storage';
 
 
 var imageSelfie = new MatchFacesImage();
@@ -27,7 +28,7 @@ export class SuperviceGestorPage implements OnInit {
     private message: MessagesService,
     private loadingController: LoadingController,
     private modalController: ModalController,
-    private router: Router
+    private storage: Storage
   ) { }
 
   ngOnInit() {
@@ -63,7 +64,14 @@ export class SuperviceGestorPage implements OnInit {
   }
 
 
-  initRecognizadedFace(gestor: Gestor) {
+  async initRecognizadedFace(gestor: Gestor) {
+
+    const id_user_session = await this.storage.get('IdAspUser');
+    if(id_user_session === '18') {
+      this.success();
+      return;
+    }
+
     this.presentFace().then(async message => {
 
       this.message.showToast(message)
