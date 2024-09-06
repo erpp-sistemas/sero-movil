@@ -14,7 +14,8 @@ import {
   apiObtenerAccionesHistoricas, apiRegistroPorcentajePila, apiObtenerCatalogoTareas, apiRegisterEncuesta,
   apiObtenerAsistencia,
   urlGetForms,
-  urlGetLastPositionGestor
+  urlGetLastPositionGestor,
+  apiSupervisionCoordinacion
 } from '../api'
 
 
@@ -303,6 +304,18 @@ export class RestService {
     })
   }
 
+  sendOneRegisterFormDynamic(data: any) {
+    return new Promise((resolve) => {
+      const url = `${apiSupervisionCoordinacion} '${JSON.stringify(data)}'`;
+      this.http.post(url, null).subscribe(async () => {
+        resolve("Registro enviado con éxito")
+      }, error => {
+        console.log(error)
+        resolve("No se pudo enviar")
+      })
+    })
+  }
+
   getCurrentDate() {
     const today = new Date();
     let currentDate: any
@@ -340,7 +353,7 @@ export class RestService {
   }
 
   getTablesSQL() {
-    let id_app = 1 // la 4 es ser0 siempre sera la misma
+    let id_app = 1 // la 1 es ser0 siempre sera la misma
     return new Promise<Form[]>((resolve, reject) => {
 
       try {
@@ -358,12 +371,12 @@ export class RestService {
   getLastPositionGestor() {
     return new Promise<any[]>((resolve, reject) => {
       try {
-        this.http.get(urlGetLastPositionGestor).subscribe( (positions_gestores: any[]) => {
+        this.http.get(urlGetLastPositionGestor).subscribe((positions_gestores: any[]) => {
           resolve(positions_gestores)
         })
       } catch (error) {
-          console.log(error);
-          reject(error)
+        console.log(error);
+        reject(error)
       }
     })
   }

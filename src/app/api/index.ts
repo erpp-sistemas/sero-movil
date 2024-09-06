@@ -43,3 +43,6 @@ export const urlGetForms = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_form
 // Positions
 export const urlGetLastPositionGestor = 'https://ser0.mx/seroMovil.aspx?query=sp_obtener_ultima_posicion_gestores'
 
+// supervision coordinacion
+export const apiSupervisionCoordinacion = 'https://ser0.mx/seroMovil.aspx?query=sp_registro_super_coord'
+

@@ -23,7 +23,7 @@ export class CoordinatorPage implements OnInit {
   gestores: Gestor[];
   gestores_position: any[];
 
-  
+  gestor: Gestor;  
   messages: any[] = [];
   markers: { [userId: string]: Marker } = {}; 
 
@@ -190,6 +190,7 @@ export class CoordinatorPage implements OnInit {
 
     const res = await modal.onDidDismiss();
     if (res.data.status) {
+      this.gestor = res.data.gestor;
       this.showForm = true;
     }
   }

@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { Form } from 'src/app/interfaces';
 import { DblocalService } from 'src/app/services/dblocal.service';
 import { MessagesService } from 'src/app/services/messages.service';
+import { PhotoService } from 'src/app/services/photo.service';
+import { RestService } from 'src/app/services/rest.service';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -16,6 +18,8 @@ import { MessagesService } from 'src/app/services/messages.service';
   styleUrls: ['./dynamic-form.component.scss'],
 })
 export class DynamicFormComponent implements OnInit {
+
+  @Input() data: any;
 
   formulario: FormGroup;
   data_form_structure: Form[];
@@ -26,11 +30,25 @@ export class DynamicFormComponent implements OnInit {
   have_signature: boolean = false;
   nombre_plaza: string = '';
   id_usuario: number = 0;
+  id_plaza: number = 0;
   id_form: number = 0;
   longitud: number = 0;
   latitud: number = 0;
   geoPosicion: any = {};
   fecha_actual: string = '';
+
+  // cuando es un formulario de gestion
+  account: any;
+  id_proceso: any;
+  infoAccount: any;
+  propietario: any;
+  idAccountSqlite: any;
+  tareaAsignada: any;
+  nombreTareaAsignada: any;
+  tipoServicioPadron: any;
+
+  loading: any;
+
 
   imgs: any;
   infoImage: any = [];
@@ -41,6 +59,15 @@ export class DynamicFormComponent implements OnInit {
   indicadorImagen: number = 0;
   image: string = '';
 
+  showGestor: boolean = false;
+
+
+  sliderOpts = {
+    zoom: true,
+    slidesPerView: 1.55,
+    spaceBetween: 10,
+    centeredSlides: true
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -49,11 +76,12 @@ export class DynamicFormComponent implements OnInit {
     private alertController: AlertController,
     private dbLocalService: DblocalService,
     private messageService: MessagesService,
-    private modalController: ModalController,
     private camera: Camera,
     private router: Router,
     private storage: Storage,
     private webview: WebView,
+    private photoService: PhotoService,
+    private rest: RestService
   ) { this.imgs = [{ imagen: 'assets/img/imgs.png' }] }
 
   async ngOnInit() {
@@ -82,6 +110,10 @@ export class DynamicFormComponent implements OnInit {
     if (this.currentRoute.includes('gestion')) {
       await this.getInfoAccount();
       this.isFormGestion = true;
+    }
+
+    if (this.currentRoute.includes('coordinator')) {
+      this.showGestor = true;
     }
 
     await this.getInfoBasic();
@@ -132,7 +164,16 @@ export class DynamicFormComponent implements OnInit {
   }
 
   async getInfoAccount() {
-
+    this.id_plaza = await this.storage.get('IdPlazaActiva');
+    this.nombre_plaza = await this.storage.get('NombrePlazaActiva');
+    this.account = await this.storage.get("account");
+    this.id_proceso = await this.storage.get('id_proceso');
+    this.infoAccount = await this.dbLocalService.getInfoAccount(this.account);
+    this.propietario = this.infoAccount[0].propietario;
+    this.idAccountSqlite = this.infoAccount[0].id;
+    this.tareaAsignada = this.infoAccount[0].tarea_asignada;
+    this.nombreTareaAsignada = this.infoAccount[0].nombre_tarea_asignada;
+    this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
   }
 
   async onSubmit() {
@@ -161,15 +202,23 @@ export class DynamicFormComponent implements OnInit {
 
 
   async endGestion() {
-    if(!this.formulario.valid) {
+    if (!this.formulario.valid) {
       this.messageService.showAlert("Tienes que cumplir con los requerimientos de los campos, *obligatorios y los que son email")
       return
     }
-    if(this.fecha_actual === '') {
+    if (this.fecha_actual === '') {
       this.fecha_actual = this.getDateCurrent();
     }
+
+    this.loading = await this.loadingController.create({
+      message: 'Enviando registro...',
+      spinner: 'dots'
+    })
+
+    await this.loading.present();
+
     await this.getPosition()
-    
+
     let data = {
       ...this.formulario.value,
       id_form: this.id_form,
@@ -179,8 +228,48 @@ export class DynamicFormComponent implements OnInit {
       id_usuario: this.id_usuario,
     }
 
+    if (this.showGestor) {
+      data = { ...data, gestor_visitado: this.data.id_usuario }
+    }
+
     console.log(data)
 
+    try {
+      const message = await this.rest.sendOneRegisterFormDynamic(data);
+      if (message === 'No se pudo enviar') {
+        //console.log("No se envio entonces vamos a guardarla")
+        this.loading.dismiss()
+        await this.saveLocal(data, this.fecha_actual)
+      } else {
+        this.loading.dismiss()
+        this.exit()
+      }
+    } catch (error) {
+
+    }
+
+  }
+
+  async saveLocal(data: any, fecha_actual: string) {
+    this.loading = await this.loadingController.create({
+      message: 'Guardando encuesta...',
+      spinner: 'dots'
+    })
+    await this.loading.present();
+
+    this.dbLocalService.insertRegisterFormDynamic(data, fecha_actual).then((message: string) => {
+      console.log(message)
+      this.messageService.showToastLarge(message)
+      this.loading.dismiss()
+      this.exit()
+    }).catch(error => {
+      this.messageService.showToastLarge(error)
+      this.loading.dismiss();
+    })
+  }
+
+  exit() {
+    this.router.navigateByUrl('/home/tab1')
   }
 
   async getPosition() {
@@ -251,7 +340,7 @@ export class DynamicFormComponent implements OnInit {
 
     this.camera.getPicture(options)
       .then(imageData => {
-        if(this.fecha_actual === '') {
+        if (this.fecha_actual === '') {
           this.fecha_actual = this.getDateCurrent();
         }
         this.indicadorImagen = this.indicadorImagen + 1;
@@ -264,11 +353,16 @@ export class DynamicFormComponent implements OnInit {
         }
 
         this.saveImageLocal(
+          this.isFormGestion ? Number(this.id_plaza) : 0,
+          this.isFormGestion ? this.nombre_plaza : 'Coordinación',
           this.image,
+          this.isFormGestion ? this.account : `${this.id_usuario}-${this.fecha_actual}`,
           this.fecha_actual,
           rutaBase64,
           this.id_usuario,
+          this.isFormGestion ? this.tareaAsignada : 0,
           photo,
+          this.isFormGestion ? Number(this.tipoServicioPadron) : 0
         );
       })
       .catch(error => {
@@ -276,10 +370,14 @@ export class DynamicFormComponent implements OnInit {
       });
   }
 
-  async saveImageLocal( img: any,  fecha_actual: string, rutaBase64: any, id_usuario: number, tipo: string) {
 
-    this.dbLocalService.insertImageRegister( img, fecha_actual, rutaBase64, id_usuario, tipo)
-    .then(message =>  this.messageService.showToast("Imagen almacenada correctamente"))
+  //saveImage(id_plaza, nombrePlaza, image, accountNumber, fecha, rutaBase64, idAspuser, idTarea, tipo, idServicioPlaza) {
+
+  async saveImageLocal(id_plaza: number, nombrePlaza: string, img: any, id: any, fecha_actual: string, rutaBase64: any, id_usuario: number, id_tarea: number, tipo: string, id_servicio_plaza: number) {
+
+    this.photoService
+      .saveImage(id_plaza, nombrePlaza, img, id, fecha_actual, rutaBase64, id_usuario, id_tarea, tipo, id_servicio_plaza)
+      .then(res => this.messageService.showToast("Se almacenó la imagen correctamente"));
 
   }
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { DataGeneral, EncuestaGeneral, Form, Gestor, ServicioPublico, UserPlacesServices } from '../interfaces';
-import { File } from "@ionic-native/file/ngx";
 import { Proceso } from '../interfaces/Procesos';
 
 @Injectable({
@@ -12,7 +11,6 @@ export class DblocalService {
   db: SQLiteObject = null;
 
   constructor(
-    private file: File
   ) { }
 
   setDatabase(db: SQLiteObject) {
@@ -20,7 +18,6 @@ export class DblocalService {
       this.db = db;
     }
   }
-
 
   async insertDataEncuestas(data: EncuestaGeneral) {
     const query = 'INSERT INTO encuesta_general (id_encuesta, id_pregunta, name_encuesta, name_pregunta, posibles_respuestas, id_plaza, icono_app_movil, id_sub_pregunta, name_sub_pregunta, sub_pregunta_posibles_respuestas) VALUES (?,?,?,?,?,?,?,?,?,?)'
@@ -122,6 +119,22 @@ export class DblocalService {
       } catch (error) {
         console.error(error)
         reject("No se pudo guardar la encuesta")
+      }
+    })
+  }
+
+  async insertRegisterFormDynamic(data: any, fecha: string) {
+    return new Promise(async (resolve, reject) => {
+      const query = 'INSERT INTO register_form_dynamic (data_json, fecha) VALUES (?,?)';
+      try {
+        await this.db.executeSql(query, [
+          JSON.stringify(data),
+          fecha
+        ])
+        resolve("No se pudo enviar el registro pero fue guardada correctamente")
+      } catch (error) {
+        console.error(error)
+        reject("No se pudo guardar el registro")
       }
     })
   }
@@ -733,12 +746,6 @@ export class DblocalService {
         console.error("No se pudo mostrar la lista de las tablas ", error)
         reject(error)
       }
-    })
-  }
-
-  insertImageRegister( img, fecha_actual, rutaBase64, id_usuario, tipo) {
-    return new Promise((resolve, reject) => {
-
     })
   }
 

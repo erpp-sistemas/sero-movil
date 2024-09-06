@@ -68,7 +68,7 @@ export class SuperviceGestorPage implements OnInit {
 
     const id_user_session = await this.storage.get('IdAspUser');
     if(id_user_session === '18') {
-      this.success();
+      this.success(gestor);
       return;
     }
 
@@ -81,7 +81,7 @@ export class SuperviceGestorPage implements OnInit {
         this.matchFaces().then((data: any) => {
           
           if (data.estatus === 'passed') {
-            this.success();
+            this.success(gestor);
           } else {
             this.message.showAlert("Error!!!! -- No coinciden los biométricos")
           }
@@ -162,9 +162,10 @@ export class SuperviceGestorPage implements OnInit {
   }
 
 
-  success() {
+  success(gestor: Gestor) {
     this.modalController.dismiss({
-      status: true
+      status: true,
+      gestor: gestor
     })
   }
 

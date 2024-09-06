@@ -12,6 +12,14 @@
   </ion-label>
 </div>
 
+<div *ngIf="showGestor">
+  <ion-item color="medium" style="margin-bottom: 10px;">
+    <ion-avatar slot="start">
+      <img [src]="data.foto" />
+    </ion-avatar>
+    <ion-label color="light"> {{ data.nombre }} {{ data.apellido_paterno }} {{ data.apellido_materno }}</ion-label>
+  </ion-item>
+</div>
 
 <form *ngIf="formulario" [formGroup]="formulario" (ngSubmit)="onSubmit()">
   <ion-item *ngFor="let campo of data_form_structure">
