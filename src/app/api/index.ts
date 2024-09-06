@@ -16,7 +16,8 @@ export const apiActualizarDomicilio = "https://ser0.mx/seroMovil.aspx?query=sp_a
 export const apiRegistroFotos = "https://ser0.mx/seroMovil.aspx?query=sp_savePhotosSero";
 export const apiRegistroFotosServicios = "https://ser0.mx/seroMovil.aspx?query=sp_savePhotosSeroServicios";
 
-export const apiRegistroRecorrido = "https://ser0.mx/seroMovil.aspx?query=sp_registro_recorrido";
+//export const apiRegistroRecorrido = "https://ser0.mx/seroMovil.aspx?query=sp_registro_recorrido";
+export const apiRegistroRecorrido = "https://erpp.center/sero-web/api/insert-asistencia";
 
 export const apiObtenerCuentasDistancia = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_cuentas_distancia";
 

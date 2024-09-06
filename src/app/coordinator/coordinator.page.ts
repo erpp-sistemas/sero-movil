@@ -5,6 +5,7 @@ import { SuperviceGestorPage } from '../supervice-gestor/supervice-gestor.page';
 import { DblocalService } from '../services/dblocal.service';
 import { Gestor } from '../interfaces';
 import { RestService } from '../services/rest.service';
+import { WebsocketService } from '../services/websocket.service';
 
 
 @Component({
@@ -21,6 +22,13 @@ export class CoordinatorPage implements OnInit {
   longitud: any;
   gestores: Gestor[];
   gestores_position: any[];
+
+  
+  messages: any[] = [];
+  markers: { [userId: string]: Marker } = {}; 
+
+
+
 
   options: GoogleMapOptions = {
     mapType: GoogleMapsMapTypeId.ROADMAP,
@@ -44,13 +52,22 @@ export class CoordinatorPage implements OnInit {
     public toastCtrl: ToastController,
     private modalController: ModalController,
     private dbLocalService: DblocalService,
-    private rest: RestService
+    private rest: RestService,
+    private wssService: WebsocketService
   ) { }
 
   async ngOnInit() {
     await this.platform.ready();
     if(!this.showForm) await this.loadMap();
     await this.getGestoresLocal();
+    
+    this.wssService.getMessages().subscribe((message) => {
+      if(message) {
+        console.log(message);
+        this.messages.push(message);
+        this.updateMarkerPosition(message.payload.data)
+      }
+    })
   }
 
   async loadMap() {
@@ -88,12 +105,33 @@ export class CoordinatorPage implements OnInit {
         size: { width: 60, height: 60 },
       };
   
-      this.map.addMarkerSync({
+      const marker = this.map.addMarkerSync({
         title: `${data.nombre} ${data.apellido_paterno} ${data.apellido_materno}`,
         position: { lat: data.latitud, lng: data.longitud },
         icon: icon_gestor
       });
+
+      this.markers[data.id_usuario] = marker;
     });
+  }
+
+  updateMarkerPosition(updatedUser: any) {
+    const marker = this.markers[updatedUser.id_usuario];
+    if (marker) {
+      // Actualiza la posición del marcador existente
+      marker.setPosition({ lat: updatedUser.latitud, lng: updatedUser.longitud });
+
+      // Si la foto también puede cambiar, podrías regenerar el ícono
+      // this.createCustomIcon(updatedUser.photo, (iconUrl: string) => {
+      //   marker.setIcon({
+      //     url: iconUrl,
+      //     size: { width: 60, height: 60 },
+      //   });
+      // });
+    } else {
+      // Si no existe el marcador, creas uno nuevo
+      this.addMarker(updatedUser);
+    }
   }
 
   createCustomIcon(url: string, callback: (iconUrl: string) => void) {

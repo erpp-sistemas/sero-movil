@@ -60,15 +60,21 @@ export class RestService {
 
 
   async guardarSQl(lat: number, lng: number, idasp: number, fecha: string) {
-    let sqlString = `${idasp},${lat},${lng},'${fecha}'`;
-    this.recorridoSync(sqlString, 0);
+    // let sqlString = `${idasp},${lat},${lng},'${fecha}'`; este es para el endpoint directo con el stored
+    const data = {
+      id_usuario: idasp,
+      latitud: lat,
+      longitud: lng,
+      fecha: fecha
+    }
+    this.recorridoSync(data, 0);
     return Promise.resolve("Executed query");
   }
 
 
-  async recorridoSync(query: string, id: number) {
+  async recorridoSync(data: any, id: number) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroRecorrido + " " + query, null).subscribe(
+      this.http.post(apiRegistroRecorrido, data).subscribe(
         async data => {
           await this.updateRecorridoSync(id);
           resolve(data);
