@@ -23,10 +23,9 @@ export class CoordinatorPage implements OnInit {
   gestores: Gestor[];
   gestores_position: any[];
 
-  gestor: Gestor;  
+  gestor: Gestor;
   messages: any[] = [];
-  markers: { [userId: string]: Marker } = {}; 
-
+  markers: { [userId: string]: Marker } = {};
 
 
 
@@ -58,11 +57,11 @@ export class CoordinatorPage implements OnInit {
 
   async ngOnInit() {
     await this.platform.ready();
-    if(!this.showForm) await this.loadMap();
+    if (!this.showForm) await this.loadMap();
     await this.getGestoresLocal();
-    
+
     this.wssService.getMessages().subscribe((message) => {
-      if(message) {
+      if (message) {
         console.log(message);
         this.messages.push(message);
         this.updateMarkerPosition(message.payload.data)
@@ -104,7 +103,7 @@ export class CoordinatorPage implements OnInit {
         url: iconUrl,
         size: { width: 60, height: 60 },
       };
-  
+
       const marker = this.map.addMarkerSync({
         title: `${data.nombre} ${data.apellido_paterno} ${data.apellido_materno}`,
         position: { lat: data.latitud, lng: data.longitud },
@@ -118,10 +117,9 @@ export class CoordinatorPage implements OnInit {
   updateMarkerPosition(updatedUser: any) {
     const marker = this.markers[updatedUser.id_usuario];
     if (marker) {
-      // Actualiza la posición del marcador existente
       marker.setPosition({ lat: updatedUser.latitud, lng: updatedUser.longitud });
 
-      // Si la foto también puede cambiar, podrías regenerar el ícono
+      // Si la foto cambia entonces esto
       // this.createCustomIcon(updatedUser.photo, (iconUrl: string) => {
       //   marker.setIcon({
       //     url: iconUrl,
@@ -129,7 +127,7 @@ export class CoordinatorPage implements OnInit {
       //   });
       // });
     } else {
-      // Si no existe el marcador, creas uno nuevo
+      // Si no existe el marcador, crear uno nuevo
       this.addMarker(updatedUser);
     }
   }
@@ -139,28 +137,28 @@ export class CoordinatorPage implements OnInit {
     canvas.width = 50;
     canvas.height = 50;
     const context = canvas.getContext('2d');
-  
+
     context.beginPath();
     context.arc(20, 20, 20, 0, Math.PI * 2, true);
     context.closePath();
-    context.fillStyle = '#ffffff'; 
+    context.fillStyle = '#ffffff';
     context.fill();
-  
+
     context.lineWidth = 2;
     context.strokeStyle = '#00FF00';
     context.stroke();
-  
+
     const img = new Image();
     img.crossOrigin = 'Anonymous';
     img.onload = () => {
       context.save();
       context.beginPath();
-      context.arc(20, 20, 18, 0, Math.PI * 2, true); 
+      context.arc(20, 20, 18, 0, Math.PI * 2, true);
       context.closePath();
       context.clip();
-      context.drawImage(img, 0, 0, 40, 40); 
+      context.drawImage(img, 0, 0, 40, 40);
       context.restore();
-  
+
       const iconUrl = canvas.toDataURL('image/png');
       callback(iconUrl);
     };
