@@ -49,18 +49,18 @@ export class AuthService {
    * @param password 
    * @returns Promise
    */
-  loginFirebase(email: string, password: string) {
-    return new Promise((resolve, reject) => {
-      this.firebaseAuth.signInWithEmailAndPassword(email, password).then(user => {
+  async loginFirebase(email: string, password: string) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const user = await this.firebaseAuth.signInWithEmailAndPassword(email, password)
         const uid = user.user.uid;
         let subscribe = this.getUserInfo(uid).subscribe(async (userInfoFirebase: UserFirebase) => {
-
           if (!userInfoFirebase) return this.mensaje.showAlert("Usuario no creado en la app móvil");
 
           if (!userInfoFirebase.isActive) {
-            this.mensaje.showAlert("Usuario desactivado");
             this.logout();
-            return
+            resolve("Usuario desactivado");
+            return;
           }
 
           this.userInfo = userInfoFirebase
@@ -91,12 +91,13 @@ export class AuthService {
               resolve(nombreUsuario)
             }
           }
-
           subscribe.unsubscribe();
-
         }) // getUserInfo
-      }) // signInWithEmailAndPassword
-        .catch(error => reject(error));
+
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
     })
   }
 
@@ -132,6 +133,7 @@ export class AuthService {
     }
     await this.getDataEncuestas(data)
   }
+
 
 
   async getDataEncuestas(data: UserPlacesServices[]) {
@@ -202,7 +204,7 @@ export class AuthService {
     for (let gestor of gestores) {
       let { id_usuario, nombre, apellido_paterno, apellido_materno, foto: foto_url, id_plaza } = gestor;
       const foto = await this.getPhotoUser(foto_url)
-      this.dbLocalService.insertaGestor({id_usuario, nombre, apellido_paterno, apellido_materno, foto, id_plaza});
+      this.dbLocalService.insertaGestor({ id_usuario, nombre, apellido_paterno, apellido_materno, foto, id_plaza });
     }
   }
 
@@ -216,7 +218,6 @@ export class AuthService {
 
 
   async getPhotoUser(url_foto: string): Promise<string> {
-    console.log(url_foto)
     return new Promise((resolve, reject) => {
       this.userService.getUrlFoto(url_foto).subscribe((response: Blob) => {
         const reader = new FileReader();

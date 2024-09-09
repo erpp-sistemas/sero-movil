@@ -381,6 +381,14 @@ export class DynamicFormComponent implements OnInit {
 
   }
 
+  openSignature() {
+
+  }
+
+  deletePhoto(img: any) {
+
+  }
+
 
 
 

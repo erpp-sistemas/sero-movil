@@ -7,6 +7,7 @@ import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
 import { DataGeneral, EncuestaGeneral } from '../interfaces';
 import { DblocalService } from '../services/dblocal.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-tab1',
@@ -42,7 +43,8 @@ export class Tab1Page implements OnInit {
     private platform: Platform,
     private router: Router,
     private alertCtrl: AlertController,
-    private dbLocalService: DblocalService
+    private dbLocalService: DblocalService,
+    private authService: AuthService
   ) { }
 
 
@@ -66,7 +68,15 @@ export class Tab1Page implements OnInit {
     this.obtenerDatosUsuario();
     this.platform.ready().then(async () => {
       await this.obtenerPlazasUsuario();
+      this.getStatus();
     });
+  }
+
+  async getStatus() {
+    const imei = await this.storage.get('IMEI');
+    this.authService.getUserInfo(imei).subscribe( (user: any) => {
+      if(!user.isActive) this.authService.logout();
+    })
   }
 
   ionViewDidEnter() {

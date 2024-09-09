@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MessagesService } from '../services/messages.service';
-import { IonSlides, LoadingController, ModalController, Platform } from '@ionic/angular';
+import { IonSlides, LoadingController, ModalController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 // import { UsersService } from '../services/users.service';
@@ -45,7 +45,6 @@ export class LoginPage implements OnInit {
     // private usuarioService: UsersService,
     private mensaje: MessagesService,
     private modalCtrl: ModalController,
-    private platform: Platform
   ) {
     // Inhabilitar el back button
     // this.platform.backButton.subscribeWithPriority(10, () => {
@@ -72,6 +71,11 @@ export class LoginPage implements OnInit {
     await this.loading.present();
 
     this.auth.loginFirebase(this.email, this.password).then(user => {
+      if (user === 'Usuario desactivado') {
+        this.mensaje.showAlert("Usuario sin acceso !!!!");
+        this.loading.dismiss();
+        return;
+      }
 
       // Se ha iniciado sesión de forma exitosa, se quita el loading
       this.loading.dismiss();
@@ -81,6 +85,7 @@ export class LoginPage implements OnInit {
       //this.router.navigateByUrl("/home/tab1");
 
     }).catch(error => {
+      console.log(error);
       this.mensaje.showAlert("Credenciales incorrectas, favor de verificar");
       this.loading.dismiss();
     })
