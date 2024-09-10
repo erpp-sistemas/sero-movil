@@ -11,6 +11,7 @@ export const apiRegistroCortes = "https://ser0.mx/seroMovil.aspx?query=sp_regist
 export const apiRegistroLegal = "https://ser0.mx/seroMovil.aspx?query=sp_registro_legal";
 export const apiRegistroServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_registro_servicios_publicos";
 export const apiActualizarDomicilio = "https://ser0.mx/seroMovil.aspx?query=sp_actualizar_domicilio";
+export const urlGetGestionesByGestor = 'https://ser0.mx/seroMovil.aspx?query=sp_get_gestiones_by_gestor'
 
 // fotos
 export const apiRegistroFotos = "https://ser0.mx/seroMovil.aspx?query=sp_savePhotosSero";
@@ -45,4 +46,5 @@ export const urlGetLastPositionGestor = 'https://ser0.mx/seroMovil.aspx?query=sp
 
 // supervision coordinacion
 export const apiSupervisionCoordinacion = 'https://ser0.mx/seroMovil.aspx?query=sp_registro_super_coord'
+
 

@@ -92,6 +92,8 @@ import { FaceSDK } from '@regulaforensics/ionic-native-face-api/ngx'
 // battery status
 import { BatteryStatus } from '@awesome-cordova-plugins/battery-status/ngx';
 
+import { NgChartsModule } from 'ng2-charts';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -105,6 +107,7 @@ import { BatteryStatus } from '@awesome-cordova-plugins/battery-status/ngx';
     AppRoutingModule,
     HttpClientModule,
     ComponentsModule,
+    NgChartsModule,
     IonicStorageModule.forRoot(),
   ],
   providers: [

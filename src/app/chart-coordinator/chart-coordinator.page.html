@@ -1,0 +1,25 @@
+<ion-header class="header" style="z-index: 1 !important;" no-border>
+  <ion-toolbar style="z-index: 0 !important;" color="medium">
+    <ion-buttons>
+      <ion-button color="medium">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <img style="margin-right: 25px;" src="../../assets/img/sero_sin_letras.png" slot="end" alt="">
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="medium">
+
+  <div class="titulo">
+    <h1> Gestiones realizadas por gestor </h1>
+  </div>
+
+  <div class="spinner" *ngIf="!showChart"></div>
+
+  <div *ngIf="showChart" class="chart-container">
+    <canvas baseChart [data]="barChartData" [type]="barChartType" [options]="barChartOptions">
+    </canvas>
+  </div>
+
+</ion-content>

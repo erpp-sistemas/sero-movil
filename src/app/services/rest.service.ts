@@ -15,7 +15,8 @@ import {
   apiObtenerAsistencia,
   urlGetForms,
   urlGetLastPositionGestor,
-  apiSupervisionCoordinacion
+  apiSupervisionCoordinacion,
+  urlGetGestionesByGestor
 } from '../api'
 
 
@@ -368,10 +369,23 @@ export class RestService {
     })
   }
 
-  getLastPositionGestor() {
+  getLastPositionGestor(id_plaza: number) {
     return new Promise<any[]>((resolve, reject) => {
       try {
         this.http.get(urlGetLastPositionGestor).subscribe((positions_gestores: any[]) => {
+          resolve(positions_gestores)
+        })
+      } catch (error) {
+        console.log(error);
+        reject(error)
+      }
+    })
+  }
+
+  getGestionesByGestor( id_plaza: number ) {
+    return new Promise<any[]>((resolve, reject) => {
+      try {
+        this.http.get(`${urlGetGestionesByGestor} ${id_plaza}`).subscribe((positions_gestores: any[]) => {
           resolve(positions_gestores)
         })
       } catch (error) {

@@ -153,6 +153,10 @@ const routes: Routes = [
   {
     path: 'supervice-gestor',
     loadChildren: () => import('./supervice-gestor/supervice-gestor.module').then( m => m.SuperviceGestorPageModule)
+  },
+  {
+    path: 'chart-coordinator',
+    loadChildren: () => import('./chart-coordinator/chart-coordinator.module').then( m => m.ChartCoordinatorPageModule)
   }
 
 

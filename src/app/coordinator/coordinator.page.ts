@@ -6,6 +6,8 @@ import { DblocalService } from '../services/dblocal.service';
 import { Gestor } from '../interfaces';
 import { RestService } from '../services/rest.service';
 import { WebsocketService } from '../services/websocket.service';
+import { ChartCoordinatorPage } from '../chart-coordinator/chart-coordinator.page';
+import { Storage } from '@ionic/storage';
 
 
 @Component({
@@ -20,6 +22,7 @@ export class CoordinatorPage implements OnInit {
   loading: any;
   latitud: any;
   longitud: any;
+  id_plaza: number;
   gestores: Gestor[];
   gestores_position: any[];
 
@@ -52,14 +55,16 @@ export class CoordinatorPage implements OnInit {
     private modalController: ModalController,
     private dbLocalService: DblocalService,
     private rest: RestService,
-    private wssService: WebsocketService
+    private wssService: WebsocketService,
+    private storage: Storage
   ) { }
 
   async ngOnInit() {
     await this.platform.ready();
+    this.id_plaza = await this.storage.get('IdPlazaActiva');
+    
     if (!this.showForm) await this.loadMap();
-    await this.getGestoresLocal();
-
+        
     this.wssService.getMessages().subscribe((message) => {
       if (message) {
         console.log(message);
@@ -75,9 +80,8 @@ export class CoordinatorPage implements OnInit {
       message: 'Cargando mapa...'
     });
     await this.loading.present();
-
-    const gestores_photo = await this.rest.getLastPositionGestor();
-    for (let g of gestores_photo) {
+    this.gestores = await this.rest.getLastPositionGestor(this.id_plaza);
+    for (let g of this.gestores) {
       this.addMarker(g)
     }
 
@@ -193,9 +197,15 @@ export class CoordinatorPage implements OnInit {
     }
   }
 
-  async getGestoresLocal() {
-    const data_gestores = await this.dbLocalService.getGestores();
-    this.gestores = data_gestores;
+  async goChart() {
+
+    const modal = await this.modalController.create({
+      component: ChartCoordinatorPage,
+      cssClass: 'my-custom-class'
+    })
+
+    await modal.present();
+
   }
 
 }

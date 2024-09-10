@@ -94,6 +94,7 @@ export class Tab1Page implements OnInit {
     // tomamos el primer registro para ponerlo como plaza default en el select
     if (this.plazasServicios.length > 0) {
       this.id_plaza = this.plazasServicios[0].id_plaza;
+      await this.storage.set('IdPlazaActiva', this.id_plaza);
     }
     this.asignarServicios();
   }

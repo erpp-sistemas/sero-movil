@@ -1,0 +1,33 @@
+ion-toolbar {
+    height: 70px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border: none !important;
+}
+
+ion-toolbar img {
+    width: 160px;
+    height: 40px;
+}
+
+.titulo {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.titulo h1 {
+    font-size: 20px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+canvas {
+    height: 500px !important;
+}
+
+.spinner {
+    position: relative;
+    width: 22.4px;
+    height: 22.4px;
+ }
