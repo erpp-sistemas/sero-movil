@@ -38,10 +38,6 @@ export class HeaderComponent implements OnInit {
     this.router.navigateByUrl('/checador');
   }
 
-  coordinador() {
-    this.menuCtrl.close();
-    this.router.navigateByUrl('/coordinator');
-  }
 
   async manualWeb() {
     let link = 'https://erpp-movil.web.app/'

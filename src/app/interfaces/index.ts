@@ -55,6 +55,7 @@ export interface UserPlacesServices {
     have_service_public: number;
     id_servicio: number;
     icono_app_movil: string;
+    id_rol: number;
 }
 
 export interface ServicioPublico {

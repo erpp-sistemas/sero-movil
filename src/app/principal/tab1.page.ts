@@ -19,6 +19,7 @@ export class Tab1Page implements OnInit {
   nombre: string = '';
   email: string = '';
   imgUser: string = '';
+  id_rol: number = 0;
   progress: boolean = false;
   progressTotal: number = 0;
   loading: any;
@@ -74,8 +75,8 @@ export class Tab1Page implements OnInit {
 
   async getStatus() {
     const imei = await this.storage.get('IMEI');
-    this.authService.getUserInfo(imei).subscribe( (user: any) => {
-      if(!user.isActive) this.authService.logout();
+    this.authService.getUserInfo(imei).subscribe((user: any) => {
+      if (!user.isActive) this.authService.logout();
     })
   }
 
@@ -149,6 +150,7 @@ export class Tab1Page implements OnInit {
     this.nombre = await this.storage.get('Nombre');
     this.email = await this.storage.get('Email');
     this.imgUser = await this.storage.get('Foto');
+    this.id_rol = await this.storage.get('IdRol');
   }
 
 
@@ -336,6 +338,32 @@ export class Tab1Page implements OnInit {
     this.router.navigate(['mapa-google', idServicioPlaza, this.id_plaza]);
   }
 
+
+  async supervisarGestor() {
+
+    const alert = await this.alertCtrl.create({
+      subHeader: "Confirme para supervisar gestor",
+      buttons: [
+        {
+          text: "Cancelar",
+          role: "cancel",
+          cssClass: "secondary",
+          handler: blah => {
+            console.log("Confirm Cancel: blah");
+          }
+        },
+        {
+          text: "Confirmar",
+          cssClass: "secondary",
+          handler: () => {
+            this.router.navigateByUrl('/coordinator');
+          }
+        }
+      ]
+    });
+    await alert.present();
+
+  }
 
 
 }

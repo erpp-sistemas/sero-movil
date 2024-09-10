@@ -126,7 +126,8 @@ export class AuthService {
 
 
   async insertServices(data: UserPlacesServices[]) {
-    this.photo_user = await this.getPhotoUser(data[0].foto)
+    this.photo_user = await this.getPhotoUser(data[0].foto);
+    this.storage.set('IdRol', data[0].id_rol);
     await this.storage.set('Foto', this.photo_user)
     for (let servicio of data) {
       this.dbLocalService.insertarServiciosSQL(servicio);

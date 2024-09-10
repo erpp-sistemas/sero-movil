@@ -73,7 +73,7 @@ export class DblocalService {
  */
   insertarServiciosSQL(data: UserPlacesServices) {
     console.log("Tratando de insertar los servicios obtenidos");
-    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, foto, plaza, servicio, id_plaza, id_servicio, icono_app_movil) VALUES (?,?,?,?,?,?,?,?,?)'
+    let sql = 'INSERT INTO serviciosPlazaUser (nombre, ape_pat, ape_mat, foto, plaza, servicio, id_plaza, id_servicio, icono_app_movil, id_rol) VALUES (?,?,?,?,?,?,?,?,?,?)'
     return this.db.executeSql(sql, [
       data.nombre,
       data.apellido_paterno,
@@ -83,7 +83,8 @@ export class DblocalService {
       data.servicio,
       data.id_plaza,
       data.id_servicio,
-      data.icono_app_movil
+      data.icono_app_movil,
+      data.id_rol
     ]);
   }
 
