@@ -279,7 +279,7 @@
 
       <hr>
 
-      <div style="text-align: center;" *ngIf="idEstatusPredio === '1'">
+      <div style="text-align: center;" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
         <ion-chip color="success">Características del inmueble</ion-chip>
       </div>
 
@@ -395,6 +395,10 @@
   </ion-card>
 
 
+  <div style="text-align: center;" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
+    <ion-chip color="success">Acciones</ion-chip>
+  </div>
+
   <ion-card style="margin-top: 20px;" color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
     <ion-card-content>
       <div>
@@ -417,13 +421,14 @@
           style="margin-top: 10px;" (click)="goUpdateAddress()">
           <ion-icon slot="start" name="ticket-outline"></ion-icon>
           Actualización de domicilio
-          <ion-icon *ngIf="sello" color="success" slot="end" name="checkmark-done-circle-outline"></ion-icon>
+          <ion-icon *ngIf="domicilio_actualizado" color="success" slot="end"
+            name="checkmark-done-circle-outline"></ion-icon>
         </ion-button>
       </div>
     </ion-card-content>
   </ion-card>
 
-<!-- ? TIPO DE GESTION -->
+  <!-- ? TIPO DE GESTION -->
   <ion-card color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
     <ion-card-content color="medium">
 
@@ -460,8 +465,9 @@
 
         <ion-item color="medium" style="margin-top:20px">
           <ion-label>
-            <p>Fecha captura para la gestión</p>            
-            <input type="date" [value]="fechaActual" [(ngModel)]="fechaCapturaPostpago" min="2024-01-01" [max]="fechaActual">
+            <p>Fecha captura para la gestión</p>
+            <input type="date" [value]="fechaActual" [(ngModel)]="fechaCapturaPostpago" min="2024-01-01"
+              [max]="fechaActual">
           </ion-label>
         </ion-item>
         <ion-item color="medium">
@@ -536,7 +542,7 @@
   </ion-item>
 
   <!-- ! ESTO POR AHORA NO LO MUESTO EN EL FORMULARIO HASTA QUE VEA COMO IMPLEMENTARLO -->
-  <div *ngIf="false"> 
+  <div *ngIf="false">
     <ion-card color="medium">
       <ion-grid *ngIf="!encuestaRealizada">
         <ion-row>

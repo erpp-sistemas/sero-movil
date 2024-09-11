@@ -372,7 +372,7 @@ export class RestService {
   getLastPositionGestor(id_plaza: number) {
     return new Promise<any[]>((resolve, reject) => {
       try {
-        this.http.get(urlGetLastPositionGestor).subscribe((positions_gestores: any[]) => {
+        this.http.get(`${urlGetLastPositionGestor}  ${id_plaza}`).subscribe((positions_gestores: any[]) => {
           resolve(positions_gestores)
         })
       } catch (error) {

@@ -496,7 +496,6 @@ export class GestionCartaPage implements OnInit {
 
     await this.loading.present();
 
-    console.log(this.data_domicilio_actualizado);
 
     let data = {
       id_plaza: this.id_plaza,
@@ -717,6 +716,7 @@ export class GestionCartaPage implements OnInit {
     this.entreCalle1 = '';
     this.entreCalle2 = '';
     this.sello = 0;
+    this.domicilio_actualizado = false;
   }
 
 
@@ -747,9 +747,6 @@ export class GestionCartaPage implements OnInit {
     }
   }
 
-  exit() {
-    this.router.navigateByUrl('home/tab2');
-  }
 
   async getGeolocation() {
     return new Promise(async (resolve, reject) => {
@@ -1029,6 +1026,10 @@ export class GestionCartaPage implements OnInit {
       ]
     })
     await alert.present()
+  }
+
+  exit() {
+    this.router.navigateByUrl('home/tab2');
   }
 
 }

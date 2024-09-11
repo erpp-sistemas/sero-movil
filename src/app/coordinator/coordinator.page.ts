@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, ModalController, Platform, ToastController } from '@ionic/angular';
-import { GoogleMaps, GoogleMap, Marker, GoogleMapsAnimation, MyLocation, GoogleMapOptions, GoogleMapsMapTypeId, MarkerIcon } from '@ionic-native/google-maps';
+import { GoogleMaps, GoogleMap, Marker, MyLocation, GoogleMapOptions, GoogleMapsMapTypeId, MarkerIcon } from '@ionic-native/google-maps';
 import { SuperviceGestorPage } from '../supervice-gestor/supervice-gestor.page';
-import { DblocalService } from '../services/dblocal.service';
 import { Gestor } from '../interfaces';
 import { RestService } from '../services/rest.service';
 import { WebsocketService } from '../services/websocket.service';
 import { ChartCoordinatorPage } from '../chart-coordinator/chart-coordinator.page';
 import { Storage } from '@ionic/storage';
+import { MessagesService } from '../services/messages.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -53,18 +54,19 @@ export class CoordinatorPage implements OnInit {
     private loadingController: LoadingController,
     public toastCtrl: ToastController,
     private modalController: ModalController,
-    private dbLocalService: DblocalService,
     private rest: RestService,
     private wssService: WebsocketService,
-    private storage: Storage
+    private storage: Storage,
+    private messageService: MessagesService,
+    private router: Router
   ) { }
 
   async ngOnInit() {
     await this.platform.ready();
     this.id_plaza = await this.storage.get('IdPlazaActiva');
-    
+
     if (!this.showForm) await this.loadMap();
-        
+
     this.wssService.getMessages().subscribe((message) => {
       if (message) {
         console.log(message);
@@ -81,12 +83,16 @@ export class CoordinatorPage implements OnInit {
     });
     await this.loading.present();
     this.gestores = await this.rest.getLastPositionGestor(this.id_plaza);
+    if (this.gestores.length === 0) {
+      this.loading.dismiss();
+      this.messageService.showAlert("No hay usuarios para esta plaza")
+      this.router.navigateByUrl('/home/tab1');
+    }
     for (let g of this.gestores) {
       this.addMarker(g)
     }
-
+    this.loading.dismiss();
     this.map.getMyLocation().then(async (location: MyLocation) => {
-      this.loading.dismiss();
       this.latitud = location.latLng.lat.toString();
       this.longitud = location.latLng.lng.toString();
       this.map.animateCamera({

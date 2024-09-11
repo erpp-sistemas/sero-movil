@@ -129,6 +129,7 @@ export class Tab1Page implements OnInit {
     this.progressTotal = 0;
     // si el idPlaza es diferente de 0 entonces verificar la descarga
     if (this.id_plaza != 0) {
+      await this.storage.set('IdPlazaActiva', this.id_plaza)
       this.asignarServicios();
     }
   }
@@ -340,10 +341,10 @@ export class Tab1Page implements OnInit {
   }
 
 
-  async supervisarGestor() {
-
+  async supervisarGestor() { 
+    const plaza_servicio = await this.dbLocalService.mostrarServicios(this.id_plaza);
     const alert = await this.alertCtrl.create({
-      subHeader: "Confirme para supervisar gestor",
+      subHeader: `Confirme para abrir el módulo de supervición de gestores de ${plaza_servicio[0].plaza}`,
       buttons: [
         {
           text: "Cancelar",
