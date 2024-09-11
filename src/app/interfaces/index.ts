@@ -107,3 +107,14 @@ export interface Form {
     parent_id_parent: number // para saber si depende de otro campo
     orden: number; // para sabeer el orden del campo
 }
+
+
+export interface DataInfoAccount {
+    id_plaza: number;
+    nombrePlaza: string;
+    nombreTareaAsignada: string;
+    account: string;
+    propietario: string;
+    nombreProceso: string;
+    iconoProceso: string;
+}

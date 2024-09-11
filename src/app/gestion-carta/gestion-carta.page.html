@@ -5,60 +5,7 @@
 
 <ion-content color="medium" id="main">
 
-  <div class="contenedor-icono-proceso" style="text-align: center;">
-    <ion-icon class="icono-proceso" [name]="iconoProceso"></ion-icon>
-  </div>
-
-  <div class="contenedor-nombre-proceso">
-    <ion-label>
-      <p>{{nombreProceso}}</p>
-    </ion-label>
-  </div>
-
-  <ion-card color="medium">
-    <div style="text-align: center;">
-      <ion-chip color="success">Información de la gestión a realizar</ion-chip>
-    </div>
-    <ion-card-content>
-      <ion-item color="medium">
-        <ion-label>
-          <p> Plaza: <span style="font-weight: bold;"> {{nombrePlaza}} </span> </p>
-        </ion-label>
-      </ion-item>
-
-      <ion-item color="medium">
-        <ion-label>
-          <p> Acción a realizar: <span style="font-weight: bold;"> {{nombreTareaAsignada}} </span> </p>
-        </ion-label>
-      </ion-item>
-
-      <ion-item color="medium">
-        <ion-label>
-          <p> Cuenta a gestionar: <span style="font-weight: bold;"> {{account}} </span> </p>
-        </ion-label>
-      </ion-item>
-
-      <ion-item color="medium">
-        <ion-label>
-          <p> Propietario: <span style="font-weight: bold;"> {{propietario}} </span> </p>
-        </ion-label>
-      </ion-item>
-
-
-
-      <ion-button fill="outline" expand="block" (click)="goPhotos()">
-        <ion-icon slot="start" name="image"></ion-icon>
-        Fotos históricas
-      </ion-button>
-
-      <ion-button style="margin-top: 10px;" fill="outline" color="success" expand="block" (click)="goActions()">
-        <ion-icon slot="start" name="cube-outline"></ion-icon>
-        Acciones históricas
-      </ion-button>
-
-    </ion-card-content>
-  </ion-card>
-
+  <app-info-account [data]="data_info_account" *ngIf="show_info_data_account"></app-info-account>
 
   <ion-card color="medium">
     <ion-card-content color="medium">
@@ -174,7 +121,7 @@
         </ion-label>
       </ion-item>
 
-      <div *ngIf="mostrarGiro">
+      <div *ngIf="idEstatusPredio === '1' && mostrarGiro">
         <ion-item color="medium">
           <ion-label>
             <p>* Giro: </p>
@@ -444,7 +391,13 @@
           (ionChange)="validateField($event, 'leyendaObservaciones')"></ion-textarea>
       </ion-item>
 
-      <div style="margin-top: 20px;">
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-card style="margin-top: 20px;" color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
+    <ion-card-content>
+      <div>
         <ion-button [disabled]="sello" fill="outline" color="success" expand="block" (click)="colocacionSello()">
           <ion-icon slot="start" name="albums-outline"></ion-icon>
           Colocación de sello
@@ -460,17 +413,18 @@
             name="checkmark-done-circle-outline"></ion-icon>
         </ion-button>
 
-        <ion-button [disabled]="domicilio_actualizado" fill="outline" color="secondary" expand="block" style="margin-top: 10px;" (click)="goUpdateAddress()">
+        <ion-button [disabled]="domicilio_actualizado" fill="outline" color="secondary" expand="block"
+          style="margin-top: 10px;" (click)="goUpdateAddress()">
           <ion-icon slot="start" name="ticket-outline"></ion-icon>
           Actualización de domicilio
           <ion-icon *ngIf="sello" color="success" slot="end" name="checkmark-done-circle-outline"></ion-icon>
         </ion-button>
       </div>
-
     </ion-card-content>
   </ion-card>
 
-  <ion-card color="medium">
+
+  <ion-card color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
     <ion-card-content color="medium">
 
       <ion-item color="medium">
@@ -490,7 +444,6 @@
 
       <div *ngIf="activaPostpago">
 
-
         <div style="text-align: center; margin:15 0px 0 20;">
           <ion-chip color="success">Pagos realizados de la cuenta</ion-chip>
         </div>
@@ -507,10 +460,8 @@
 
         <ion-item color="medium" style="margin-top:20px">
           <ion-label>
-            <p>Fecha captura para la gestión</p>
-            <ion-datetime displayFormat="DD-MM-YYYY" min="2020" min="2020-01-01" placeholder="1999-09-09"
-              [(ngModel)]="fechaCapturaPostpago">
-            </ion-datetime>
+            <p>Fecha captura para la gestión</p>            
+            <input type="date" [value]="fechaActual" [(ngModel)]="fechaCapturaPostpago" min="2024-01-01" [max]="fechaActual">
           </ion-label>
         </ion-item>
         <ion-item color="medium">
@@ -532,6 +483,8 @@
 
     </ion-card-content>
   </ion-card>
+
+
 
   <ion-slides [options]="sliderOpts">
     <ion-slide *ngFor="let img of imgs">

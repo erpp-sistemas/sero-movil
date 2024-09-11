@@ -1,0 +1,53 @@
+<div class="contenedor-icono-proceso" style="text-align: center;">
+  <ion-icon class="icono-proceso" [name]="data.iconoProceso"></ion-icon>
+</div>
+
+<div class="contenedor-nombre-proceso">
+  <ion-label>
+    <p>{{data.nombreProceso}}</p>
+  </ion-label>
+</div>
+
+<ion-card color="medium">
+  <div style="text-align: center;">
+    <ion-chip color="success">Información de la gestión a realizar</ion-chip>
+  </div>
+  <ion-card-content>
+    <ion-item color="medium">
+      <ion-label>
+        <p> Plaza: <span style="font-weight: bold;"> {{data.nombrePlaza}} </span> </p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item color="medium">
+      <ion-label>
+        <p> Acción a realizar: <span style="font-weight: bold;"> {{data.nombreTareaAsignada}} </span> </p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item color="medium">
+      <ion-label>
+        <p> Cuenta a gestionar: <span style="font-weight: bold;"> {{data.account}} </span> </p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item color="medium">
+      <ion-label>
+        <p> Propietario: <span style="font-weight: bold;"> {{data.propietario}} </span> </p>
+      </ion-label>
+    </ion-item>
+
+
+
+    <ion-button fill="outline" expand="block" (click)="goPhotos()">
+      <ion-icon slot="start" name="image"></ion-icon>
+      Fotos históricas
+    </ion-button>
+
+    <ion-button style="margin-top: 10px;" fill="outline" color="success" expand="block" (click)="goActions()">
+      <ion-icon slot="start" name="cube-outline"></ion-icon>
+      Acciones históricas
+    </ion-button>
+
+  </ion-card-content>
+</ion-card>

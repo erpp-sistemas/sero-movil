@@ -14,6 +14,7 @@ import { CardAprobacionAutoridadesComponent } from './card-aprobacion-autoridade
 import { CardPreferenciaElectoralComponent } from './card-preferencia-electoral/card-preferencia-electoral.component';
 import { SegmentTabBarComponent } from './segment-tab-bar/segment-tab-bar.component';
 import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
+import { InfoAccountComponent } from './info-account/info-account.component';
 
 
 
@@ -25,7 +26,8 @@ import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
     CardAprobacionAutoridadesComponent,
     CardPreferenciaElectoralComponent,
     SegmentTabBarComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    InfoAccountComponent
   ],
   imports: [
     CommonModule,
@@ -40,7 +42,8 @@ import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
     CardAprobacionAutoridadesComponent,
     CardPreferenciaElectoralComponent,
     SegmentTabBarComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    InfoAccountComponent
   ],
   providers: [
     CallNumber

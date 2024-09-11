@@ -16,6 +16,7 @@ import { PhotoService } from '../services/photo.service';
 import { RegisterService } from '../services/register.service';
 import { UpdateAddressPage } from '../update-address/update-address.page';
 import { Address } from '../interfaces/Address';
+import { DataInfoAccount } from '../interfaces';
 
 
 @Component({
@@ -25,9 +26,11 @@ import { Address } from '../interfaces/Address';
 })
 export class GestionCartaPage implements OnInit {
 
+  data_info_account: DataInfoAccount;
+  show_info_data_account: boolean = false;
+
   imgs: any;
   account: string;
-  propietario: string = "";
   infoAccount: any = [];
   idEstatusPredio: string = '';
   personaAtiende: string = '';
@@ -53,7 +56,6 @@ export class GestionCartaPage implements OnInit {
   idTareaGestor: any;
   gestionada: number;
   tareaAsignada: number = 0;
-  nombreTareaAsignada: string = '';
   fechaActual: any;
   infoImage: any = [];
   takePhoto: boolean = false;
@@ -100,10 +102,8 @@ export class GestionCartaPage implements OnInit {
   geoPosicion: any = {};
 
   id_proceso: any;
-  nombreProceso: string;
-  iconoProceso: string;
 
-  sello: boolean = false;
+  sello: number = 0;
   domicilio_actualizado: boolean = false;
   verificacionDomicilio: boolean = false;
   idMotivoNoPago: number = 0;
@@ -158,8 +158,7 @@ export class GestionCartaPage implements OnInit {
 
   async ngOnInit() {
     await this.platform.ready();
-    this.getInfoAccount();
-    this.getPlaza();
+    this.getInfoData();
     this.getFechaActual();
     this.idServicioPlaza = await this.storage.get('IdServicioActivo');
     this.estatusLecturaMedidor();
@@ -214,29 +213,36 @@ export class GestionCartaPage implements OnInit {
     }
   }
 
-  async getPlaza() {
-    this.nombrePlaza = await this.storage.get('NombrePlazaActiva');
-    this.id_plaza = await this.storage.get('IdPlazaActiva');
-  }
 
-  async getInfoAccount() {
+  async getInfoData() {
     this.account = await this.storage.get("account");
-    this.id_proceso = await this.storage.get('id_proceso');
-    this.nombreProceso = await this.storage.get('proceso_gestion');
-    this.iconoProceso = await this.storage.get('icono_proceso');
-    this.idAspUser = await this.storage.get('IdAspUser');
     this.infoAccount = await this.dbLocalService.getInfoAccount(this.account);
-    this.propietario = this.infoAccount[0].propietario;
-    this.idAccountSqlite = this.infoAccount[0].id;
-    this.tareaAsignada = this.infoAccount[0].tarea_asignada;
-    this.nombreTareaAsignada = this.infoAccount[0].nombre_tarea_asignada;
-    this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
     let gestionada = this.infoAccount[0].gestionada;
     if (gestionada == 1) {
       this.mensaje.showAlert("Esta cuenta ya ha sido gestionada");
       this.router.navigateByUrl('home/tab2');
     }
+    this.id_plaza = await this.storage.get('IdPlazaActiva');
+    this.nombrePlaza = await this.storage.get('NombrePlazaActiva');
+    this.id_proceso = await this.storage.get('id_proceso');
+    this.idAspUser = await this.storage.get('IdAspUser');
+    this.idAccountSqlite = this.infoAccount[0].id;
+    this.tipoServicioPadron = this.infoAccount[0].tipo_servicio;
+    this.tareaAsignada = this.infoAccount[0].tarea_asignada;
+
+    this.data_info_account = {
+      account: this.account,
+      id_plaza: this.id_plaza,
+      nombrePlaza: this.nombrePlaza,
+      iconoProceso: await this.storage.get('icono_proceso'),
+      nombreProceso: await this.storage.get('proceso_gestion'),
+      nombreTareaAsignada: this.infoAccount[0].nombre_tarea_asignada,
+      propietario: this.infoAccount[0].propietario
+    }
+    this.show_info_data_account = true;
   }
+
+
 
   getFechaActual() {
     var dateDay = new Date().toISOString();
@@ -250,7 +256,7 @@ export class GestionCartaPage implements OnInit {
 
   }
 
-  async deletePhoto(img) {
+  async deletePhoto(img: any) {
     for (let i = 0; i < this.imgs.length; i++) {
       if (this.imgs[i].imagen == img) {
         this.imgs.splice(i, 1);
@@ -490,13 +496,6 @@ export class GestionCartaPage implements OnInit {
 
     await this.loading.present();
 
-    let colocoSello: number = 2;
-    if (this.sello === true) {
-      colocoSello = 1;
-    } else {
-      colocoSello = 0;
-    }
-
     let data = {
       id_plaza: this.id_plaza,
       nombrePlaza: this.nombrePlaza,
@@ -529,7 +528,7 @@ export class GestionCartaPage implements OnInit {
       viernes: this.viernes,
       sabado: this.sabado,
       domingo: this.domingo,
-      colocoSello: colocoSello,
+      colocoSello: this.sello,
       idMotivoNoPago: this.idMotivoNoPago,
       otroMotivoNoPago: this.otroMotivo,
       domicilio_verificado: this.verificacionDomicilio ? 1 : 0,
@@ -619,6 +618,7 @@ export class GestionCartaPage implements OnInit {
     if (this.idEstatusPredio === '4' && this.observaciones !== '') {
       this.takePhotoFachada = true;
       this.takePhotoEvidencia = true;
+      this.clearFields();
       this.hideLeyendas();
     }
 
@@ -626,7 +626,7 @@ export class GestionCartaPage implements OnInit {
     if (this.idEstatusPredio === '4' && this.observaciones === '') return this.leyendaObservaciones = true;
 
 
-    //* cuando es predio abandonado o predio baldio le pedira el tipo de predio y las referencia y las entre calles
+    //* cuando es predio abandonado o predio baldio le pedira el tipo de predio, las referencias y las entre calles, si los mete lo deja pasar
     if (
       (this.idEstatusPredio === '2' || this.idEstatusPredio === '3') &&
       (this.referencia !== '' || this.entreCalle1 !== '' || this.entreCalle2 !== '' || this.idTipoPredio !== 0 || this.observaciones !== '')
@@ -636,7 +636,7 @@ export class GestionCartaPage implements OnInit {
       return;
     }
 
-    //* cuando es predio abandonado o predio baldio le pedira el tipo de predio y las referencia y las entre calles
+    //* cuando es predio abandonado o predio baldio le pedira el tipo de predio y las referencia y las entre calles, si no los mete le muestra los mensajes de error
     if (
       (this.idEstatusPredio === '2' || this.idEstatusPredio === '3') &&
       (this.referencia === '' || this.entreCalle1 === '' || this.entreCalle2 === '' || this.idTipoPredio === 0 || this.observaciones === '')
@@ -692,6 +692,31 @@ export class GestionCartaPage implements OnInit {
     //this.leyendaObservaciones = false;
   }
 
+  clearFields() {
+    this.idMotivoNoPago = 0;
+    this.otroMotivo = '';
+    this.personaAtiende = '';
+    this.tipoServicio = 0;
+    this.giro = '';
+    this.lectura_medidor = '';
+    this.idTiempoSuministroAgua = '';
+    this.lunes = '';
+    this.martes = '';
+    this.miercoles = '';
+    this.jueves = '';
+    this.viernes = '';
+    this.sabado = '';
+    this.domingo = '';
+    this.numeroNiveles = 0;
+    this.colorFachada = '';
+    this.colorPuerta = '';
+    this.referencia = '';
+    this.idTipoPredio = 0;
+    this.entreCalle1 = '';
+    this.entreCalle2 = '';
+    this.sello = 0;
+  }
+
 
   async gestionCarta(data: any) {
     if (this.id_proceso === 7) {
@@ -738,15 +763,15 @@ export class GestionCartaPage implements OnInit {
     })
   }
 
-  resultEstatusPredio(event) {
+  resultEstatusPredio(event: any) {
     let estatus = event.detail.value;
     this.leyendaEstatusPredio = false
     if (estatus === '1') {
       this.activaFormulario = true;
-      this.desactivaBotonesCamara = false;
+      this.desactivaBotonesCamara = false; // ? ahorita esto funciona para activar o desactivar el boton para abrir la encuesta
     } else {
       this.activaFormulario = false;
-      this.desactivaBotonesCamara = true;
+      this.desactivaBotonesCamara = true; // ? ahorita esto funciona para activar o desactivar el boton para abrir la encuesta
     }
   }
 
@@ -958,7 +983,7 @@ export class GestionCartaPage implements OnInit {
           text: "Confirmar",
           cssClass: "secondary",
           handler: () => {
-            this.sello = true;
+            this.sello = 1;
           }
         }
       ]
