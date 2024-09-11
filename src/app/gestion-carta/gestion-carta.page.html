@@ -423,7 +423,7 @@
     </ion-card-content>
   </ion-card>
 
-
+<!-- ? TIPO DE GESTION -->
   <ion-card color="medium" *ngIf="idEstatusPredio !== '4' && idEstatusPredio !== ''">
     <ion-card-content color="medium">
 
@@ -503,9 +503,7 @@
         Fotos de la visita
       </p>
 
-
       <ion-grid>
-
         <ion-row>
           <ion-col text-center>
             <ion-button expand="block" color="primary" (click)="takePic(1)">
@@ -520,9 +518,7 @@
             </ion-button>
             <ion-label class="fotos-visita">Evidencia</ion-label>
           </ion-col>
-
         </ion-row>
-
       </ion-grid>
 
       <ion-grid>
@@ -539,7 +535,8 @@
     </ion-label>
   </ion-item>
 
-  <div *ngIf="false">
+  <!-- ! ESTO POR AHORA NO LO MUESTO EN EL FORMULARIO HASTA QUE VEA COMO IMPLEMENTARLO -->
+  <div *ngIf="false"> 
     <ion-card color="medium">
       <ion-grid *ngIf="!encuestaRealizada">
         <ion-row>

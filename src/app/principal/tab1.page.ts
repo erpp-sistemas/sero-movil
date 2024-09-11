@@ -73,6 +73,7 @@ export class Tab1Page implements OnInit {
     });
   }
 
+
   async getStatus() {
     const imei = await this.storage.get('IMEI');
     this.authService.getUserInfo(imei).subscribe((user: any) => {

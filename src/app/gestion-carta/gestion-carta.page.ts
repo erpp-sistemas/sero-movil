@@ -496,6 +496,8 @@ export class GestionCartaPage implements OnInit {
 
     await this.loading.present();
 
+    console.log(this.data_domicilio_actualizado);
+
     let data = {
       id_plaza: this.id_plaza,
       nombrePlaza: this.nombrePlaza,
@@ -898,33 +900,7 @@ export class GestionCartaPage implements OnInit {
   }
 
 
-  async goPhotos() {
-    let idPlaza = this.id_plaza;
-    const modal = await this.modalController.create({
-      component: PhotosHistoryPage,
-      componentProps: {
-        "account": this.account,
-        "idPlaza": idPlaza
-      }
-    });
-    await modal.present();
-  }
-
-  async goActions() {
-    let idPlaza = Number(this.id_plaza);
-    const modal = await this.modalController.create({
-      component: ActionsHistoryPage,
-      componentProps: {
-        "account": this.account,
-        "idPlaza": idPlaza
-      }
-    });
-    await modal.present();
-  }
-
-
   async encuesta() {
-
     let idPlaza = this.id_plaza;
 
     const modal = await this.modalController.create({
@@ -940,7 +916,6 @@ export class GestionCartaPage implements OnInit {
     const data = await modal.onDidDismiss();
     let resultadoEncuesta = data.data.estatus;
     if (resultadoEncuesta === 'Realizado') this.encuestaRealizada = true;
-
   }
 
   async openLecturaMedidor() {
