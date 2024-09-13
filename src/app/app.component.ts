@@ -45,7 +45,7 @@ export class AppComponent {
     private androidPermissions: AndroidPermissions,
     private push: PushService,
     private storage: Storage,
-    private batteryStatus: BatteryStatus
+    private batteryStatus: BatteryStatus,
   ) {
     this.initializeApp();
   }

@@ -61,28 +61,25 @@ export class ChartCoordinatorPage implements OnInit {
     private storage: Storage
   ) { }
 
-  // Aquí es donde cargarás los datos de tu API
+  
   ngOnInit() {
     this.loadData();
   }
 
 
-  // Simulamos la carga de datos
   async loadData() {
     const id_plaza = await this.storage.get('IdPlazaActiva')
     const data = await this.rest.getGestionesByGestor(id_plaza);
 
-    const gestores = data.map( gestor => gestor.nombre_gestor);
-    const totales = data.map( gestor => gestor.total_extrajudicial)
+    const gestores = data.map(gestor => gestor.nombre_gestor);
+    const totales = data.map(gestor => gestor.total_extrajudicial)
 
     this.buildChart(gestores, totales)
   }
 
   buildChart(gestores: any, totales: any) {
-    // Asigna los datos obtenidos a la gráfica
     this.barChartData.labels = gestores;
     this.barChartData.datasets[0].data = totales;
-
     this.showChart = true;
   }
 

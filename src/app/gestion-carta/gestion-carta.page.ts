@@ -7,9 +7,7 @@ import { RestService } from '../services/rest.service';
 import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Router } from '@angular/router';
-import { PhotosHistoryPage } from '../photos-history/photos-history.page';
 import { EncuestaPage } from '../encuesta/encuesta.page';
-import { ActionsHistoryPage } from '../actions-history/actions-history.page';
 import { LecturaMedidorPage } from '../lectura-medidor/lectura-medidor.page';
 import { DblocalService } from '../services/dblocal.service';
 import { PhotoService } from '../services/photo.service';
@@ -17,6 +15,8 @@ import { RegisterService } from '../services/register.service';
 import { UpdateAddressPage } from '../update-address/update-address.page';
 import { Address } from '../interfaces/Address';
 import { DataInfoAccount } from '../interfaces';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+import { File } from '@ionic-native/file/ngx';
 
 
 @Component({
@@ -151,7 +151,10 @@ export class GestionCartaPage implements OnInit {
     private alertCtrl: AlertController,
     private dbLocalService: DblocalService,
     private photoService: PhotoService,
-    private registerService: RegisterService
+    private registerService: RegisterService,
+    private androidPermissions: AndroidPermissions,
+    private file: File
+
   ) {
     this.imgs = [{ imagen: "assets/img/imgs.png" }];
   }
@@ -330,6 +333,8 @@ export class GestionCartaPage implements OnInit {
 
     this.fechaCapturaFoto
 
+    this.checkPermission();
+
     let options: CameraOptions = {
       quality: 40,
       correctOrientation: true,
@@ -337,11 +342,14 @@ export class GestionCartaPage implements OnInit {
       sourceType: this.camera.PictureSourceType.CAMERA,
       encodingType: this.camera.EncodingType.JPEG,
       mediaType: this.camera.MediaType.PICTURE,
-      saveToPhotoAlbum: true
+      saveToPhotoAlbum: false
     };
     this.camera
       .getPicture(options)
       .then(imageData => {
+
+        this.workImage(imageData);
+
         this.indicadorImagen = this.indicadorImagen + 1;
         let rutaBase64 = imageData;
         this.image = this.webview.convertFileSrc(imageData);
@@ -356,6 +364,38 @@ export class GestionCartaPage implements OnInit {
         console.error(error);
       });
 
+  }
+
+  workImage(imageData: any) {
+    const currentName = imageData.substring(imageData.lastIndexOf('/') + 1);
+    const path = imageData.substring(0, imageData.lastIndexOf('/') + 1);
+
+    // Nombre personalizado para la imagen
+    const newFileName = `${this.account}` + new Date().getTime().toString() + '.jpg';
+
+    // Ruta donde deseas guardar la imagen
+    const folderPath = this.file.externalRootDirectory + 'Erpp';
+
+    // Crear la carpeta si no existe
+    this.file.checkDir(this.file.externalRootDirectory, 'Erpp').then(() => {
+      // Si la carpeta ya existe, mueve el archivo
+      this.moveFile(path, currentName, folderPath, newFileName);
+    }).catch(() => {
+      // Si la carpeta no existe, créala y luego mueve el archivo
+      this.file.createDir(this.file.externalRootDirectory, 'Erpp', false).then(() => {
+        this.moveFile(path, currentName, folderPath, newFileName);
+      }).catch((err) => {
+        console.log('Error al crear la carpeta:', err);
+      });
+    });
+  }
+
+  moveFile(sourcePath: string, fileName: string, destPath: string, newFileName: string) {
+    this.file.moveFile(sourcePath, fileName, destPath, newFileName).then((success) => {
+      console.log('Imagen guardada en álbum personalizado:', success);
+    }, (error) => {
+      console.log('Error al mover el archivo:', error);
+    });
   }
 
   takePicGallery(type: any) {
@@ -1026,6 +1066,16 @@ export class GestionCartaPage implements OnInit {
       ]
     })
     await alert.present()
+  }
+
+  checkPermission() {
+    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.CAMERA).then(
+      result => {
+        if (!result.hasPermission) {
+          this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.CAMERA);
+        }
+      }
+    );
   }
 
   exit() {

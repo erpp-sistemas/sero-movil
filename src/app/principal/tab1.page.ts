@@ -5,9 +5,11 @@ import { Storage } from '@ionic/storage';
 import { Proceso } from '../interfaces/Procesos';
 import { MessagesService } from '../services/messages.service';
 import { RestService } from '../services/rest.service';
-import { DataGeneral, EncuestaGeneral } from '../interfaces';
+import { DataGeneral } from '../interfaces';
 import { DblocalService } from '../services/dblocal.service';
 import { AuthService } from '../services/auth.service';
+import { File } from '@ionic-native/file/ngx';
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
 
 @Component({
   selector: 'app-tab1',
@@ -45,7 +47,9 @@ export class Tab1Page implements OnInit {
     private router: Router,
     private alertCtrl: AlertController,
     private dbLocalService: DblocalService,
-    private authService: AuthService
+    private authService: AuthService,
+    private file: File,
+    private emailComposer: EmailComposer
   ) { }
 
 
@@ -366,6 +370,11 @@ export class Tab1Page implements OnInit {
     await alert.present();
 
   }
+
+  getDatabasePath() {
+    return this.file.dataDirectory + 'erppMovil.db'; // Ruta donde se guarda la base de datos
+  }
+
 
 
 }

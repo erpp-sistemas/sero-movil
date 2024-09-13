@@ -15,6 +15,10 @@
     <h1> Gestiones realizadas por gestor </h1>
   </div>
 
+  <div *ngIf="!showChart">
+    <p style="font-size: 26px; color: white;">Cargando gráfica !!!!</p>
+  </div>
+
   <div class="spinner" *ngIf="!showChart"></div>
 
   <div *ngIf="showChart" class="chart-container">
