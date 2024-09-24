@@ -321,9 +321,7 @@ export class RegisterService {
    */
   async sendAddressUptade(data: Address) {
     return new Promise((resolve, reject) => {
-      let { account, id_plaza, calle, numero_exterior, numero_interior, manzana, lote, colonia, codigo_postal, id_usuario } = data;
-      let query = `'${account}', ${id_plaza}, '${calle}', '${numero_exterior}', '${numero_interior}', '${manzana}', '${lote}', '${colonia}', ${codigo_postal}, ${id_usuario}`
-      this.http.post(apiActualizarDomicilio + " " + query, null).subscribe(
+      this.http.post(apiActualizarDomicilio, data).subscribe(
         async data => {
           resolve(data);
         }, err => {
@@ -357,46 +355,47 @@ export class RegisterService {
       if (arrayCuentaCarta.length == 0) {
         this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
       } else {
-        let id_plaza = arrayCuentaCarta[0].id_plaza;
-        let account = arrayCuentaCarta[0].account;
-        let persona_atiende = arrayCuentaCarta[0].persona_atiende;
-        let id_tipo_servicio = arrayCuentaCarta[0].id_tipo_servicio;
-        let numero_niveles = arrayCuentaCarta[0].numero_niveles;
-        let color_fachada = arrayCuentaCarta[0].color_fachada;
-        let color_puerta = arrayCuentaCarta[0].color_puerta;
-        let referencia = arrayCuentaCarta[0].referencia;
-        let id_tipo_predio = arrayCuentaCarta[0].tipo_predio;
-        let entre_calle1 = arrayCuentaCarta[0].entre_calle1;
-        let entre_calle2 = arrayCuentaCarta[0].entre_calle2;
-        let observaciones = arrayCuentaCarta[0].observaciones;
-        let lectura_medidor = arrayCuentaCarta[0].lectura_medidor;
-        let giro = arrayCuentaCarta[0].giro;
-        let idAspUser = arrayCuentaCarta[0].idAspUser;
-        let idTarea = arrayCuentaCarta[0].id_tarea;
-        let fechaCaptura = arrayCuentaCarta[0].fecha_captura;
-        let latitud = arrayCuentaCarta[0].latitud;
-        let longitud = arrayCuentaCarta[0].longitud;
-        let idServicioPaza = arrayCuentaCarta[0].id_servicio_plaza;
-        let idEstatusPredio = arrayCuentaCarta[0].id_estatus_predio;
-        let idTipoGestion = arrayCuentaCarta[0].id_tipo_gestion;
-        let idTiempoSuministroAgua = arrayCuentaCarta[0].id_tiempo_suministro_agua;
-        let lunes = arrayCuentaCarta[0].lunes;
-        let martes = arrayCuentaCarta[0].martes;
-        let miercoles = arrayCuentaCarta[0].miercoles;
-        let jueves = arrayCuentaCarta[0].jueves;
-        let viernes = arrayCuentaCarta[0].viernes;
-        let sabado = arrayCuentaCarta[0].sabado;
-        let domingo = arrayCuentaCarta[0].domingo;
-        let colocoSello = arrayCuentaCarta[0].coloco_sello;
-        let idMotivoNoPago = arrayCuentaCarta[0].id_motivo_no_pago;
-        let otroMotivoNoPago = arrayCuentaCarta[0].otro_motivo_no_pago;
-        let domicilio_verificado = arrayCuentaCarta[0].domicilio_verificado;
+        const data = {
+          id_plaza: arrayCuentaCarta[0].id_plaza,
+          account: arrayCuentaCarta[0].account,
+          persona_atiende: arrayCuentaCarta[0].persona_atiende,
+          id_tipo_servicio: arrayCuentaCarta[0].id_tipo_servicio,
+          numero_niveles: arrayCuentaCarta[0].numero_niveles,
+          color_fachada: arrayCuentaCarta[0].color_fachada,
+          color_puerta: arrayCuentaCarta[0].color_puerta,
+          referencia: arrayCuentaCarta[0].referencia,
+          id_tipo_predio: arrayCuentaCarta[0].tipo_predio,
+          entre_calle1: arrayCuentaCarta[0].entre_calle1,
+          entre_calle2: arrayCuentaCarta[0].entre_calle2,
+          observaciones: arrayCuentaCarta[0].observaciones,
+          lectura_medidor: arrayCuentaCarta[0].lectura_medidor,
+          giro: arrayCuentaCarta[0].giro,
+          idAspUser: arrayCuentaCarta[0].idAspUser,
+          idTarea: arrayCuentaCarta[0].id_tarea,
+          fechaCaptura: arrayCuentaCarta[0].fecha_captura,
+          latitud: arrayCuentaCarta[0].latitud,
+          longitud: arrayCuentaCarta[0].longitud,
+          idServicioPaza: arrayCuentaCarta[0].id_servicio_plaza,
+          idEstatusPredio: arrayCuentaCarta[0].id_estatus_predio,
+          idTipoGestion: arrayCuentaCarta[0].id_tipo_gestion,
+          idTiempoSuministroAgua: arrayCuentaCarta[0].id_tiempo_suministro_agua,
+          lunes: arrayCuentaCarta[0].lunes,
+          martes: arrayCuentaCarta[0].martes,
+          miercoles: arrayCuentaCarta[0].miercoles,
+          jueves: arrayCuentaCarta[0].jueves,
+          viernes: arrayCuentaCarta[0].viernes,
+          sabado: arrayCuentaCarta[0].sabado,
+          domingo: arrayCuentaCarta[0].domingo,
+          colocoSello: arrayCuentaCarta[0].coloco_sello,
+          idMotivoNoPago: arrayCuentaCarta[0].id_motivo_no_pago,
+          otroMotivoNoPago: arrayCuentaCarta[0].otro_motivo_no_pago,
+          domicilio_verificado: arrayCuentaCarta[0].domicilio_verificado,
+        }
 
         let id = arrayCuentaCarta[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello}, ${idMotivoNoPago}, '${otroMotivoNoPago}', ${domicilio_verificado}`
-        //console.log(sql);
-        await this.enviarSQLCartaInvitacion(sql, id)
+
+        await this.enviarSQLCartaInvitacion(data, id)
 
         this.message.showAlert("Envío de la gestión correctamente");
 
@@ -430,42 +429,42 @@ export class RegisterService {
       if (arrayCuentaCortes.length == 0) {
         this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
       } else {
-        let id_plaza = arrayCuentaCortes[0].id_plaza;
-        let account = arrayCuentaCortes[0].account;
-        let persona_atiende = arrayCuentaCortes[0].persona_atiende;
-        let id_tipo_servicio = arrayCuentaCortes[0].id_tipo_servicio;
-        let numero_niveles = arrayCuentaCortes[0].numero_niveles;
-        let color_fachada = arrayCuentaCortes[0].color_fachada;
-        let color_puerta = arrayCuentaCortes[0].color_puerta;
-        let referencia = arrayCuentaCortes[0].referencia;
-        let id_tipo_predio = arrayCuentaCortes[0].tipo_predio;
-        let entre_calle1 = arrayCuentaCortes[0].entre_calle1;
-        let entre_calle2 = arrayCuentaCortes[0].entre_calle2;
-        let observaciones = arrayCuentaCortes[0].observaciones;
-        let lectura_medidor = arrayCuentaCortes[0].lectura_medidor;
-        let giro = arrayCuentaCortes[0].giro;
-        let idAspUser = arrayCuentaCortes[0].idAspUser;
-        let idTarea = arrayCuentaCortes[0].id_tarea;
-        let fechaCaptura = arrayCuentaCortes[0].fecha_captura;
-        let latitud = arrayCuentaCortes[0].latitud;
-        let longitud = arrayCuentaCortes[0].longitud;
-        let idServicioPaza = arrayCuentaCortes[0].id_servicio_plaza;
-        let idEstatusPredio = arrayCuentaCortes[0].id_estatus_predio;
-        let idTipoGestion = arrayCuentaCortes[0].id_tipo_gestion;
-        let idTiempoSuministroAgua = arrayCuentaCortes[0].id_tiempo_suministro_agua;
-        let lunes = arrayCuentaCortes[0].lunes;
-        let martes = arrayCuentaCortes[0].martes;
-        let miercoles = arrayCuentaCortes[0].miercoles;
-        let jueves = arrayCuentaCortes[0].jueves;
-        let viernes = arrayCuentaCortes[0].viernes;
-        let sabado = arrayCuentaCortes[0].sabado;
-        let domingo = arrayCuentaCortes[0].domingo;
+        const data = {
+          id_plaza: arrayCuentaCortes[0].id_plaza,
+          account: arrayCuentaCortes[0].account,
+          persona_atiende: arrayCuentaCortes[0].persona_atiende,
+          id_tipo_servicio: arrayCuentaCortes[0].id_tipo_servicio,
+          numero_niveles: arrayCuentaCortes[0].numero_niveles,
+          color_fachada: arrayCuentaCortes[0].color_fachada,
+          color_puerta: arrayCuentaCortes[0].color_puerta,
+          referencia: arrayCuentaCortes[0].referencia,
+          id_tipo_predio: arrayCuentaCortes[0].tipo_predio,
+          entre_calle1: arrayCuentaCortes[0].entre_calle1,
+          entre_calle2: arrayCuentaCortes[0].entre_calle2,
+          observaciones: arrayCuentaCortes[0].observaciones,
+          lectura_medidor: arrayCuentaCortes[0].lectura_medidor,
+          giro: arrayCuentaCortes[0].giro,
+          idAspUser: arrayCuentaCortes[0].idAspUser,
+          idTarea: arrayCuentaCortes[0].id_tarea,
+          fechaCaptura: arrayCuentaCortes[0].fecha_captura,
+          latitud: arrayCuentaCortes[0].latitud,
+          longitud: arrayCuentaCortes[0].longitud,
+          idServicioPaza: arrayCuentaCortes[0].id_servicio_plaza,
+          idEstatusPredio: arrayCuentaCortes[0].id_estatus_predio,
+          idTipoGestion: arrayCuentaCortes[0].id_tipo_gestion,
+          idTiempoSuministroAgua: arrayCuentaCortes[0].id_tiempo_suministro_agua,
+          lunes: arrayCuentaCortes[0].lunes,
+          martes: arrayCuentaCortes[0].martes,
+          miercoles: arrayCuentaCortes[0].miercoles,
+          jueves: arrayCuentaCortes[0].jueves,
+          viernes: arrayCuentaCortes[0].viernes,
+          sabado: arrayCuentaCortes[0].sabado,
+          domingo: arrayCuentaCortes[0].domingo,
+        }
 
         let id = arrayCuentaCortes[0].id;
 
-        let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza}, ${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}'`
-        console.log(sql);
-        await this.enviarSQLCortes(sql, id)
+        await this.enviarSQLCortes(data, id)
 
         this.message.showAlert("Envío de la gestión correctamente");
 
@@ -498,36 +497,38 @@ export class RegisterService {
       if (arrayCuentaLegal.length == 0) {
         this.message.showAlert("No se puede enviar la gestión, no se guardo correctamente");
       } else {
-        let id_plaza = arrayCuentaLegal[0].id_plaza
-        let account = arrayCuentaLegal[0].account;
-        let personaTiende = arrayCuentaLegal[0].persona_atiende;
-        let idPuesto = arrayCuentaLegal[0].id_puesto;
-        let otroPuesto = arrayCuentaLegal[0].otro_puesto;
-        let idMotivoNoPago = arrayCuentaLegal[0].id_motivo_no_pago;
-        let otroMotivo = arrayCuentaLegal[0].otro_motivo;
-        let idTipoServicio = arrayCuentaLegal[0].id_tipo_servicio;
-        let numeroNiveles = arrayCuentaLegal[0].numero_niveles;
-        let colorFachada = arrayCuentaLegal[0].color_fachada;
-        let colorPuerta = arrayCuentaLegal[0].color_puerta;
-        let referencia = arrayCuentaLegal[0].referencia;
-        let idTipoPredio = arrayCuentaLegal[0].id_tipo_predio;
-        let entreCalle1 = arrayCuentaLegal[0].entre_calle1;
-        let entreCalle2 = arrayCuentaLegal[0].entre_calle2;
-        let observaciones = arrayCuentaLegal[0].observaciones;
-        let lectura_medidor = arrayCuentaLegal[0].lectura_medidor;
-        let giro = arrayCuentaLegal[0].giro;
-        let idAspUser = arrayCuentaLegal[0].idAspUser;
-        let idTarea = arrayCuentaLegal[0].id_tarea;
-        let fechaCaptura = arrayCuentaLegal[0].fecha_captura;
-        let latitud = arrayCuentaLegal[0].latitud;
-        let longitud = arrayCuentaLegal[0].longitud;
-        let idServicioPlaza = arrayCuentaLegal[0].id_servicio_plaza
-        let id_estatus_predio = arrayCuentaLegal[0].id_estatus_predio
-        let id = arrayCuentaLegal[0].id;
 
-        let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}, ${id_estatus_predio} `
-        //console.log(sql);
-        await this.enviarSQLGestionLegal(sql, id)
+        const data = {
+          id_plaza : arrayCuentaLegal[0].id_plaza,
+          account : arrayCuentaLegal[0].account,
+          personaTiende : arrayCuentaLegal[0].persona_atiende,
+          idPuesto : arrayCuentaLegal[0].id_puesto,
+          otroPuesto : arrayCuentaLegal[0].otro_puesto,
+          idMotivoNoPago : arrayCuentaLegal[0].id_motivo_no_pago,
+          otroMotivo : arrayCuentaLegal[0].otro_motivo,
+          idTipoServicio : arrayCuentaLegal[0].id_tipo_servicio,
+          numeroNiveles : arrayCuentaLegal[0].numero_niveles,
+          colorFachada : arrayCuentaLegal[0].color_fachada,
+          colorPuerta : arrayCuentaLegal[0].color_puerta,
+          referencia : arrayCuentaLegal[0].referencia,
+          idTipoPredio : arrayCuentaLegal[0].id_tipo_predio,
+          entreCalle1 : arrayCuentaLegal[0].entre_calle1,
+          entreCalle2 : arrayCuentaLegal[0].entre_calle2,
+          observaciones : arrayCuentaLegal[0].observaciones,
+          lectura_medidor : arrayCuentaLegal[0].lectura_medidor,
+          giro : arrayCuentaLegal[0].giro,
+          idAspUser : arrayCuentaLegal[0].idAspUser,
+          idTarea : arrayCuentaLegal[0].id_tarea,
+          fechaCaptura : arrayCuentaLegal[0].fecha_captura,
+          latitud : arrayCuentaLegal[0].latitud,
+          longitud : arrayCuentaLegal[0].longitud,
+          idServicioPlaza : arrayCuentaLegal[0].id_servicio_plaza,
+          id_estatus_predio : arrayCuentaLegal[0].id_estatus_predio
+        }
+
+        let id = arrayCuentaLegal[0].id;
+       
+        await this.enviarSQLGestionLegal(data, id)
 
         this.message.showAlert("Envío de la gestión correctamente");
 
@@ -737,48 +738,49 @@ export class RegisterService {
   async sendGestionesInspeccion(i: number, arrayGestionesInspeccionAgua: any[]) {
     //let idPlaza = await this.storage.get("IdPlaza");
     return new Promise(async (resolve) => {
-      let id_plaza = arrayGestionesInspeccionAgua[i].id_plaza;
-      let account = arrayGestionesInspeccionAgua[i].account;
-      let personaAtiende = arrayGestionesInspeccionAgua[i].personaAtiende;
-      //let numeroContacto = arrayGestionesInspeccionAgua[i].numeroContacto; // Lo quitaron en la junta
-      let idPuesto = arrayGestionesInspeccionAgua[i].idPuesto;
-      let otroPuesto = arrayGestionesInspeccionAgua[i].otroPuesto;
-      //let idMotivoNoPago = arrayGestionesInspeccionAgua[i].idMotivoNoPago; // lo quito Alejandro
-      //let otroMotivo = arrayGestionesInspeccionAgua[i].otroMotivo; // Lo quito Alejandro
-      let idTipoServicio = arrayGestionesInspeccionAgua[i].idTipoServicio;
-      let numeroNiveles = arrayGestionesInspeccionAgua[i].numeroNiveles;
-      let colorFachada = arrayGestionesInspeccionAgua[i].colorFachada;
-      let colorPuerta = arrayGestionesInspeccionAgua[i].colorPuerta;
-      let referencia = arrayGestionesInspeccionAgua[i].referencia;
-      let idTipoPredio = arrayGestionesInspeccionAgua[i].idTipoPredio;
-      let entreCalle1 = arrayGestionesInspeccionAgua[i].entreCalle1;
-      let entreCalle2 = arrayGestionesInspeccionAgua[i].entreCalle2;
-      let hallazgoNinguna = arrayGestionesInspeccionAgua[i].hallazgoNinguna;
-      let hallazgoNegaronAcceso = arrayGestionesInspeccionAgua[i].hallazgoNegaronAcceso;
-      let hallazgoMedidorDescompuesto = arrayGestionesInspeccionAgua[i].hallazgoMedidorDescompuesto;
-      let hallazgoDiferenciaDiametro = arrayGestionesInspeccionAgua[i].hallazgoDiferenciaDiametro;
-      let hallazgoTomaClandestina = arrayGestionesInspeccionAgua[i].hallazgoTomaClandestina;
-      let hallazgoDerivacionClandestina = arrayGestionesInspeccionAgua[i].hallazgoDerivacionClandestina;
-      let hallazgoDrenajeClandestino = arrayGestionesInspeccionAgua[i].hallazgoDrenajeClandestino;
-      let hallazgoCambioGiro = arrayGestionesInspeccionAgua[i].hallazgoCambioGiro;
-      let hallazgoFaltaDocumentacion = arrayGestionesInspeccionAgua[i].hallazgoFaltaDocumentacion;
-      let idAspUser = arrayGestionesInspeccionAgua[i].idAspUser;
-      let inspector2 = arrayGestionesInspeccionAgua[i].inspector2;
-      let inspector3 = arrayGestionesInspeccionAgua[i].inspector3;
-      let inspector4 = arrayGestionesInspeccionAgua[i].inspector4;
-      let observacion = arrayGestionesInspeccionAgua[i].observacion;
-      let lectura_medidor = arrayGestionesInspeccionAgua[i].lectura_medidor;
-      let giro = arrayGestionesInspeccionAgua[i].giro;
-      let idTarea = arrayGestionesInspeccionAgua[i].idTarea;
-      let fechaCaptura = arrayGestionesInspeccionAgua[i].fechaCaptura;
-      let latitud = arrayGestionesInspeccionAgua[i].latitud;
-      let longitud = arrayGestionesInspeccionAgua[i].longitud;
-      let idServicioPlaza = arrayGestionesInspeccionAgua[i].id_servicio_plaza;
+      let data = {
+        id_plaza: arrayGestionesInspeccionAgua[i].id_plaza,
+        account: arrayGestionesInspeccionAgua[i].account,
+        personaAtiende: arrayGestionesInspeccionAgua[i].personaAtiende,
+        //let numeroContacto = arrayGestionesInspeccionAgua[i].numeroContacto; // Lo quitaron en la junta
+        idPuesto: arrayGestionesInspeccionAgua[i].idPuesto,
+        otroPuesto: arrayGestionesInspeccionAgua[i].otroPuesto,
+        //let idMotivoNoPago = arrayGestionesInspeccionAgua[i].idMotivoNoPago; // lo quito Alejandro
+        //let otroMotivo = arrayGestionesInspeccionAgua[i].otroMotivo; // Lo quito Alejandro
+        idTipoServicio: arrayGestionesInspeccionAgua[i].idTipoServicio,
+        numeroNiveles: arrayGestionesInspeccionAgua[i].numeroNiveles,
+        colorFachada: arrayGestionesInspeccionAgua[i].colorFachada,
+        colorPuerta: arrayGestionesInspeccionAgua[i].colorPuerta,
+        referencia: arrayGestionesInspeccionAgua[i].referencia,
+        idTipoPredio: arrayGestionesInspeccionAgua[i].idTipoPredio,
+        entreCalle1: arrayGestionesInspeccionAgua[i].entreCalle1,
+        entreCalle2: arrayGestionesInspeccionAgua[i].entreCalle2,
+        hallazgoNinguna: arrayGestionesInspeccionAgua[i].hallazgoNinguna,
+        hallazgoNegaronAcceso: arrayGestionesInspeccionAgua[i].hallazgoNegaronAcceso,
+        hallazgoMedidorDescompuesto: arrayGestionesInspeccionAgua[i].hallazgoMedidorDescompuesto,
+        hallazgoDiferenciaDiametro: arrayGestionesInspeccionAgua[i].hallazgoDiferenciaDiametro,
+        hallazgoTomaClandestina: arrayGestionesInspeccionAgua[i].hallazgoTomaClandestina,
+        hallazgoDerivacionClandestina: arrayGestionesInspeccionAgua[i].hallazgoDerivacionClandestina,
+        hallazgoDrenajeClandestino: arrayGestionesInspeccionAgua[i].hallazgoDrenajeClandestino,
+        hallazgoCambioGiro: arrayGestionesInspeccionAgua[i].hallazgoCambioGiro,
+        hallazgoFaltaDocumentacion: arrayGestionesInspeccionAgua[i].hallazgoFaltaDocumentacion,
+        idAspUser: arrayGestionesInspeccionAgua[i].idAspUser,
+        inspector2: arrayGestionesInspeccionAgua[i].inspector2,
+        inspector3: arrayGestionesInspeccionAgua[i].inspector3,
+        inspector4: arrayGestionesInspeccionAgua[i].inspector4,
+        observacion: arrayGestionesInspeccionAgua[i].observacion,
+        lectura_medidor: arrayGestionesInspeccionAgua[i].lectura_medidor,
+        giro: arrayGestionesInspeccionAgua[i].giro,
+        idTarea: arrayGestionesInspeccionAgua[i].idTarea,
+        fechaCaptura: arrayGestionesInspeccionAgua[i].fechaCaptura,
+        latitud: arrayGestionesInspeccionAgua[i].latitud,
+        longitud: arrayGestionesInspeccionAgua[i].longitud,
+        idServicioPlaza: arrayGestionesInspeccionAgua[i].id_servicio_plaza,
+      }
+
       let id = arrayGestionesInspeccionAgua[i].id;
 
-      let sql = `${id_plaza},'${account}','${personaAtiende}',${idPuesto},'${otroPuesto}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}',${hallazgoNinguna},${hallazgoNegaronAcceso},${hallazgoMedidorDescompuesto},${hallazgoDiferenciaDiametro},${hallazgoTomaClandestina},${hallazgoDerivacionClandestina},${hallazgoDrenajeClandestino},${hallazgoCambioGiro},${hallazgoFaltaDocumentacion},'${idAspUser}','${inspector2}','${inspector3}','${inspector4}','${observacion}','${lectura_medidor}','${giro}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}`;
-      console.log(sql);
-      await this.enviarSQLInspeccion(sql, id)
+      await this.enviarSQLInspeccion(data, id)
       resolve('Execute Query successfully');
     })
   }
@@ -789,9 +791,9 @@ export class RegisterService {
    * @param id 
    * @returns 
    */
-  async enviarSQLInspeccion(query: string, id: number) {
+  async enviarSQLInspeccion(data: any, id: number) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroInspeccion + " " + query, null).subscribe(
+      this.http.post(apiRegistroInspeccion, data).subscribe(
         async data => {
           await this.actualizarIdInspeccion(id);
           resolve(data);
@@ -893,44 +895,46 @@ export class RegisterService {
   async sendGestionesCarta(i: number, arrayGestionesCarta: any[]) {
     return new Promise(async (resolve) => {
 
-      let id_plaza = arrayGestionesCarta[i].id_plaza;
-      let account = arrayGestionesCarta[i].account;
-      let persona_atiende = arrayGestionesCarta[i].persona_atiende;
-      let id_tipo_servicio = arrayGestionesCarta[i].id_tipo_servicio;
-      let numero_niveles = arrayGestionesCarta[i].numero_niveles;
-      let color_fachada = arrayGestionesCarta[i].color_fachada;
-      let color_puerta = arrayGestionesCarta[i].color_puerta;
-      let referencia = arrayGestionesCarta[i].referencia;
-      let id_tipo_predio = arrayGestionesCarta[i].tipo_predio;
-      let entre_calle1 = arrayGestionesCarta[i].entre_calle1;
-      let entre_calle2 = arrayGestionesCarta[i].entre_calle2;
-      let observaciones = arrayGestionesCarta[i].observaciones;
-      let lectura_medidor = arrayGestionesCarta[i].lectura_medidor;
-      let giro = arrayGestionesCarta[i].giro;
-      let idAspUser = arrayGestionesCarta[i].idAspUser;
-      let idTarea = arrayGestionesCarta[i].id_tarea;
-      let fechaCaptura = arrayGestionesCarta[i].fecha_captura;
-      let latitud = arrayGestionesCarta[i].latitud;
-      let longitud = arrayGestionesCarta[i].longitud;
-      let idServicioPaza = arrayGestionesCarta[i].id_servicio_plaza;
-      let idEstatusPredio = arrayGestionesCarta[i].id_estatus_predio;
-      let idTipoGestion = arrayGestionesCarta[i].id_tipo_gestion;
-      let idTiempoSuministroAgua = arrayGestionesCarta[i].id_tiempo_suministro_agua;
-      let lunes = arrayGestionesCarta[i].lunes;
-      let martes = arrayGestionesCarta[i].martes;
-      let miercoles = arrayGestionesCarta[i].miercoles;
-      let jueves = arrayGestionesCarta[i].jueves;
-      let viernes = arrayGestionesCarta[i].viernes;
-      let sabado = arrayGestionesCarta[i].sabado;
-      let domingo = arrayGestionesCarta[i].domingo;
-      let colocoSello = arrayGestionesCarta[i].coloco_sello;
-      let idMotivoNoPago = arrayGestionesCarta[i].id_motivo_no_pago;
-      let otroMotivoNoPago = arrayGestionesCarta[i].otro_motivo_no_pago;
-      let domicilio_verificado = arrayGestionesCarta[i].domicilio_verificado;
+      const data = {
+        id_plaza: arrayGestionesCarta[i].id_plaza,
+        account: arrayGestionesCarta[i].account,
+        persona_atiende: arrayGestionesCarta[i].persona_atiende,
+        id_tipo_servicio: arrayGestionesCarta[i].id_tipo_servicio,
+        numero_niveles: arrayGestionesCarta[i].numero_niveles,
+        color_fachada: arrayGestionesCarta[i].color_fachada,
+        color_puerta: arrayGestionesCarta[i].color_puerta,
+        referencia: arrayGestionesCarta[i].referencia,
+        id_tipo_predio: arrayGestionesCarta[i].tipo_predio,
+        entre_calle1: arrayGestionesCarta[i].entre_calle1,
+        entre_calle2: arrayGestionesCarta[i].entre_calle2,
+        observaciones: arrayGestionesCarta[i].observaciones,
+        lectura_medidor: arrayGestionesCarta[i].lectura_medidor,
+        giro: arrayGestionesCarta[i].giro,
+        idAspUser: arrayGestionesCarta[i].idAspUser,
+        idTarea: arrayGestionesCarta[i].id_tarea,
+        fechaCaptura: arrayGestionesCarta[i].fecha_captura,
+        latitud: arrayGestionesCarta[i].latitud,
+        longitud: arrayGestionesCarta[i].longitud,
+        idServicioPaza: arrayGestionesCarta[i].id_servicio_plaza,
+        idEstatusPredio: arrayGestionesCarta[i].id_estatus_predio,
+        idTipoGestion: arrayGestionesCarta[i].id_tipo_gestion,
+        idTiempoSuministroAgua: arrayGestionesCarta[i].id_tiempo_suministro_agua,
+        lunes: arrayGestionesCarta[i].lunes,
+        martes: arrayGestionesCarta[i].martes,
+        miercoles: arrayGestionesCarta[i].miercoles,
+        jueves: arrayGestionesCarta[i].jueves,
+        viernes: arrayGestionesCarta[i].viernes,
+        sabado: arrayGestionesCarta[i].sabado,
+        domingo: arrayGestionesCarta[i].domingo,
+        colocoSello: arrayGestionesCarta[i].coloco_sello,
+        idMotivoNoPago: arrayGestionesCarta[i].id_motivo_no_pago,
+        otroMotivoNoPago: arrayGestionesCarta[i].otro_motivo_no_pago,
+        domicilio_verificado: arrayGestionesCarta[i].domicilio_verificado,
+      }
+
       let id = arrayGestionesCarta[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}', ${colocoSello} ${idMotivoNoPago}, '${otroMotivoNoPago}', ${domicilio_verificado}`
-      await this.enviarSQLCartaInvitacion(sql, id)
+      await this.enviarSQLCartaInvitacion(data, id)
       resolve('Execute Query successfully');
 
     })
@@ -942,9 +946,9 @@ export class RegisterService {
    * @param id 
    * @returns Promise
    */
-  enviarSQLCartaInvitacion(query: string, id: number) {
+  enviarSQLCartaInvitacion(data: { [key: string]: any }, id: number) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroCartaInvitacion + " " + query, null).subscribe(async data => {
+      this.http.post(apiRegistroCartaInvitacion + " " + data, null).subscribe(async data => {
         await this.actualizarIdCartaInvitacion(id);
         resolve(data);
       }, err => {
@@ -1035,38 +1039,38 @@ export class RegisterService {
    */
   sendGestionesLegal(i: number, arrayGestionesLegal: any[]) {
     return new Promise(async (resolve, reject) => {
-      console.log(arrayGestionesLegal);
+     
+      const data = {
+        id_plaza : arrayGestionesLegal[i].id_plaza,
+        account : arrayGestionesLegal[i].account,
+        personaTiende : arrayGestionesLegal[i].persona_atiende,
+       // numeroContacto : arrayGestionesLegal[i].numero_contacto,
+        idPuesto : arrayGestionesLegal[i].id_puesto,
+        otroPuesto : arrayGestionesLegal[i].otro_puesto,
+        idMotivoNoPago : arrayGestionesLegal[i].id_motivo_no_pago,
+        otroMotivo : arrayGestionesLegal[i].otro_motivo,
+        idTipoServicio : arrayGestionesLegal[i].id_tipo_servicio,
+        numeroNiveles : arrayGestionesLegal[i].numero_niveles,
+        colorFachada : arrayGestionesLegal[i].color_fachada,
+        colorPuerta : arrayGestionesLegal[i].color_puerta,
+        referencia : arrayGestionesLegal[i].referencia,
+        idTipoPredio : arrayGestionesLegal[i].id_tipo_predio,
+        entreCalle1 : arrayGestionesLegal[i].entre_calle1,
+        entreCalle2 : arrayGestionesLegal[i].entre_calle2,
+        observaciones : arrayGestionesLegal[i].observaciones,
+        lectura_medidor : arrayGestionesLegal[i].lectura_medidor,
+        giro : arrayGestionesLegal[i].giro,
+        idAspUser : arrayGestionesLegal[i].idAspUser,
+        idTarea : arrayGestionesLegal[i].id_tarea,
+        fechaCaptura : arrayGestionesLegal[i].fecha_captura,
+        latitud : arrayGestionesLegal[i].latitud,  longitud : arrayGestionesLegal[i].longitud,
+        idServicioPlaza : arrayGestionesLegal[i].id_servicio_plaza,
+        id_estatus_predio : arrayGestionesLegal[i].id_estatus_predio
+      }
 
-      let id_plaza = arrayGestionesLegal[i].id_plaza
-      let account = arrayGestionesLegal[i].account;
-      let personaTiende = arrayGestionesLegal[i].persona_atiende;
-      //let numeroContacto = arrayGestionesLegal[i].numero_contacto;
-      let idPuesto = arrayGestionesLegal[i].id_puesto;
-      let otroPuesto = arrayGestionesLegal[i].otro_puesto;
-      let idMotivoNoPago = arrayGestionesLegal[i].id_motivo_no_pago;
-      let otroMotivo = arrayGestionesLegal[i].otro_motivo;
-      let idTipoServicio = arrayGestionesLegal[i].id_tipo_servicio;
-      let numeroNiveles = arrayGestionesLegal[i].numero_niveles;
-      let colorFachada = arrayGestionesLegal[i].color_fachada;
-      let colorPuerta = arrayGestionesLegal[i].color_puerta;
-      let referencia = arrayGestionesLegal[i].referencia;
-      let idTipoPredio = arrayGestionesLegal[i].id_tipo_predio;
-      let entreCalle1 = arrayGestionesLegal[i].entre_calle1;
-      let entreCalle2 = arrayGestionesLegal[i].entre_calle2;
-      let observaciones = arrayGestionesLegal[i].observaciones;
-      let lectura_medidor = arrayGestionesLegal[i].lectura_medidor;
-      let giro = arrayGestionesLegal[i].giro;
-      let idAspUser = arrayGestionesLegal[i].idAspUser;
-      let idTarea = arrayGestionesLegal[i].id_tarea;
-      let fechaCaptura = arrayGestionesLegal[i].fecha_captura;
-      let latitud = arrayGestionesLegal[i].latitud; let longitud = arrayGestionesLegal[i].longitud;
-      let idServicioPlaza = arrayGestionesLegal[i].id_servicio_plaza
-      let id_estatus_predio = arrayGestionesLegal[i].id_estatus_predio
       let id = arrayGestionesLegal[i].id;
 
-      let sql = `${id_plaza},'${account}','${personaTiende}',${idPuesto},'${otroPuesto}',${idMotivoNoPago},'${otroMotivo}',${idTipoServicio},${numeroNiveles},'${colorFachada}','${colorPuerta}','${referencia}',${idTipoPredio},'${entreCalle1}','${entreCalle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPlaza}, ${id_estatus_predio} `
-      console.log(sql);
-      await this.enviarSQLGestionLegal(sql, id)
+      await this.enviarSQLGestionLegal(data, id)
       resolve('Execute Query successfully');
 
     })
@@ -1078,9 +1082,9 @@ export class RegisterService {
    * @param id 
    * @returns 
    */
-  enviarSQLGestionLegal(query: string, id: number) {
+  enviarSQLGestionLegal(data: { [key: string]: any }, id: number) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroLegal + " " + query, null).subscribe(async data => {
+      this.http.post(apiRegistroLegal, data).subscribe(async data => {
         await this.actualizarIdLegal(id);
         console.log(data);
         resolve(data);
@@ -1179,41 +1183,43 @@ export class RegisterService {
   */
   async sendGestionesCortes(i: number, arrayGestionesCortes: any[]) {
     return new Promise(async (resolve) => {
-      let id_plaza = arrayGestionesCortes[i].id_plaza;
-      let account = arrayGestionesCortes[i].account;
-      let persona_atiende = arrayGestionesCortes[i].persona_atiende;
-      let id_tipo_servicio = arrayGestionesCortes[i].id_tipo_servicio;
-      let numero_niveles = arrayGestionesCortes[i].numero_niveles;
-      let color_fachada = arrayGestionesCortes[i].color_fachada;
-      let color_puerta = arrayGestionesCortes[i].color_puerta;
-      let referencia = arrayGestionesCortes[i].referencia;
-      let id_tipo_predio = arrayGestionesCortes[i].tipo_predio;
-      let entre_calle1 = arrayGestionesCortes[i].entre_calle1;
-      let entre_calle2 = arrayGestionesCortes[i].entre_calle2;
-      let observaciones = arrayGestionesCortes[i].observaciones;
-      let lectura_medidor = arrayGestionesCortes[i].lectura_medidor;
-      let giro = arrayGestionesCortes[i].giro;
-      let idAspUser = arrayGestionesCortes[i].idAspUser;
-      let idTarea = arrayGestionesCortes[i].id_tarea;
-      let fechaCaptura = arrayGestionesCortes[i].fecha_captura;
-      let latitud = arrayGestionesCortes[i].latitud;
-      let longitud = arrayGestionesCortes[i].longitud;
-      let idServicioPaza = arrayGestionesCortes[i].id_servicio_plaza;
-      let idEstatusPredio = arrayGestionesCortes[i].id_estatus_predio;
-      let idTipoGestion = arrayGestionesCortes[i].id_tipo_gestion;
-      let idTiempoSuministroAgua = arrayGestionesCortes[i].id_tiempo_suministro_agua;
-      let lunes = arrayGestionesCortes[i].lunes;
-      let martes = arrayGestionesCortes[i].martes;
-      let miercoles = arrayGestionesCortes[i].miercoles;
-      let jueves = arrayGestionesCortes[i].jueves;
-      let viernes = arrayGestionesCortes[i].viernes;
-      let sabado = arrayGestionesCortes[i].sabado;
-      let domingo = arrayGestionesCortes[i].domingo;
+
+      const data = {
+        id_plaza : arrayGestionesCortes[i].id_plaza,
+        account : arrayGestionesCortes[i].account,
+        persona_atiende : arrayGestionesCortes[i].persona_atiende,
+        id_tipo_servicio : arrayGestionesCortes[i].id_tipo_servicio,
+        numero_niveles : arrayGestionesCortes[i].numero_niveles,
+        color_fachada : arrayGestionesCortes[i].color_fachada,
+        color_puerta : arrayGestionesCortes[i].color_puerta,
+        referencia : arrayGestionesCortes[i].referencia,
+        id_tipo_predio : arrayGestionesCortes[i].tipo_predio,
+        entre_calle1 : arrayGestionesCortes[i].entre_calle1,
+        entre_calle2 : arrayGestionesCortes[i].entre_calle2,
+        observaciones : arrayGestionesCortes[i].observaciones,
+        lectura_medidor : arrayGestionesCortes[i].lectura_medidor,
+        giro : arrayGestionesCortes[i].giro,
+        idAspUser : arrayGestionesCortes[i].idAspUser,
+        idTarea : arrayGestionesCortes[i].id_tarea,
+        fechaCaptura : arrayGestionesCortes[i].fecha_captura,
+        latitud : arrayGestionesCortes[i].latitud,
+        longitud : arrayGestionesCortes[i].longitud,
+        idServicioPaza : arrayGestionesCortes[i].id_servicio_plaza,
+        idEstatusPredio : arrayGestionesCortes[i].id_estatus_predio,
+        idTipoGestion : arrayGestionesCortes[i].id_tipo_gestion,
+        idTiempoSuministroAgua : arrayGestionesCortes[i].id_tiempo_suministro_agua,
+        lunes : arrayGestionesCortes[i].lunes,
+        martes : arrayGestionesCortes[i].martes,
+        miercoles : arrayGestionesCortes[i].miercoles,
+        jueves : arrayGestionesCortes[i].jueves,
+        viernes : arrayGestionesCortes[i].viernes,
+        sabado : arrayGestionesCortes[i].sabado,
+        domingo : arrayGestionesCortes[i].domingo,
+      }
+
       let id = arrayGestionesCortes[i].id;
 
-      let sql = `${id_plaza},'${account}','${persona_atiende}',${id_tipo_servicio},${numero_niveles},'${color_fachada}','${color_puerta}','${referencia}',${id_tipo_predio},'${entre_calle1}','${entre_calle2}','${observaciones}','${lectura_medidor}','${giro}','${idAspUser}',${idTarea},'${fechaCaptura}',${latitud},${longitud},${idServicioPaza},${idEstatusPredio}, ${idTipoGestion}, '${idTiempoSuministroAgua}', '${lunes}', '${martes}', '${miercoles}', '${jueves}', '${viernes}', '${sabado}', '${domingo}' `
-      console.log(sql);
-      await this.enviarSQLCortes(sql, id)
+      await this.enviarSQLCortes(data, id)
       resolve('Execute Query successfully');
 
     })
@@ -1225,9 +1231,9 @@ export class RegisterService {
 * @param id 
 * @returns Promise
 */
-  enviarSQLCortes(query: string, id: number) {
+  enviarSQLCortes(data: { [key: string]: any }, id: number) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroCortes + " " + query, null).subscribe(async data => {
+      this.http.post(apiRegistroCortes, data).subscribe(async data => {
         await this.actualizarIdCortes(id);
         resolve(data);
       }, err => {
@@ -1278,26 +1284,25 @@ export class RegisterService {
 
   sendGestionesServicios(i: number, arrayServicios: any[]) {
     return new Promise(async resolve => {
-      let id_plaza = arrayServicios[i].id_plaza;
-      let idAspUser = arrayServicios[i].idAspUser;
-      let idServicio = arrayServicios[i].idServicio;
-      //let idServicio2 = arrayServicios[i].idServicio2;
-      let observacion = arrayServicios[i].observacion;
-      let fechaCaptura = arrayServicios[i].fechaCaptura;
-      let latitud = arrayServicios[i].latitud;
-      let longitud = arrayServicios[i].longitud;
+      const data = {
+        id_plaza: arrayServicios[i].id_plaza,
+        idAspUser: arrayServicios[i].idAspUser,
+        idServicio: arrayServicios[i].idServicio,
+        //idServicio2: arrayServicios[i].idServicio2,
+        observacion: arrayServicios[i].observacion,
+        fechaCaptura: arrayServicios[i].fechaCaptura,
+        latitud: arrayServicios[i].latitud,
+        longitud: arrayServicios[i].longitud,
+      }      
       let id = arrayServicios[i].id
-
-      let sql = `${id_plaza},'${idAspUser}',${idServicio},'${observacion}','${fechaCaptura}',${latitud},${longitud} `
-      await this.enviarSQLServicios(sql, id)
+      await this.enviarSQLServicios(data, id)
       resolve('Execute Query successfully');
-
     })
   }
 
-  enviarSQLServicios(query: string, id: number) {
+  enviarSQLServicios(data: { [key: string]: any }, id: number) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroServiciosPublicos + " " + query, null).subscribe(async data => {
+      this.http.post(apiRegistroServiciosPublicos, data).subscribe(async data => {
         await this.actualizarServiciosPublicos(id);
         console.log(data);
         resolve(data);

@@ -13,6 +13,7 @@ import { DblocalService } from './dblocal.service';
 import { EncuestaGeneral, ServicioPublico, UserPlacesServices, UserFirebase, Gestor } from '../interfaces';
 import { wihoutDuplicated } from '../../helpers'
 import { UsersService } from './users.service';
+import { apiObtenerGestores } from '../api';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,6 @@ export class AuthService {
 
   apiObtenerServiciosUser = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios";
   apiObtenerServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios_publicos";
-  apiObtenerGestores = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_gestores_plaza";
   apiUpdateAppVersion = "https://ser0.mx/seroMovil.aspx?query=sp_user_app_version";
   userInfo: UserFirebase;
   modal: any;
@@ -196,7 +196,7 @@ export class AuthService {
 
   async getUsersPlaces() {
     await this.dbLocalService.deleteGestores()
-    this.http.get<Gestor[]>(this.apiObtenerGestores).subscribe(data => {
+    this.http.get<Gestor[]>(apiObtenerGestores).subscribe(data => {
       this.insertGestores(data);
     })
   }

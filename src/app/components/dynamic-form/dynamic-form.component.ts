@@ -222,6 +222,7 @@ export class DynamicFormComponent implements OnInit {
     let data = {
       ...this.formulario.value,
       id_form: this.id_form,
+      account: this.isFormGestion ? this.account : `${this.id_usuario}-${this.fecha_actual}`,
       fecha: this.fecha_actual,
       latitud: this.latitud,
       longitud: this.longitud,

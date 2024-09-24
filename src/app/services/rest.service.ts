@@ -9,14 +9,14 @@ import { DblocalService } from './dblocal.service';
 import { DataGeneral, Form } from '../interfaces';
 import {
   apiObtenerDatos, apiRegistroRecorrido, apiObtenerCuentasDistancia,
-  apiObtenerEmpleados, apiObtenerFotosHistoricas, apiObtenerPagosHistoricos, apiRegistroEncuestaPresidente,
+  apiObtenerEmpleados, apiObtenerFotosHistoricas, apiObtenerPagosHistoricos,
   apiRegistroAsistencia, apiObtenerGestores, apiObtenerProcesosPlaza, apiRegistroBotonPanico,
   apiObtenerAccionesHistoricas, apiRegistroPorcentajePila, apiObtenerCatalogoTareas, apiRegisterEncuesta,
   apiObtenerAsistencia,
   urlGetForms,
   urlGetLastPositionGestor,
-  apiSupervisionCoordinacion,
-  urlGetGestionesByGestor
+  urlGetGestionesByGestor,
+  apiRegisterFormDynamic
 } from '../api'
 
 
@@ -52,7 +52,7 @@ export class RestService {
    */
   obtenerDatosSql(id_usuario: number, id_plaza: number, id_plaza_servicio: number) {
     return new Promise((resolve, reject) => {
-      this.http.get(`${apiObtenerDatos} ${id_usuario}, ${id_plaza}, ${id_plaza_servicio}`)
+      this.http.get(`${apiObtenerDatos}/${id_usuario}/${id_plaza}/${id_plaza_servicio}`)
         .subscribe((data: DataGeneral[]) => resolve(data), error => {
           console.error(error);
           reject(error)
@@ -110,7 +110,7 @@ export class RestService {
   obtenerCuentasDistancias(id_usuario: number, id_plaza: number, id_plaza_servicio: number, latitud: number, longitud: number) {
     try {
       return new Promise(resolve => {
-        this.http.post(apiObtenerCuentasDistancia + " '" + id_usuario + "', " + id_plaza + ", " + id_plaza_servicio + ", " + latitud + ", " + longitud, null)
+        this.http.get(`${apiObtenerCuentasDistancia}/${id_usuario}/${id_plaza}/${id_plaza_servicio}/${latitud}/${longitud}`)
           .subscribe(data => resolve(data), err => console.log(err));
       })
     } catch {
@@ -145,7 +145,7 @@ export class RestService {
   async getPhotosHistory(id_plaza, account) {
     return new Promise((resolve, reject) => {
       try {
-        this.http.get(apiObtenerFotosHistoricas + " " + id_plaza + " , " + "'" + account + "'").subscribe(data => {
+        this.http.get(`${apiObtenerFotosHistoricas}/${id_plaza}/${account}`).subscribe(data => {
           resolve(data);
         })
       } catch (error) {
@@ -164,7 +164,7 @@ export class RestService {
   async getPagosHistoryByCuenta(id_plaza, account) {
     return new Promise((resolve, reject) => {
       try {
-        this.http.get(apiObtenerPagosHistoricos + " " + id_plaza + " , " + "'" + account + "'").subscribe(data => {
+        this.http.get(`${apiObtenerPagosHistoricos}/${id_plaza}/${account}`).subscribe(data => {
           resolve(data);
         })
       } catch (error) {
@@ -176,7 +176,6 @@ export class RestService {
 
 
   registroChecador(parametros: string) {
-    console.log(parametros);
     return new Promise(resolve => {
       this.http.post(apiRegistroAsistencia + " " + parametros, null).subscribe(data => {
         resolve(data)
@@ -190,7 +189,7 @@ export class RestService {
 
   obtenerGestoresPlaza(idPlaza: string) {
     return new Promise(resolve => {
-      this.http.get(`${apiObtenerGestores} ${idPlaza}`).subscribe(data => {
+      this.http.get(`${apiObtenerGestores}`).subscribe(data => {
         resolve(data)
       }, err => {
         this.message.showAlert("No se obtuvieron los usuarios");
@@ -205,7 +204,7 @@ export class RestService {
    */
   obtenerProcesosByIdPlaza(id_plaza: number) {
     return new Promise<Proceso[]>(resolve => {
-      this.http.get(`${apiObtenerProcesosPlaza} ${id_plaza}`).subscribe((data: Proceso[]) => {
+      this.http.get(`${apiObtenerProcesosPlaza}/${id_plaza}`).subscribe((data: Proceso[]) => {
         resolve(data)
       }, err => {
         this.message.showAlert("No se pudieron obtener los procesos de la plaza " + err);
@@ -223,7 +222,7 @@ export class RestService {
     return new Promise<UsuarioAyuda[]>((resolve, reject) => {
       try {
         const { id_usuario, fecha_captura, latitud, longitud } = data;
-        const url = `${apiRegistroBotonPanico} ${id_usuario}, '${fecha_captura}', ${latitud}, ${longitud}`
+        const url = `${apiRegistroBotonPanico}/${id_usuario}/${fecha_captura}/${latitud}/${longitud}`
         this.http.get(url).subscribe((data: any) => {
           resolve(data);
         })
@@ -238,8 +237,7 @@ export class RestService {
   async getActionsHistory(id_plaza: number, account: string) {
     return new Promise((resolve, reject) => {
       try {
-        let url = `${apiObtenerAccionesHistoricas} ${id_plaza}, '${account}'`;
-        console.log(url);
+        let url = `${apiObtenerAccionesHistoricas}/${id_plaza}/${account}`;
         this.http.get(url).subscribe((data: any) => {
           resolve(data)
         })
@@ -254,8 +252,8 @@ export class RestService {
   async registerPorcentajePila(id_usuario: number, porcentaje: number, fecha: any) {
     return new Promise((resolve, reject) => {
       try {
-        let url = `${apiRegistroPorcentajePila} ${id_usuario}, ${porcentaje}, '${fecha}'`
-        this.http.post(url, null).subscribe(message => {
+        const data = { user_id: id_usuario, percentage: porcentaje, datetime: fecha }
+        this.http.post(apiRegistroPorcentajePila, data).subscribe(message => {
           resolve("Insertado el porcentaje de la pila")
         })
       } catch (error) {
@@ -293,8 +291,8 @@ export class RestService {
 
   sendOneRegisterEncuesta(data: any) {
     return new Promise<string>((resolve) => {
-      const url = `${apiRegisterEncuesta} '${JSON.stringify(data)}'`
-      this.http.post(url, null).subscribe(async () => {
+      const info = { register: JSON.stringify(data) }
+      this.http.post(apiRegisterEncuesta, info).subscribe(async () => {
         const fecha = this.getCurrentDate()
         await this.dblocal.insertContadorRegisterEncuesta(fecha)
         resolve("Registro enviado con éxito")
@@ -307,8 +305,7 @@ export class RestService {
 
   sendOneRegisterFormDynamic(data: any) {
     return new Promise((resolve) => {
-      const url = `${apiSupervisionCoordinacion} '${JSON.stringify(data)}'`;
-      this.http.post(url, null).subscribe(async () => {
+      this.http.post(apiRegisterFormDynamic, data).subscribe(async () => {
         resolve("Registro enviado con éxito")
       }, error => {
         console.log(error)
@@ -329,8 +326,7 @@ export class RestService {
 
   sendRenuenteEncuesta() {
     return new Promise<string>((resolve) => {
-      const url = `${apiRegisterEncuesta} ''`
-      this.http.post(url, null).subscribe(async () => {
+      this.http.post(apiRegisterEncuesta, {}).subscribe(async () => {
         const fecha = this.getCurrentDate()
         await this.dblocal.insertContadorRegisterEncuesta(fecha)
         resolve("Registro enviado con éxito")
@@ -344,7 +340,7 @@ export class RestService {
 
   async getAsistencias(id_usuario: number) {
     return new Promise((resolve, reject) => {
-      let url = `${apiObtenerAsistencia} ${id_usuario}`
+      let url = `${apiObtenerAsistencia}/${id_usuario}`
       this.http.get(url).subscribe(data => {
         resolve(data)
       }, error => {
@@ -358,7 +354,7 @@ export class RestService {
     return new Promise<Form[]>((resolve, reject) => {
 
       try {
-        this.http.get(urlGetForms + ' ' + id_app).subscribe((data: Form[]) => {
+        this.http.get(`${urlGetForms}/${id_app}`).subscribe((data: Form[]) => {
           resolve(data)
         })
       } catch (error) {
@@ -372,7 +368,7 @@ export class RestService {
   getLastPositionGestor(id_plaza: number) {
     return new Promise<any[]>((resolve, reject) => {
       try {
-        this.http.get(`${urlGetLastPositionGestor}  ${id_plaza}`).subscribe((positions_gestores: any[]) => {
+        this.http.get(`${urlGetLastPositionGestor}/${id_plaza}`).subscribe((positions_gestores: any[]) => {
           resolve(positions_gestores)
         })
       } catch (error) {
@@ -385,7 +381,7 @@ export class RestService {
   getGestionesByGestor( id_plaza: number ) {
     return new Promise<any[]>((resolve, reject) => {
       try {
-        this.http.get(`${urlGetGestionesByGestor} ${id_plaza}`).subscribe((positions_gestores: any[]) => {
+        this.http.get(`${urlGetGestionesByGestor}/${id_plaza}`).subscribe((positions_gestores: any[]) => {
           resolve(positions_gestores)
         })
       } catch (error) {
