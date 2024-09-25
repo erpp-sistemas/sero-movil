@@ -20,6 +20,7 @@ import { RestService } from 'src/app/services/rest.service';
 export class DynamicFormComponent implements OnInit {
 
   @Input() data: any;
+  @Input() id_plaza: number;
 
   formulario: FormGroup;
   data_form_structure: Form[];
@@ -30,7 +31,6 @@ export class DynamicFormComponent implements OnInit {
   have_signature: boolean = false;
   nombre_plaza: string = '';
   id_usuario: number = 0;
-  id_plaza: number = 0;
   id_form: number = 0;
   longitud: number = 0;
   latitud: number = 0;
@@ -221,6 +221,7 @@ export class DynamicFormComponent implements OnInit {
 
     let data = {
       ...this.formulario.value,
+      id_plaza: this.id_plaza,
       id_form: this.id_form,
       account: this.isFormGestion ? this.account : `${this.id_usuario}-${this.fecha_actual}`,
       fecha: this.fecha_actual,

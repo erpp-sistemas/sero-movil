@@ -348,7 +348,7 @@ export class GestionCartaPage implements OnInit {
       .getPicture(options)
       .then(imageData => {
 
-        this.workImage(imageData);
+        this.workImage(imageData, tipo);
 
         this.indicadorImagen = this.indicadorImagen + 1;
         let rutaBase64 = imageData;
@@ -366,32 +366,33 @@ export class GestionCartaPage implements OnInit {
 
   }
 
-  workImage(imageData: any) {
+  workImage(imageData: any, tipo: string) {
     const currentName = imageData.substring(imageData.lastIndexOf('/') + 1);
     const path = imageData.substring(0, imageData.lastIndexOf('/') + 1);
 
     // Nombre personalizado para la imagen
-    const newFileName = `${this.account}` + new Date().getTime().toString() + '.jpg';
+    const newFileName = `${this.account}-${tipo.replace(/\s/g, "_")}` + '.jpg';
+    const fecha = new Date().toISOString();
 
-    // Ruta donde deseas guardar la imagen
-    const folderPath = this.file.externalRootDirectory + 'Erpp';
+    // Ruta donde se guardara guardar la imagen
+    const folderPath = this.file.externalRootDirectory + `Erpp/${fecha.substring(0,10)}`;
 
     // Crear la carpeta si no existe
-    this.file.checkDir(this.file.externalRootDirectory, 'Erpp').then(() => {
-      // Si la carpeta ya existe, mueve el archivo
-      this.moveFile(path, currentName, folderPath, newFileName);
+    this.file.checkDir(this.file.externalRootDirectory, `Erpp/${fecha.substring(0,10)}`).then(() => {
+      // Si la carpeta ya existe, mover el archivo
+      this.copyFile(path, currentName, folderPath, newFileName);
     }).catch(() => {
-      // Si la carpeta no existe, créala y luego mueve el archivo
-      this.file.createDir(this.file.externalRootDirectory, 'Erpp', false).then(() => {
-        this.moveFile(path, currentName, folderPath, newFileName);
+      // Si la carpeta no existe, se crea y luego mueve el archivo
+      this.file.createDir(this.file.externalRootDirectory, `Erpp/${fecha.substring(0,10)}`, false).then(() => {
+        this.copyFile(path, currentName, folderPath, newFileName);
       }).catch((err) => {
         console.log('Error al crear la carpeta:', err);
       });
     });
   }
 
-  moveFile(sourcePath: string, fileName: string, destPath: string, newFileName: string) {
-    this.file.moveFile(sourcePath, fileName, destPath, newFileName).then((success) => {
+  copyFile(sourcePath: string, fileName: string, destPath: string, newFileName: string) {
+    this.file.copyFile(sourcePath, fileName, destPath, newFileName).then((success) => {
       console.log('Imagen guardada en álbum personalizado:', success);
     }, (error) => {
       console.log('Error al mover el archivo:', error);
@@ -864,7 +865,6 @@ export class GestionCartaPage implements OnInit {
 
   resultLunes(event) {
     let seleccion = event.target.value;
-    console.log(seleccion);
     if (seleccion == 'lunesSi') {
       this.lunes = 'si'
     } else {
@@ -989,7 +989,7 @@ export class GestionCartaPage implements OnInit {
           text: "Cancelar",
           role: "cancel",
           cssClass: "secondary",
-          handler: blah => console.log("Confirm Cancel: blah")
+          handler: blah => {}
         },
         {
           text: "Confirmar",

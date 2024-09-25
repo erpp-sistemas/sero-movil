@@ -53,7 +53,6 @@ export class PhotoService {
    * @returns Promise
    */
   async getTotalFotosServicios() {
-    console.log("Obteniendo el total de las fotos de las acciones");
     let sql = "SELECT count(*) AS total from capturaFotosServicios WHERE cargado = 0 ";
     try {
       const response = await this.db.executeSql(sql, []);
@@ -103,7 +102,6 @@ export class PhotoService {
       .then(response => {
         let arrayImage = [];
         arrayImage.push(response.rows.item(0));
-        console.log(arrayImage);
         this.deletePhoto(arrayImage[0].id, arrayImage[0].rutaBase64);
         return Promise.resolve(arrayImage);
       })
@@ -121,12 +119,9 @@ export class PhotoService {
     var uno = url.split("cache/");
     let first = uno[0] + "cache/";
     let second = uno[1];
-    console.log(first, second);
     this.file
       .removeFile(first, second)
       .then(res => {
-        console.log("Se borro");
-        console.log(res);
       })
       .catch(err => {
         console.log("No borro");
@@ -140,7 +135,6 @@ export class PhotoService {
       .then(response => {
         let arrayImage = [];
         arrayImage.push(response.rows.item(0));
-        console.log(arrayImage);
         this.deletePhotoServicios(arrayImage[0].id, arrayImage[0].rutaBase64);
         return Promise.resolve(arrayImage);
       })
@@ -156,7 +150,7 @@ export class PhotoService {
   }
 
 
-  
+
   //* METODOS PARA EL ENVIO DE LAS FOTOS
 
   async getImagesLocal() {
@@ -179,7 +173,6 @@ export class PhotoService {
       for (let i = 0; i < response.rows.length; i++) {
         arrayFotosServicios.push(response.rows.item(i));
       }
-      console.log(arrayFotosServicios);
       return Promise.resolve(arrayFotosServicios);
     }).catch(error => Promise.reject(error));
   }
@@ -280,8 +273,12 @@ export class PhotoService {
       this.loading.dismiss();
       this.message.showAlert("Fotos enviadas con exito!!!!");
     } else {
-      this.sendImage(this.avanceImages, arrayImages).then(respEnvio => {
-        if (respEnvio) {
+      this.sendImage(this.avanceImages, arrayImages).then((respEnvio: any) => {
+        if (respEnvio.status) {
+          this.avanceImages++;
+          this.envioFotos(arrayImages);
+        } else if (respEnvio.status === false && respEnvio.message === 'foto rota') {
+          this.message.showToastLarge(`La foto de la cuenta ${arrayImages[this.avanceImages].cuenta} ya no se encuentra en el dispositivo`)
           this.avanceImages++;
           this.envioFotos(arrayImages);
         } else {
@@ -316,17 +313,20 @@ export class PhotoService {
   async uploadPhotoS3V1(cuenta: string, id_usuario: number, id_tarea: number, fecha: string, tipo: string, base64File: string, imageName: string, id: number, ruta: string, cont: any, id_plaza: number, id_plaza_servicio: number) {
     return new Promise(async (resolve) => {
       try {
-        this.s3Service.uploadS3(base64File, imageName).then(async uploadResponse => {
-          if (uploadResponse) {
-            let UrlOriginal: any;
-            UrlOriginal = this.s3Service.getURLPresignaded(imageName);
-            await this.saveSqlServer(cuenta, id_usuario, imageName, id_tarea, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza, id_plaza_servicio);
-            resolve(true);
-          }
-          else {
-            this.uploadPhotoS3V1(cuenta, id_usuario, id_tarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza, id_plaza_servicio);
-          }
-        });
+        if (base64File) {
+          this.s3Service.uploadS3(base64File, imageName).then(async uploadResponse => {
+            if (uploadResponse) {
+              let UrlOriginal = this.s3Service.getURLPresignaded(imageName);
+              await this.saveSqlServer(cuenta, id_usuario, imageName, id_tarea, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza, id_plaza_servicio);
+              resolve({status: true, message: 'foto correcta'});
+            }
+            else {
+              this.uploadPhotoS3V1(cuenta, id_usuario, id_tarea, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza, id_plaza_servicio);
+            }
+          });
+        } else {
+          resolve({ status: false, message: "foto rota" })
+        }
       } catch (err_1) {
         alert(err_1)
         console.log(err_1);
@@ -338,17 +338,21 @@ export class PhotoService {
   async uploadPhotoS3V1Servicios(id_usuario: number, id_plaza_servicio: number, fecha: string, tipo: string, base64File: string, imageName: string, id: number, ruta: string, cont: any, id_plaza: number) {
     return new Promise(async (resolve) => {
       try {
-        this.s3Service.uploadS3(base64File, imageName).then(async uploadResponse => {
-          if (uploadResponse) {
-            let UrlOriginal: any;
-            UrlOriginal = this.s3Service.getURLPresignaded(imageName);
-            await this.saveSqlServerServicios(id_usuario, imageName, id_plaza_servicio, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza);
-            resolve(true);
-          }
-          else {
-            this.uploadPhotoS3V1Servicios(id_usuario, id_plaza_servicio, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza);
-          }
-        });
+        if (base64File) {
+          this.s3Service.uploadS3(base64File, imageName).then(async uploadResponse => {
+            if (uploadResponse) {
+              let UrlOriginal: any;
+              UrlOriginal = this.s3Service.getURLPresignaded(imageName);
+              await this.saveSqlServerServicios(id_usuario, imageName, id_plaza_servicio, fecha, tipo, id, UrlOriginal, ruta, cont, id_plaza);
+              resolve(true);
+            }
+            else {
+              this.uploadPhotoS3V1Servicios(id_usuario, id_plaza_servicio, fecha, tipo, base64File, imageName, id, ruta, cont, id_plaza);
+            }
+          });
+        } else {
+          resolve(false)
+        }
       } catch (err_1) {
         alert(err_1)
         console.log(err_1);
@@ -359,22 +363,22 @@ export class PhotoService {
 
 
   async saveSqlServer(cuenta: string, id_usuario: number, imageName: string, id_tarea: number, fecha: string, tipo: string, id: any, url: any, ruta: string, cont: any, id_plaza: number, id_plaza_servicio: number) {
-    let a = url.split("&");
-    let b = a[0];
-    let b1 = b.split(":");
-    let b2 = b1[0];
-    let b3 = b1[1];
-    let c = a[1];
-    let d = a[2];
-    let idPlaza = id_plaza
-    let strinSql0 = `'${cuenta}','${id_usuario}','${imageName}',${id_tarea},'${fecha}','${tipo}',${id_plaza_servicio},${idPlaza},'${b2}','${b3}','${c}','${d}'`;
-
+    let data_photo = {
+      account: cuenta,
+      id_usuario: id_usuario,
+      image_name: imageName,
+      id_tarea: id_tarea,
+      fecha: fecha,
+      tipo: tipo,
+      id_servicio: id_plaza_servicio,
+      id_plaza: id_plaza,
+      url_photo: url,
+    }
     return new Promise(resolve => {
-      this.http.post(apiRegistroFotos + " " + strinSql0, null).subscribe(
+      this.http.post(apiRegistroFotos, data_photo).subscribe(
         async data => {
           this.message.showToast(data[0].mensaje + ' ' + cont)
           await this.updateLoadedItem(id);
-          //   await this.deletePhotoFile(ruta);
           resolve(data);
         },
         err => {
@@ -389,27 +393,22 @@ export class PhotoService {
 
 
   async saveSqlServerServicios(id_usuario: number, imageName: string, id_servicio: number, fecha: string, tipo: string, id: number, url: string, ruta: string, cont: any, id_plaza: number) {
-    console.log("id_plaza " + id_plaza);
-    let a = url.split("&");
-    let b = a[0];
-    let b1 = b.split(":");
-    let b2 = b1[0];
-    let b3 = b1[1];
-    let c = a[1];
-    let d = a[2];
-    console.log('La url partida')
-    console.log(b2, b3, c, d)
-    let idPlaza = id_plaza
-    let strinSql0 = `'${id_usuario}','${imageName}',${id_servicio},'${fecha}','${tipo}',${idPlaza},'${b2}','${b3}','${c}','${d}'`;
+  
+    let data_photo = {
+      id_usuario: id_usuario,
+      image_name: imageName,
+      id_servicio: id_servicio,
+      fecha: fecha,
+      tipo: tipo,
+      id_plaza: id_plaza,
+      url_photo: url,
+    }
 
     return new Promise(resolve => {
-      this.http.post(apiRegistroFotosServicios + " " + strinSql0, null).subscribe(
+      this.http.post(apiRegistroFotosServicios, data_photo).subscribe(
         async data => {
           this.message.showToast(data[0].mensaje + ' ' + cont)
           await this.updateLoadedItemServicios(id);
-          console.log('registroCargado al sql')
-          //   await this.deletePhotoFile(ruta);
-          //  console.log('se borro la foto')
           resolve(data);
         },
         err => {
@@ -447,21 +446,21 @@ export class PhotoService {
         let imagenString = imagen64[1];
         let idTarea = arrayImages[0].idTarea;
         if (idTarea == null) { idTarea = 0; }
-        // await this.uploadPhotoS3V1(item.cuenta,item.idAspUser, idTarea, item.fecha,item.tipo, imagenString,imageName, item.id,item.rutaBase64);
         try {
-          this.s3Service.uploadS3(imagenString, imageName).then(async uploadResponse => {
-            if (uploadResponse) {
-              let UrlOriginal: any;
-              UrlOriginal = this.s3Service.getURLPresignaded(imageName);
-              console.log('La url::::::')
-              console.log(UrlOriginal)
-              await this.saveSqlServer(arrayImages[0].cuenta, arrayImages[0].idAspUser, imageName, idTarea, arrayImages[0].fecha, arrayImages[0].tipo, arrayImages[0].id, UrlOriginal, arrayImages[0].ruta, 1, arrayImages[0].id_plaza, arrayImages[0].id_servicio_plaza);
-              resolve(true);
-            }
-            else {
-              this.uploadPhoto(id);
-            }
-          });
+          if (imagenString) {
+            this.s3Service.uploadS3(imagenString, imageName).then(async uploadResponse => {
+              if (uploadResponse) {
+                let UrlOriginal = this.s3Service.getURLPresignaded(imageName);
+                await this.saveSqlServer(arrayImages[0].cuenta, arrayImages[0].idAspUser, imageName, idTarea, arrayImages[0].fecha, arrayImages[0].tipo, arrayImages[0].id, UrlOriginal, arrayImages[0].ruta, 1, arrayImages[0].id_plaza, arrayImages[0].id_servicio_plaza);
+                resolve(true);
+              }
+              else {
+                this.uploadPhoto(id);
+              }
+            });
+          } else {
+            resolve(false)
+          }
 
         } catch (err_1) {
           alert(err_1)

@@ -5,6 +5,7 @@ import { OneSignal } from '@awesome-cordova-plugins/onesignal/ngx';
 import { Storage } from '@ionic/storage';
 import { PushNotification } from '../interfaces/PushNotifications';
 import { RestService } from './rest.service';
+import { apiDeletePushNotification, apiGetPushNotifications, apiUpdateUserIdPushSQL } from '../api';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,7 @@ export class PushService {
 
   userId: any;
 
-  apiUpdateUserIdPushSQL = 'https://ser0.mx/seroMovil.aspx?query=sp_user_id_push';
-  apiGetPushNotifications = 'https://ser0.mx/seroMovil.aspx?query=sp_obtener_push_notification';
-  apiDeletePushNotification = 'https://ser0.mx/seroMovil.aspx?query=sp_disabled_push_notification';
+
 
   constructor(
     private oneSignal: OneSignal,
@@ -52,9 +51,12 @@ export class PushService {
 
   async updateUserIdPushSQL() {
     let idUsuario = await this.storage.get('IdAspUser');
-    let sql = `${this.apiUpdateUserIdPushSQL} ${idUsuario}, '${this.userId}'`;
+    const data = {
+      user_id: idUsuario,
+      user_id_push: this.userId
+    }
     try {
-      this.http.post(sql, null).subscribe((data) => {
+      this.http.post(apiUpdateUserIdPushSQL, data ).subscribe((data) => {
         //console.log(data);
       })
     } catch (error) {
@@ -65,8 +67,7 @@ export class PushService {
 
   async getPushNotificationsByIdUser() {
     let idUsuario = await this.storage.get('IdAspUser');
-    let sql = `${this.apiGetPushNotifications} ${idUsuario}`
-    console.log(sql);
+    let sql = `${apiGetPushNotifications}/${idUsuario}`
     return new Promise<PushNotification[]>((resolve, reject) => {
       try {
         this.http.get(sql).subscribe((data:PushNotification[]) => {
@@ -80,11 +81,13 @@ export class PushService {
 
   async deletePushNotificationById(id_push_notification: string) {
     let idUsuario = await this.storage.get('IdAspUser');
-    let sql = `${this.apiDeletePushNotification} '${id_push_notification}', ${idUsuario}`;
-    console.log(sql);
+    const data = {
+      id_push: id_push_notification,
+      user_id: idUsuario
+    }
     return new Promise((resolve, reject) => {
       try {
-        this.http.post(sql, null).subscribe((data) => {
+        this.http.post(apiDeletePushNotification, data).subscribe((data) => {
           resolve(data)
         });
       } catch (error) {

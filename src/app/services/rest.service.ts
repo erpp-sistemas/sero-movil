@@ -175,9 +175,9 @@ export class RestService {
   }
 
 
-  registroChecador(parametros: string) {
+  registroChecador(parametros: { [key: string]: any }) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroAsistencia + " " + parametros, null).subscribe(data => {
+      this.http.post(apiRegistroAsistencia, parametros).subscribe(data => {
         resolve(data)
       }, err => {
         this.message.showAlert("No se realizo el registro, verifique con sistemas");

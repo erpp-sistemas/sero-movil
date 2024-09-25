@@ -191,7 +191,7 @@ export class CoordinatorPage implements OnInit {
       component: SuperviceGestorPage,
       cssClass: 'my-custom-class',
       componentProps: {
-        gestores: this.gestores
+        gestores: this.gestores,
       }
     })
     await modal.present();

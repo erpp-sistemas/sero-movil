@@ -51,7 +51,7 @@ export class RegisterService {
   * @returns Promise (insert into serviciosPublicos)
   */
   gestionServiciosPublicos(data: any) {
-    let sql = 'INSERT INTO serviciosPublicos ( id_plaza, nombre_plaza, idAspUser, idServicio, obervacion, fechaCaptura, latitud, longitud)' +
+    let sql = 'INSERT INTO serviciosPublicos ( id_plaza, nombre_plaza, idAspUser, idServicio, observacion, fechaCaptura, latitud, longitud)' +
       'VALUES (?,?,?,?,?,?,?,?)';
 
     return this.db.executeSql(sql, [
@@ -948,7 +948,7 @@ export class RegisterService {
    */
   enviarSQLCartaInvitacion(data: { [key: string]: any }, id: number) {
     return new Promise(resolve => {
-      this.http.post(apiRegistroCartaInvitacion + " " + data, null).subscribe(async data => {
+      this.http.post(apiRegistroCartaInvitacion, data).subscribe(async data => {
         await this.actualizarIdCartaInvitacion(id);
         resolve(data);
       }, err => {

@@ -74,37 +74,32 @@ export class SyncFotosAccionesPage implements OnInit {
   }
 
   async uploadPhoto(id) {
-
     const loading = await this.loadingCtrl.create({
       message: 'Enviando foto...',
       spinner: 'dots'
     });
-
     await loading.present();
-
-    await this.photoService.uploadPhoto(id);
-    this.getInfo();
-    await this.getTotalFotos();
-
-    loading.dismiss();
-
+    this.photoService.uploadPhoto(id).then(async res => {
+      if(!res) {
+        loading.dismiss();
+        this.mensaje.showAlert("La foto ya no se encuentra en el dispositivo...")
+      }
+      this.getInfo();
+      await this.getTotalFotos();
+      loading.dismiss();
+    })
   }
 
   async deletePhoto(id, rutaBase64) {
-
     const loading = await this.loadingCtrl.create({
       message: 'Eliminando la foto...',
       spinner: 'dots'
     });
-
     loading.present();
-
     this.photoService.deletePhoto(id, rutaBase64);
     this.getInfo();
     await this.getTotalFotos();
-
     loading.dismiss();
-
   }
 
   syncFotos() {

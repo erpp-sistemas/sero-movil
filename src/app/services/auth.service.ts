@@ -13,16 +13,14 @@ import { DblocalService } from './dblocal.service';
 import { EncuestaGeneral, ServicioPublico, UserPlacesServices, UserFirebase, Gestor } from '../interfaces';
 import { wihoutDuplicated } from '../../helpers'
 import { UsersService } from './users.service';
-import { apiObtenerGestores } from '../api';
+import { apiObtenerGestores, apiObtenerServiciosPublicos, apiObtenerServiciosUser, apiUpdateAppVersion } from '../api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  apiObtenerServiciosUser = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios";
-  apiObtenerServiciosPublicos = "https://ser0.mx/seroMovil.aspx?query=sp_obtener_servicios_publicos";
-  apiUpdateAppVersion = "https://ser0.mx/seroMovil.aspx?query=sp_user_app_version";
+
   userInfo: UserFirebase;
   modal: any;
   photo_user: string = ''
@@ -119,7 +117,7 @@ export class AuthService {
 
   async getPlacesAndServicesUser(idUser: number) {
     await this.dbLocalService.deleteServicios();
-    this.http.get(this.apiObtenerServiciosUser + " " + idUser).subscribe((data: UserPlacesServices[]) => {
+    this.http.get(`${apiObtenerServiciosUser}/${idUser}`).subscribe((data: UserPlacesServices[]) => {
       this.insertServices(data);
     })
   }
@@ -140,14 +138,14 @@ export class AuthService {
   async getDataEncuestas(data: UserPlacesServices[]) {
     const places = data.map(upls => upls.id_plaza)
     const places_unique = wihoutDuplicated(places) // ? [2, 3]
-    const api = `https://ser0.mx/seroMovil.aspx?query=sp_obtener_preguntas_encuesta`
+    const api = `https://erpp.center/sero-web/api/preguntas-encuesta`
     try {
       await this.dbLocalService.deleteDataEncuestas()
     } catch (error) {
       console.error("No se pudo borrar la informacion de la tabla local encuesta_general ", error)
     }
     for (let place of places_unique) {
-      await this.rest.getDataSQL(`${api} ${place}`)
+      await this.rest.getDataSQL(`${api}/${place}`)
         .then(async (data: EncuestaGeneral[]) => {
           await this.insertDataEncuestas(data)
         })
@@ -169,7 +167,7 @@ export class AuthService {
 
   async getServicesPublic() {
     await this.dbLocalService.deleteServiciosPublicos();
-    this.http.get(this.apiObtenerServiciosPublicos).subscribe((data: ServicioPublico[]) => {
+    this.http.get(apiObtenerServiciosPublicos).subscribe((data: ServicioPublico[]) => {
       this.insertServicePublic(data);
     })
   }
@@ -261,10 +259,12 @@ export class AuthService {
   async updateAppVersion() {
     let appVersion = await this.obtenerVersionApp();
     let idUsuario = await this.storage.get('IdAspUser');
-    let sql = `${this.apiUpdateAppVersion} ${idUsuario}, '${appVersion}'`
+    let data = {
+      id_usuario: idUsuario,
+      app_version: appVersion
+    }
     try {
-      this.http.post(sql, null).subscribe((data) => {
-      })
+      this.http.post(apiUpdateAppVersion, data).subscribe((data) => { })
     } catch (error) {
       console.log("No se pudo actualizar la version de la app en el SQL ", error);
     }

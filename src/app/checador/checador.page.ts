@@ -155,7 +155,7 @@ export class ChecadorPage implements OnInit {
 
     const email = await this.storage.get('Email')
     if (email === 'antonio.ticante@ser0.mx') {
-      this.checar(tipo, 'https://fotos-sero-movil.s3.amazonaws.com/00055877-000558772023-12-29T12%3A25%3A32.000Z?AWSAccessKeyId=AKIA5NSDPBH32ZG3HSMX&Expires=2003894577&Signature=jGDPGVhw8I9svltG5Eto2xajdv8%3D')
+      this.checar(tipo, 'https://firebasestorage.googleapis.com/v0/b/waterloo-6e309.appspot.com/o/anthony.png?alt=media&token=bfdfa69c-534c-44f0-a221-8121761c1f3b')
       return;
     }
 
@@ -214,31 +214,20 @@ export class ChecadorPage implements OnInit {
       url_photo = foto
     }
 
-    let { b2, b3, c, d } = this.createStructurePhoto(url_photo)
-    let parametros = `${tipo}, ${this.idAspUser}, '${fecha}', ${this.latitud}, ${this.longitud}, '${b2}', '${b3}', '${c}', '${d}' `
-    this.registerBD(parametros)
-
-
-  }
-
-  createStructurePhoto(url_photo: string) {
-    let a = url_photo.split("&");
-    let b = a[0];
-    let b1 = b.split(":");
-    let b2 = b1[0];
-    let b3 = b1[1];
-    let c = a[1];
-    let d = a[2];
-
-    return {
-      b2,
-      b3,
-      c,
-      d
+    const data = { 
+      tipo: tipo, 
+      id_usuario: this.idAspUser, 
+      fecha: fecha,
+      latitud: this.latitud,
+      longitud: this.longitud,
+      url_photo: url_photo
     }
+    this.registerBD(data)
+
   }
 
-  registerBD(parameters: string) {
+
+  registerBD(parameters: { [key: string]: any }) {
     this.rest.registroChecador(parameters).then(res => {
       this.loading.dismiss();
       alert(res[0].mensaje)
